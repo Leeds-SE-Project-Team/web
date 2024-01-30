@@ -1,0 +1,62 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  //font-weight: normal;
+}
+
+//* {
+//  font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+//  outline: none;
+//}
+
+html,body,#app{
+  height: 100%;
+}
+
+.show-border {
+  .border-1 {
+    border: 0.1px solid green !important;
+  }
+
+  .border-2 {
+    border: 0.1px solid red !important;
+  }
+
+  .border-3 {
+    border: 0.1px solid blue !important;
+  }
+
+  .border-4 {
+    border: 0.1px solid yellow !important;
+  }
+
+  .border-5 {
+    border: thick solid yellow !important;
+  }
+
+  .border-6 {
+    border: thick solid white !important;
+  }
+
+}
+
+
+
+//隐藏滚动条
+::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+  height: 0 !important;
+  width: 0 !important;
+}
+
+//.arco-trigger-menu {
+//  padding: 10px !important;
+//  border-radius: 12px !important;
+//
+//  .arco-trigger-menu-inner .arco-trigger-menu-item {
+//    border-radius: 12px;
+//    margin: 5px 0;
+//  }
+//}

@@ -1,0 +1,34 @@
+html {
+  font-size: 12px;
+}
+
+#home {
+
+  .title {
+    display: flex;
+    height: 10vh;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+  }
+
+  #container {
+    width: 100%;
+    height: 80vh;
+    padding: 0;
+    margin: 0;
+  }
+
+  .input-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 10vh;
+  }
+}
+
+
+
+
+
