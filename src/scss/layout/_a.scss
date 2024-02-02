@@ -1,0 +1,139 @@
+#layout-a {
+    $sidebar-width: 30%;
+    $content-width: 70%;
+    $header-height: 5.5vh;
+    height: 100%;
+    box-sizing: border-box;
+
+    #layout-a-header {
+        height: $header-height;
+        .main-header {
+            height: 100%;
+            width: 100vw;
+            background-color: #383838;
+        }
+
+        .header-left {
+            height: 100%;
+            width: 60vw;
+            float: left;
+            .box {
+                font-size: 16px;
+                font-weight: 700;
+                background-color: #383838;
+                color: #d7d7d7;
+                margin-left: 0px;
+            }
+            .box:hover {
+                color: #fff;
+            }
+
+            .logo {
+                padding: 0px;
+                display: flex;
+                .logo-pic {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 16px;
+                    background-color: #000;
+                    margin-right: 5px;
+                }
+                .logo-text {
+                }
+            }
+
+        }
+
+        .header-right {
+            height: 100%;
+            display: flex;
+            float: right;
+            color: #000;
+            font-size: 16px;
+            font-weight: 700;
+            align-items: center;
+            margin-right: 10px;
+            .shop {
+                cursor: pointer;
+                height: 32px;
+                padding: 7px 11px;
+                background-color: #aadc64;
+                border-radius: 8px;
+            }
+            .lang {
+                cursor: pointer;
+                height: 32px;
+                margin: 0 10px;
+                padding: 7px 11px;
+                color: #d7d7d7;
+                display: flex;
+                align-items: center;
+                .lang-logo {
+                    width: 24px;
+                    height: 24px;
+                    margin-right: 5px;
+                }
+            }
+            .sign-log {
+                cursor: pointer;
+                height: 32px;
+                padding: 7px 11px;
+                background-color: #aadc64;
+                border-radius: 8px;
+            }
+            .shop:hover,.sign-log:hover {
+                background-color: #90ba55;
+            }
+        }
+
+        // change the arco design style
+        .arco-menu-horizontal .arco-menu-inner {
+            background-color: #383838;
+        }
+    }
+
+     #layout-a-sider {
+        width: $sidebar-width !important;
+        #ASider{
+            .personInfo{
+                padding-left: 2rem;
+                margin-top: 2rem;
+                margin-bottom: 2rem;
+            }
+            .usernameWrapper{
+                margin-top: 1.5rem;
+                .username{
+                    font-size: 2rem;
+                    font-weight: 600;
+                }
+            }
+            .userUltra{
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: start;
+                .ultraItem{
+                    display: flex;
+                    flex-direction: column;
+                    align-items:start ;
+                    padding-right: 15px;
+                    margin-top: 2rem;
+                    .itemNumber{
+                        margin-bottom: 5px;
+                    }
+                }
+            }
+        }
+    }
+
+    #layout-a-content {
+        @media screen and (min-width: 1024px) {
+            width: 70%;
+        }
+        @media screen and (min-width: 720px) {
+            padding: 3rem;
+        }
+        @media screen and (min-width: 540px) {
+            background-color: #F5F4E9
+        }
+    }
+}
