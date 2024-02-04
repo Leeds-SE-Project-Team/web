@@ -1,0 +1,162 @@
+#account-main {
+  background-color: #FFF;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  @media screen and (min-width: 1024px) {
+    flex-direction: row;
+  }
+
+  .container {
+    align-items: center;
+    display: flex;
+    flex: 1 1 50%;
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 32rem;
+    min-height: 100vh;
+
+    .content-container {
+      padding: 0.75rem;
+      @media screen and (min-width: 540px) {
+        padding: 1.5rem;
+      }
+      @media screen and (min-width: 720px) {
+        padding: 1.5rem;
+      }
+      @media screen and (min-width: 1024px) {
+        padding: 2.5rem 0;
+      }
+
+      &.header-logo {
+        flex: 0 0 auto;
+
+        .logo {
+          vertical-align: middle;
+          //height: 36px;
+          height: 50px;
+          max-width: 100%;
+          display: inline-flex;
+          margin-top: 30px;
+        }
+      }
+
+      &.main-content-container {
+        flex: 1 1 auto;
+
+        .main-content-inner-container {
+          display: block;
+          height: 100%;
+
+          .account-title {
+            color: inherit;
+            font-weight: 700;
+            line-height: 1.125;
+            font-size: 18px;
+            @media screen and (min-width: 540px) {
+              font-size: 24px;
+            }
+          }
+
+          .account-subtitle {
+            color: inherit;
+            font-size: 16px;
+          }
+
+          .account-main-btn {
+            margin-top: 15px;
+            background-color: rgb(79, 133, 13);
+            width: 100%;
+            border-width: 0.0625rem;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.5rem;
+            padding: 1.2rem 0.6875rem;
+            border-color: transparent;
+            border-radius: 8px;
+            color: #FFF;
+
+            .btn-icon {
+              height: 1.5rem;
+              width: 1.5rem;
+            }
+
+            .btn-text {
+              display: inline-flex;
+              text-align: center;
+              flex-flow: column;
+              padding-left: 0.25rem;
+              padding-right: 0px;
+            }
+          }
+
+          .divider-container {
+            position: relative;
+            z-index: 10;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+
+            p {
+              font-weight: 700;
+              font-size: 16px;
+              color: #666666;
+            }
+          }
+
+          .admin-btn {
+            -webkit-box-align: center;
+            align-items: center;
+            appearance: none;
+            background-color: rgb(24, 119, 242);
+            border-color: transparent;
+            border-radius: 8px;
+            border-style: solid;
+            color: #FFFFFF;
+            cursor: pointer;
+            display: inline-flex;
+            -webkit-box-pack: center;
+            justify-content: center;
+            pointer-events: auto;
+            text-align: center;
+            border-width: 0.0625rem;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.5rem;
+            padding: 0.4375rem;
+            height: 2.4rem;
+            width: 2.6rem;
+            .admin-btn-text {
+              font-size: 0.6rem;
+            }
+          }
+        }
+      }
+
+      &.footer {
+        flex: 0 0 auto;
+      }
+    }
+
+
+  }
+
+  .cover {
+    display: none;
+    flex-basis: 50%;
+    background-image: url("/account/account-main-cover.png");
+    background-size: cover;
+    background-position: center center;
+    @media screen and (min-width: 1024px) {
+      display: block;
+    }
+  }
+
+}
+
+
+
+
+

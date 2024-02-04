@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
-const route = useRoute();
+const route = useRoute()
 // 配置布局
-const layout = computed(() => 'layout-' + ((route.meta.layout as string) || 'a').toLowerCase())
-
+const layout = computed(
+  () => 'layout-' + ((route.meta.layout as string) || 'default').toLowerCase()
+)
 </script>
 
 <!--App.vue-->
@@ -14,7 +15,6 @@ const layout = computed(() => 'layout-' + ((route.meta.layout as string) || 'a')
     <!--    Layout & Router View-->
     <component :is="layout"> </component>
     <!--    Layout & Router View-->
-    <LoginCard />
   </a-config-provider>
   <!-- Component Library Config Provider-->
 </template>
