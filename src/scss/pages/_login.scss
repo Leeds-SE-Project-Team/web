@@ -88,7 +88,7 @@
               text-align: center;
               flex-flow: column;
               padding-left: 0.25rem;
-              padding-right: 0px;
+              padding-right: 0;
             }
           }
 
@@ -143,17 +143,19 @@
 
   }
 
+  // SCSS 引用云资源
   .cover {
+    $url: $static-url+"/account/account-main-cover.png";
+    background-image: url($url);
+
     display: none;
     flex-basis: 50%;
-    background-image: url("/account/account-main-cover.png");
     background-size: cover;
     background-position: center center;
     @media screen and (min-width: 1024px) {
       display: block;
     }
   }
-
 }
 
 
