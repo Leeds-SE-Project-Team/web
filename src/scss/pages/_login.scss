@@ -12,14 +12,19 @@
     align-items: center;
     display: flex;
     flex: 1 1 50%;
-    flex-direction: column;
+    //flex-direction: column;
     margin-left: auto;
     margin-right: auto;
     max-width: 32rem;
     min-height: 100vh;
 
+    align-content: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: row;
+
     .content-container {
-      padding: 0.75rem;
+      padding: 1.5rem 0.75rem;
       @media screen and (min-width: 540px) {
         padding: 1.5rem;
       }
@@ -32,11 +37,14 @@
 
       &.header-logo {
         flex: 0 0 auto;
-
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
         .logo {
           vertical-align: middle;
           //height: 36px;
-          height: 50px;
+          height: 4.5rem;
           max-width: 100%;
           display: inline-flex;
           margin-top: 30px;
@@ -45,6 +53,7 @@
 
       &.main-content-container {
         flex: 1 1 auto;
+        padding: 2rem;
 
         .main-content-inner-container {
           display: block;
@@ -54,7 +63,7 @@
             color: inherit;
             font-weight: 700;
             line-height: 1.125;
-            font-size: 18px;
+            font-size: 1.25rem;
             @media screen and (min-width: 540px) {
               font-size: 24px;
             }
@@ -128,6 +137,9 @@
             padding: 0.4375rem;
             height: 2.4rem;
             width: 2.6rem;
+            -moz-user-select: none;
+            user-select: none;
+
             .admin-btn-text {
               font-size: 0.6rem;
             }

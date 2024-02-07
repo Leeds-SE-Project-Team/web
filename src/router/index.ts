@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import IndexView from '@/views/home/index.vue'
 import HomeView from '@/views/home/HomeView.vue'
 import LoginView from '@/views/login/index.vue'
 
@@ -7,13 +8,17 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/login'
+      name: 'index',
+      meta: {
+        title: '主页'
+      },
+      component: IndexView
     },
     {
       path: '/home',
       name: 'home',
       meta: {
-        title: '主页',
+        title: '探索',
         layout: 'a'
       },
       component: HomeView

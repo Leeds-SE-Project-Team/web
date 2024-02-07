@@ -6,12 +6,16 @@
   //font-weight: normal;
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 //* {
 //  font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
 //  outline: none;
 //}
 
-html,body,#app{
+html, body, #app {
   height: 100%;
 }
 
@@ -40,7 +44,6 @@ html,body,#app{
     border: thick solid white !important;
   }
 }
-
 
 
 //隐藏滚动条
