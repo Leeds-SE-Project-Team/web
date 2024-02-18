@@ -2,7 +2,13 @@ import axios, { type AxiosRequestConfig, type AxiosResponse, HttpStatusCode } fr
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.APP_SERVER_URL,
-  timeout: 30000
+  timeout: 30000,
+  headers: {
+    common: {
+      'Content-Type': 'application/json',
+      Authorization: '' // TODO: 需要带上登录时返回的 access token
+    }
+  }
 })
 
 export const axiosRequest = <T>(config: AxiosRequestConfig): Promise<T> =>
