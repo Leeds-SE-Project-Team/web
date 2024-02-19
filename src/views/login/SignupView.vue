@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { type FieldRule, Message } from '@arco-design/web-vue'
-import { checkEmail } from '@/utils'
 import useLoading from '@/hooks/loading'
-import { createUser, getUserByEmail } from '@/apis/user'
-import { authPwdLogin } from '@/apis/auth'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { createUser } from '@/apis/user'
 
 type Status = 'default' | 'signup' | 'login'
 // type-based
@@ -67,12 +63,13 @@ const handleSignup = () => {
         .then((apiRes) => {
           if (apiRes.success) {
             // 注册成功
-            authStore.refreshAccessToken(apiRes.data as string)
+            // authStore.refreshAccessToken(apiRes.data as string)
             Message.success({
               id: 'signup',
               content: apiRes.message
             })
-            router.push({ name: 'index' })
+            emits('change-status', 'login', props.signupEmail)
+            // router.push({ name: 'index' })
           } else {
             // 注册失败
             Message.info({
@@ -95,8 +92,6 @@ const handleSignup = () => {
 }
 
 const { loading, setLoading } = useLoading()
-const authStore = useAuthStore()
-const router = useRouter()
 </script>
 
 <template>

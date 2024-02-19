@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue'
 import { type FieldRule, Message } from '@arco-design/web-vue'
 import { checkEmail } from '@/utils'
 import useLoading from '@/hooks/loading'
-import { getUserByEmail } from '@/apis/user'
+import { checkUserExist } from '@/apis/user'
 
 type Status = 'default' | 'signup' | 'login'
 // type-based
@@ -34,7 +34,9 @@ const handleClickContinue = () => {
     if (!error) {
       const email = form.email as string
       setLoading(true)
-      getUserByEmail(email)
+      checkUserExist({
+        email: email
+      })
         .then((apiRes) => {
           if (apiRes.success) {
             // 用户已注册
