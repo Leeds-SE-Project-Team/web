@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import IndexView from '@/views/home/index.vue'
 import HomeView from '@/views/home/HomeView.vue'
 import LoginView from '@/views/login/index.vue'
+import DiscoverView from '@/views/discover/index.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +31,14 @@ const router = createRouter({
         title: '登录'
       },
       component: LoginView
+    },
+    {
+      path: '/discover',
+      name: 'discover',
+      meta: {
+        title: '发现',
+      },
+      component: DiscoverView
     }
   ]
 })
