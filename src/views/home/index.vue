@@ -12,6 +12,7 @@ const authStore = useAuthStore()
 
       <template #extra>
         <a-button :type="'secondary'" @click="authStore.handleLogout">Log out</a-button>
+        <a-button :type="'secondary'" @click="$router.push({ name: 'discover' })">发现</a-button>
       </template>
       <a-typography style="background: var(--color-fill-2); padding: 24px">
         <a-typography-paragraph>Access token:</a-typography-paragraph>
