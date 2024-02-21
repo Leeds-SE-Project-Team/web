@@ -6,7 +6,8 @@ const axiosInstance = axios.create({
   headers: {
     common: {
       'Content-Type': 'application/json',
-      Authorization: 'root' // TODO: 需要带上登录时返回的 access token
+      Authorization: 'root', // TODO: 需要带上登录时返回的 access token
+      'User-ID': 1 // TODO: Change User-ID
     }
   }
 })

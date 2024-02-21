@@ -1,9 +1,41 @@
 <script setup lang="ts">
+import MapContainer from '@/components/map/MapContainer.vue'
+import { ref } from 'vue'
+import { createTour, type CreateTourForm, TourType } from '@/apis/tour'
+import { Message } from '@arco-design/web-vue'
+import useLoading from '@/hooks/loading'
+
 const customStyle = {
   borderRadius: '6px',
   marginBottom: '18px',
   border: 'none',
   overflow: 'hidden'
+}
+
+const createTourForm = ref<CreateTourForm>({
+  startLocation: '',
+  endLocation: '',
+  type: TourType.WALK,
+  pons: []
+})
+
+const { loading, setLoading } = useLoading()
+const handleCreateTour = () => {
+  setLoading(true)
+  createTour(createTourForm.value)
+    .then((res) => {
+      if (res.success) {
+        Message.success(res.message)
+      } else {
+        Message.info(res.message)
+      }
+    })
+    .catch((e) => {
+      Message.error(e)
+    })
+    .finally(() => {
+      setLoading(false)
+    })
 }
 </script>
 
@@ -19,27 +51,19 @@ const customStyle = {
       <!-- tool part -->
       <div class="tool">
         <a-collapse expand-icon-position="right" accordion>
-          <a-collapse-item
-            :style="customStyle"
-            header="Beijing Toutiao Technology Co., Ltd."
-            key="1"
-          >
+          <a-collapse-item :style="customStyle" header="Sports" key="1">
             <div>Beijing Toutiao Technology Co., Ltd.</div>
           </a-collapse-item>
-          <a-collapse-item
-            :style="customStyle"
-            header="Beijing Toutiao Technology Co., Ltd."
-            key="2"
-          >
+          <a-collapse-item :style="customStyle" header="Fitness" key="2">
             <div>Beijing Toutiao Technology Co., Ltd.</div>
           </a-collapse-item>
-          <a-collapse-item
-            :style="customStyle"
-            header="Beijing Toutiao Technology Co., Ltd."
-            key="3"
-          >
-            <div>Beijing Toutiao Technology Co., Ltd.</div>
-          </a-collapse-item>
+          <!--          <a-collapse-item-->
+          <!--            :style="customStyle"-->
+          <!--            header="Beijing Toutiao Technology Co., Ltd."-->
+          <!--            key="3"-->
+          <!--          >-->
+          <!--            <div>Beijing Toutiao Technology Co., Ltd.</div>-->
+          <!--          </a-collapse-item>-->
         </a-collapse>
       </div>
     </div>
@@ -48,13 +72,25 @@ const customStyle = {
       <!-- place part -->
       <div class="place">
         <div>
-          <a-input class="place-input" placeholder="Enter Place Or Address..." allow-clear />
+          <a-input
+            v-model:model-value="createTourForm.startLocation"
+            class="place-input"
+            placeholder="Enter Starting Point"
+            allow-clear
+          >
+            <template #prefix>A</template>
+            <!--            <template #append><icon-delete /></template>-->
+          </a-input>
         </div>
         <div>
-          <a-input class="place-input" placeholder="Enter Place Or Address..." allow-clear />
-        </div>
-        <div>
-          <a-input class="place-input" placeholder="Enter Place Or Address..." allow-clear />
+          <a-input
+            v-model:model-value="createTourForm.endLocation"
+            class="place-input"
+            placeholder="Enter Destination"
+            allow-clear
+          >
+            <template #prefix>B</template>
+          </a-input>
         </div>
       </div>
 
@@ -90,8 +126,11 @@ const customStyle = {
         <h3 class="header">Where do you want to go?</h3>
         <p class="text">Enter a destination or click on the map to add it.</p>
       </div>
+      <a-button style="width: 100px" @click="handleCreateTour" :loading="loading">创建</a-button>
     </div>
   </section>
+
+  <MapContainer v-model:create-tour-form="createTourForm" />
 </template>
 
 <style scoped></style>

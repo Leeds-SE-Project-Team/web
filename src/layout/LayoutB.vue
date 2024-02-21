@@ -8,7 +8,7 @@ import AHeader from '@/components/header/AHeader.vue'
       <AHeader />
     </a-layout-header>
     <a-layout>
-      <a-layout-content class="border-1" id="planner-sider">
+      <a-layout-content class="border-1" id="planner-content">
         <RouterView />
       </a-layout-content>
     </a-layout>
