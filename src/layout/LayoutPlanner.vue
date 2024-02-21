@@ -1,7 +1,6 @@
 <script setup lang="ts">
-// import { RouterView } from 'vue-router'
-// import ASider from "../components/ASider.vue";
 import AHeader from "../components/header/AHeader.vue"
+import plannerSider from "../components/sider/plannerSider.vue"
 </script>
 
 <template>
@@ -10,11 +9,8 @@ import AHeader from "../components/header/AHeader.vue"
       <AHeader />
     </a-layout-header>
     <a-layout>
-      <a-layout-sider id="layout-a-sider" >
-        <ASider />
-      </a-layout-sider>
-      <a-layout-content id="layout-a-content" class="border-3">
-        <RouterView/>
+      <a-layout-content class="border-1" id="planner-sider">
+        <plannerSider />
       </a-layout-content>
     </a-layout>
     <!-- <a-layout-footer>Footer</a-layout-footer> -->

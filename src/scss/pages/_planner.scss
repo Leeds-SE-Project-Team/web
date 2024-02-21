@@ -1,0 +1,98 @@
+#planner-sider {
+    .sider {
+        width: 388px;
+
+        .top {
+            background-color: #4d741f;
+            padding: 12px;
+
+            .search {
+                .input {
+                    height: 43px;
+                    border-radius: 8px;
+                }
+            }
+
+            .tool {
+                margin-top: 18px;
+
+                .arco-collapse {
+                    border: none;
+
+                    .arco-collapse-item-header-title {
+                        color: #fff !important;
+                        font-weight: 900 !important;
+                    }
+                }
+
+                .arco-collapse-item-header-right {
+                    background-color: #4d741f;
+                }
+
+                .arco-collapse-item .arco-collapse-item-expand-icon {
+                    color: #fff;
+                }
+            }
+        }
+
+        .middle {
+            background-color: #5c8429;
+            padding: 12px 12px 8px 12px;
+
+            .place-input {
+                height: 40px;
+                margin-bottom: 8px;
+            }
+
+            .right-icon {
+                margin-left: 340px;
+                width: 24px;
+                height: 24px;
+
+                path {
+                    fill: #fff;
+                }
+            }
+
+            .arco-input-wrapper {
+                background-color: #4d741f;
+            }
+
+            .arco-input-wrapper .arco-input.arco-input-size-medium::placeholder {
+                color: #dbe3d2;
+                font-size: 16px;
+            }
+
+            .arco-input-wrapper:focus-within,
+            .arco-input-wrapper.arco-input-focus {
+                border: 1px solid #56732d;
+            }
+        }
+
+        .bottom {
+            padding: 12px;
+            text-align: center;
+
+            // background-color: #cadf81;
+            .route-img {
+                display: inline-block;
+                margin-top: 40px;
+
+                img {
+                    margin: 0 0 20px 0;
+                    width: 120px;
+                    height: 120px;
+                }
+            }
+
+            .header {
+                font-size: 21px;
+                margin-bottom: 10px;
+            }
+
+            .text {
+                font-size: 16px;
+            }
+        }
+    }
+}
