@@ -3,6 +3,7 @@ import IndexView from '@/views/home/index.vue'
 import HomeView from '@/views/home/HomeView.vue'
 import LoginView from '@/views/login/index.vue'
 import DiscoverView from '@/views/discover/index.vue'
+import PlannerView from '@/views/planner/index.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,7 +12,7 @@ const router = createRouter({
       path: '/',
       name: 'index',
       meta: {
-        title: '主页'
+        title: 'Index Page'
       },
       component: IndexView
     },
@@ -19,7 +20,7 @@ const router = createRouter({
       path: '/home',
       name: 'home',
       meta: {
-        title: '探索',
+        title: 'Home Page',
         layout: 'a'
       },
       component: HomeView
@@ -28,7 +29,7 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       meta: {
-        title: '登录'
+        title: 'Log in'
       },
       component: LoginView
     },
@@ -36,9 +37,19 @@ const router = createRouter({
       path: '/discover',
       name: 'discover',
       meta: {
-        title: '发现',
+        layout: 'b',
+        title: 'Discover Page'
       },
       component: DiscoverView
+    },
+    {
+      path: '/plan',
+      name: 'planner',
+      meta: {
+        title: 'Planner Page',
+        layout: 'b'
+      },
+      component: PlannerView
     }
   ]
 })

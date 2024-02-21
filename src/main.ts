@@ -14,7 +14,7 @@ import router from './router'
 const app = createApp(App)
 import LayoutA from '@/layout/LayoutA.vue'
 import LayoutDefault from '@/layout/LayoutDefault.vue'
-import LayoutPlanner from '@/layout/LayoutPlanner.vue'
+import LayoutB from '@/layout/LayoutB.vue'
 
 app.use(createPinia())
 app.use(router)
@@ -22,5 +22,5 @@ app.use(ArcoVue)
 app.use(ArcoVueIcon)
 app.component('layout-default', LayoutDefault)
 app.component('layout-a', LayoutA)
-app.component('layout-planner', LayoutPlanner)
+app.component('layout-b', LayoutB)
 app.mount('#app')
