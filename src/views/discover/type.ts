@@ -1,6 +1,7 @@
 export interface articleInfo {
     username: string
-    userFollow: string | number
+    userFollower: string | number
+    userFollowing: string | number
     userAvatar: string
     backgroundUrl: string
     collection: 'hiking' | 'biking' | 'running'
@@ -9,4 +10,12 @@ export interface articleInfo {
     introduction: string
     like: number | string
     comment: string | number
+    time?: string
+}
+
+export interface hoverInfo {
+    username: string
+    userFollower: number | string
+    userFollowing: number | string
+    userAvatar: string
 }
