@@ -89,10 +89,10 @@ import type { articleInfo } from './type'
 
 const testInfo: articleInfo = {
   username: '测试用户',
-  userFollow: 10000,
+  userFollower: 10000,
+  userFollowing: 10,
   userAvatar:
-    'https://i1.hdslb.com/bfs/face/fd48028dbb3d3fca850ca47f3dd2a6bcd1fbab8b.jpg \
-                    @240w_240h_1c_1s_!web-avatar-space-header.avif',
+    '//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif',
   backgroundUrl: '//fp1.fghrsh.net/2020/01/12/1e8c4232da6be35942f6ecd630797f60.jpg',
   collection: 'hiking',
   title: '随便写点',

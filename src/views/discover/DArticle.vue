@@ -5,20 +5,41 @@
                 <div class="cover-wrapper">
                     <div class="cover-info">
                         <div class="info-user">
-                            <a-avatar id="user-avatar">
-                                <img 
-                                    :src="props.info.userAvatar"
-                                    alt="avatar"
-                                >
-                            </a-avatar>
-                            <div class="user">
-                                <p class="user-name">
-                                    {{ props.info.username }}
-                                </p>
-                                <p class="user-follow">
-                                    {{ props.info.userFollow }} Follower
-                                </p>
-                            </div>
+                            <a-popover>
+                                <a-avatar id="user-avatar">
+                                    <img 
+                                        :src="props.info.userAvatar"
+                                        alt="avatar"
+                                    >
+                                </a-avatar>
+                                <template #content>
+                                    <DHover
+                                        :username="props.info.username"
+                                        :user-avatar="props.info.userAvatar"
+                                        :user-follower="$props.info.userFollower"
+                                        :user-following="$props.info.userFollowing"
+                                    ></DHover>
+                                </template>
+                            </a-popover>
+                            <a-popover>
+                                <div class="user">
+                                    <p class="user-name">
+                                        {{ props.info.username }}
+                                    </p>
+                                    <p class="user-follow">
+                                        {{ props.info.userFollower }} Follower
+                                    </p>
+                                </div>
+                                <template #content>
+                                    <DHover
+                                        :username="props.info.username"
+                                        :user-avatar="props.info.userAvatar"
+                                        :user-follower="$props.info.userFollower"
+                                        :user-following="$props.info.userFollowing"
+                                    ></DHover>
+                                </template>
+                            </a-popover>
+                            
                             <a-button id="follow-button" type="primary">Follow</a-button>
                         </div>
                         <div class="info-content">
@@ -86,6 +107,7 @@
 
 <script setup lang="ts">
 import { type articleInfo } from './type';
+import DHover from './DHover.vue';
 
 const props = defineProps<{
     info: articleInfo
