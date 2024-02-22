@@ -5,7 +5,7 @@ export interface UserRecord {
   email: string
   nickname: string
   password: string
-
+  avatar: string
   // TODO: Time format: '%Y-%m-%d %H:%M:%S'
   registerTime: string
   latestLoginTime: string

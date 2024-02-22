@@ -1,119 +1,113 @@
 <template>
-    <div>
-        <a-card id="d-article" hoverable style="width: 100%;">
-            <template #cover>
-                <div class="cover-wrapper">
-                    <div class="cover-info">
-                        <div class="info-user">
-                            <a-popover>
-                                <a-avatar id="user-avatar">
-                                    <img 
-                                        :src="props.info.userAvatar"
-                                        alt="avatar"
-                                    >
-                                </a-avatar>
-                                <template #content>
-                                    <DHover
-                                        :username="props.info.username"
-                                        :user-avatar="props.info.userAvatar"
-                                        :user-follower="$props.info.userFollower"
-                                        :user-following="$props.info.userFollowing"
-                                    ></DHover>
-                                </template>
-                            </a-popover>
-                            <a-popover>
-                                <div class="user">
-                                    <p class="user-name">
-                                        {{ props.info.username }}
-                                    </p>
-                                    <p class="user-follow">
-                                        {{ props.info.userFollower }} Follower
-                                    </p>
-                                </div>
-                                <template #content>
-                                    <DHover
-                                        :username="props.info.username"
-                                        :user-avatar="props.info.userAvatar"
-                                        :user-follower="$props.info.userFollower"
-                                        :user-following="$props.info.userFollowing"
-                                    ></DHover>
-                                </template>
-                            </a-popover>
-                            
-                            <a-button id="follow-button" type="primary">Follow</a-button>
-                        </div>
-                        <div class="info-content">
-                            <div class="classify">
-                                <p>
-                                    {{ props.info.collection }}
-                                </p>
-                            </div>
-                            <div class="title">
-                                <h3>
-                                    {{ props.info.title }}
-                                </h3>
-                            </div>
-                            <div class="specify">
-                                <p>
-                                    {{ props.info.specify }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <a class="cover-jump" href="#"></a>
-                    <div :style="bgUrl" class="cover-bg"></div>
+  <div>
+    <a-card id="d-article" hoverable style="width: 100%">
+      <template #cover>
+        <div class="cover-wrapper">
+          <div class="cover-info">
+            <div class="info-user">
+              <a-popover>
+                <a-avatar id="user-avatar">
+                  <img :src="props.info.user.avatar" alt="avatar" />
+                </a-avatar>
+                <template #content>
+                  <!-- TODO: following and follower -->
+                  <DHover
+                    :username="props.info.user.nickname"
+                    :user-avatar="props.info.user.avatar"
+                    :user-follower="$props.info.user.id"
+                    :user-following="$props.info.user.id"
+                  ></DHover>
+                </template>
+              </a-popover>
+              <a-popover>
+                <div class="user">
+                  <p class="user-name">
+                    {{ props.info.user.nickname }}
+                  </p>
+                  <p class="user-follow">{{ props.info.user.id }} Follower</p>
                 </div>
-            </template>
-            <div class="article-content">
-                <div class="introduction">
-                    <p>
-                        {{ props.info.introduction }}
-                        <a href="#">
-                            read more
-                        </a>
-                    </p>
-                </div>
+                <template #content>
+                  <DHover
+                    :username="props.info.user.nickname"
+                    :user-avatar="props.info.user.avatar"
+                    :user-follower="$props.info.user.id"
+                    :user-following="$props.info.user.id"
+                  ></DHover>
+                </template>
+              </a-popover>
+
+              <a-button id="follow-button" type="primary">Follow</a-button>
             </div>
-            <a-divider class="divider"/>
-            <div class="article-action">
-                <a-button class="action-button" type="text">
-                    <template #icon>
-                        <icon-heart :size="20"/>
-                    </template>
-                    {{ props.info.like }}
-                </a-button>
-                <a-button class="action-button" type="text">
-                    <template #icon>
-                        <icon-message :size="20"/>
-                    </template>
-                    {{ props.info.comment }}
-                </a-button>
-                <a-button class="action-button" type="text">
-                    <template #icon>
-                        <icon-bookmark :size="20"/>
-                    </template>
-                    Bookmark
-                </a-button>
-                <a-button class="action-button" type="text">
-                    <template #icon>
-                        <icon-share-internal :size="20"/>
-                    </template>
-                    Share
-                </a-button>
+            <div class="info-content">
+              <div class="classify">
+                <p>
+                  {{ props.info.title }}
+                </p>
+              </div>
+              <div class="title">
+                <h3>
+                  {{ props.info.title }}
+                </h3>
+              </div>
+              <div class="specify">
+                <p>
+                  {{ props.info.title }}
+                </p>
+              </div>
             </div>
-        </a-card>
-    </div>
+          </div>
+          <a class="cover-jump" href="#"></a>
+          <div :style="bgUrl" class="cover-bg"></div>
+        </div>
+      </template>
+      <div class="article-content">
+        <div class="introduction">
+          <p>
+            {{ props.info.description }}
+            <a href="#"> read more </a>
+          </p>
+        </div>
+      </div>
+      <a-divider class="divider" />
+      <div class="article-action">
+        <a-button class="action-button" type="text">
+          <template #icon>
+            <icon-heart :size="20" />
+          </template>
+          {{ props.info.id }}
+        </a-button>
+        <a-button class="action-button" type="text">
+          <template #icon>
+            <icon-message :size="20" />
+          </template>
+          {{ props.info.id }}
+        </a-button>
+        <a-button class="action-button" type="text">
+          <template #icon>
+            <icon-bookmark :size="20" />
+          </template>
+          Bookmark
+        </a-button>
+        <a-button class="action-button" type="text">
+          <template #icon>
+            <icon-share-internal :size="20" />
+          </template>
+          Share
+        </a-button>
+      </div>
+    </a-card>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { type articleInfo } from './type';
-import DHover from './DHover.vue';
+import { type TourCollection } from '@/apis/collection'
+import DHover from './DHover.vue'
 
 const props = defineProps<{
-    info: articleInfo
+  info: TourCollection
 }>()
 
 const bgUrl = {
-    backgroundImage: props.info.backgroundUrl
+  backgroundImage: props.info.coverUrl
 }
 </script>

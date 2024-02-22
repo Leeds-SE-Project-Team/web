@@ -65,17 +65,8 @@
         </div>
         <a-divider class="discover-divider" />
         <ul class="content-list">
-          <li>
-            <DArticle :info="testInfo"></DArticle>
-          </li>
-          <li>
-            <DArticle :info="testInfo"></DArticle>
-          </li>
-          <li>
-            <DArticle :info="testInfo"></DArticle>
-          </li>
-          <li>
-            <DArticle :info="testInfo"></DArticle>
+          <li v-for="ele in articleInfos" :key="ele.id">
+            <DArticle :info="ele"></DArticle>
           </li>
         </ul>
       </div>
@@ -85,26 +76,49 @@
 
 <script setup lang="ts">
 import DArticle from '@/views/discover/DArticle.vue'
-import type { articleInfo } from './type'
+// import type { articleInfo } from './type'
+import { getTourCollection, type TourCollection } from '@/apis/collection'
+import { onMounted, ref } from 'vue'
+import { Message } from '@arco-design/web-vue'
 
-const testInfo: articleInfo = {
-  username: '测试用户',
-  userFollower: 10000,
-  userFollowing: 10,
-  userAvatar:
-    '//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif',
-  backgroundUrl: '//fp1.fghrsh.net/2020/01/12/1e8c4232da6be35942f6ecd630797f60.jpg',
-  collection: 'hiking',
-  title: '随便写点',
-  specify: '12334235',
-  introduction:
-    '我不会再退缩 \
-                    送给你纯白色的花,塞西莉亚,塞西莉亚,盛开在起风的地方,沐浴九月的骄阳,\
-                    偷偷放在你的身上,替我传达,我不敢说的话,在流浪的路上,你是我唯一牵挂,\
-                    无尽海上的星光,所以别让我担心啊',
-  like: 123345,
-  comment: 234234
-}
+// const testInfo: articleInfo = {
+//   username: '测试用户',
+//   userFollower: 10000,
+//   userFollowing: 10,
+//   userAvatar:
+//     '//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif',
+//   backgroundUrl: '//fp1.fghrsh.net/2020/01/12/1e8c4232da6be35942f6ecd630797f60.jpg',
+//   collection: 'hiking',
+//   title: '随便写点',
+//   specify: '12334235',
+//   introduction:
+//     '我不会再退缩 \
+//                     送给你纯白色的花,塞西莉亚,塞西莉亚,盛开在起风的地方,沐浴九月的骄阳,\
+//                     偷偷放在你的身上,替我传达,我不敢说的话,在流浪的路上,你是我唯一牵挂,\
+//                     无尽海上的星光,所以别让我担心啊',
+//   like: 123345,
+//   comment: 234234
+// }
+
+const articleInfos = ref<TourCollection[] | undefined>()
+
+onMounted(() => {
+  getTourCollection()
+    .then((tours) => {
+      if (!tours.success) {
+        Message.info(tours.message)
+      }
+      tours.data?.forEach((ele) => {
+        if (ele.description.length > 50) {
+          ele.description = ele.description.substring(0, 50) + '...'
+        }
+      })
+      articleInfos.value = tours.data
+    })
+    .catch((reason: any) => {
+      Message.error(reason)
+    })
+})
 </script>
 
 <script lang="ts">

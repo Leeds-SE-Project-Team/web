@@ -11,8 +11,6 @@ export enum TourType {
 
 export interface PON {}
 
-export interface TourCollection {}
-
 export interface TourRecord {
   id: number
   startLocation: string
@@ -24,7 +22,7 @@ export interface TourRecord {
   type: TourType
   pons: PON[]
   user: UserRecord
-  tourCollection: TourCollection
+  tourCollectionId: number
 }
 
 export interface CreateTourForm {
