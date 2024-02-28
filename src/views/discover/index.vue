@@ -65,6 +65,9 @@
         </div>
         <a-divider class="discover-divider" />
         <ul class="content-list">
+          <li>
+            <DCard :info="testCardInfo"></DCard>
+          </li>
           <li v-for="ele in articleInfos" :key="ele.id">
             <DArticle :info="ele"></DArticle>
           </li>
@@ -76,10 +79,12 @@
 
 <script setup lang="ts">
 import DArticle from '@/views/discover/DArticle.vue'
+import DCard from './DCard.vue'
 // import type { articleInfo } from './type'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
 import { onMounted, ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
+import type { cardInfo } from './type'
 
 // const testInfo: articleInfo = {
 //   username: '测试用户',
@@ -99,6 +104,47 @@ import { Message } from '@arco-design/web-vue'
 //   like: 123345,
 //   comment: 234234
 // }
+
+const testCardInfo: cardInfo = {
+  id: 0,
+  title: '这是一个用来展示一个行程的card',
+  user: {
+    id: 0,
+    email: '234',
+    nickname: 'aaaaaaiiiiiiiieeeeeee',
+    password: 'sdf',
+    avatar: '//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif',
+    registerTime: '234',
+    latestLoginTime: '25',
+  },
+  pictures: [
+    '//fp1.fghrsh.net/2021/12/24/b41bf96f8c15b7d39a911a85ace4aeca.png',
+    '//fp1.fghrsh.net/2021/12/12/e6d334449c5545a34c25053aa30139b8.png',
+    '//fp1.fghrsh.net/2021/05/26/5e5c7dea39a95e42f2389ebf0c3d8279.jpg'
+  ],
+  like: 100,
+  comment: 3,
+  commentList: [
+    {
+        auther: 'Sample',
+        content: 'this is a sample content',
+        dateTime: '1970-1-1',
+        avatar: "https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp"
+    },
+    {
+        auther: 'Sample',
+        content: 'this is a sample content',
+        dateTime: '1970-1-1',
+        avatar: "https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp"
+    },
+    {
+        auther: 'Sample',
+        content: 'this is a sample content',
+        dateTime: '1970-1-1',
+        avatar: "https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp"
+    }
+  ]
+}
 
 const articleInfos = ref<TourCollection[] | undefined>()
 

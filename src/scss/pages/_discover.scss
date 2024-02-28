@@ -2,6 +2,7 @@
   #page-discover {
     background-color: $color-default-background;
     width: 100%;
+    min-height: 100%;
     height: auto;
     padding: 3rem;
 
@@ -330,6 +331,130 @@
           font-weight: 700;
         }
       }
+    }
+  }
+}
+
+#d-card{
+  .title-wrapper{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    .greeting-more{
+      display: flex;
+      justify-content: space-between;
+
+      span{
+        font-weight: 600;
+        &:hover{
+          font-weight: 700;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .user-wrapper{
+      display: flex;
+      align-items: center;
+
+      .avatar-wrapper{
+        flex-shrink: 0;
+      }
+
+      .info-wrapper{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding-left: 15px;
+
+        span{
+          font-size: 14px;
+        }
+      }
+
+      .button-wrapper{
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+    }
+
+    .picture-map{
+      width: 100%;
+
+      .picture-wrapper{
+        display: flex;
+        gap: 0.25rem;
+
+        .left{
+          width: 60%;
+          height: 400px;
+          flex-shrink: 0;
+        }
+
+        .right{
+          height: 400px;
+          width: 40%;
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          .right-item{
+            height: 200px;
+          }
+        }
+      }
+    }
+    
+    .operation{
+      .buttons-wrapper{
+        display: flex;
+        gap: 1rem;
+
+        .action-button {
+          font-size: 16px;
+          font-weight: 700;
+          color: black;
+        }
+      }
+      
+    }
+  }
+
+  .comment-area{
+    transition: all 1s, ease-out;
+    overflow: hidden;
+
+    &.show{
+      transition: all 1s, ease-out;
+      height: 100px;
+    }
+
+    &.hide{
+      max-height: 0;
+    }
+
+    .my-comment{
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+
+      .avatar{
+        flex-shrink: 0;
+      }
+
+      .form{
+        width: 100%;
+      }
+    }
+
+    .other-comments{
+      margin-top: 1.5rem;
+      padding-left: 1.5rem;
     }
   }
 }
