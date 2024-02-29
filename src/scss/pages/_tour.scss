@@ -1,0 +1,68 @@
+#planner-content {
+    overflow: hidden;
+    .bg {
+        position: relative;
+        width: 100vw;
+        background: #f5f4ea;
+        height: 1300px;
+        .bg-2-imgs {
+            z-index: 1;
+        }
+        .bg-img {
+            position: absolute;
+            left: -5vw;
+            top: -4vw;
+            width: 110vw;
+            filter: blur(8px) brightness(0.5);
+            -webkit-mask-image: linear-gradient(#000000 65%, rgba(0, 0, 0, 0) 98%);
+            mask-image: linear-gradient(#000000 65%, rgba(0, 0, 0, 0) 98%);
+        }
+        .out-img {
+            position: absolute;
+            left: 17vw;
+            margin-top: 3%;
+            width: 80vw;
+            -webkit-mask-image: linear-gradient(#000000 65%, rgba(0, 0, 0, 0) 98%);
+            mask-image: linear-gradient(#000000 65%, rgba(0, 0, 0, 0) 98%);
+        }
+        .title-card {
+            position: absolute;
+            left: 4vw;
+            top: 15vw;
+            width: 36vw;
+            padding: 16px;
+            background-color: #f5f4ea;
+            border-radius: 8px;
+            border: 2px solid #dfbf88;
+            z-index: 3;
+            p {
+                font-size: 16px;
+                padding: 8px 0;
+                color: #3e4e62;
+            }
+
+            h2 {
+                font-size: 57.6px;
+                color: #9f251f;
+                margin-bottom: 16px;
+            }
+
+            h3 {
+                font-size: 27.6px;
+                color: #3b3b3b;
+                padding: 8px 0;
+                margin-bottom: 20px;
+            }
+
+            .profile {
+                width: 40px;
+                height: 40px;
+                padding: 2px;
+                img {
+                    width: 100%;
+                    border-radius: 50%;
+                }
+            }
+        }
+    }
+}
