@@ -34,6 +34,7 @@ export interface cardInfo {
     user: UserRecord
     title: string
     pictures: string[]
+    map: string
     like: number
     comment: number
     commentList: commentInfo[]

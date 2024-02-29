@@ -122,6 +122,7 @@ const testCardInfo: cardInfo = {
     '//fp1.fghrsh.net/2021/12/12/e6d334449c5545a34c25053aa30139b8.png',
     '//fp1.fghrsh.net/2021/05/26/5e5c7dea39a95e42f2389ebf0c3d8279.jpg'
   ],
+  map: '//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg',
   like: 100,
   comment: 3,
   commentList: [

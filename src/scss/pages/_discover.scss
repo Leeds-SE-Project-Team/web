@@ -384,10 +384,15 @@
 
     .picture-map{
       width: 100%;
+      position: relative;
 
       .picture-wrapper{
         display: flex;
         gap: 0.25rem;
+
+        &.hide{
+          display: none;
+        }
 
         .left{
           width: 60%;
@@ -405,6 +410,50 @@
 
           .right-item{
             height: 200px;
+          }
+        }
+      }
+
+      .map-wrapper{
+        width: 100%;
+        height: 400px;
+        transition: all 2s ease-in;
+
+        &.hide{
+          display: none;
+        }
+
+        img{
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .switch{
+        position: absolute;
+        bottom: 2rem;
+        right: 2rem;
+
+        .switch-button{
+          height: 70px;
+          width: 70px;
+          border-radius: 10px;
+          border: #CCCCCC solid 3px;
+          background-color: transparent;
+          padding: 0;
+          overflow: hidden;
+
+          .small-img{
+            width: 100%;
+            height: 100%;
+
+            img{
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              transition: all .2s ease-in-out;
+            }
           }
         }
       }

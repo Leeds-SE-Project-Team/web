@@ -28,42 +28,45 @@
                         {{ props.info.title }}
                     </h3>
                     <div class="picture-map">
-                        <div class="picture-wrapper">
-                            <div class="left">
-                                <a-image-preview-group :src-list="props.info.pictures" :default-current="0">
+                        <div ref="picWrapper" class="picture-wrapper">
+                            <a-image-preview-group>
+                                <div class="left">
                                     <a-image
                                         :src="props.info.pictures[0]"
                                         fit="cover"
                                         :width="'100%'"
                                         :height="'100%'"
                                     />
-                                </a-image-preview-group>
-                            </div>
-                            <div class="right">
-                                <div class="up right-item">
-                                    <a-image-preview-group :src-list="imglist" :default-current="1">
+                                </div>
+                                <div class="right">
+                                    <div class="up right-item">
                                         <a-image
                                             :src="props.info.pictures[1]"
                                             :width="'100%'"
                                             :height="'100%'"
                                             fit="cover"
                                         />
-                                    </a-image-preview-group>
-                                </div>
-                                <div class="down right-item">
-                                    <a-image-preview-group :src-list="imglist" :default-current="2">
+                                    </div>
+                                    <div class="down right-item">
                                         <a-image
                                             :src="props.info.pictures[2]"
                                             :width="'100%'"
                                             :height="'100%'"
                                             fit="cover"
                                         />
-                                    </a-image-preview-group>
+                                    </div>
                                 </div>
-                            </div>
+                            </a-image-preview-group>
                         </div>
-                        <div class="map-wrapper">
-
+                        <div ref="mapWrapper" class="map-wrapper hide">
+                            <img :src="props.info.map" alt="">
+                        </div>
+                        <div class="switch">
+                            <button class="switch-button" @click="switchClick">
+                                <div class="small-img">
+                                    <img :src="smallImg" alt="">
+                                </div>
+                            </button>
                         </div>
                     </div>
                     <div class="operation">
@@ -151,16 +154,15 @@ const props = defineProps<{
 }>()
 
 const commentArea = ref<HTMLDivElement | undefined>()
+const mapWrapper = ref<HTMLDivElement | undefined>()
+const picWrapper = ref<HTMLDivElement | undefined>()
 const textA = ref('')
 
-const imglist = reactive<string[]>([
-    '//fp1.fghrsh.net/2021/12/24/b41bf96f8c15b7d39a911a85ace4aeca.png',
-    '//fp1.fghrsh.net/2021/12/12/e6d334449c5545a34c25053aa30139b8.png',
-    '//fp1.fghrsh.net/2021/05/26/5e5c7dea39a95e42f2389ebf0c3d8279.jpg'
-])
+const smallImg = ref(props.info.map);
 const commentList = props.info.commentList;
 
 const commentShow = ref(false)
+const swichStatus= ref<'map'|'pic'>('map');
 
 const commentClick = ()=>{
     commentShow.value = !commentShow.value
@@ -171,6 +173,32 @@ const commentClick = ()=>{
         commentArea.value.classList.remove('hide');
     }else{
         commentArea.value.classList.add('hide');
+    }
+}
+
+const switchClick = ()=>{
+    switch (swichStatus.value) {
+        case 'map':
+            swichStatus.value = 'pic'
+            if(picWrapper.value){
+                picWrapper.value.classList.add('hide')
+            }
+            if(mapWrapper.value){
+                mapWrapper.value.classList.remove('hide')
+            }
+            smallImg.value = props.info.pictures[0];
+            break;
+    
+        case 'pic':
+            swichStatus.value = 'map'
+            if(picWrapper.value){
+                picWrapper.value.classList.remove('hide')
+            }
+            if(mapWrapper.value){
+                mapWrapper.value.classList.add('hide')
+            }
+            smallImg.value = props.info.map;
+            break;
     }
 }
 
