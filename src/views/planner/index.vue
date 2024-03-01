@@ -19,6 +19,8 @@ const createTourForm = ref<CreateTourForm>({
   pons: []
 })
 
+const mapContainer = ref()
+
 const { loading, setLoading } = useLoading()
 const handleCreateTour = () => {
   setLoading(true)
@@ -26,6 +28,7 @@ const handleCreateTour = () => {
     .then((res) => {
       if (res.success) {
         Message.success(res.message)
+        mapContainer.value.screenMap()
       } else {
         Message.info(res.message)
       }
@@ -130,7 +133,7 @@ const handleCreateTour = () => {
     </div>
   </section>
 
-  <MapContainer v-model:create-tour-form="createTourForm" />
+  <MapContainer v-model:create-tour-form="createTourForm" ref="mapContainer" />
 </template>
 
 <style scoped></style>
