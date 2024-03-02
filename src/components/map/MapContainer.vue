@@ -12,24 +12,16 @@ import { type CreateTourForm, parseLocation, TourType } from '@/apis/tour'
 import { Screenshot } from '@amap/screenshot'
 
 const map = ref<any>(null)
-const screenshot = ref<any>(null)
+const screenshot = ref<Screenshot | null>(null)
+const mapRef = ref<HTMLDivElement | null>(null)
 
 // TODO: screen shot
 // API documentation: https://github.com/AMap-Web/amap-screenshot
-watch(
-  () => map.value,
-  (value) => {
-    if (value !== null) {
-      screenshot.value = new Screenshot(map)
-    }
-  }
-)
 
 const screenMap = () => {
-  if (screenshot.value) {
-    screenshot.value.toDataURL().then((url: string) => {
-      console.log('url: ', url)
-    })
+  if(mapRef.value){
+    const canvas = mapRef.value.getElementsByTagName('canvas');
+    console.log(canvas[0].toDataURL('image/jpeg', 1.0));
   }
 }
 
@@ -375,6 +367,7 @@ onMounted(() => {
       //
 
       map.value.setFitView()
+      screenshot.value = new Screenshot(map.value);
     })
     .catch((e) => {
       Message.error({
@@ -398,6 +391,6 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="map" id="map-container"></div>
+  <div ref="mapRef" id="map-container"></div>
   <div id="panel"></div>
 </template>
