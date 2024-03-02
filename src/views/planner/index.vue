@@ -120,7 +120,7 @@ const handleCreateTour = () => {
 
     <div class="bottom">
       <div class="route-img">
-        <img src="../../../public/route/route.png" alt="route" />
+        <img src="/route/route.png" alt="route" />
       </div>
       <div>
         <h3 class="header">Where do you want to go?</h3>
