@@ -5,12 +5,26 @@ JS API Loader是我们提供的 API 加载器，其加载方式为异步加载 J
 -->
 
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref, type UnwrapRef } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, type UnwrapRef, watch } from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { Message } from '@arco-design/web-vue'
 import { type CreateTourForm, parseLocation, TourType } from '@/apis/tour'
+import { Screenshot } from '@amap/screenshot'
 
 const map = ref<any>(null)
+const screenshot = ref<Screenshot | null>(null)
+const mapRef = ref<HTMLDivElement | null>(null)
+
+// TODO: screen shot
+// API documentation: https://github.com/AMap-Web/amap-screenshot
+
+const screenMap = () => {
+  if(mapRef.value){
+    const canvas = mapRef.value.getElementsByTagName('canvas');
+    console.log(canvas[0].toDataURL('image/jpeg', 1.0));
+  }
+}
+
 const marker = ref<any>(null)
 
 let lineArr = [
@@ -123,7 +137,11 @@ onMounted(() => {
       map.value = new AMap.Map('map-container', {
         viewMode: '2D', // 默认使用 2D 模式，如果希望使用带有俯仰角的 3D 模式，请设置 viewMode: '3D'
         zoom: 11, // 初始化地图层级
-        center: [116.397428, 39.90923] // 初始化地图中心点
+        center: [116.397428, 39.90923], // 初始化地图中心点
+        // 配置地图截图
+        WebGLParams: {
+          preserveDrawingBuffer: true
+        }
       })
       /*---------- 地图实例化 ----------*/
 
@@ -347,7 +365,9 @@ onMounted(() => {
       //   map.value.setCenter(e.target.getPosition(), true)
       // })
       //
+
       map.value.setFitView()
+      screenshot.value = new Screenshot(map.value);
     })
     .catch((e) => {
       Message.error({
@@ -365,11 +385,12 @@ defineExpose({
   startAnimation,
   pauseAnimation,
   resumeAnimation,
-  stopAnimation
+  stopAnimation,
+  screenMap
 })
 </script>
 
 <template>
-  <div ref="map" id="map-container"></div>
+  <div ref="mapRef" id="map-container"></div>
   <div id="panel"></div>
 </template>
