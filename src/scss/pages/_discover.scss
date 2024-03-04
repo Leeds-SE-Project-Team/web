@@ -252,7 +252,8 @@
       left: 0;
       right: 0;
       background-size: cover;
-      background-image: url('//fp1.fghrsh.net/2020/01/12/1e8c4232da6be35942f6ecd630797f60.jpg');
+      background-image: url($static-url + "/tour/example/4.png");
+      //background-image: url('//fp1.fghrsh.net/2020/01/12/1e8c4232da6be35942f6ecd630797f60.jpg');
       transition: all .1s ease-in;
       z-index: 8;
 
@@ -443,6 +444,7 @@
           background-color: transparent;
           padding: 0;
           overflow: hidden;
+          cursor: pointer;
 
           .small-img{
             width: 100%;
@@ -458,7 +460,7 @@
         }
       }
     }
-    
+
     .operation{
       .buttons-wrapper{
         display: flex;
@@ -470,7 +472,7 @@
           color: black;
         }
       }
-      
+
     }
   }
 

@@ -43,13 +43,13 @@ export default {
     <div class="middle">
       <!-- place part -->
       <div class="place">
-        <div> 
+        <div>
           <a-input class="place-input" placeholder="Enter Place Or Address..." allow-clear />
         </div>
-        <div> 
+        <div>
           <a-input class="place-input" placeholder="Enter Place Or Address..." allow-clear />
         </div>
-        <div> 
+        <div>
           <a-input class="place-input" placeholder="Enter Place Or Address..." allow-clear />
         </div>
       </div>
@@ -70,7 +70,7 @@ export default {
       </div>
       <div>
         <h3 class="header">Where do you want to go?</h3>
-        <p class="text">Enter a destination or click on the map to add it.</p>
+<!--        <p class="text">Enter a destination or click on the map to add it.</p>-->
       </div>
     </div>
   </section>
@@ -79,4 +79,3 @@ export default {
 <style lang="less">
 
 </style>
-  

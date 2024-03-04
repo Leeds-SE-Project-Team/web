@@ -61,7 +61,7 @@
               <img :src="props.info.map" alt="" />
             </div>
             <div class="switch">
-              <button class="switch-button" @click="switchClick">
+              <button class="switch-button" @click="switchClick" >
                 <div class="small-img">
                   <img :src="smallImg" alt="" />
                 </div>
@@ -132,18 +132,18 @@
           </a-row>
         </div>
 
-        <div class="usually-search">
-          大家都在搜：<a class="usually-search-topic"
-            ><span class="usually-search-topic-text" :style="{ cursor: 'default' }">{{
-              '暂无推荐'
-            }}</span>
-            <img
-              class="usually-search-icon"
-              src="/interaction/usually_search.svg"
-              alt="usually-search"
-            />
-          </a>
-        </div>
+<!--        <div class="usually-search">-->
+<!--          大家都在搜：<a class="usually-search-topic"-->
+<!--            ><span class="usually-search-topic-text" :style="{ cursor: 'default' }">{{-->
+<!--              '暂无推荐'-->
+<!--            }}</span>-->
+<!--            <img-->
+<!--              class="usually-search-icon"-->
+<!--              src="/interaction/usually_search.svg"-->
+<!--              alt="usually-search"-->
+<!--            />-->
+<!--          </a>-->
+<!--        </div>-->
 
         <div class="comments-list">
           <CommentCard

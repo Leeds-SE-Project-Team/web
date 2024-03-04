@@ -4,7 +4,7 @@ import plannerSider from "../components/sider/plannerSider.vue"
 </script>
 
 <template>
-  <a-layout class="show-border" id="layout-a">
+  <a-layout id="layout-a">
     <a-layout-header class="border-1" id="layout-a-header">
       <AHeader />
     </a-layout-header>
