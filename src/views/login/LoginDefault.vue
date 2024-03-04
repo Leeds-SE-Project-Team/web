@@ -4,6 +4,7 @@ import { type FieldRule, Message } from '@arco-design/web-vue'
 import { checkEmail } from '@/utils'
 import useLoading from '@/hooks/loading'
 import { checkUserExist } from '@/apis/user'
+import { useRouter } from 'vue-router'
 
 type Status = 'default' | 'signup' | 'login'
 // type-based
@@ -55,6 +56,12 @@ const handleClickContinue = () => {
     }
   })
 }
+
+const router = useRouter()
+const handleClickAdmin = () => {
+  Message.success('Welcome: Admin')
+  router.push({ name: 'discover' })
+}
 </script>
 
 <template>
@@ -92,7 +99,7 @@ const handleClickContinue = () => {
       </a-divider>
     </a-row>
     <a-row justify="center">
-      <a-button class="admin-btn" @click="Message.info('The feature is current unavailable')"
+      <a-button class="admin-btn" @click="handleClickAdmin"
         ><span class="admin-btn-text">Admin</span></a-button
       >
     </a-row>

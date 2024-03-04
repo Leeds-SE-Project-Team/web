@@ -31,3 +31,7 @@ export interface ApiResponse<T> {
   message: string
   success: boolean
 }
+
+export const getStaticRes = (relativePath: string) => {
+  return import.meta.env.APP_STATIC_URL.concat(relativePath)
+}
