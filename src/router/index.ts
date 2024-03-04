@@ -2,9 +2,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 import IndexView from '@/views/home/index.vue'
 import HomeView from '@/views/home/HomeView.vue'
 import LoginView from '@/views/login/index.vue'
+import DiscoverMobileView from '@/views/discover_mobile/index.vue'
 import DiscoverView from '@/views/discover/index.vue'
 import PlannerView from '@/views/planner/index.vue'
 import TourView from '@/views/tour/index.vue'
+import { Capacitor } from '@capacitor/core'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,8 +42,8 @@ const router = createRouter({
       meta: {
         layout: 'b',
         title: 'Discover Page'
-      },
-      component: DiscoverView
+      }, // Render component dynamically according to platform
+      component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
     },
     {
       path: '/plan',
@@ -53,11 +55,11 @@ const router = createRouter({
       component: PlannerView
     },
     {
-      path: "/tour",
-      name: "tour",
+      path: '/tour',
+      name: 'tour',
       meta: {
         layout: 'b',
-        title: 'Tour Page',
+        title: 'Tour Page'
       },
       component: TourView
     }
