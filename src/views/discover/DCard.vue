@@ -35,7 +35,7 @@
                 <div class="left">
                   <a-image
                     :height="'100%'"
-                    :src="props.info.pictures[0]"
+                    :src="props.info.spots[0].coverUrl"
                     :width="'100%'"
                     fit="cover"
                   />
@@ -44,7 +44,7 @@
                   <div class="up right-item">
                     <a-image
                       :height="'100%'"
-                      :src="props.info.pictures[1]"
+                      :src="props.info.spots[1].coverUrl"
                       :width="'100%'"
                       fit="cover"
                     />
@@ -52,7 +52,7 @@
                   <div class="down right-item">
                     <a-image
                       :height="'100%'"
-                      :src="props.info.pictures[2]"
+                      :src="props.info.spots[2].coverUrl"
                       :width="'100%'"
                       fit="cover"
                     />
@@ -154,7 +154,7 @@
             <a-avatar style="cursor: default">
               <img
                 alt="avatar"
-                src="http://walcraft.wmzspace.space/static/user/default/avatar/b082833e5c59a309880eca3d525e7cae.gif"
+                src="http://walcraft.wmzspace.space/static/user/default/avatar/avatar.jpg"
               />
             </a-avatar>
 
@@ -326,7 +326,7 @@ const switchClick = () => {
       if (mapWrapper.value) {
         mapWrapper.value.classList.remove('hide')
       }
-      smallImg.value = props.info.pictures[0]
+      smallImg.value = props.info.spots[0].coverUrl
       break
 
     case 'pic':

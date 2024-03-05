@@ -156,7 +156,6 @@ const fetchCollection = () => {
   getTourCollection()
     .then((apiRes) => {
       itemList.value = apiRes.data!
-      console.log(itemList.value)
     })
     .catch((e) => {
       Message.error(e)

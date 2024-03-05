@@ -106,6 +106,7 @@ import { onMounted, ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
 import { type TourRecord, TourType } from '@/apis/tour'
 import { exampleUserRecord } from '@/apis/user'
+import { getTourSpotExample } from '@/apis/tour/spot'
 
 // const testInfo: articleInfo = {
 //   username: '测试用户',
@@ -137,15 +138,7 @@ const testCardInfo: TourRecord = {
     registerTime: '234',
     latestLoginTime: '25'
   },
-  pictures: [
-    // '//fp1.fghrsh.net/2021/12/24/b41bf96f8c15b7d39a911a85ace4aeca.png',
-    // '//fp1.fghrsh.net/2021/12/12/e6d334449c5545a34c25053aa30139b8.png',
-    // '//fp1.fghrsh.net/2021/05/26/5e5c7dea39a95e42f2389ebf0c3d8279.jpg'
-
-    import.meta.env.APP_STATIC_URL.concat('/tour/example/1.png'),
-    import.meta.env.APP_STATIC_URL.concat('/tour/example/2.png'),
-    import.meta.env.APP_STATIC_URL.concat('/tour/example/3.png')
-  ],
+  spots: [getTourSpotExample(1), getTourSpotExample(2), getTourSpotExample(3)],
   mapCapture: import.meta.env.APP_STATIC_URL.concat('/tour/example/map/map.png'),
   // map: '//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg',
   // like: 100,

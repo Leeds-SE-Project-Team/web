@@ -125,7 +125,7 @@ const isDeleted = ref(false)
     <!--    New comment input-->
     <a-comment
       align="right"
-      avatar="http://walcraft.wmzspace.space/static/user/default/avatar/b082833e5c59a309880eca3d525e7cae.gif"
+      avatar="http://walcraft.wmzspace.space/static/user/default/avatar/avatar.jpg"
       class="reply-comment"
       v-if="isReplying"
     >
