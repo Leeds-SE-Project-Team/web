@@ -282,8 +282,8 @@ const handleTouchMove = (e: TouchEvent) => {
                                   :preview-visible="false"
                                   :src="
                                     isLiked
-                                      ? '/interaction/video_detail_liked.svg'
-                                      : '/interaction/video_detail_like.svg'
+                                      ? './interaction/video_detail_liked.svg'
+                                      : './interaction/video_detail_like.svg'
                                   "
                                   :width="45"
                                 ></a-image>
@@ -308,7 +308,9 @@ const handleTouchMove = (e: TouchEvent) => {
                                   :height="45"
                                   :preview-visible="false"
                                   :src="
-                                    isStarred ? '/interaction/starred.svg' : '/interaction/star.svg'
+                                    isStarred
+                                      ? './interaction/starred.svg'
+                                      : './interaction/star.svg'
                                   "
                                   :width="45"
                                 ></a-image>
@@ -333,7 +335,7 @@ const handleTouchMove = (e: TouchEvent) => {
                                   :height="45"
                                   :preview-visible="false"
                                   :width="45"
-                                  src="/interaction/comment.svg"
+                                  src="./interaction/comment.svg"
                                 ></a-image>
                               </div>
                               <div class="video-action-statistic">
@@ -358,7 +360,7 @@ const handleTouchMove = (e: TouchEvent) => {
                                   :height="45"
                                   :preview-visible="false"
                                   :width="45"
-                                  src="/interaction/more.svg"
+                                  src="./interaction/more.svg"
                                 ></a-image>
                               </div>
                             </div>

@@ -16,10 +16,10 @@ const handleChangeStatus = (s: Status, email: string) => {
 </script>
 
 <template>
-  <div id="account-main" >
+  <div id="account-main">
     <main class="container">
       <div class="header-logo content-container">
-        <a-image src="/logo/green-transparent.png" class="logo"></a-image>
+        <a-image src="./logo/green-transparent.png" class="logo"></a-image>
       </div>
       <div class="main-content-container content-container">
         <LoginDefault v-if="status === 'default'" @change-status="handleChangeStatus" />
