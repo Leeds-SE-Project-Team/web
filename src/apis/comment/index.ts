@@ -19,3 +19,13 @@ export const getCommentsByTourId = (tourId: number): Promise<ApiResponse<Comment
     url: 'comments/by_tour_id?'.concat(tourString)
   })
 }
+
+// const exampleCommentRecord: CommentRecord = {
+//   author: exampleUserRecord,
+//   content: '',
+//   id: 0,
+//   parent: 0,
+//   publishTime: '',
+//   replies: [],
+//   tourId: 0
+// }

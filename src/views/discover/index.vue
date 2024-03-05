@@ -15,7 +15,7 @@
         <div class="card-content">
           <div class="search-wrapper">
             <div class="search-type">
-              <span class="type-label">Sport Type</span>
+              <span class="type-label">Which sport?</span>
               <div class="select-wrapper">
                 <div class="selector">
                   <a-select
@@ -27,14 +27,14 @@
                     <a-option>Biking</a-option>
                     <a-option>
                       <icon-search />
-                      Runing
+                      Running
                     </a-option>
                   </a-select>
                 </div>
               </div>
             </div>
             <div class="search-content">
-              <span class="type-label">Where</span>
+              <span class="type-label">Where?</span>
               <div class="input-wrapper">
                 <div class="inputer">
                   <a-input
@@ -51,15 +51,30 @@
             </div>
             <div class="search-button">
               <div class="button-wrapper">
-                <a-button type="primary">Primary</a-button>
+                <a-button
+                  type="primary"
+                  style="background-color: rgb(79, 133, 13); font-weight: bold"
+                  >Search</a-button
+                >
               </div>
             </div>
           </div>
         </div>
       </a-card>
-      <p style="text-align: center; font-size: 14px; margin-top: 1.5rem">
+
+      <p
+        style="
+          text-align: center;
+          font-size: 14px;
+          margin-top: 1.5rem;
+          font-family:
+            PingFang SC,
+            DFPKingGothicGB-Regular,
+            sans-serif;
+        "
+      >
         Not sure where you want to go?
-        <a href="">Browse routes and topics</a>
+        <a-link href="">Browse routes and topics</a-link>
       </p>
       <!-- 发现内容 -->
       <div id="content-discover">
@@ -70,7 +85,7 @@
         <ul class="content-list">
           <li>
             <!--            TOUR-->
-            <DCard :info="testCardInfo"></DCard>
+            <DCard :info="testCardInfo" style="margin: 10px"></DCard>
           </li>
           <li v-for="ele in articleInfos" :key="ele.id">
             <!--          COLLECTION-->
@@ -89,7 +104,8 @@ import DCard from './DCard.vue'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
 import { onMounted, ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
-import type { cardInfo } from './type'
+import { type TourRecord, TourType } from '@/apis/tour'
+import { exampleUserRecord } from '@/apis/user'
 
 // const testInfo: articleInfo = {
 //   username: '测试用户',
@@ -110,7 +126,7 @@ import type { cardInfo } from './type'
 //   comment: 234234
 // }
 
-const testCardInfo: cardInfo = {
+const testCardInfo: TourRecord = {
   id: 0,
   title: '这是一个用来展示一个行程的card',
   user: {
@@ -130,33 +146,43 @@ const testCardInfo: cardInfo = {
     import.meta.env.APP_STATIC_URL.concat('/tour/example/2.png'),
     import.meta.env.APP_STATIC_URL.concat('/tour/example/3.png')
   ],
-  map: import.meta.env.APP_STATIC_URL.concat('/tour/example/map/map.png'),
+  mapCapture: import.meta.env.APP_STATIC_URL.concat('/tour/example/map/map.png'),
   // map: '//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg',
-  like: 100,
-  comment: 3,
-  commentList: [
+  // like: 100,
+  // comment: 3,
+  comments: [
     {
-      author: 'Sample',
+      id: 1,
+      tourId: 1,
+      author: exampleUserRecord,
       content: 'this is a sample content',
-      dateTime: '1970-1-1',
-      avatar:
-        'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp'
+      publishTime: '2024-3-4 00:00:00',
+      replies: []
     },
     {
-      author: 'Sample',
+      id: 2,
+      tourId: 1,
+      author: exampleUserRecord,
       content: 'this is a sample content',
-      dateTime: '1970-1-1',
-      avatar:
-        'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp'
+      publishTime: '2024-3-4 00:00:00',
+      replies: []
     },
     {
-      author: 'Sample',
+      id: 3,
+      tourId: 1,
+      author: exampleUserRecord,
       content: 'this is a sample content',
-      dateTime: '1970-1-1',
-      avatar:
-        'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp'
+      publishTime: '2024-3-4 00:00:00',
+      replies: []
     }
-  ]
+  ],
+  startLocation: '',
+  endLocation: '',
+  createTime: '2024-3-4 00:00:00',
+  type: TourType.WALK,
+  pons: [],
+  status: 'awaitApproval',
+  tourCollectionId: 1
 }
 
 const articleInfos = ref<TourCollection[] | undefined>()

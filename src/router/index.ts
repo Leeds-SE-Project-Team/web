@@ -43,6 +43,7 @@ const router = createRouter({
         layout: 'b',
         title: 'Discover Page'
       }, // Render component dynamically according to platform
+      // component: DiscoverMobileView
       component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
     },
     {

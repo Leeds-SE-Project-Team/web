@@ -1,6 +1,7 @@
 import type { UserRecord } from '@/apis/user'
 import type { ApiResponse } from '@/apis'
 import { axiosRequest } from '@/apis'
+import type { CommentRecord } from '@/apis/comment'
 
 export enum TourType {
   WALK,
@@ -23,6 +24,12 @@ export interface TourRecord {
   pons: PON[]
   user: UserRecord
   tourCollectionId: number
+  mapCapture: string
+
+  pictures: string[]
+  comments: CommentRecord[]
+  status: 'online' | 'offline' | 'awaitApproval'
+  title: string
 }
 
 export interface CreateTourForm {

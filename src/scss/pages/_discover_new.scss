@@ -190,6 +190,10 @@
                         border: 0;
                         margin: 0;
 
+                        .item-name {
+                          margin: 10px 0;
+                        }
+
                         .account {
                           > * {
                             flex-shrink: 0;

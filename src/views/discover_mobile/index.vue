@@ -199,6 +199,9 @@ const handleTouchMove = (e: TouchEvent) => {
                     <div class="video-info-container-inner">
                       <div :id="idx === currentPlayIndex ? 'video-info-wrap' : undefined">
                         <div class="video-info-detail">
+                          <a-row class="item-name">
+                            <a-tag>{{ item.name }}</a-tag>
+                          </a-row>
                           <a-row class="account">
                             <div class="account-name">
                               <span>{{ itemList[idx].user.nickname }}</span>

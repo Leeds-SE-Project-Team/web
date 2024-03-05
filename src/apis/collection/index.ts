@@ -9,6 +9,7 @@ export interface TourCollection {
   title: string
   description: string
   createTime: string
+  name: string
   // tours: TourRecord
 }
 
@@ -25,7 +26,8 @@ export const exampleTourCollection: TourCollection = {
     'For those who love cycling, adventure and, more generally, the outdoors, the idea of conquering epic mountains is certainly a strong driving force.',
   id: 1,
   title: 'Hike a hidden gem in Southwest Germany – Palatinate High Route',
-  user: exampleUserRecord
+  user: exampleUserRecord,
+  name: 'Hiking Collection'
 }
 
 export const exampleTourCollection2: TourCollection = {
@@ -35,5 +37,6 @@ export const exampleTourCollection2: TourCollection = {
     'For those who love cycling, adventure and, more generally, the outdoors, the idea of conquering epic mountains is certainly a strong driving force.',
   id: 1,
   title: 'A land of contrasts – Lake Zurich',
-  user: exampleUserRecord
+  user: exampleUserRecord,
+  name: 'Hiking Collection'
 }
