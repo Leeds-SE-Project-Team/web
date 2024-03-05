@@ -277,16 +277,16 @@ const handleTouchMove = (e: TouchEvent) => {
                           <a-tooltip :position="'left'">
                             <div class="video-action-others">
                               <div class="video-action-icon">
-                                <a-image
+                                <img
                                   :height="45"
-                                  :preview-visible="false"
                                   :src="
                                     isLiked
-                                      ? './interaction/video_detail_liked.svg'
-                                      : './interaction/video_detail_like.svg'
+                                      ? '/interaction/video_detail_liked.svg'
+                                      : '/interaction/video_detail_like.svg'
                                   "
+                                  alt="like"
                                   :width="45"
-                                ></a-image>
+                                />
                               </div>
                               <div class="video-action-statistic">{{ videoLikeShowNum }}</div>
                             </div>
@@ -304,16 +304,14 @@ const handleTouchMove = (e: TouchEvent) => {
                           <a-tooltip :position="'left'">
                             <div class="video-action-others">
                               <div class="video-action-icon">
-                                <a-image
+                                <img
                                   :height="45"
-                                  :preview-visible="false"
                                   :src="
-                                    isStarred
-                                      ? './interaction/starred.svg'
-                                      : './interaction/star.svg'
+                                    isStarred ? '/interaction/starred.svg' : '/interaction/star.svg'
                                   "
                                   :width="45"
-                                ></a-image>
+                                  alt="star"
+                                />
                               </div>
                               <div class="video-action-statistic">{{ videoStarShowNum }}</div>
                             </div>
@@ -331,12 +329,12 @@ const handleTouchMove = (e: TouchEvent) => {
                           <a-tooltip :position="'left'">
                             <div class="video-action-others">
                               <div class="video-action-icon">
-                                <a-image
+                                <img
                                   :height="45"
-                                  :preview-visible="false"
                                   :width="45"
-                                  src="./interaction/comment.svg"
-                                ></a-image>
+                                  alt="comment"
+                                  src="/interaction/comment.svg"
+                                />
                               </div>
                               <div class="video-action-statistic">
                                 {{ 1 }}
@@ -356,12 +354,12 @@ const handleTouchMove = (e: TouchEvent) => {
                           <a-tooltip :position="'left'">
                             <div class="video-action-others">
                               <div class="video-action-icon">
-                                <a-image
+                                <img
                                   :height="45"
-                                  :preview-visible="false"
+                                  alt="more"
                                   :width="45"
-                                  src="./interaction/more.svg"
-                                ></a-image>
+                                  src="/interaction/more.svg"
+                                />
                               </div>
                             </div>
                             <template #content>
