@@ -4,12 +4,9 @@ import { getTimeDiffUntilNow } from '@/utils'
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
-import {
-  exampleTourCollection,
-  exampleTourCollection2,
-  type TourCollection
-} from '@/apis/collection'
+import { getTourCollection, type TourCollection } from '@/apis/collection'
 import { useUserStore } from '@/stores/user'
+import { getTours } from '@/apis/tour'
 
 const currentPlayIndex = ref(0)
 
@@ -129,15 +126,49 @@ const resizeEventHandler = () => {
 onMounted(() => {
   resizeEventHandler()
   window.addEventListener('resize', resizeEventHandler)
+  // fetchTourList()
+  fetchCollection()
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', resizeEventHandler)
 })
 
+const getTourLoading = useLoading()
+const fetchTourList = () => {
+  console.log('test')
+  getTourLoading.setLoading(true)
+  getTours()
+    .then((apiRes) => {
+      console.log(apiRes)
+    })
+    .catch((e) => {
+      Message.error(e)
+    })
+    .finally(() => {
+      getTourLoading.setLoading(false)
+    })
+}
+const getCollectionLoading = useLoading()
+
+const fetchCollection = () => {
+  getCollectionLoading.setLoading(true)
+  getTourCollection()
+    .then((apiRes) => {
+      itemList.value = apiRes.data!
+      console.log(itemList.value)
+    })
+    .catch((e) => {
+      Message.error(e)
+    })
+    .finally(() => {
+      getCollectionLoading.setLoading(false)
+    })
+}
 const itemList = ref<TourCollection[]>([])
-itemList.value.push(exampleTourCollection)
-itemList.value.push(exampleTourCollection2)
+
+// itemList.value.push(exampleTourCollection)
+// itemList.value.push(exampleTourCollection2)
 
 const startX = ref(0)
 const startY = ref(0)
@@ -190,10 +221,10 @@ const handleTouchMove = (e: TouchEvent) => {
             <div class="playerContainer">
               <div class="slider-video">
                 <div
-                  class="basePlayerContainer"
                   :style="{
                     backgroundImage: `url(${item.coverUrl})`
                   }"
+                  class="basePlayerContainer"
                 >
                   <div class="video-info-container">
                     <div class="video-info-container-inner">

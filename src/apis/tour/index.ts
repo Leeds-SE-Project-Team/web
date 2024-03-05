@@ -50,3 +50,9 @@ export const createTour = (form: CreateTourForm): Promise<ApiResponse<void>> =>
     url: `tours/create`,
     data: form
   })
+
+export const getTours = (): Promise<ApiResponse<TourRecord[]>> =>
+  axiosRequest({
+    method: 'GET',
+    url: 'tours/all'
+  })

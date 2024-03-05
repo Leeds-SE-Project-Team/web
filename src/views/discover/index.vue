@@ -187,7 +187,7 @@ const testCardInfo: TourRecord = {
 
 const articleInfos = ref<TourCollection[] | undefined>()
 
-onMounted(() => {
+const fetchTourCollection = () => {
   getTourCollection()
     .then((tours) => {
       if (!tours.success) {
@@ -203,6 +203,10 @@ onMounted(() => {
     .catch((reason: any) => {
       Message.error(reason)
     })
+}
+
+onMounted(() => {
+  fetchTourCollection()
 })
 </script>
 
