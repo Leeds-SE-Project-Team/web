@@ -51,7 +51,7 @@ const router = createRouter({
       name: 'planner',
       meta: {
         title: 'Planner Page',
-        layout: 'b'
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default'
       },
       component: PlannerView
     },
