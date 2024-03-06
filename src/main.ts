@@ -12,7 +12,7 @@ import { createPinia } from 'pinia'
 import './scss/app.scss'
 import App from './App.vue'
 import router from './router'
-
+import { PullRefresh } from 'vant'
 const app = createApp(App)
 import LayoutA from '@/layout/LayoutA.vue'
 import LayoutDefault from '@/layout/LayoutDefault.vue'
@@ -27,6 +27,7 @@ app.use(Vant)
 // Lazyload 指令需要单独进行注册
 // app.use(Vant.Lazyload)
 app.use(ArcoVueIcon)
+app.use(PullRefresh)
 app.component('layout-default', LayoutDefault)
 app.component('layout-a', LayoutA)
 app.component('layout-b', LayoutB)

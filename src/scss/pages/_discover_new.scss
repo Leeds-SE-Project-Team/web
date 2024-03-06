@@ -131,12 +131,29 @@
               bottom: 0;
               overflow: hidden;
 
-              .basePlayerContainer {
+              .blurImageContainer{
+                //background: red;
                 background-size: cover;
-                background-color: black;
+                background-repeat: no-repeat;
+                //background-position-y: 20px;
+                //border: thick solid white;
+                height:100%;
+                width: 100%;
+                position: absolute;
+                top:0;
+                z-index: -1;
+                filter: blur(10px);
+                //display: none;
+              }
+
+              .basePlayerContainer {
+                //padding: 20px;
+                border-right: 20px;
+                //z-index: 9999999;
+                background-size: cover;
+                background-color: transparent;
                 height: 80%;
                 background-position-y: 100px;
-                //filter: blur(10px);
                 //position: absolute;
                 background-repeat: no-repeat;
                 width: 100%;
