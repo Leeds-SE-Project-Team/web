@@ -126,7 +126,7 @@ const handleCreateTour = () => {
       <div class="route-img">
         <img alt="route" src="/route/route.png" />
       </div>
-      <div>
+      <div class="route-text">
         <h3 class="header">Where do you want to go?</h3>
 <!--        <p class="text">Enter a destination or click on the map to add it.</p>-->
       </div>
