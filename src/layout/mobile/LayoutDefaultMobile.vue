@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AHeader from "../components/header/AHeader.vue"
-import plannerSider from "../components/sider/plannerSider.vue"
+import AHeader from '@/components/header/AHeader.vue'
+import FooterNav from '@/components/mobile/navigation/FooterNav.vue'
 </script>
 
 <template>
@@ -9,16 +9,14 @@ import plannerSider from "../components/sider/plannerSider.vue"
       <AHeader />
     </a-layout-header>
     <a-layout>
-      <a-layout-content class="border-1" id="planner-sider">
-        <plannerSider />
+      <a-layout-content class="border-1" id="planner-content">
+        <RouterView />
       </a-layout-content>
     </a-layout>
+    <a-layout-footer><FooterNav /></a-layout-footer>
+
     <!-- <a-layout-footer>Footer</a-layout-footer> -->
   </a-layout>
 </template>
 
-<style scoped>
-.border-1 {
-  height: 3rem;
-}
-</style>
+<style scoped></style>

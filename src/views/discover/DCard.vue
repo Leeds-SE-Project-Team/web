@@ -4,7 +4,7 @@
       <template #title>
         <div class="title-wrapper">
           <div class="greeting-more">
-            <h4>Intersting in your region</h4>
+            <h4>interesting in your region</h4>
             <span>...</span>
           </div>
           <div class="user-wrapper">
@@ -15,12 +15,15 @@
             </div>
             <div class="info-wrapper">
               <span
-                ><a href="#">{{ props.info.user.nickname }}</a> goes there</span
+                ><a-link href="#" style="margin: 0; padding: 0; background-color: transparent">{{
+                  props.info.user.nickname
+                }}</a-link>
+                goes there</span
               >
-              <span>n days ago</span>
+              <span style="color: rgba(102, 102, 102, 1) !important">n days ago</span>
             </div>
             <div class="button-wrapper">
-              <a-button>Follow</a-button>
+              <a-button type="primary">Follow</a-button>
             </div>
           </div>
           <h3 class="title">
@@ -32,7 +35,7 @@
                 <div class="left">
                   <a-image
                     :height="'100%'"
-                    :src="props.info.pictures[0]"
+                    :src="props.info.spots[0].coverUrl"
                     :width="'100%'"
                     fit="cover"
                   />
@@ -41,7 +44,7 @@
                   <div class="up right-item">
                     <a-image
                       :height="'100%'"
-                      :src="props.info.pictures[1]"
+                      :src="props.info.spots[1].coverUrl"
                       :width="'100%'"
                       fit="cover"
                     />
@@ -49,7 +52,7 @@
                   <div class="down right-item">
                     <a-image
                       :height="'100%'"
-                      :src="props.info.pictures[2]"
+                      :src="props.info.spots[2].coverUrl"
                       :width="'100%'"
                       fit="cover"
                     />
@@ -58,7 +61,7 @@
               </a-image-preview-group>
             </div>
             <div ref="mapWrapper" class="map-wrapper hide">
-              <img :src="props.info.map" alt="" />
+              <img :src="props.info.mapCapture" alt="" />
             </div>
             <div class="switch">
               <button class="switch-button" @click="switchClick">
@@ -68,31 +71,79 @@
               </button>
             </div>
           </div>
-          <div class="operation">
-            <div class="buttons-wrapper">
-              <div class="like">
-                <a-button class="action-button" type="text">
-                  <template #icon>
-                    <icon-heart :size="20" />
-                  </template>
-                  {{ props.info.like }}
-                </a-button>
-              </div>
-              <div class="comment">
-                <a-button class="action-button" type="text" @click="commentClick">
-                  <template #icon>
-                    <icon-message :size="20" />
-                  </template>
-                  {{ props.info.comment }}
-                </a-button>
-              </div>
-            </div>
-          </div>
+          <!--          <div class="operation">-->
+          <!--            <div class="buttons-wrapper">-->
+          <!--              <div class="like">-->
+          <!--                <a-button class="action-button" type="text">-->
+          <!--                  <template #icon>-->
+          <!--                    <icon-heart :size="20" />-->
+          <!--                  </template>-->
+          <!--                  {{ props.info.like }}-->
+          <!--                </a-button>-->
+          <!--              </div>-->
+          <!--              <div class="comment">-->
+          <!--                <a-button class="action-button" type="text" @click="commentClick">-->
+          <!--                  <template #icon>-->
+          <!--                    <icon-message :size="20" />-->
+          <!--                  </template>-->
+          <!--                  {{ props.info.comment }}-->
+          <!--                </a-button>-->
+          <!--              </div>-->
+          <!--            </div>-->
+          <!--          </div>-->
         </div>
       </template>
 
+      <div class="item-actions">
+        <a-list :bordered="false" class="item-actions-left">
+          <a-list-item class="like-action">
+            <span class="like-icon"><IconHeartFill v-if="false" /><IconHeart v-else /></span>
+            <span>{{ 1 }}</span>
+          </a-list-item>
+          <a-list-item class="star-action">
+            <span class="star-icon"><IconStarFill v-if="false" /><IconStar v-else /></span>
+            <span>{{ 1 }}</span>
+          </a-list-item>
+          <a-list-item style="cursor: pointer" @click="commentClick">
+            <icon-message />
+            <span>{{ comments.length > 0 ? comments.length : 'view' }}</span>
+          </a-list-item>
+        </a-list>
+        <div class="item-actions-right">
+          <a-tag
+            v-if="props.info.status === 'awaitApproval'"
+            :color="'arcoblue'"
+            :size="'small'"
+            bordered
+            class="detail-video-tag"
+            style="background: transparent"
+            >审核中
+          </a-tag>
+          <a-tag
+            v-else-if="props.info.status === 'offline'"
+            :color="'red'"
+            :size="'small'"
+            bordered
+            class="detail-video-tag"
+            style="background: transparent"
+            >未过审
+          </a-tag>
+
+          <a-button :type="'text'" class="delete-video">
+            <template #icon>
+              <icon-delete />
+            </template>
+            <span>删除</span>
+          </a-button>
+          <div class="publish-time">
+            <span>发布时间：</span>
+            <span>{{ props.info.createTime }}</span>
+          </div>
+        </div>
+      </div>
+
       <!--      commentContainer-->
-      <div class="commentContainer" v-if="showCommentList">
+      <div v-if="showCommentList" class="commentContainer">
         <div class="detail-comment-divider">
           <span class="comment-title">全部评论</span>
           <a-divider />
@@ -103,28 +154,28 @@
             <a-avatar style="cursor: default">
               <img
                 alt="avatar"
-                src="http://walcraft.wmzspace.space/static/user/default/avatar/b082833e5c59a309880eca3d525e7cae.gif"
+                src="http://walcraft.wmzspace.space/static/user/default/avatar/avatar.jpg"
               />
             </a-avatar>
 
             <a-input
-              placeholder="留下你的精彩评论吧"
-              class="comment-input"
               v-model:model-value.trim="newCommentContent"
               :max-length="400"
+              class="comment-input"
+              placeholder="留下你的精彩评论吧"
             >
               <template #suffix>
                 <a-tooltip>
-                  <template #content> 没有可以@的朋友 </template>
-                  <img class="icon-at" src="/interaction/comment_at.svg" alt="at_friend" />
+                  <template #content> 没有可以@的朋友</template>
+                  <img alt="at_friend" class="icon-at" src="/interaction/comment_at.svg" />
                 </a-tooltip>
                 <a-tooltip>
                   <template #content>发布评论</template>
                   <img
-                    class="icon-send"
-                    src="/interaction/send_comment.svg"
                     v-if="newCommentContent.length > 0"
                     alt="send_comment"
+                    class="icon-send"
+                    src="/interaction/send_comment.svg"
                   />
                 </a-tooltip>
               </template>
@@ -132,18 +183,18 @@
           </a-row>
         </div>
 
-        <div class="usually-search">
-          大家都在搜：<a class="usually-search-topic"
-            ><span class="usually-search-topic-text" :style="{ cursor: 'default' }">{{
-              '暂无推荐'
-            }}</span>
-            <img
-              class="usually-search-icon"
-              src="/interaction/usually_search.svg"
-              alt="usually-search"
-            />
-          </a>
-        </div>
+        <!--        <div class="usually-search">-->
+        <!--          大家都在搜：<a class="usually-search-topic"-->
+        <!--            ><span class="usually-search-topic-text" :style="{ cursor: 'default' }">{{-->
+        <!--              '暂无推荐'-->
+        <!--            }}</span>-->
+        <!--            <img-->
+        <!--              class="usually-search-icon"-->
+        <!--              src="/interaction/usually_search.svg"-->
+        <!--              alt="usually-search"-->
+        <!--            />-->
+        <!--          </a>-->
+        <!--        </div>-->
 
         <div class="comments-list">
           <CommentCard
@@ -214,14 +265,14 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import type { cardInfo, commentInfo } from './type'
 import CommentCard from '@/views/discover/CommentCard.vue'
 import useLoading from '@/hooks/loading'
 import { type CommentRecord, getCommentsByTourId } from '@/apis/comment'
 import { Message } from '@arco-design/web-vue'
+import type { TourRecord } from '@/apis/tour'
 
 const props = defineProps<{
-  info: cardInfo
+  info: TourRecord
 }>()
 
 const commentArea = ref<HTMLDivElement | undefined>()
@@ -229,8 +280,8 @@ const mapWrapper = ref<HTMLDivElement | undefined>()
 const picWrapper = ref<HTMLDivElement | undefined>()
 const textA = ref('')
 
-const smallImg = ref(props.info.map)
-const commentList = props.info.commentList
+const smallImg = ref(props.info.mapCapture)
+const commentList = props.info.comments
 
 const switchStatus = ref<'map' | 'pic'>('map')
 
@@ -248,8 +299,10 @@ const fetchComments = () => {
 }
 
 const commentClick = () => {
-  showCommentList.value = true
-  fetchComments()
+  showCommentList.value = !showCommentList.value
+  if (showCommentList.value) {
+    fetchComments()
+  }
   // commentShow.value = !commentShow.value
   // if (!commentArea.value) {
   //   return
@@ -273,7 +326,7 @@ const switchClick = () => {
       if (mapWrapper.value) {
         mapWrapper.value.classList.remove('hide')
       }
-      smallImg.value = props.info.pictures[0]
+      smallImg.value = props.info.spots[0].coverUrl
       break
 
     case 'pic':
@@ -284,23 +337,23 @@ const switchClick = () => {
       if (mapWrapper.value) {
         mapWrapper.value.classList.add('hide')
       }
-      smallImg.value = props.info.map
+      smallImg.value = props.info.mapCapture
       break
   }
 }
 
 const newCommentContent = ref<string>('')
 
-const commitComment = () => {
-  const temp: commentInfo = {
-    author: 'aiiiieee',
-    dateTime: 'now',
-    content: textA.value,
-    avatar: props.info.user.avatar
-  }
-  commentList.unshift(temp)
-  textA.value = ''
-}
+// const commitComment = () => {
+//   const temp: CommentRecord = {
+//     author: 'aiiiieee',
+//     dateTime: 'now',
+//     content: textA.value,
+//     avatar: props.info.user.avatar
+//   }
+//   commentList.unshift(temp)
+//   textA.value = ''
+// }
 
 const showCommentList = ref(false)
 

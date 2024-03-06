@@ -1,6 +1,8 @@
 import type { UserRecord } from '@/apis/user'
 import type { ApiResponse } from '@/apis'
 import { axiosRequest } from '@/apis'
+import type { CommentRecord } from '@/apis/comment'
+import type { TourSpot } from '@/apis/tour/spot'
 
 export enum TourType {
   WALK,
@@ -23,6 +25,12 @@ export interface TourRecord {
   pons: PON[]
   user: UserRecord
   tourCollectionId: number
+  mapCapture: string
+
+  spots: TourSpot[]
+  comments: CommentRecord[]
+  status: 'online' | 'offline' | 'awaitApproval'
+  title: string
 }
 
 export interface CreateTourForm {
@@ -30,6 +38,7 @@ export interface CreateTourForm {
   endLocation: string
   type: TourType
   pons: PON[]
+  tourCollectionId: number
 }
 
 export const parseLocation = (location: string): string[] => {
@@ -41,4 +50,10 @@ export const createTour = (form: CreateTourForm): Promise<ApiResponse<void>> =>
     method: 'POST',
     url: `tours/create`,
     data: form
+  })
+
+export const getTours = (): Promise<ApiResponse<TourRecord[]>> =>
+  axiosRequest({
+    method: 'GET',
+    url: 'tours/all'
   })
