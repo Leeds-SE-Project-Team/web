@@ -125,11 +125,11 @@ const handleCreateTour = () => {
       <div class="route-img">
         <img src="/route/route.png" alt="route" />
       </div>
-      <div>
+      <div class="route-text">
         <h3 class="header">Where do you want to go?</h3>
         <p class="text">Enter a destination or click on the map to add it.</p>
       </div>
-      <a-button style="width: 100px" @click="handleCreateTour" :loading="loading">创建</a-button>
+      <a-button class="bottom-button" style="width: 100px" @click="handleCreateTour" :loading="loading">创建</a-button>
     </div>
   </section>
 

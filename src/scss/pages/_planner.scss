@@ -1,13 +1,20 @@
 #planner-content {
   $sider-width: 388px;
-
   .sider {
     position: absolute;
     width: $sider-width;
     left: 0;
     height: calc(100% - $header-height);
     z-index: 1;
-    background-color: #FFFFFF;;
+    background-color: #FFFFFF;
+
+    .arco-menu-icon-suffix,.arco-icon {
+      color: #d7d7d7 !important;
+    }
+
+    .arco-menu-pop {
+      color: #d7d7d7 !important;
+    }
 
     &.hidden {
       display: none;
@@ -134,5 +141,34 @@
   #panel .amap-lib-driving {
     border-radius: 4px;
     overflow: hidden;
+  }
+}
+
+@media (max-width: 900px) {
+  #planner-content {
+    .sider {
+      width: 100vw;
+      top: $header-height;
+      height: 30vh;
+      min-height: 342px;
+
+      .bottom {
+        position: relative;
+        .route-img,.route-text {
+          display: none;
+        }
+        .bottom-button {
+          position: absolute;
+          top: -32px;
+          height: 24px;
+          background-color: #fff;
+          color: #56732d;
+        }
+      }
+
+      .right-icon {
+        margin-left: calc(100vw - 48px) !important;
+      }
+    }
   }
 }
