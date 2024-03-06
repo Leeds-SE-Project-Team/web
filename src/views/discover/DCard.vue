@@ -275,13 +275,13 @@ const props = defineProps<{
   info: TourRecord
 }>()
 
-const commentArea = ref<HTMLDivElement | undefined>()
+// const commentArea = ref<HTMLDivElement | undefined>()
 const mapWrapper = ref<HTMLDivElement | undefined>()
 const picWrapper = ref<HTMLDivElement | undefined>()
-const textA = ref('')
+// const textA = ref('')
 
 const smallImg = ref(props.info.mapCapture)
-const commentList = props.info.comments
+// const commentList = props.info.comments
 
 const switchStatus = ref<'map' | 'pic'>('map')
 
