@@ -2,9 +2,11 @@ import '@amap/amap-jsapi-types'
 
 import { createApp } from 'vue'
 import ArcoVue from '@arco-design/web-vue'
+import Vant from 'vant'
 // 额外引入图标库
 import ArcoVueIcon from '@arco-design/web-vue/es/icon'
 import '@arco-design/web-vue/dist/arco.css'
+import 'vant/lib/index.css'
 import { createPinia } from 'pinia'
 
 import './scss/app.scss'
@@ -20,6 +22,9 @@ import LayoutMobileMain from '@/layout/mobile/LayoutMain.vue'
 app.use(createPinia())
 app.use(router)
 app.use(ArcoVue)
+app.use(Vant)
+// Lazyload 指令需要单独进行注册
+// app.use(Vant.Lazyload)
 app.use(ArcoVueIcon)
 app.component('layout-default', LayoutDefault)
 app.component('layout-a', LayoutA)
