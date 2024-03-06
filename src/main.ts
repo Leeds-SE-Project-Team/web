@@ -18,6 +18,7 @@ import LayoutA from '@/layout/LayoutA.vue'
 import LayoutDefault from '@/layout/LayoutDefault.vue'
 import LayoutB from '@/layout/LayoutB.vue'
 import LayoutMobileMain from '@/layout/mobile/LayoutMain.vue'
+import LayoutMobileDefault from '@/layout/mobile/LayoutDefaultMobile.vue'
 
 app.use(createPinia())
 app.use(router)
@@ -30,4 +31,5 @@ app.component('layout-default', LayoutDefault)
 app.component('layout-a', LayoutA)
 app.component('layout-b', LayoutB)
 app.component('layout-mobile-main', LayoutMobileMain)
+app.component('layout-mobile-default', LayoutMobileDefault)
 app.mount('#app')
