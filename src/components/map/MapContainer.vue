@@ -42,7 +42,15 @@ let lineArr = [
 
 // 解析WalkRoute对象，构造成AMap.Polyline的path参数需要的格式
 // WalkRoute对象的结构文档 https://lbs.amap.com/api/javascript-api/reference/route-search#m_WalkRoute
-const parseRouteToPath = (route: any) => {
+/**
+ * 将路径数据转为经纬度数组
+ * @param route 路径数据
+ * @param other 是否跳过处理,用于对GPX的处理,默认为flase
+ */
+const parseRouteToPath = (route: any, other?: boolean) => {
+  if(other){
+    return route;
+  }
   const path = []
 
   for (let i = 0, l = route.steps.length; i < l; i++) {
@@ -56,8 +64,8 @@ const parseRouteToPath = (route: any) => {
   return path
 }
 
-const drawRoute = (route: any) => {
-  const path = parseRouteToPath(route)
+const drawRoute = (route: any, other?: boolean) => {
+  const path = parseRouteToPath(route, other)
 
   const startMarker = new AMap.Marker({
     position: path[0],
@@ -88,6 +96,17 @@ const drawRoute = (route: any) => {
 
   // 调整视野达到最佳显示区域
   map.value.setFitView([startMarker, endMarker, routeLine])
+}
+
+/**
+ * 将GPX数据通过高德API转换为高德经纬度数据并绘制在地图上
+ */
+const drawGPX = (route: any)=>{
+  AMap.convertFrom(route,'gps',(status:any, result:any)=>{
+    if(result.info=='ok'){
+      drawRoute(result.locations, true);
+    }
+  })
 }
 
 const startAnimation = function () {
@@ -343,7 +362,7 @@ onMounted(() => {
       //   offset: new AMap.Pixel(-13, -26)
       // })
       //
-      // // 绘制轨迹
+      // 绘制轨迹
       // new AMap.Polyline({
       //   map: map.value,
       //   path: lineArr,
@@ -386,7 +405,8 @@ defineExpose({
   pauseAnimation,
   resumeAnimation,
   stopAnimation,
-  screenMap
+  screenMap,
+  drawGPX
 })
 </script>
 

@@ -21,6 +21,7 @@ const createTourForm = ref<CreateTourForm>({
 })
 
 const mapContainer = ref()
+const infile = ref<HTMLInputElement| null>(null);
 
 const { loading, setLoading } = useLoading()
 const handleCreateTour = () => {
@@ -40,6 +41,33 @@ const handleCreateTour = () => {
     .finally(() => {
       setLoading(false)
     })
+}
+
+const handleGPX = ()=>{
+  const theFile = infile.value?.files?.item(0)
+  if(theFile){
+    const reader = new FileReader()
+    reader.readAsText(theFile)
+    reader.onload = ()=>{
+      // 读取gpx文件为DOM
+      const paser = new DOMParser()
+      const res= paser.parseFromString(reader.result as string, 'text/xml')
+      const tracks = res.getElementsByTagName('trkpt')
+      const pos = []
+      // 摘取经纬度
+      for(let i =0;i<tracks.length;i++){
+        if(tracks.item(i)){
+          pos.push(
+            [tracks[i].getAttribute('lon'),
+            tracks.item(i)?.getAttribute('lat')]
+          )
+        }
+      }
+      createTourForm.value.startLocation = pos[0].toString()
+      createTourForm.value.endLocation = pos[pos.length -1].toString()
+      mapContainer.value.drawGPX(pos)
+    }
+  }
 }
 </script>
 
@@ -131,6 +159,7 @@ const handleCreateTour = () => {
 <!--        <p class="text">Enter a destination or click on the map to add it.</p>-->
       </div>
       <a-button :loading="loading" style="width: 100px" @click="handleCreateTour">创建</a-button>
+      <input ref="infile" type="file" name="file" id="infile" @change="handleGPX">
     </div>
   </section>
 
