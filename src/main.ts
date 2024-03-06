@@ -15,6 +15,7 @@ const app = createApp(App)
 import LayoutA from '@/layout/LayoutA.vue'
 import LayoutDefault from '@/layout/LayoutDefault.vue'
 import LayoutB from '@/layout/LayoutB.vue'
+import LayoutMobileMain from '@/layout/mobile/LayoutMain.vue'
 
 app.use(createPinia())
 app.use(router)
@@ -23,4 +24,5 @@ app.use(ArcoVueIcon)
 app.component('layout-default', LayoutDefault)
 app.component('layout-a', LayoutA)
 app.component('layout-b', LayoutB)
+app.component('layout-mobile-main', LayoutMobileMain)
 app.mount('#app')
