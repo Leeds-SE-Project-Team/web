@@ -7,6 +7,10 @@ import { Message } from '@arco-design/web-vue'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
 import { useUserStore } from '@/stores/user'
 import { getTours } from '@/apis/tour'
+import likeSvgUrl from '/interaction/video_detail_like.svg'
+import likedSvgUrl from '/interaction/video_detail_liked.svg'
+import starSvgUrl from '/interaction/star.svg'
+import starredSvgUrl from '/interaction/starred.svg'
 
 const currentPlayIndex = ref(0)
 
@@ -279,11 +283,7 @@ const handleTouchMove = (e: TouchEvent) => {
                               <div class="video-action-icon">
                                 <img
                                   :height="45"
-                                  :src="
-                                    isLiked
-                                      ? '/interaction/video_detail_liked.svg'
-                                      : '/interaction/video_detail_like.svg'
-                                  "
+                                  :src="isLiked ? likedSvgUrl : likeSvgUrl"
                                   alt="like"
                                   :width="45"
                                 />
@@ -306,9 +306,7 @@ const handleTouchMove = (e: TouchEvent) => {
                               <div class="video-action-icon">
                                 <img
                                   :height="45"
-                                  :src="
-                                    isStarred ? '/interaction/starred.svg' : '/interaction/star.svg'
-                                  "
+                                  :src="isStarred ? starredSvgUrl : starSvgUrl"
                                   :width="45"
                                   alt="star"
                                 />
