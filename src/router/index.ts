@@ -40,7 +40,7 @@ const router = createRouter({
       path: '/discover',
       name: 'discover',
       meta: {
-        layout: 'b',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'Discover Page'
       }, // Render component dynamically according to platform
       // component: DiscoverMobileView
