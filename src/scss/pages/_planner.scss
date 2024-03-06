@@ -1,5 +1,6 @@
 #planner-content {
   $sider-width: 388px;
+  $menu-height: 342px;
   .sider {
     position: absolute;
     width: $sider-width;
@@ -121,6 +122,11 @@
     width: calc(100% - $sider-width);
     margin: 0;
     padding: 0;
+    @media(max-width: 900px){
+      width:100%;
+      left:0;
+      top:$menu-height;
+    }
   }
 
   .sider.hidden ~ #map-container {
@@ -142,15 +148,13 @@
     border-radius: 4px;
     overflow: hidden;
   }
-}
 
-@media (max-width: 900px) {
-  #planner-content {
+  @media (max-width: 900px) {
     .sider {
       width: 100vw;
       top: $header-height;
       height: 30vh;
-      min-height: 342px;
+      min-height: $menu-height;
 
       .bottom {
         position: relative;
@@ -171,4 +175,6 @@
       }
     }
   }
+
 }
+
