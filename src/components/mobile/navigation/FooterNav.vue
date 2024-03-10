@@ -13,7 +13,7 @@ const active = ref('discover')
     route
     style="background-color: #383838"
   >
-    <van-tabbar-item :to="{ name: 'discover' }" name="discover" badge="5">
+    <van-tabbar-item :to="{ name: 'discover' }" badge="5" name="discover">
       <template #icon>
         <van-icon :size="18" name="star" />
       </template>
@@ -25,7 +25,7 @@ const active = ref('discover')
       </template>
       <span class="tab-title">Plan</span>
     </van-tabbar-item>
-    <van-tabbar-item name="record" dot>
+    <van-tabbar-item :to="{ name: 'record' }" dot name="record">
       <template #icon>
         <van-icon :size="18" name="add" />
       </template>
@@ -45,10 +45,11 @@ const active = ref('discover')
     </van-tabbar-item>
   </van-tabbar>
 </template>
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .tab-title {
   font-size: 10px;
 }
+
 :deep(.van-tabbar-item--active) {
   background-color: transparent;
 }

@@ -11,13 +11,11 @@ import likeSvgUrl from '/interaction/video_detail_like.svg'
 import likedSvgUrl from '/interaction/video_detail_liked.svg'
 import starSvgUrl from '/interaction/star.svg'
 import starredSvgUrl from '/interaction/starred.svg'
-import { showToast } from 'vant'
 
 const currentPlayIndex = ref(0)
 
 const loadingObject = useLoading()
-const setLoadingVideo = loadingObject.setLoading
-const loadingVideo = loadingObject.loading
+const loadingItem = loadingObject.loading
 
 const handlePlayPrev = () => {
   if (!canHandleSwitch.value) {
@@ -27,7 +25,7 @@ const handlePlayPrev = () => {
     canHandleSwitch.value = false
     currentPlayIndex.value -= 1
     // createPlay(itemList.value[currentPlayIndex.value])
-    // refreshVideoLikeAndStar()
+    // refreshItemLikeAndStar()
     nextAfterLoad.value = false
     nextTick(() => {
       adjustHeight(true)
@@ -39,7 +37,7 @@ const nextAfterLoad = ref(false)
 const handlePlayNext = () => {
   if (
     !canHandleSwitch.value ||
-    (loadingVideo.value && currentPlayIndex.value >= itemList.value.length - 1)
+    (loadingItem.value && currentPlayIndex.value >= itemList.value.length - 1)
   ) {
     return
   }
@@ -48,14 +46,14 @@ const handlePlayNext = () => {
   if (currentPlayIndex.value < itemList.value.length - 1) {
     currentPlayIndex.value += 1
     // createPlay(itemList.value[currentPlayIndex.value])
-    // refreshVideoLikeAndStar()
+    // refreshItemLikeAndStar()
   } else {
     Message.loading({
       id: 'loadMore',
       content: '加载中...'
     })
     nextAfterLoad.value = true
-    // getMoreVideos(3, false).then(() => {
+    // getMoreItems(3, false).then(() => {
     //   Message.success({
     //     id: 'loadMore',
     //     content: '更新成功'
@@ -75,7 +73,7 @@ const handleWheel = (event: WheelEvent) => {
   if (canHandleSwitch.value) {
     const delta = Math.sign(event.deltaY)
     if (delta > 0) {
-      if (!loadingVideo.value || currentPlayIndex.value < itemList.value.length - 1) {
+      if (!loadingItem.value || currentPlayIndex.value < itemList.value.length - 1) {
         handlePlayNext()
       }
     } else if (delta < 0) {
@@ -88,12 +86,12 @@ const handleWheel = (event: WheelEvent) => {
 
 const userStore = useUserStore()
 
-const currentVideo = computed(() => itemList.value[currentPlayIndex.value])
+const currentItem = computed(() => itemList.value[currentPlayIndex.value])
 const isLiked = ref(false)
 const isStarred = ref(false)
 
-const videoLikeShowNum = ref(0)
-const videoStarShowNum = ref(0)
+const itemLikeShowNum = ref(0)
+const itemStarShowNum = ref(0)
 
 const router = useRouter()
 // const handleClickAvatar = (authorId: number) => {
@@ -113,10 +111,10 @@ const adjustHeight = (animation: boolean) => {
     parentHeight.value = slideList.value.offsetHeight
   }
   nextTick(() => {
-    const sliderVideo = document.getElementById('sliderVideo') as HTMLElement | null
-    if (sliderVideo !== null) {
+    const sliderItem = document.getElementById('sliderVideo') as HTMLElement | null
+    if (sliderItem !== null) {
       slideList.value.style['transition-duration'] = animation ? '250ms' : '0ms'
-      slideList.value.style.transform = `translate3d(0px, -${sliderVideo.parentElement?.offsetTop}px, 0px)`
+      slideList.value.style.transform = `translate3d(0px, -${sliderItem.parentElement?.offsetTop}px, 0px)`
     }
     setTimeout(() => {
       canHandleSwitch.value = true
@@ -199,15 +197,17 @@ const handleTouchMove = (e: TouchEvent) => {
 // const onOffsetChange = (offset) => {
 //   showToast(`x: ${offset.x.toFixed(0)}, y: ${offset.y.toFixed(0)}`)
 // }
-const count = ref(0)
-const loading = ref(false)
-const onRefresh = () => {
-  setTimeout(() => {
-    showToast('刷新成功')
-    loading.value = false
-    count.value++
-  }, 1000)
-}
+// const loading = ref(false)
+// const onRefresh = () => {
+//   loading.value = false
+//   if (currentPlayIndex.value > 0) {
+//     loading.value = true
+//     setTimeout(() => {
+//       showToast('刷新成功')
+//       loading.value = false
+//     }, 1000)
+//   }
+// }
 </script>
 
 <template>
@@ -230,50 +230,48 @@ const onRefresh = () => {
     }"
     ><template #default> <van-icon :size="23" name="guide-o" /></template>
   </van-floating-bubble>
-  <van-pull-refresh v-model="loading" @refresh="onRefresh" style="width: 100%; height: 100%">
-    <div id="slide-list" @wheel.passive="handleWheel">
-      <div class="outer-container">
-        <div ref="slideList" class="slide-list-container">
-          <div
-            v-for="(item, idx) in itemList"
-            :key="idx"
-            :style="{
-              height: `${parentHeight}px`
-            }"
-            class="page-recommend-container border-1"
-            @touchmove="handleTouchMove"
-            @touchstart="handleTouchStart"
-          >
-            <div :id="idx === currentPlayIndex ? 'sliderVideo' : undefined" class="feed-video">
-              <div class="playerContainer">
-                <div class="slider-video">
-                  <div
-                    :style="{
-                      backgroundImage: `url(${item.coverUrl})`
-                    }"
-                    class="basePlayerContainer"
-                  >
-                    <div class="video-info-container">
-                      <div class="video-info-container-inner">
-                        <div :id="idx === currentPlayIndex ? 'video-info-wrap' : undefined">
-                          <div class="video-info-detail">
-                            <a-row class="item-name">
-                              <a-tag>{{ item.name }}</a-tag>
-                            </a-row>
-                            <a-row class="account">
-                              <div class="account-name">
-                                <span>{{ itemList[idx].user.nickname }}</span>
-                              </div>
-                              <div class="video-create-time">
-                                <span>· {{ getTimeDiffUntilNow(itemList[idx].createTime) }}</span>
-                              </div>
-                            </a-row>
-                            <div class="title">
-                              <div class="title-container">
-                                <div class="title-inner-container">
-                                  <div class="title-content">
-                                    <span>{{ itemList[idx].title }}</span>
-                                  </div>
+  <div id="slide-list" @wheel.passive="handleWheel">
+    <div class="outer-container">
+      <div ref="slideList" class="slide-list-container">
+        <div
+          v-for="(item, idx) in itemList"
+          :key="idx"
+          :style="{
+            height: `${parentHeight}px`
+          }"
+          class="page-recommend-container border-1"
+          @touchmove="handleTouchMove"
+          @touchstart="handleTouchStart"
+        >
+          <div :id="idx === currentPlayIndex ? 'sliderVideo' : undefined" class="feed-video">
+            <div class="playerContainer">
+              <div class="slider-video">
+                <div
+                  :style="{
+                    backgroundImage: `url(${item.coverUrl})`
+                  }"
+                  class="basePlayerContainer"
+                >
+                  <div class="video-info-container">
+                    <div class="video-info-container-inner">
+                      <div :id="idx === currentPlayIndex ? 'video-info-wrap' : undefined">
+                        <div class="video-info-detail">
+                          <a-row class="item-name">
+                            <a-tag>{{ item.name }}</a-tag>
+                          </a-row>
+                          <a-row class="account">
+                            <div class="account-name">
+                              <span>{{ itemList[idx].user.nickname }}</span>
+                            </div>
+                            <div class="video-create-time">
+                              <span>· {{ getTimeDiffUntilNow(itemList[idx].createTime) }}</span>
+                            </div>
+                          </a-row>
+                          <div class="title">
+                            <div class="title-container">
+                              <div class="title-inner-container">
+                                <div class="title-content">
+                                  <span>{{ itemList[idx].title }}</span>
                                 </div>
                               </div>
                             </div>
@@ -281,145 +279,146 @@ const onRefresh = () => {
                         </div>
                       </div>
                     </div>
-                    <div class="video-action-holder">
-                      <div class="video-action-outer-container">
-                        <div class="video-action-inner-container">
-                          <div class="video-action-item">
-                            <a-tooltip :position="'left'">
-                              <div class="video-action-avatar">
-                                <a>
-                                  <a-avatar :image-url="item.user.avatar" :size="40"></a-avatar>
-                                </a>
+                  </div>
+                  <div class="video-action-holder">
+                    <div class="video-action-outer-container">
+                      <div class="video-action-inner-container">
+                        <div class="video-action-item">
+                          <a-tooltip :position="'left'">
+                            <div class="video-action-avatar">
+                              <a>
+                                <a-avatar :image-url="item.user.avatar" :size="40"></a-avatar>
+                              </a>
+                            </div>
+                            <template #content>
+                              查看主页
+                              <a-tag
+                                :size="'small'"
+                                style="margin: 5px; padding: 5px; border-radius: 5px"
+                                >V
+                              </a-tag>
+                            </template>
+                          </a-tooltip>
+                        </div>
+                        <div class="video-action-item">
+                          <a-tooltip :position="'left'">
+                            <div class="video-action-others">
+                              <div class="video-action-icon">
+                                <img
+                                  :height="45"
+                                  :src="isLiked ? likedSvgUrl : likeSvgUrl"
+                                  alt="like"
+                                  :width="45"
+                                />
                               </div>
-                              <template #content>
-                                查看主页
-                                <a-tag
-                                  :size="'small'"
-                                  style="margin: 5px; padding: 5px; border-radius: 5px"
-                                  >V
-                                </a-tag>
-                              </template>
-                            </a-tooltip>
-                          </div>
-                          <div class="video-action-item">
-                            <a-tooltip :position="'left'">
-                              <div class="video-action-others">
-                                <div class="video-action-icon">
-                                  <img
-                                    :height="45"
-                                    :src="isLiked ? likedSvgUrl : likeSvgUrl"
-                                    alt="like"
-                                    :width="45"
-                                  />
-                                </div>
-                                <div class="video-action-statistic">{{ videoLikeShowNum }}</div>
+                              <div class="video-action-statistic">{{ itemLikeShowNum }}</div>
+                            </div>
+                            <template #content>
+                              {{ isLiked ? '取消点赞' : '点赞' }}
+                              <a-tag
+                                :size="'small'"
+                                style="margin: 5px; padding: 5px; border-radius: 5px"
+                                >Z
+                              </a-tag>
+                            </template>
+                          </a-tooltip>
+                        </div>
+                        <div class="video-action-item">
+                          <a-tooltip :position="'left'">
+                            <div class="video-action-others">
+                              <div class="video-action-icon">
+                                <img
+                                  :height="45"
+                                  :src="isStarred ? starredSvgUrl : starSvgUrl"
+                                  :width="45"
+                                  alt="star"
+                                />
                               </div>
-                              <template #content>
-                                {{ isLiked ? '取消点赞' : '点赞' }}
-                                <a-tag
-                                  :size="'small'"
-                                  style="margin: 5px; padding: 5px; border-radius: 5px"
-                                  >Z
-                                </a-tag>
-                              </template>
-                            </a-tooltip>
-                          </div>
-                          <div class="video-action-item">
-                            <a-tooltip :position="'left'">
-                              <div class="video-action-others">
-                                <div class="video-action-icon">
-                                  <img
-                                    :height="45"
-                                    :src="isStarred ? starredSvgUrl : starSvgUrl"
-                                    :width="45"
-                                    alt="star"
-                                  />
-                                </div>
-                                <div class="video-action-statistic">{{ videoStarShowNum }}</div>
+                              <div class="video-action-statistic">{{ itemStarShowNum }}</div>
+                            </div>
+                            <template #content>
+                              {{ isStarred ? '取消收藏' : '收藏' }}
+                              <a-tag
+                                :size="'small'"
+                                style="margin: 5px; padding: 5px; border-radius: 5px"
+                                >X
+                              </a-tag>
+                            </template>
+                          </a-tooltip>
+                        </div>
+                        <div class="video-action-item">
+                          <a-tooltip :position="'left'">
+                            <div class="video-action-others">
+                              <div class="video-action-icon">
+                                <img
+                                  :height="45"
+                                  :width="45"
+                                  alt="comment"
+                                  src="/interaction/comment.svg"
+                                />
                               </div>
-                              <template #content>
-                                {{ isStarred ? '取消收藏' : '收藏' }}
-                                <a-tag
-                                  :size="'small'"
-                                  style="margin: 5px; padding: 5px; border-radius: 5px"
-                                  >X
-                                </a-tag>
-                              </template>
-                            </a-tooltip>
-                          </div>
-                          <div class="video-action-item">
-                            <a-tooltip :position="'left'">
-                              <div class="video-action-others">
-                                <div class="video-action-icon">
-                                  <img
-                                    :height="45"
-                                    :width="45"
-                                    alt="comment"
-                                    src="/interaction/comment.svg"
-                                  />
-                                </div>
-                                <div class="video-action-statistic">
-                                  {{ 1 }}
-                                </div>
+                              <div class="video-action-statistic">
+                                {{ 1 }}
                               </div>
-                              <template #content>
-                                评论
-                                <a-tag
-                                  :size="'small'"
-                                  style="margin: 5px; padding: 5px; border-radius: 5px"
-                                  >C
-                                </a-tag>
-                              </template>
-                            </a-tooltip>
-                          </div>
-                          <div class="video-action-item">
-                            <a-tooltip :position="'left'">
-                              <div class="video-action-others">
-                                <div class="video-action-icon">
-                                  <img
-                                    :height="45"
-                                    alt="more"
-                                    :width="45"
-                                    src="/interaction/more.svg"
-                                  />
-                                </div>
+                            </div>
+                            <template #content>
+                              评论
+                              <a-tag
+                                :size="'small'"
+                                style="margin: 5px; padding: 5px; border-radius: 5px"
+                                >C
+                              </a-tag>
+                            </template>
+                          </a-tooltip>
+                        </div>
+                        <div class="video-action-item">
+                          <a-tooltip :position="'left'">
+                            <div class="video-action-others">
+                              <div class="video-action-icon">
+                                <img
+                                  :height="45"
+                                  alt="more"
+                                  :width="45"
+                                  src="/interaction/more.svg"
+                                />
                               </div>
-                              <template #content>
-                                更多
-                                <a-tag
-                                  :size="'small'"
-                                  style="margin: 5px; padding: 5px; border-radius: 5px"
-                                  >C
-                                </a-tag>
-                              </template>
-                            </a-tooltip>
-                          </div>
+                            </div>
+                            <template #content>
+                              更多
+                              <a-tag
+                                :size="'small'"
+                                style="margin: 5px; padding: 5px; border-radius: 5px"
+                                >C
+                              </a-tag>
+                            </template>
+                          </a-tooltip>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  <div
-                    :style="{
-                      backgroundImage: `url(${item.coverUrl})`
-                    }"
-                    class="blurImageContainer"
-                  ></div>
                 </div>
+
+                <div
+                  :style="{
+                    backgroundImage: `url(${item.coverUrl})`
+                  }"
+                  class="blurImageContainer"
+                ></div>
               </div>
             </div>
           </div>
-
-          <a-spin
-            v-if="loadingVideo"
-            :loading="loadingVideo"
-            class="load-more"
-            dot
-            style="margin: auto"
-          />
         </div>
-      </div></div
-  ></van-pull-refresh>
+
+        <a-spin
+          v-if="loadingItem"
+          :loading="loadingItem"
+          class="load-more"
+          dot
+          style="margin: auto"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">

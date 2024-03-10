@@ -19,9 +19,9 @@ const mapRef = ref<HTMLDivElement | null>(null)
 // API documentation: https://github.com/AMap-Web/amap-screenshot
 
 const screenMap = () => {
-  if(mapRef.value){
-    const canvas = mapRef.value.getElementsByTagName('canvas');
-    console.log(canvas[0].toDataURL('image/jpeg', 1.0));
+  if (mapRef.value) {
+    const canvas = mapRef.value.getElementsByTagName('canvas')
+    console.log(canvas[0].toDataURL('image/jpeg', 1.0))
   }
 }
 
@@ -48,8 +48,8 @@ let lineArr = [
  * @param other 是否跳过处理,用于对GPX的处理,默认为flase
  */
 const parseRouteToPath = (route: any, other?: boolean) => {
-  if(other){
-    return route;
+  if (other) {
+    return route
   }
   const path = []
 
@@ -101,10 +101,10 @@ const drawRoute = (route: any, other?: boolean) => {
 /**
  * 将GPX数据通过高德API转换为高德经纬度数据并绘制在地图上
  */
-const drawGPX = (route: any)=>{
-  AMap.convertFrom(route,'gps',(status:any, result:any)=>{
-    if(result.info=='ok'){
-      drawRoute(result.locations, true);
+const drawGPX = (route: any) => {
+  AMap.convertFrom(route, 'gps', (status: any, result: any) => {
+    if (result.info == 'ok') {
+      drawRoute(result.locations, true)
     }
   })
 }
@@ -279,7 +279,13 @@ onMounted(() => {
       // AMap.plugin(["AMap.Geolocation"], function() {
       const geolocation = new AMap.Geolocation(options)
       map.value.addControl(geolocation)
-      geolocation.getCurrentPosition(undefined, undefined, undefined)
+      console.log('geo:', geolocation)
+      geolocation.getCurrentPosition((status, result) => {
+        Message.info(JSON.stringify(status) + JSON.stringify(result))
+        console.log(JSON.stringify(status) + JSON.stringify(result))
+      })
+
+      // geolocation.getCurrentPosition(undefined, undefined, undefined)
       // });
       /*----------当前位置定位----------*/
 
@@ -386,7 +392,7 @@ onMounted(() => {
       //
 
       map.value.setFitView()
-      screenshot.value = new Screenshot(map.value);
+      screenshot.value = new Screenshot(map.value)
     })
     .catch((e) => {
       Message.error({

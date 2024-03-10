@@ -7,10 +7,12 @@ import DiscoverView from '@/views/discover/index.vue'
 import PlannerView from '@/views/planner/index.vue'
 import TourView from '@/views/tour/index.vue'
 import { Capacitor } from '@capacitor/core'
+import { MOBILE_ROUTES } from '@/router/mobile'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    ...MOBILE_ROUTES,
     {
       path: '/',
       name: 'index',
