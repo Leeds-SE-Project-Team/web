@@ -1,68 +1,75 @@
 #planner-content {
-    overflow: hidden;
-    .bg {
-        position: relative;
-        width: 100vw;
-        background: #f5f4ea;
-        height: 1300px;
-        .bg-2-imgs {
-            z-index: 1;
-        }
-        .bg-img {
-            position: absolute;
-            left: -5vw;
-            top: -4vw;
-            width: 110vw;
-            filter: blur(8px) brightness(0.5);
-            -webkit-mask-image: linear-gradient(#000000 65%, rgba(0, 0, 0, 0) 98%);
-            mask-image: linear-gradient(#000000 65%, rgba(0, 0, 0, 0) 98%);
-        }
-        .out-img {
-            position: absolute;
-            left: 17vw;
-            margin-top: 3%;
-            width: 80vw;
-            -webkit-mask-image: linear-gradient(#000000 65%, rgba(0, 0, 0, 0) 98%);
-            mask-image: linear-gradient(#000000 65%, rgba(0, 0, 0, 0) 98%);
-        }
-        .title-card {
-            position: absolute;
-            left: 4vw;
-            top: 15vw;
-            width: 36vw;
-            padding: 16px;
-            background-color: #f5f4ea;
-            border-radius: 8px;
-            border: 2px solid #dfbf88;
-            z-index: 3;
-            p {
-                font-size: 16px;
-                padding: 8px 0;
-                color: #3e4e62;
+    .tour-main {
+        background-color: #f5f4ea;
+        height: 2000px;
+        padding: 0px 6vw;
+    }
+
+    .tour-title {
+        padding-top: 40px;
+        .bg {
+            aspect-ratio: 2.66667;
+            width: 100%;
+            border: 1px solid #000;    
+            
+            .main-bg {
+                float: left;
+                height: 100%;
+                width: 61.5%;
             }
 
-            h2 {
-                font-size: 57.6px;
-                color: #9f251f;
-                margin-bottom: 16px;
-            }
-
-            h3 {
-                font-size: 27.6px;
-                color: #3b3b3b;
-                padding: 8px 0;
-                margin-bottom: 20px;
-            }
-
-            .profile {
-                width: 40px;
-                height: 40px;
-                padding: 2px;
-                img {
+            .sub {
+                float: left;
+                height: 100%;
+                width: 38.5%;
+                .sub-bg {
                     width: 100%;
-                    border-radius: 50%;
+                    height: 50%;
                 }
             }
         }
+
+        .title {
+            font-size: 16px;
+            padding: 0 2%;
+            background-color: #fff;
+            .main-title {
+                margin: 0;
+                padding: 30px 0 30px 0;
+                font-size: 28px;
+                font-weight: 700 !important;
+            }
+            .category {
+                padding: 4px 4px;
+                color: #fff;
+                background-color: #383838;
+                border-radius: 4px;
+            }
+
+            .time, .distance, .speed {
+                margin: 0 16px;
+                font-size: 16px;
+                font-weight: 700;
+            }
+
+            .des {
+                color: #666666;
+                font-size: 16px;
+                padding: 20px 0 30px 0;
+                font-weight: 500;
+            }
+
+        }
     }
+
+    .overview {
+        padding: 0 2%;
+        background-color: #fff;
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            font-weight: 700;
+        }
+    }
+
 }
