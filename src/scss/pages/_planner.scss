@@ -38,9 +38,41 @@
         .arco-collapse {
           border: none;
 
+          .items {
+            height: 40px;
+            .item {
+              display: inline-block;
+              margin-right: 20px;
+              padding: 7px;
+              height: 36px;
+              width: 36px;
+              cursor: pointer;
+            }
+
+            .walk{
+              padding: 5px;
+            }
+
+            .car {
+              padding: 5px;
+            }
+
+            .public {
+              padding: 7px;
+            }
+          }
+
           .arco-collapse-item-header-title {
             color: #fff !important;
             font-weight: 900 !important;
+          }
+
+          .arco-collapse-item-content {
+            background-color: #383838;
+          }
+
+          .arco-collapse-item-active > .arco-collapse-item-header {
+            border: none;
           }
         }
 
