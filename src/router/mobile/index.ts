@@ -7,7 +7,7 @@ export const MOBILE_ROUTES: RouteRecordRaw[] = [
     path: '/record',
     name: 'record',
     meta: {
-      layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+      layout: 'mobile-record',
       title: 'Discover Page'
     },
     component: MobileRecord

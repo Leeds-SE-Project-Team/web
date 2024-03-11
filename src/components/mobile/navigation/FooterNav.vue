@@ -11,7 +11,7 @@ const active = ref('discover')
     :border="false"
     :inactive-color="'#FFFFFF'"
     route
-    style="background-color: #383838"
+    id="mobile-footer-nav"
   >
     <van-tabbar-item :to="{ name: 'discover' }" badge="5" name="discover">
       <template #icon>
@@ -45,12 +45,4 @@ const active = ref('discover')
     </van-tabbar-item>
   </van-tabbar>
 </template>
-<style lang="scss" scoped>
-.tab-title {
-  font-size: 10px;
-}
-
-:deep(.van-tabbar-item--active) {
-  background-color: transparent;
-}
-</style>
+<style lang="scss" scoped></style>

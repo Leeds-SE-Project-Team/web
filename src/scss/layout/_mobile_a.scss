@@ -1,0 +1,14 @@
+$mobile-footer-nav-height: 50px;
+
+#mobile-footer-nav {
+  height: $mobile-footer-nav-height;
+  background-color: #383838;
+
+  .tab-title {
+    font-size: 10px;
+  }
+
+  .van-tabbar-item--active {
+    background-color: transparent;
+  }
+}

@@ -1,0 +1,21 @@
+<script setup lang="ts">
+import AHeader from '@/components/header/AHeader.vue'
+import RecordFooter from '@/components/mobile/footer/RecordFooter.vue'
+</script>
+
+<template>
+  <a-layout id="layout-a">
+    <a-layout-header class="border-1" id="layout-a-header">
+      <AHeader />
+    </a-layout-header>
+    <a-layout>
+      <a-layout-content class="border-1" id="planner-content">
+        <RouterView />
+      </a-layout-content>
+    </a-layout>
+    <a-layout-footer><RecordFooter /></a-layout-footer>
+    <!-- <a-layout-footer>Footer</a-layout-footer> -->
+  </a-layout>
+</template>
+
+<style scoped></style>
