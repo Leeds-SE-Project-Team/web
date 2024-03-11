@@ -1,22 +1,33 @@
 <template>
-  <div>
-    <!-- the section of bg in tour page -->
-    <section class="bg">
-      <!-- bg img -->
-      <div class="bg-2-imgs">
-           <img :src="url.concat('/test_for_tour_page1.png')" alt="bg in tour page" class="bg-img">
-           <img :src="url.concat('/test_for_tour_page1.png')" alt="bg in tour page" class="out-img">
-      </div>
-      <!-- tile card -->
-      <div class="title-card">
-        <p>Lifestyle Sports</p>
-        <h2>Cricket 101</h2>
-        <h3>Learn the basics of cricket, the second most popular sport in the world</h3>
-        <div class="profile">
-            <img :src="url.concat('/test_for_tour_page2.png')" alt="profile photo">
+  <div class="tour-main">
+    <!-- the section of bg and title in tour page -->
+    <section class="tour-title">
+      <!-- the bg part -->
+      <div class="bg">
+        <div class="main-bg">1234</div>
+        <div class="sub">
+          <div class="sub-bg">1234</div>
+          <div class="sub-bg">1234</div>
         </div>
-        <p>18 September 2023</p>
       </div>
+
+      <!-- the title part -->
+      <div class="title">
+        <h1 class="main-title">Alberta - Plain of Six Glaciers</h1>
+        <div>
+          <span class="category">Expert</span>
+          <span class="time">07:10</span>
+          <span class="distance">18.4</span>km
+          <span class="speed">2.6</span>km/h
+        </div>
+        <h3 class="des">Expert Hiking Tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine experience required.</h3>
+      </div>
+    </section>
+
+    <!-- the section of TOUR OVERVIEW -->
+    <section class="overview">
+      <div class="subtitle">TOUR OVERVIEW</div>
+      <a-divider />
     </section>
   </div>
 </template>
