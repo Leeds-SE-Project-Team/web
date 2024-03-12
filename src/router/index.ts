@@ -46,8 +46,8 @@ const router = createRouter({
         // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'Discover Page'
       }, // Render component dynamically according to platform
-      component: DiscoverMobileView
-      // component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
+      // component: DiscoverMobileView
+      component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
     },
     {
       path: '/plan',

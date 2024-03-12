@@ -16,12 +16,8 @@ const takePicture = async () => {
   // You can access the original file using image.path, which can be
   // passed to the Filesystem API to read the raw data of the image,
   // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-  console.log(JSON.stringify(image))
   if (image.webPath != null) {
-    const imageUrl = image.webPath //TODO: 去掉双斜杠
-    if (image.path != null) {
-      console.log(Capacitor.convertFileSrc(image.path))
-    }
+    const imageUrl = image.webPath.replace(/(?<!http:)\/\//, '/')
     emits('createSpot', imageUrl)
   }
 }
