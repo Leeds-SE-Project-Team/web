@@ -4,6 +4,9 @@ import AMapLoader from '@amap/amap-jsapi-loader'
 import { Message } from '@arco-design/web-vue'
 
 const map = ref<AMap.Map>()
+const geolocation = ref<any>()
+
+defineExpose({ geolocation })
 
 onMounted(() => {
   AMapLoader.load({
@@ -67,9 +70,9 @@ onMounted(() => {
       }
 
       // AMap.plugin(["AMap.Geolocation"], function() {
-      const geolocation = new AMap.Geolocation(options)
-      map.value!.addControl(geolocation)
-      geolocation.getCurrentPosition(undefined, undefined, undefined)
+      geolocation.value = new AMap.Geolocation(options)
+      map.value!.addControl(geolocation.value)
+      geolocation.value.getCurrentPosition(undefined, undefined, undefined)
 
       // geolocation.getCurrentPosition(undefined, undefined, undefined)
       // });
