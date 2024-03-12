@@ -1,13 +1,13 @@
 <template>
   <div>
-    <a-card id="d-card">
+    <a-card class="d-card">
       <template #title>
         <div class="title-wrapper">
-          <div class="greeting-more">
+          <div class="greeting-more" v-if="!isMinimal">
             <h4>interesting in your region</h4>
             <span>...</span>
           </div>
-          <div class="user-wrapper">
+          <div class="user-wrapper" v-if="!isMinimal">
             <div class="avatar-wrapper">
               <a-avatar>
                 <img :src="props.info.user.avatar" alt="avatar" />
@@ -26,6 +26,7 @@
               <a-button type="primary">Follow</a-button>
             </div>
           </div>
+          <div class="split" v-if="isMinimal"></div>
           <h3 class="title">
             {{ props.info.title }}
           </h3>
@@ -104,12 +105,12 @@
             <span class="star-icon"><IconStarFill v-if="false" /><IconStar v-else /></span>
             <span>{{ 1 }}</span>
           </a-list-item>
-          <a-list-item style="cursor: pointer" @click="commentClick">
+          <a-list-item style="cursor: pointer" @click="commentClick" v-if="!isMinimal">
             <icon-message />
             <span>{{ comments.length > 0 ? comments.length : 'view' }}</span>
           </a-list-item>
         </a-list>
-        <div class="item-actions-right">
+        <div class="item-actions-right" v-if="!isMinimal">
           <a-tag
             v-if="props.info.status === 'awaitApproval'"
             :color="'arcoblue'"
@@ -265,14 +266,15 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import CommentCard from '@/views/discover/CommentCard.vue'
+import CommentCard from '@/views/discover/components/CommentCard.vue'
 import useLoading from '@/hooks/loading'
 import { type CommentRecord, getCommentsByTourId } from '@/apis/comment'
 import { Message } from '@arco-design/web-vue'
 import type { TourRecord } from '@/apis/tour'
 
 const props = defineProps<{
-  info: TourRecord
+  info: TourRecord,
+  mode?: 'minimal'
 }>()
 
 // const commentArea = ref<HTMLDivElement | undefined>()
@@ -356,12 +358,23 @@ const newCommentContent = ref<string>('')
 // }
 
 const showCommentList = ref(false)
+const isMinimal = ref(false)
 
-onMounted(() => {})
+onMounted(() => {
+  if(props.mode==='minimal'){
+    isMinimal.value = true;
+    switchStatus.value = 'map';
+    switchClick();
+  }
+})
 </script>
 
 <style scoped>
-#d-card :deep(.arco-card-header) {
+.d-card :deep(.arco-card-header) {
   height: auto;
+}
+
+.split{
+  height: 1rem;
 }
 </style>

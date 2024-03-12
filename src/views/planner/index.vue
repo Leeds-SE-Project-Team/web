@@ -52,6 +52,7 @@ const handleGPX = ()=>{
       // 读取gpx文件为DOM
       const paser = new DOMParser()
       const res= paser.parseFromString(reader.result as string, 'text/xml')
+      console.log(res)
       const tracks = res.getElementsByTagName('trkpt')
       const pos = []
       // 摘取经纬度

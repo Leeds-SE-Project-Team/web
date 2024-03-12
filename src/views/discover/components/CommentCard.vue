@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import { useUserStore } from '@/store/user'
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 // import {
 //   deleteComment,
 //   getCommentLikeUsersByCommentId,
@@ -9,13 +9,10 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 //   postComment
 // } from '@/utils/comment'
 import { getTimeDiffUntilNow } from '@/utils'
-import { Message } from '@arco-design/web-vue'
 import type { CommentRecord } from '@/apis/comment'
-import { useUserStore } from '@/stores/user'
 
 const emit = defineEmits(['refresh', 'change'])
 
-const userStore = useUserStore()
 const props = defineProps<{
   comment: CommentRecord
   index: any
@@ -55,10 +52,6 @@ const replyCommentContent = ref('')
 //   } else {
 //   }
 // })
-
-const isProcessReplyComment = ref(false)
-
-const processDeleteComment = ref(false)
 
 onMounted(() => {
   // refreshUserInfo()
