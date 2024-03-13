@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AHeader from '@/components/header/AHeader.vue'
+import { RouterView } from 'vue-router';
 </script>
 
 <template>

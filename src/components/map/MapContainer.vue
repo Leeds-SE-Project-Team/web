@@ -5,7 +5,7 @@ JS API Loader是我们提供的 API 加载器，其加载方式为异步加载 J
 -->
 
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref, type UnwrapRef, watch } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, type UnwrapRef } from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { Message } from '@arco-design/web-vue'
 import { type CreateTourForm, parseLocation, TourType } from '@/apis/tour'

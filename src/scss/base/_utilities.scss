@@ -209,6 +209,13 @@ $neutral-colors: (
 .h-full {
   height: 100%;
 }
+.w-full{
+  width: 100%;
+}
+.wh-full{
+  height: 100%;
+  width: 100%;
+}
 
 // / Height
 
@@ -260,4 +267,23 @@ $shadows: (
 
 .d-inline-block {
   display: inline-block;
+}
+
+// display
+
+.flex-r{
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-c{
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-justify-c{
+  justify-content: center;
+}
+.flex-align-c{
+  align-items: center;
 }

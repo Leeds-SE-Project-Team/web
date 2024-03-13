@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card id="d-article" hoverable style="width: 100%">
+    <a-card class="d-article" hoverable style="width: 100%">
       <template #cover>
         <div class="cover-wrapper">
           <div class="cover-info">
@@ -56,7 +56,7 @@
               </div>
             </div>
           </div>
-          <a class="cover-jump" href="#"></a>
+          <a class="cover-jump" :href="`/collection?id=${props.info.id}`"></a>
           <div :style="bgUrl" class="cover-bg"></div>
         </div>
       </template>
@@ -101,7 +101,7 @@
 
 <script setup lang="ts">
 import { type TourCollection } from '@/apis/collection'
-import DHover from './DHover.vue'
+import DHover from './components/DHover.vue'
 
 const props = defineProps<{
   info: TourCollection
@@ -111,3 +111,4 @@ const bgUrl = {
   backgroundImage: props.info.coverUrl
 }
 </script>
+./components/DHover.vue

@@ -6,6 +6,7 @@ import DiscoverMobileView from '@/views/mobile/discover/index.vue'
 import DiscoverView from '@/views/discover/index.vue'
 import PlannerView from '@/views/planner/index.vue'
 import TourView from '@/views/tour/index.vue'
+import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import { Capacitor } from '@capacitor/core'
 import { MOBILE_ROUTES } from '@/router/mobile'
 
@@ -66,6 +67,20 @@ const router = createRouter({
         title: 'Tour Page'
       },
       component: TourView
+    },
+    {
+      path: '/collection',
+      name: 'collection',
+      meta: {
+        layout: 'b',
+        title: 'Collection Detail Page'
+      },
+      beforeEnter: (to)=>{
+        if(!to.query.id){
+          return {path: '/discover'};
+        }
+      },
+      component: CollectionDetail,
     }
   ]
 })

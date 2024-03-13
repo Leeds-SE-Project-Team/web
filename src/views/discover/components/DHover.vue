@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { type hoverInfo } from './type';
+import { type hoverInfo } from '../type';
 
 const props = defineProps<hoverInfo>();
 </script>
