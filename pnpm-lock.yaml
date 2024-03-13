@@ -26,6 +26,9 @@ dependencies:
   '@capacitor/core':
     specifier: ^5.6.0
     version: 5.6.0
+  '@vuemap/vue-amap':
+    specifier: ^2.1.1
+    version: 2.1.1(vue@3.4.15)
   axios:
     specifier: ^1.6.7
     version: 1.6.7
@@ -429,6 +432,13 @@ packages:
       '@babel/helper-plugin-utils': 7.22.5
       '@babel/plugin-syntax-typescript': 7.23.3(@babel/core@7.23.9)
     dev: true
+
+  /@babel/runtime@7.24.0:
+    resolution: {integrity: sha512-Chk32uHMg6TnQdvw2e9IlqPpFX/6NLuK0Ys2PqLb7/gL5uFn9mXvK715FGLlOLQrcO4qIkNHkvPGktzzXexsFw==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.14.1
+    dev: false
 
   /@babel/template@7.23.9:
     resolution: {integrity: sha512-+xrD2BWLpvHKNmX2QbpdpsBaWnRxahMwJjO+KZk2JOElj5nSmKezyS1B4u+QbHMTX69t4ukm6hh9lsYQ7GHCKA==}
@@ -942,6 +952,18 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
+  /@math.gl/core@3.6.3:
+    resolution: {integrity: sha512-jBABmDkj5uuuE0dTDmwwss7Cup5ZwQ6Qb7h1pgvtkEutTrhkcv8SuItQNXmF45494yIHeoGue08NlyeY6wxq2A==}
+    dependencies:
+      '@babel/runtime': 7.24.0
+      '@math.gl/types': 3.6.3
+      gl-matrix: 3.4.3
+    dev: false
+
+  /@math.gl/types@3.6.3:
+    resolution: {integrity: sha512-3uWLVXHY3jQxsXCr/UCNPSc2BG0hNUljhmOBt9l+lNFDp7zHgm0cK2Tw4kj2XfkJy4TgwZTBGwRDQgWEbLbdTA==}
+    dev: false
+
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -1107,6 +1129,24 @@ packages:
   /@tsconfig/node18@18.2.2:
     resolution: {integrity: sha512-d6McJeGsuoRlwWZmVIeE8CUA27lu6jLjvv1JzqmpsytOYYbVi1tHZEnwCNVOXnj4pyLvneZlFlpXUK+X9wBWyw==}
     dev: true
+
+  /@turf/helpers@6.5.0:
+    resolution: {integrity: sha512-VbI1dV5bLFzohYYdgqwikdMVpe7pJ9X3E+dlr425wa2/sMJqYDhTO++ec38/pcPvPE6oD9WEEeU3Xu3gza+VPw==}
+    dev: false
+
+  /@turf/intersect@6.5.0:
+    resolution: {integrity: sha512-2legGJeKrfFkzntcd4GouPugoqPUjexPZnOvfez+3SfIMrHvulw8qV8u7pfVyn2Yqs53yoVCEjS5sEpvQ5YRQg==}
+    dependencies:
+      '@turf/helpers': 6.5.0
+      '@turf/invariant': 6.5.0
+      polygon-clipping: 0.15.7
+    dev: false
+
+  /@turf/invariant@6.5.0:
+    resolution: {integrity: sha512-Wv8PRNCtPD31UVbdJE/KVAWKe7l6US+lJItRR/HOEW3eh+U/JwRCSUl/KZ7bmjM/C+zLNoreM2TU6OoLACs4eg==}
+    dependencies:
+      '@turf/helpers': 6.5.0
+    dev: false
 
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
@@ -1576,6 +1616,50 @@ packages:
     resolution: {integrity: sha512-VcZK7MvpjuTPx2w6blwnwZAu5/LgBUtejFOi3pPGQFXQN5Ela03FUtd2Qtg4yWGGissVL0dr6Ro1LfOFh+PCuQ==}
     dev: true
 
+  /@vuemap/amap-jsapi-loader@1.0.4:
+    resolution: {integrity: sha512-s5fFHrsNkjYMovEmUJ5S23jpDtElTanDN2HdCt/amOD245a8wWVcTPjl06YEHXtxf6Ewm+z29wQByOCn209Hxg==}
+    dev: false
+
+  /@vuemap/amap-jsapi-types@0.0.16:
+    resolution: {integrity: sha512-1B1H2IS8sT2RDubbpEY+K8j11Gb7PZY5Bo0cszRkF8Nw+9HNqpbUNeqkQ6+rxLkwIedcSkOsFDy/IyzXCUXqVw==}
+    dev: false
+
+  /@vuemap/amap-jsapi-types@0.0.17:
+    resolution: {integrity: sha512-FHI8OMWxJWbgyuQ0tKclvurQIVHRexMIYAOwZ/z9+G7aHHK5EFhKM13siLczNNAgXdJ2dctPEghCdlhcByl3Ag==}
+    dev: false
+
+  /@vuemap/amap-xyz-layer@0.0.10:
+    resolution: {integrity: sha512-NHAGN57EFn2Xpktwx6+fqlVHmu8MvG4gl9fQJT2LepAJSmgFG+o+YtOoJFXwdT8BOg8W5evJNE+CZC0833zZpA==}
+    engines: {node: '>= 16'}
+    dependencies:
+      '@math.gl/core': 3.6.3
+      earcut: 2.2.4
+      gl-matrix: 3.4.3
+    dev: false
+
+  /@vuemap/district-cluster@0.0.11:
+    resolution: {integrity: sha512-SY01gFe8uhP5FKjzyTe0x2yL2K5VmwD5UKlEUU4e09UUZphXCj2Ci7iunX0L29nWINkBjdfxu8dXzhIcx9T3ug==}
+    engines: {node: '>= 16'}
+    dependencies:
+      '@turf/helpers': 6.5.0
+      '@turf/intersect': 6.5.0
+      '@vuemap/amap-jsapi-types': 0.0.16
+      topojson-client: 3.1.0
+    dev: false
+
+  /@vuemap/vue-amap@2.1.1(vue@3.4.15):
+    resolution: {integrity: sha512-340nZxN7jgl9ff1phBnVPoPumzZPA03S6bf3KPhn1ybschw7gm2RNX+h0kFC+sOmFxyjRJULh2g1a2tdiQtHsA==}
+    peerDependencies:
+      vue: '3'
+    dependencies:
+      '@vuemap/amap-jsapi-loader': 1.0.4
+      '@vuemap/amap-jsapi-types': 0.0.17
+      '@vuemap/amap-xyz-layer': 0.0.10
+      '@vuemap/district-cluster': 0.0.11
+      lodash-es: 4.17.21
+      vue: 3.4.15(typescript@5.3.3)
+    dev: false
+
   /@xmldom/xmldom@0.8.10:
     resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
     engines: {node: '>=10.0.0'}
@@ -1899,6 +1983,10 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
+  /commander@2.20.3:
+    resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
+    dev: false
+
   /commander@9.5.0:
     resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
     engines: {node: ^12.20.0 || >=14}
@@ -2037,6 +2125,10 @@ packages:
   /dotenv@16.4.1:
     resolution: {integrity: sha512-CjA3y+Dr3FyFDOAMnxZEGtnW9KBR2M0JvvUtXNW+dYJL5ROWxP9DUHCwgFqpMk0OXCc0ljhaNTr2w/kutYIcHQ==}
     engines: {node: '>=12'}
+    dev: false
+
+  /earcut@2.2.4:
+    resolution: {integrity: sha512-/pjZsA1b4RPHbeWZQn66SWS8nZZWLQQ23oE3Eam7aroEFGEvwKAsJfZ9ytiEMycfzXWpca4FA9QIOehf7PocBQ==}
     dev: false
 
   /eastasianwidth@0.2.0:
@@ -2451,6 +2543,10 @@ packages:
     resolution: {integrity: sha512-VaUJspBffn/LMCJVoMvSAdmscJyS1auj5Zulnn5UoYcY531UWmdwhRWkcGKnGU93m5HSXP9LP2usOryrBtQowA==}
     engines: {node: '>=16'}
     dev: true
+
+  /gl-matrix@3.4.3:
+    resolution: {integrity: sha512-wcCp8vu8FT22BnvKVPjXa/ICBWRq/zjFfdofZy1WSpQZpphblv12/bOQLBC1rMM7SGOFS9ltVmKOHil5+Ml7gA==}
+    dev: false
 
   /glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
@@ -3314,6 +3410,13 @@ packages:
       xmlbuilder: 15.1.1
     dev: false
 
+  /polygon-clipping@0.15.7:
+    resolution: {integrity: sha512-nhfdr83ECBg6xtqOAJab1tbksbBAOMUltN60bU+llHVOL0e5Onm1WpAXXWXVB39L8AJFssoIhEVuy/S90MmotA==}
+    dependencies:
+      robust-predicates: 3.0.2
+      splaytree: 3.1.2
+    dev: false
+
   /postcss-selector-parser@6.0.15:
     resolution: {integrity: sha512-rEYkQOMUCEMhsKbK66tbEU9QVIxbhN18YiniAwA7XQYTVBqrBy+P2p5JcdqsHgKM2zWylp8d7J6eszocfds5Sw==}
     engines: {node: '>=4'}
@@ -3420,6 +3523,10 @@ packages:
       picomatch: 2.3.1
     dev: true
 
+  /regenerator-runtime@0.14.1:
+    resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
+    dev: false
+
   /require-from-string@2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
@@ -3456,6 +3563,10 @@ packages:
     hasBin: true
     dependencies:
       glob: 9.3.5
+    dev: false
+
+  /robust-predicates@3.0.2:
+    resolution: {integrity: sha512-IXgzBWvWQwE6PrDI05OvmXUIruQTcoMDzRsOd5CDvHCVLcLHMTSYvOK5Cm46kWqlV3yAbuSpBZdJ5oP5OUoStg==}
     dev: false
 
   /rollup@4.9.6:
@@ -3619,6 +3730,10 @@ packages:
     resolution: {integrity: sha512-eWN+LnM3GR6gPu35WxNgbGl8rmY1AEmoMDvL/QD6zYmPWgywxWqJWNdLGT+ke8dKNWrcYgYjPpG5gbTfghP8rw==}
     dev: true
 
+  /splaytree@3.1.2:
+    resolution: {integrity: sha512-4OM2BJgC5UzrhVnnJA4BkHKGtjXNzzUfpQjCO8I05xYPsfS/VuQDwjCGGMi8rYQilHEV4j8NBqTFbls/PZEE7A==}
+    dev: false
+
   /split2@4.2.0:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
     engines: {node: '>= 10.x'}
@@ -3766,6 +3881,13 @@ packages:
     dependencies:
       is-number: 7.0.0
     dev: true
+
+  /topojson-client@3.1.0:
+    resolution: {integrity: sha512-605uxS6bcYxGXw9qi62XyrV6Q3xwbndjachmNxu8HWTtVPxZfEJN9fd/SZS1Q54Sn2y0TMyMxFj/cJINqGHrKw==}
+    hasBin: true
+    dependencies:
+      commander: 2.20.3
+    dev: false
 
   /tough-cookie@4.1.3:
     resolution: {integrity: sha512-aX/y5pVRkfRnfmuX+OdbSdXvPe6ieKX/G2s7e98f4poJHnqH3281gDPm/metm6E/WRamfx7WC4HUqkWHfQHprw==}

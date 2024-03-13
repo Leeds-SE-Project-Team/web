@@ -4,9 +4,8 @@
 
   #map-container {
     position: relative;
-    //top:-30px;
     left: 0;
-    top:0;
+    top: 0;
     height: calc(100vh - $mobile-footer-nav-height - $header-height);
     width: 100%;
     margin: 0;

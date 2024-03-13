@@ -166,3 +166,17 @@ export const checkEmail = (email: string | undefined) => {
   const reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
   return reg.test(email)
 }
+
+/**
+ * 获取当前的位置
+ * */
+// 获取当前的位置
+export const getCurrentLocation = (): Promise<AMap.CurrentPositionResult> =>
+  new Promise((resolve, reject) => {
+    new AMap.Geolocation().getCurrentPosition((...cb) => {
+      if (cb[0] === 'error') {
+        reject('error when get location')
+      }
+      resolve(cb[1])
+    })
+  })

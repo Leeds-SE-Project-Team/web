@@ -1,8 +1,9 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import AHeader from '@/components/header/AHeader.vue'
 import RecordFooter from '@/components/mobile/footer/RecordFooter.vue'
 import CreateSpotModal from '@/views/mobile/record/components/CreateSpotModal.vue'
-import { ref } from 'vue'
+import { provide, ref } from 'vue'
+import { type CreateTourSpotForm } from '@/apis/tour/spot'
 
 const imageUrl = ref('')
 
@@ -11,24 +12,33 @@ const handleShowCreateSpot = (url: string) => {
   imageUrl.value = url
 }
 const createSpotRef = ref()
+const recordMapRef = ref()
+const handleConfirm = (tourSpotForm: CreateTourSpotForm) => {
+  recordMapRef.value.handleCreateSpot(tourSpotForm)
+}
+
+const tourId = ref(1)
+provide('tourId', tourId)
 </script>
 
 <template>
   <a-layout id="layout-a">
-    <a-layout-header class="border-1" id="layout-a-header">
+    <a-layout-header id="layout-a-header" class="border-1">
       <AHeader />
     </a-layout-header>
     <a-layout>
-      <a-layout-content class="border-1" id="planner-content">
+      <a-layout-content id="planner-content" class="border-1">
         <RouterView v-slot="{ Component }">
-          <component ref="recordMap" :is="Component" />
+          <component :is="Component" ref="recordMapRef" />
         </RouterView>
       </a-layout-content>
     </a-layout>
-    <a-layout-footer><RecordFooter @createSpot="handleShowCreateSpot" /></a-layout-footer>
+    <a-layout-footer>
+      <RecordFooter @create-spot="handleShowCreateSpot" />
+    </a-layout-footer>
     <!-- <a-layout-footer>Footer</a-layout-footer> -->
   </a-layout>
-  <CreateSpotModal ref="createSpotRef" :image-url="imageUrl" />
+  <CreateSpotModal ref="createSpotRef" :image-url="imageUrl" @confirm="handleConfirm" />
 </template>
 
 <style scoped></style>
