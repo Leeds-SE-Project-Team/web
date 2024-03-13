@@ -5,7 +5,15 @@ import { Message } from '@arco-design/web-vue'
 
 const map = ref<AMap.Map>()
 const geolocation = ref<any>()
-
+const getCurLocation = () => {
+  if (geolocation.value) {
+    geolocation.value.getCurrentLocation((cb: any) => {
+      console.log(cb)
+    })
+  } else {
+    return undefined
+  }
+}
 defineExpose({ geolocation })
 
 onMounted(() => {
@@ -88,7 +96,7 @@ onMounted(() => {
     .catch((e) => {
       Message.error({
         id: 'AMap',
-        content: 'Amap' + e
+        content: 'Amap:' + e
       })
     })
 })

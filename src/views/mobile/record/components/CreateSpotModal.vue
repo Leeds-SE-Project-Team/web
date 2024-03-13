@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const show = ref(true)
+const show = ref(false)
 const spotTitle = ref('')
 const props = defineProps<{
   imageUrl: string

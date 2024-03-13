@@ -9,7 +9,6 @@ const imageUrl = ref('')
 const handleShowCreateSpot = (url: string) => {
   createSpotRef.value.show = true
   imageUrl.value = url
-  console.log('!')
 }
 const createSpotRef = ref()
 </script>
