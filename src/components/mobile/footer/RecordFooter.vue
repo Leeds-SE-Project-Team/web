@@ -1,8 +1,5 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { Camera, CameraResultType } from '@capacitor/camera'
-import { Capacitor } from '@capacitor/core'
-import { ref } from 'vue'
-import { getStaticRes } from '@/apis'
 
 // const imageUrl = ref('blob:http://localhost:5173/a0900c7d-6ee0-4b62-bd6c-f99f419f0d1e')
 const takePicture = async () => {
@@ -33,9 +30,9 @@ const emits = defineEmits(['createSpot'])
       </template>
     </van-action-bar-icon>
     <van-action-bar-button
-      type="primary"
-      text="Add Spot"
       style="margin: 0 10px 0 10px"
+      text="Add Spot"
+      type="primary"
       @click="takePicture"
     />
   </van-action-bar>

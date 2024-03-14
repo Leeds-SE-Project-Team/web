@@ -45,6 +45,10 @@ export const parseLocation = (location: string): string[] => {
   return location.split(',')
 }
 
+export const parseLocationNumber = (location: string): number[] => {
+  return location.split(',').map((e) => parseFloat(e))
+}
+
 export const createTour = (form: CreateTourForm): Promise<ApiResponse<void>> =>
   axiosRequest({
     method: 'POST',

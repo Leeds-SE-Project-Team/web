@@ -1,5 +1,6 @@
 import dayjs, { Dayjs } from 'dayjs'
 import { range } from 'lodash-es'
+import { useGeolocation } from '@vuemap/vue-amap'
 
 const THOUSAND = Math.pow(10, 3)
 const WAN = Math.pow(10, 4)
@@ -170,13 +171,27 @@ export const checkEmail = (email: string | undefined) => {
 /**
  * 获取当前的位置
  * */
+
 // 获取当前的位置
-export const getCurrentLocation = (): Promise<AMap.CurrentPositionResult> =>
+export const getCurrentLocation = (
+  options?: AMap.GeolocationOptions
+): Promise<AMap.CurrentPositionResult> =>
   new Promise((resolve, reject) => {
-    new AMap.Geolocation().getCurrentPosition((...cb) => {
-      if (cb[0] === 'error') {
-        reject('error when get location')
-      }
-      resolve(cb[1])
-    })
+    useGeolocation(options)
+      .then((res) => {
+        res.getCurrentPosition().then((currentPosition) => {
+          // curPosition.value = currentPosition.position.toArray()
+          resolve(currentPosition)
+        })
+      })
+      .catch((e) => {
+        reject(e)
+      })
+
+    // new AMap.Geolocation(geolocationOptions).getCurrentPosition((...cb) => {
+    //   if (cb[0] === 'error') {
+    //     reject('error when get location')
+    //   }
+    //   resolve(cb[1])
+    // })
   })

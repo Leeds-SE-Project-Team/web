@@ -24,7 +24,18 @@ const app = createApp(App)
 
 initAMapApiLoader({
   key: import.meta.env.APP_AMAP_KEY,
-  securityJsCode: import.meta.env.APP_AMAP_SECURITY_CODE // 新版key需要配合安全密钥使用
+  securityJsCode: import.meta.env.APP_AMAP_SECURITY_CODE, // 新版key需要配合安全密钥使用
+  plugins: [
+    'AMap.MoveAnimation',
+    'AMap.Scale',
+    'AMap.HawkEye',
+    'AMap.ToolBar',
+    'AMap.ControlBar',
+    'AMap.MouseTool',
+    'AMap.Geolocation',
+    'AMap.Walking',
+    'AMap.Riding'
+  ]
   //Loca:{
   //  version: '2.0.0'
   //} // 如果需要使用loca组件库，需要加载Loca
