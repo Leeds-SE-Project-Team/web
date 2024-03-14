@@ -1,22 +1,31 @@
-import { axiosRequest } from '@/apis'
+import { type ApiResponse, axiosRequest } from '@/apis'
 
-export async function uploadFileFromURL(resURL: string, uploadURL: string) {
+export async function uploadFileFromURL(
+  resURL: string,
+  uploadURL: string
+): Promise<ApiResponse<void>> {
   try {
     const response = await fetch(resURL)
     const blob = await response.blob()
     const formData = new FormData()
-    formData.append('file', blob, 'image.jpg') // 'image.jpg'为上传时的文件名
-    const uploadResponse = await axiosRequest({
+    formData.append('file', blob, 'image.jpg')
+    formData.append('uploadURL', uploadURL)
+    return axiosRequest({
       method: 'POST',
-      url: uploadURL,
-      data: formData
+      url: 'users/upload',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     })
-
-    console.log(uploadResponse)
 
     // const data = await uploadResponse.json()
     // console.log('文件上传成功:', data)
   } catch (error) {
-    console.error('文件上传失败:', error)
+    return {
+      data: undefined,
+      message: 'upload failed'.concat(error as string),
+      success: false
+    } as ApiResponse<void>
   }
 }

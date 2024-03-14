@@ -4,6 +4,7 @@ import { ElAmap } from '@vuemap/vue-amap'
 import { createTourSpot, type CreateTourSpotForm, type TourSpot } from '@/apis/tour/spot'
 import { showNotify } from 'vant'
 import { parseLocation, parseLocationNumber } from '@/apis/tour'
+import { uploadFileFromURL } from '@/utils/file'
 
 const zoom = ref(16)
 const spotList = ref<TourSpot[]>([])
@@ -106,17 +107,25 @@ const mapComplete = () => {
 }
 
 const handleCreateSpot = (form: CreateTourSpotForm) => {
-  // uploadFileFromURL(form.imageUrl, getStaticRes(''))
-
-  createTourSpot(form)
+  uploadFileFromURL(form.imageUrl, './')
     .then((apiRes) => {
-      if (apiRes.success) {
-        spotList.value.push(apiRes.data!)
-        moveToPosition(parseLocationNumber(form.location))
-        showNotify({ type: 'success', message: apiRes.message })
-      } else {
-        showNotify({ type: 'primary', message: apiRes.message })
-      }
+      console.log(apiRes)
+    })
+    .then(() => {
+      createTourSpot(form)
+        .then((apiRes) => {
+          console.log(apiRes)
+          if (apiRes.success) {
+            spotList.value.push(apiRes.data!)
+            moveToPosition(parseLocationNumber(form.location))
+            showNotify({ type: 'success', message: apiRes.message })
+          } else {
+            showNotify({ type: 'primary', message: apiRes.message })
+          }
+        })
+        .catch((e) => {
+          showNotify({ type: 'danger', message: e })
+        })
     })
     .catch((e) => {
       showNotify({ type: 'danger', message: e })
@@ -126,43 +135,6 @@ const handleCreateSpot = (form: CreateTourSpotForm) => {
 defineExpose({
   handleCreateSpot
 })
-
-const getElasticStyle = (spot: TourSpot) => [
-  {
-    icon: {
-      img: 'https://webapi.amap.com/theme/v1.3/markers/b/mark_bs.png',
-      // size: [16, 16], //可见区域的大小
-      anchor: 'bottom-center' //锚点
-      // imageSize: 0.1
-      // fitZoom: 16, //最合适的级别
-      // fitZoom: 14, //最合适的级别
-      // scaleFactor: 1, //地图放大一级的缩放比例系数
-      // maxScale: 2, //最大放大比例
-      // minScale: 1 //最小放大比例
-    },
-    label: {
-      content: spot.title,
-      position: 'BM'
-      // minZoom: 15
-    }
-  },
-  {
-    icon: {
-      img: spot.imageUrl,
-      size: [128, 160],
-      anchor: 'bottom-center',
-      fitZoom: 17.5,
-      // fitZoom: 17.5,
-      scaleFactor: 2,
-      maxScale: 2,
-      minScale: 0.125
-    },
-    label: {
-      content: spot.title,
-      position: 'BM'
-    }
-  }
-]
 
 const getLocation = (e: any) => {
   // console.log('getLocation: ', e)
@@ -194,7 +166,8 @@ const selectedSpot = ref<TourSpot | undefined>()
 watch(selectedSpot, (value) => {
   if (value) {
     const [x, y] = parseLocationNumber(value.location)
-    moveToPosition([x, y - 0.002])
+    moveToPosition([x, y])
+    // moveToPosition([x, y - 0.002])
     // spotPanelHeight.value = spotPanelAnchors[1]
     showSpotSheet.value = true
   }
