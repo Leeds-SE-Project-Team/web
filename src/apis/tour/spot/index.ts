@@ -3,12 +3,19 @@ import { type ApiResponse, axiosRequest } from '@/apis'
 export interface TourSpot {
   id: number
   title: string
-  imageUrl: string
+  tourImages: TourImage[]
   location: string
 }
 
+export interface TourImage {
+  id: number
+  imageUrl: string
+  tourHighlightId: number
+  tourSpotId: number
+  tourId: number
+}
+
 export interface CreateTourSpotForm {
-  title: string
   imageUrl: string
   location: string
   tourId: number
@@ -17,7 +24,7 @@ export interface CreateTourSpotForm {
 export const getTourSpotExample = (num: number): TourSpot => {
   return {
     location: '',
-    imageUrl: import.meta.env.APP_STATIC_URL.concat(`/tour/example/${num}.png`),
+    tourImages: [], // import.meta.env.APP_STATIC_URL.concat(`/tour/example/${num}.png`)
     id: 1,
     title: `Tour Spot Example ${num}`
   }

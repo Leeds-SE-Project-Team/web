@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { ElAmap } from '@vuemap/vue-amap'
 import { createTourSpot, type CreateTourSpotForm, type TourSpot } from '@/apis/tour/spot'
 import { showNotify } from 'vant'
@@ -100,21 +100,26 @@ const mapInit = () => {
   // })
 }
 
-const mapComplete = () => {
+const getCurrentLocation = () => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition((status, info) => {
-    if (status === 'SUCCESS') center.value = info.position.toArray()
+    if (status === 'complete') {
+      center.value = info.position.toArray()
+      const arr = info.position.toArray()
+      locationTrackList.value.push(arr)
+      // Message.info(arr.toString())
+    }
   })
 }
 
 const handleCreateSpot = (form: CreateTourSpotForm) => {
   uploadFileFromURL(form.imageUrl, './')
     .then((apiRes) => {
-      console.log(apiRes)
+      // console.log(apiRes)
     })
     .then(() => {
       createTourSpot(form)
         .then((apiRes) => {
-          console.log(apiRes)
+          // console.log(apiRes)
           if (apiRes.success) {
             spotList.value.push(apiRes.data!)
             moveToPosition(parseLocationNumber(form.location))
@@ -150,6 +155,7 @@ const spotPanelAnchors = [
 const spotPanelHeight = ref(spotPanelAnchors[0])
 
 const handleClickSpot = (spot: TourSpot) => {
+  console.log(spot)
   selectedSpot.value = spot
   showSpotSheet.value = true
   // const [x, y] = parseLocationNumber(spot.location)
@@ -192,6 +198,55 @@ const showSpotSheet = ref(false)
 //     selectedSpot.value = undefined
 //   }
 // }, 100)
+
+onMounted(() => {
+  window.setInterval(getCurrentLocation, 3000)
+})
+
+// onMounted(() => {
+//   let id
+//   let target
+//   let options
+//
+//   function success(pos) {
+//     const crd = pos.coords
+//
+//     console.log(pos)
+//
+//     if (target.latitude === crd.latitude && target.longitude === crd.longitude) {
+//       console.log('Congratulations, you reached the target')
+//       navigator.geolocation.clearWatch(id)
+//     }
+//   }
+//
+//   function error(err) {
+//     console.error(`ERROR(${err.code}): ${err.message}`)
+//   }
+//
+//   target = {
+//     latitude: 0,
+//     longitude: 0
+//   }
+//
+//   options = {
+//     enableHighAccuracy: false,
+//     timeout: 5000,
+//     maximumAge: 0
+//   }
+//
+//   console.log('start')
+//   id = navigator.geolocation.watchPosition(success, error, options)
+// })
+
+const locationTrackList = ref<number[][]>([])
+
+const polyline = computed(() => ({
+  path: locationTrackList.value.length > 0 ? locationTrackList.value : undefined,
+  // path: locationTrackList.value,
+  editable: false,
+  visible: true,
+  draggable: false
+}))
 </script>
 
 <template>
@@ -205,9 +260,16 @@ const showSpotSheet = ref(false)
         :doubleClickZoom="false"
         :scrollWheel="true"
         mapStyle="amap://styles/fresh"
-        @complete="mapComplete"
+        @complete="getCurrentLocation"
         @init="mapInit"
       >
+        <el-amap-polyline
+          :draggable="polyline.draggable"
+          :editable="polyline.editable"
+          :path="polyline.path"
+          :visible="polyline.visible"
+        />
+
         <el-amap-marker
           v-for="(spot, idx) in spotList"
           :key="idx"
@@ -260,21 +322,18 @@ const showSpotSheet = ref(false)
       <div
         v-if="selectedSpot"
         :style="{
-          backgroundImage: `url(${selectedSpot.imageUrl})`
+          backgroundImage: `url(${selectedSpot?.tourImages[0].imageUrl})`
         }"
         class="blurImageContainer"
       ></div>
       <div style="text-align: center; padding: 0; order: 1">
         <!--        <h2>Highlight Spot</h2>-->
-        <van-image :src="selectedSpot?.imageUrl" height="270" style="margin-top: 20px" />
-        <van-divider dashed style="color: wheat; font-size: 25px">
-          {{
-            (selectedSpot && selectedSpot.title.length > 0
-              ? selectedSpot?.title
-              : 'untitled'
-            )?.toLocaleUpperCase()
-          }}
-        </van-divider>
+        <van-image
+          :src="selectedSpot?.tourImages[0].imageUrl"
+          height="270"
+          style="margin-top: 20px"
+        />
+        <van-divider dashed style="color: wheat; font-size: 25px"> TOUR SPOT</van-divider>
       </div>
       <template #cancel>Close</template>
       <template #action="{ action }">
