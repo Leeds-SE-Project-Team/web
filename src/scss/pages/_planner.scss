@@ -46,20 +46,37 @@
               padding: 7px;
               height: 36px;
               width: 36px;
+              border-radius: 10px;
               cursor: pointer;
             }
 
-            .walk{
-              padding: 5px;
+            .svg-grew {
+              background-color: #fff !important;
+              svg {
+                path {
+                  fill: #383838;
+                }
+              }
             }
+            .svg-white {
+              background-color: #383838;
+              svg {
+                path: {
+                  fill: #fff;
+                }
+              }
+            }
+            // .walk{
+            //   padding: 5px;
+            // }
 
-            .car {
-              padding: 5px;
-            }
+            // .car {
+            //   padding: 5px;
+            // }
 
-            .public {
-              padding: 7px;
-            }
+            // .public {
+            //   padding: 7px;
+            // }
           }
 
           .arco-collapse-item-header-title {
@@ -93,6 +110,10 @@
       .place-input {
         height: 40px;
         margin-bottom: 8px;
+        color: #d7d7d7;
+        .white {
+          color: #fff;
+        }
       }
 
       .right-icon {

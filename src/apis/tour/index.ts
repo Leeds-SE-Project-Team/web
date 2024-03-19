@@ -6,9 +6,9 @@ import type { TourSpot } from '@/apis/tour/spot'
 
 export enum TourType {
   WALK,
-  RUNNING,
-  DRIVE,
-  CYCLING
+  CYCLING,
+  CAR,
+  PUBLIC
 }
 
 export interface PON {}
