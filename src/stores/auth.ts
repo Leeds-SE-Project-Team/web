@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { getUserByEmail } from '@/apis/user'
 
 export const useAuthStore = defineStore('auth', () => {
-  const accessToken = ref('')
+  const accessToken = ref('root')
   const refreshAccessToken = (newToken: string) => {
     accessToken.value = newToken
   }
