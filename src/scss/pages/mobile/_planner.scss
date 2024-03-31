@@ -1,0 +1,32 @@
+#mobile-planner {
+  #top-menu {
+    .outer-container {
+      .menu-select {
+        .van-collapse {
+          .van-collapse-item {
+            .van-cell {
+              padding: 15px 16px;
+
+              .menu-icon {
+                opacity: 0.6;
+                margin-right: 15px;
+              }
+
+              .van-cell__title {
+                margin: auto 0;
+                font-size: 20px;
+                font-family: "PingFang SC", DFPKingGothicGB-Medium, sans-serif;
+                opacity: 0.9;
+              }
+
+            }
+          }
+        }
+      }
+
+      .menu-locations {
+
+      }
+    }
+  }
+}

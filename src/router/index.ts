@@ -7,6 +7,7 @@ import DiscoverView from '@/views/discover/index.vue'
 import PlannerView from '@/views/planner/index.vue'
 import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
+import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import { Capacitor } from '@capacitor/core'
 import { MOBILE_ROUTES } from '@/router/mobile'
 
@@ -55,9 +56,9 @@ const router = createRouter({
       name: 'planner',
       meta: {
         title: 'Planner Page',
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default'
+        layout: 'mobile-default'
       },
-      component: PlannerView
+      component: PlannerMobileView
     },
     {
       path: '/tour',
@@ -75,12 +76,12 @@ const router = createRouter({
         layout: 'b',
         title: 'Collection Detail Page'
       },
-      beforeEnter: (to)=>{
-        if(!to.query.id){
-          return {path: '/discover'};
+      beforeEnter: (to) => {
+        if (!to.query.id) {
+          return { path: '/discover' }
         }
       },
-      component: CollectionDetail,
+      component: CollectionDetail
     }
   ]
 })
