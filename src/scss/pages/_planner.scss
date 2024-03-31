@@ -139,6 +139,24 @@
       .arco-input-wrapper.arco-input-focus {
         border: 1px solid #56732d;
       }
+
+      .place {
+        .arco-col-5 {
+          justify-content: flex-start;
+          width: 10% !important;
+          flex: 0 0 0;
+        }
+        .arco-col-19 {
+          width: 88% !important;
+          flex: 0 0 88%;
+        }
+        .arco-form-item-message { 
+          color: #f3b05f;
+        }
+        .arco-form-item-label-required-symbol {
+          color: #f3b05f;
+        }
+      }
     }
 
     .bottom {
