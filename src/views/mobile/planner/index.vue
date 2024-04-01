@@ -23,23 +23,17 @@ const activeName = ref('1')
                 <span class="menu-title">Sport</span>
               </template>
               <template #value>Hiking</template>
-              <van-grid>
-                <van-grid-item>
-                  <template #icon>
-                    <img src="@/assets/walk.svg" alt="walk" width="25px" height="25px" />
-                  </template>
-                </van-grid-item>
-                <van-grid-item>
-                  <template #icon>
-                    <img src="@/assets/drive.svg" alt="drive" width="25px" height="25px" />
-                  </template>
-                </van-grid-item>
-                <van-grid-item>
-                  <template #icon>
-                    <img src="@/assets/cycling.svg" alt="cycling" width="25px" height="25px" />
-                  </template>
-                </van-grid-item>
-              </van-grid>
+              <ul class="select-items">
+                <li class="list-item">
+                  <img src="@/assets/walk.svg" alt="walk" width="25px" height="25px" />
+                </li>
+                <li class="list-item">
+                  <img src="@/assets/drive.svg" alt="drive" width="25px" height="25px" />
+                </li>
+                <li class="list-item">
+                  <img src="@/assets/cycling.svg" alt="cycling" width="25px" height="25px" />
+                </li>
+              </ul>
             </van-collapse-item>
           </van-collapse>
         </div>
