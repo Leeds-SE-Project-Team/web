@@ -322,8 +322,8 @@ onMounted(() => {
             return walking
           case TourType.CYCLING:
             return cycling
-          case TourType.DRIVE:
-          case TourType.RUNNING:
+          case TourType.CAR:
+          case TourType.PUBLIC:
           default:
             throw 'no such method'
         }
