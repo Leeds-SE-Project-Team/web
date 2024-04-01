@@ -241,8 +241,8 @@ const rules = {
           <h3 class="header">Where do you want to go?</h3>
           <!--<p class="text">Enter a destination or click on the map to add it.</p>-->
         </div>
-        <a-button :loading="loading" style="width: 100px" html-type="submit">创建</a-button>
-        <input ref="infile" type="file" name="file" id="infile" @change="handleGPX">
+        <a-button :loading="loading" style="width: 100px" html-type="submit">create</a-button>
+        <!-- <input ref="infile" type="file" name="file" id="infile" @change="handleGPX"> -->
       </div>
     </a-form>
 
