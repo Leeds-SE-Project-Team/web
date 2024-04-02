@@ -12,12 +12,7 @@ import type { PickerOption } from 'vant'
 import { Message } from '@arco-design/web-vue'
 import useLoading from '@/hooks/loading'
 import MapPlanner from '@/views/planner/components/MapPlanner.vue'
-import {
-  hapticsImpactLight,
-  hapticsSelectionChanged,
-  hapticsSelectionEnd,
-  hapticsSelectionStart
-} from '@/utils'
+import { hapticsImpactLight } from '@/utils'
 
 const tourTypeText = computed<string>(() => getTourTypeText(createTourForm.type))
 const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.type))
@@ -66,6 +61,13 @@ const handleCreateTour = () => {
 const handleScrollType = () => {
   hapticsImpactLight()
 }
+
+const showPointSheet = computed<boolean>({
+  get: () => selectPoint.value !== undefined,
+  set: () => (selectPoint.value = undefined)
+})
+
+const selectPoint = ref<number[]>()
 </script>
 
 <template>
@@ -127,7 +129,28 @@ const handleScrollType = () => {
         </div>
       </div>
     </div>
-    <MapPlanner />
+    <MapPlanner ref="mapContainer" v-model:selectPoint="selectPoint" />
+    <van-action-sheet id="bottom-menu" v-model:show="showPointSheet" :closeable="false" title=" ">
+      <div class="pos-sheet-btn-container">
+        <van-button class="pos-sheet-btn primary-btn-dark">
+          <span class="btn-text">Start here</span>
+        </van-button>
+        <van-button class="pos-sheet-btn primary-btn-dark">
+          <span class="btn-text">Set as end point</span>
+        </van-button>
+      </div>
+      <div class="pos-sheet-text-container">
+        <p class="name">New waypoint</p>
+        <div class="pos-sheet-distance">
+          <van-icon name="location" class="icon" :size="23" />
+          <span class="text"><span>0.00</span> km away</span>
+        </div>
+        <div class="pos-sheet-location">
+          Southwest Jiaotong University Xipu Campus, Pidu, Chengdu, Sichuan
+        </div>
+      </div>
+      <div class="space"></div>
+    </van-action-sheet>
   </div>
 </template>
 

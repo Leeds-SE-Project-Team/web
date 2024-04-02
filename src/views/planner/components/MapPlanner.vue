@@ -1,10 +1,7 @@
-<script setup lang="ts">
-import VueAMap, { ElAmap } from '@vuemap/vue-amap'
-import { ref } from 'vue'
-import type { TourSpot } from '@/apis/tour/spot'
+<script lang="ts" setup>
+import { ElAmap } from '@vuemap/vue-amap'
+import { computed, ref } from 'vue'
 import { hapticsImpactLight } from '@/utils'
-import { showNotify } from 'vant'
-import { Message } from '@arco-design/web-vue'
 
 const getCurrentLocation = () => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition((status, info) => {
@@ -24,16 +21,25 @@ const mapInit = () => {}
 const zoom = ref(16)
 const center = ref([116.412866, 39.88365])
 
-const handleSelectPlace = () => {
+const handleSelectPlace = (position: number[]) => {
   hapticsImpactLight()
+  selectPos.value = position
 }
 
-const handleRightClick = (e) => {
-  Message.info({
-    content: e.lnglat.toString()
-  })
-  handleSelectPlace()
+const handleRightClick = (e: any) => {
+  handleSelectPlace([e.lnglat.lat, e.lnglat.lng])
 }
+
+const selectPos = computed({
+  get: () => props.selectPoint,
+  set: (value) => {
+    emits('update:selectPoint', value)
+  }
+})
+const props = defineProps<{
+  selectPoint?: number[]
+}>()
+const emits = defineEmits(['update:selectPoint'])
 </script>
 
 <template>
@@ -49,6 +55,16 @@ const handleRightClick = (e) => {
       @init="mapInit"
       @rightclick="handleRightClick"
     >
+      <el-amap-marker v-if="selectPos" :offset="[-10, -40]" :position="selectPos" :visible="true">
+        <div>
+          <img
+            alt="marker"
+            height="32px"
+            src="//webapi.amap.com/theme/v1.3/markers/b/mark_bs.png"
+            width="19px"
+          />
+        </div>
+      </el-amap-marker>
       <el-amap-control-geolocation
         ref="geolocationRef"
         :circleOptions="{

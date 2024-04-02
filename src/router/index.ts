@@ -56,10 +56,19 @@ const router = createRouter({
       name: 'planner',
       meta: {
         title: 'Planner Page',
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default'
+        layout: 'mobile-default'
       },
-      component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
+      component: PlannerMobileView
     },
+    // {
+    //   path: '/plan',
+    //   name: 'planner',
+    //   meta: {
+    //     title: 'Planner Page',
+    //     layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default'
+    //   },
+    //   component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
+    // },
     {
       path: '/tour',
       name: 'tour',
