@@ -122,7 +122,6 @@ export const useMapStore = defineStore('map', () => {
   const screenMap = (mapRef: AMap.Map) => {
     if (mapRef) {
       const canvas = mapRef.canvas!
-      console.log(canvas)
       return canvas.toDataURL('image/jpeg', 1.0)
     }
   }

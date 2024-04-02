@@ -116,6 +116,9 @@ defineExpose({
     <el-amap
       ref="mapRef"
       v-model:zoom="zoom"
+      :WebGLParams="{
+        preserveDrawingBuffer: true
+      }"
       :animateEnable="true"
       :center="center"
       :doubleClickZoom="false"
