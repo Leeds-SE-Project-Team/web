@@ -1,5 +1,7 @@
 #mobile-planner {
+  $modal-z-index: 200;
   font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+  height: 100%;
 
   #top-menu {
     background-color: transparent;
@@ -70,7 +72,7 @@
         }
 
         .van-form {
-          --van-field-placeholder-text-color: white;
+          --van-field-input-disabled-text-color: white;
           --van-field-clear-icon-color: white;
           --van-field-clear-icon-size: 12px;
           --van-field-right-icon-color: white;
@@ -98,6 +100,7 @@
 
                 input {
                   color: white;
+                  cursor: default;
                 }
               }
 
@@ -107,7 +110,38 @@
             }
           }
         }
+
+        .hint {
+          display: flex;
+          text-align: center;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.5);
+          padding: 0 5px 5px;
+          margin-top: -3px;
+          height: 34px;
+          justify-content: center;
+          align-items: center;
+        }
       }
+    }
+  }
+
+  .operation-container {
+    z-index: $modal-z-index;
+    background-color: white;
+    position: absolute;
+    bottom: $mobile-footer-nav-height;
+    left: 0;
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.4);
+
+    .operation-btn {
+      font-weight: bold;
+      letter-spacing: 1px;
+      width: 100%;
+      margin: 10px
     }
   }
 
@@ -123,7 +157,7 @@
   }
 
   #bottom-menu {
-    z-index: 0;
+    z-index: $modal-z-index;
     --van-action-sheet-header-height: 30px;
     --van-action-sheet-header-font-size: 15px;
     padding: 0 10px;
@@ -152,6 +186,12 @@
         font-size: 23px;
         margin: 5px 0 15px 5px;
         font-weight: bold;
+      }
+
+      .loading {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
       }
 
       .pos-sheet-distance {
