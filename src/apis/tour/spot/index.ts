@@ -20,10 +20,17 @@ export const getTourSpots = (): Promise<ApiResponse<TourSpot[]>> =>
     url: 'tour_spot/all'
   })
 
+export const getTourImageExample = (num: number) =>
+  ({
+    id: 1,
+    imageUrl: import.meta.env.APP_STATIC_URL.concat(`/tour/example/${num}.png`),
+    tourId: 1,
+    tourSpotId: 1
+  }) as TourImage
 export const getTourSpotExample = (num: number): TourSpot => {
   return {
     location: '',
-    tourImages: [], // import.meta.env.APP_STATIC_URL.concat(`/tour/example/${num}.png`)
+    tourImages: [getTourImageExample(num)],
     id: 1,
     tourId: 1
   }

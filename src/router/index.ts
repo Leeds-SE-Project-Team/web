@@ -47,11 +47,11 @@ const router = createRouter({
       name: 'discover',
       meta: {
         // layout: 'mobile-main',
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        layout: 'mobile-main',
         title: 'Discover Page'
       }, // Render component dynamically according to platform
       // component: DiscoverMobileView
-      component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
+      component: DiscoverMobileView
     },
     // {
     //   path: '/plan',

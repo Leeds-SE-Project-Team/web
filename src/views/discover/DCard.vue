@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card class="d-card">
+    <a-card class="d-card" style="background: rgba(255, 255, 255, 0.8)">
       <template #title>
         <div class="title-wrapper">
           <div class="greeting-more" v-if="!isMinimal && !isTour">
@@ -36,7 +36,7 @@
                 <div class="left">
                   <a-image
                     :height="'100%'"
-                    :src="props.info.spots[0].coverUrl"
+                    :src="props.info.spots[0].tourImages[0].imageUrl"
                     :width="'100%'"
                     fit="cover"
                   />
@@ -45,7 +45,7 @@
                   <div class="up right-item">
                     <a-image
                       :height="'100%'"
-                      :src="props.info.spots[1].coverUrl"
+                      :src="props.info.spots[1].tourImages[0].imageUrl"
                       :width="'100%'"
                       fit="cover"
                     />
@@ -53,7 +53,7 @@
                   <div class="down right-item">
                     <a-image
                       :height="'100%'"
-                      :src="props.info.spots[2].coverUrl"
+                      :src="props.info.spots[2].tourImages[0].imageUrl"
                       :width="'100%'"
                       fit="cover"
                     />
@@ -273,7 +273,7 @@ import { Message } from '@arco-design/web-vue'
 import type { TourRecord } from '@/apis/tour'
 
 const props = defineProps<{
-  info: TourRecord,
+  info: TourRecord
   mode?: 'minimal' | 'tour'
 }>()
 
@@ -328,7 +328,7 @@ const switchClick = () => {
       if (mapWrapper.value) {
         mapWrapper.value.classList.remove('hide')
       }
-      smallImg.value = props.info.spots[0].coverUrl
+      smallImg.value = props.info.spots[0].tourImages[0].imageUrl
       break
 
     case 'pic':
@@ -362,14 +362,14 @@ const isMinimal = ref(false)
 const isTour = ref(false)
 
 onMounted(() => {
-  if(props.mode==='minimal'){
-    isMinimal.value = true;
-    switchStatus.value = 'map';
-    switchClick();
-  }else if(props.mode==='tour'){
-    isTour.value = true;
-    switchStatus.value = 'map';
-    switchClick();
+  if (props.mode === 'minimal') {
+    isMinimal.value = true
+    switchStatus.value = 'map'
+    switchClick()
+  } else if (props.mode === 'tour') {
+    isTour.value = true
+    switchStatus.value = 'map'
+    switchClick()
   }
 })
 </script>
@@ -379,7 +379,7 @@ onMounted(() => {
   height: auto;
 }
 
-.split{
+.split {
   height: 1rem;
 }
 </style>

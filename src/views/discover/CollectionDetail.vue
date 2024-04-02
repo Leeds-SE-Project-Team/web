@@ -1,7 +1,9 @@
 <template>
   <div id="page-collection-detail">
-    <div class="head-background" style="background: url('http://walcraft.wmzspace.space/static//tour/example/4.png')">
-    </div>
+    <div
+      class="head-background"
+      style="background: url('http://walcraft.wmzspace.space/static//tour/example/4.png')"
+    ></div>
     <!-- 可能的面包屑 -->
     <div></div>
     <div class="header-cover">
@@ -56,7 +58,6 @@
         </div>
         <div class="operation-item">
           <a-button class="operation-button">
-
             <template #icon>
               <icon-message :size="28" />
             </template>
@@ -65,7 +66,6 @@
         </div>
         <div class="operation-item">
           <a-button class="operation-button">
-
             <template #icon>
               <icon-star :size="28" />
             </template>
@@ -73,7 +73,6 @@
         </div>
         <div class="operation-item">
           <a-button class="operation-button">
-
             <template #icon>
               <icon-share-internal :size="28" />
             </template>
@@ -91,10 +90,12 @@
     <div class="map-area w-full">
       <!--      <RouteMap></RouteMap>-->
       <el-amap :scroll-wheel="false" style="width: 100%; height: 100%">
-        <el-amap-control-geolocation :circleOptions="{
-                fillOpacity: 0,
-                strokeOpacity: 0
-              }" />
+        <el-amap-control-geolocation
+          :circleOptions="{
+            fillOpacity: 0,
+            strokeOpacity: 0
+          }"
+        />
       </el-amap>
     </div>
     <div class="divider">
@@ -103,36 +104,18 @@
     <h2 class="text-center">Tours</h2>
     <div ref="scrollContainer" class="tour-scroll-container">
       <div ref="imgCollection" class="img-collection">
-        <div class="img-wrapper">
-          <img src="//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg" alt="" />
-        </div>
-        <div class="img-wrapper">
-          <img src="//fp1.fghrsh.net/2020/01/12/3b46cd05b73d0ad05f7de0030a71452e.jpg" alt="" />
-        </div>
-        <div class="img-wrapper">
-          <img src="//fp1.fghrsh.net/2020/01/12/de063c44e59b954bb8e1f248790986df.png" alt="" />
-        </div>
-        <div class="img-wrapper">
-          <img src="//fp1.fghrsh.net/2020/01/12/f6371f6a09d62eea36bfbac9d25e6af0.jpg" alt="" />
+        <div class="img-wrapper" v-for="(_, i) in 3" :key="i">
+          <img :src="testCardInfo.spots[i].tourImages[0].imageUrl" alt="" />
         </div>
       </div>
       <div class="tianchong"></div>
       <div ref="tourScroll" class="tour-card-wrapper w-full">
-        <div class="tour-card flex-c flex-justify-c">
-          <DCard :info="testCardInfo" mode="minimal"></DCard>
-        </div>
-        <div class="tour-card flex-c flex-justify-c">
-          <DCard :info="testCardInfo" mode="minimal"></DCard>
-        </div>
-        <div class="tour-card flex-c flex-justify-c">
-          <DCard :info="testCardInfo" mode="minimal"></DCard>
-        </div>
-        <div class="tour-card flex-c flex-justify-c">
-          <DCard :info="testCardInfo" mode="minimal"></DCard>
+        <div class="tour-card flex-c flex-justify-c" v-for="(_, i) in 3" :key="i">
+          <DCard :info="testCardInfo" mode="minimal" style="overflow: hidden"></DCard>
         </div>
       </div>
     </div>
-    <div style="height: 800px;"></div>
+    <div style="height: 800px"></div>
   </div>
 </template>
 
@@ -151,7 +134,7 @@ var ticking = false
 
 const testCardInfo: TourRecord = {
   id: 0,
-  title: '这是一个用来展示一个行程的card',
+  title: 'Tour card',
   user: {
     id: 0,
     email: '234',
@@ -205,43 +188,49 @@ function switching(
   cards: HTMLCollectionOf<HTMLDivElement>,
   vh: number
 ) {
-  if (!tourScroll.value) { return; }
-  let offsetTop = tourScroll.value.getBoundingClientRect().top;
+  if (!tourScroll.value) {
+    return
+  }
+  let offsetTop = tourScroll.value.getBoundingClientRect().top
   // 如果卡片未抵达或超出视窗范围则什么都不干
-  if (offsetTop > vh * 0.5 - 350 || offsetTop + imgs.length * 700 < vh) { return; }
+  if (offsetTop > vh * 0.5 - 350 || offsetTop + imgs.length * 700 < vh) {
+    return
+  }
   // 画个图推导一下就大概能明白的当前图片的序号以及
   // 卡片中心相对于屏幕中心的偏移值的计算公式
   let curCardIndex = Math.floor((vh * 0.5 - offsetTop) / 700)
   let curOffset = vh * 0.5 - (offsetTop + curCardIndex * 700 + 350)
   // 渐变阈值：正向偏移150像素
   if (curOffset > 150) {
-    if (curCardIndex >= imgs.length - 1) { return; }
+    if (curCardIndex >= imgs.length - 1) {
+      return
+    }
     imgs[curCardIndex].setAttribute('style', `opacity: ${1 - (curOffset - 150) / 200}`)
     imgs[curCardIndex + 1].setAttribute('style', `opacity: ${(curOffset - 150) / 200}`)
-    cards[curCardIndex].style.opacity = `${1 - (curOffset - 150) / 200}`;
-    cards[curCardIndex + 1].style.opacity = `${(curOffset - 150) / 200}`;
+    cards[curCardIndex].style.opacity = `${1 - (curOffset - 150) / 200}`
+    cards[curCardIndex + 1].style.opacity = `${(curOffset - 150) / 200}`
   } else {
     // 处理从底部滑出时的结束状态，不处理下一张卡片和图
     if (curCardIndex >= imgs.length - 1) {
-      imgs[curCardIndex].setAttribute('style', `opacity: 1`);
-      cards[curCardIndex].style.opacity = '1';
-      cards[curCardIndex - 1].style.opacity = '0';
-      return;
+      imgs[curCardIndex].setAttribute('style', `opacity: 1`)
+      cards[curCardIndex].style.opacity = '1'
+      cards[curCardIndex - 1].style.opacity = '0'
+      return
     }
     // 处理从顶部滑出时的结束状态，不处理上一张卡片和图
     if (curCardIndex - 1 < 0) {
-      imgs[curCardIndex].setAttribute('style', `opacity: 1`);
+      imgs[curCardIndex].setAttribute('style', `opacity: 1`)
       imgs[curCardIndex + 1].setAttribute('style', `opacity: 0`)
-      cards[curCardIndex].style.opacity = '1';
-      cards[curCardIndex + 1].style.opacity = '0';
-      return;
+      cards[curCardIndex].style.opacity = '1'
+      cards[curCardIndex + 1].style.opacity = '0'
+      return
     }
     // 其余范围内的状态
     imgs[curCardIndex].setAttribute('style', `opacity: 1`)
     imgs[curCardIndex + 1].setAttribute('style', `opacity: 0`)
-    cards[curCardIndex].style.opacity = '1';
-    cards[curCardIndex + 1].style.opacity = '0';
-    cards[curCardIndex - 1].style.opacity = '0';
+    cards[curCardIndex].style.opacity = '1'
+    cards[curCardIndex + 1].style.opacity = '0'
+    cards[curCardIndex - 1].style.opacity = '0'
   }
 }
 
@@ -253,14 +242,14 @@ onMounted(() => {
     const cards = tourScroll.value.getElementsByClassName(
       'tour-card'
     ) as HTMLCollectionOf<HTMLDivElement>
-    const vh = document.body.clientHeight;
+    const vh = document.body.clientHeight
     window.addEventListener('scroll', function () {
       if (!ticking) {
         // 节流
         // 每一帧根据滑动距离计算图片透明度
         window.requestAnimationFrame(() => {
-          switching(imgs, cards, vh);
-          ticking = false;
+          switching(imgs, cards, vh)
+          ticking = false
         })
         ticking = true
       }

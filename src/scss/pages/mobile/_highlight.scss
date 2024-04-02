@@ -1,13 +1,13 @@
-
-.image-title-container {
+#mobile-page-highlight{
+  .image-title-container {
     position: relative;
   }
-  
+
   .trail-image {
     width: 100%;
     height: auto; /* Or set a specific height */
   }
-  
+
   .trail-title {
     font-size: 24px; /* Adjust font-size as needed */
     font-weight: bold;
@@ -16,15 +16,14 @@
     margin-top: -24px; /* Adjust this value to move the title up over the image */
     display: inline-block;
   }
-  
+
   .trail-description {
     font-size: 16px; /* Adjust font-size as needed */
     padding: 4px 16px; /* Adjust padding as needed */
     background-color: #fff; /* Or any color based on your design */
     display: inline-block;
   }
-  
-  
+
   /* Styles for the top section */
   .highlight-top {
     overflow-x: auto;
@@ -33,14 +32,13 @@
     background-color: #f5f5f5; /* Background color of the container */
     margin: 10px;
   }
-  
+
   .actions-container {
     display: flex;
     gap: 20px; /* Assuming you want a gap of 20px, as specified in the van-row gutter */
     margin: 10px;
-  
   }
-  
+
   .action-item {
     display: inline-flex;
     align-items: center;
@@ -52,34 +50,32 @@
     font-size: 14px; /* Adjust font-size as needed */
     cursor: pointer; /* Makes it look clickable */
     user-select: none; /* Prevents text selection */
-  
+
     &:first-child {
       background-color: #4caf50; /* Green background for the first button */
       color: white; /* White text for contrast */
       border-color: #4caf50; /* Green border for consistency */
       margin: 10px;
     }
-  
+
     &:not(:first-child) {
       background-color: #fff; /* White background for outlined buttons */
       color: #4caf50; /* Green text to match the first button */
       border-color: #4caf50; /* Green border */
       margin: 10px;
-  
     }
   }
-  
+
   /* For icons, you'll need to add specific styles or use a library like Font Awesome */
   .icon {
     margin-right: 8px; /* Space between icon and text */
   }
-  
-  
+
   .information-section {
     padding: 16px;
     background-color: #fff; /* Adjust the color to match your design */
   }
-  
+
   .info-alert {
     display: flex;
     align-items: center;
@@ -88,13 +84,13 @@
     border-radius: 5px;
     margin-bottom: 8px;
   }
-  
+
   .icon {
     color: #4caf50; /* Icon color */
     margin-right: 8px; /* Space between icon and text */
     font-size: 20px; /* Icon size */
   }
-  
+
   .info-credits {
     //display: flex;
     align-items: center;
@@ -102,13 +98,13 @@
     padding: 16px;
     background-color: #fff; /* Adjust the color to match your design */
   }
-  
+
   .user-avatars {
     margin: 0 auto; /* Center the avatars */
     display: flex;
     justify-content: left; /* Center the flex items */
   }
-  
+
   .user-avatars img {
     width: 30px; /* Avatar size */
     height: 30px;
@@ -116,42 +112,41 @@
     margin: 0 5px; /* Adjust spacing between avatars */
     border: 2px solid #fff; /* White border to separate overlapping avatars */
   }
-  
+
   .credits-text {
     margin-top: 8px; /* Add space between avatars and text */
   }
-  
+
   .credits-text span {
     display: block;
     color: #666; /* Text color */
     font-size: 14px; /* Text size */
   }
-  
-  
+
   .section-divider {
     border: none;
     height: 1px;
     background-color: #e0e0e0; /* Color of the horizontal line */
     margin: 16px 0;
   }
-  
+
   .section-title {
     font-size: 16px; /* Adjust the font size as needed */
     color: #333; /* Color of the section title */
     margin-bottom: 8px; /* Space between title and map placeholder */
   }
-  
+
   .highlight-location-section {
     /* Add padding or margins as necessary */
   }
-  
+
   .location-map-placeholder {
     width: 100%;
     height: 150px; /* Adjust to desired placeholder height */
     background-color: #a0d0a0; /* A placeholder color to represent the map */
     margin-bottom: 8px; /* Space between map placeholder and distance text */
   }
-  
+
   .location-distance {
     font-size: 14px; /* Adjust the font size as needed */
     color: #666; /* Color of the distance text */
@@ -159,8 +154,7 @@
     padding-left: 16px; /* Align the text with the map placeholder */
     margin: 10px;
   }
-  
-  
+
   /* Styles for the rides section */
   //.rides-container {
   //  display: grid;
@@ -172,20 +166,20 @@
   //.ride-card {
   //  /* Add your styles for ride cards */
   //}
-  
+
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 16px;
   }
-  
+
   .section-title {
     font-size: 18px;
     font-weight: bold;
     margin-top: 10px;
   }
-  
+
   .see-all-button {
     background: none;
     border: none;
@@ -193,23 +187,20 @@
     font-size: 16px;
     cursor: pointer;
     margin-top: 10px;
-  
   }
-  
+
   .rides-here-section {
     margin-bottom: 16px;
     background-color: #e8f5e9; /* Light green background */
-  
   }
-  
+
   .rides-container {
     display: flex;
     overflow-x: auto;
     padding: 10px 16px;
     background-color: #e8f5e9; /* Light green background */
-  
   }
-  
+
   .ride-card {
     flex: 0 0 auto; // Prevent flex items from growing or shrinking
     width: 250px; // Set a fixed width for each card
@@ -217,9 +208,9 @@
     background: #fff;
     padding: 16px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); // Add a subtle shadow
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Add a subtle shadow
   }
-  
+
   .ride-level {
     display: inline-block;
     background-color: #4caf50;
@@ -229,94 +220,78 @@
     font-size: 12px;
     margin-bottom: 8px;
   }
-  
+
   .ride-info h3 {
     font-size: 16px;
     margin: 8px 0;
   }
-  
+
   .ride-stats {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
     margin-bottom: 8px;
-  
+
     i {
       margin-right: 4px;
     }
   }
-  
+
   .map-thumbnail {
     height: 120px;
     background-color: #c0e0c0; // Placeholder for the map thumbnail
     border-radius: 4px;
   }
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   /* Styles for the tips section */
-  
+
   .tips-section {
     background-color: #fff;
     padding: 16px;
     margin-top: 16px; /* Spacing from the previous section */
   }
-  
+
   .tip {
     border-bottom: 1px solid #e0e0e0; /* Separator line */
     padding-bottom: 16px; /* Spacing at the bottom of each tip */
     margin-bottom: 16px; /* Spacing between tips */
   }
-  
+
   .tip-header {
     display: flex;
     align-items: center;
     margin-bottom: 8px; /* Spacing between header and content */
   }
-  
+
   .tip-avatar {
     width: 40px; /* Avatar size */
     height: 40px;
     border-radius: 50%; /* Make it round */
     margin-right: 8px; /* Spacing between avatar and user info */
   }
-  
+
   .tip-user-info {
     display: flex;
     flex-direction: column;
   }
-  
+
   .tip-user-name {
     font-weight: bold;
     margin: 0; /* Remove default margins */
   }
-  
+
   .tip-date {
     font-size: 14px;
     color: #666;
     margin: 0; /* Remove default margins */
   }
-  
+
   .tip-content {
     font-size: 16px;
     color: #333;
   }
-  
+
   .write-tip-button {
     background-color: #e8f5e9; /* Light green background */
     border: none;
@@ -330,72 +305,74 @@
     text-align: center; /* Center the text */
     margin: 0 auto; /* Center the button */
   }
-  
-  
-  
-  
-  
-  
+
   .most-visited-section {
     margin: 16px 0;
   }
-  
+
   .section-title {
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 8px;
   }
-  
+
   .months-container {
     display: flex;
     flex-wrap: wrap; /* Allow items to wrap to the next line */
     justify-content: space-between;
-    margin: 0 -2px; /* Negative margin to counteract the item margins */
-  }
-  
-  .month {
-    width: calc(16% - 3px); /* Calculate width for 2 items per line, adjusting for margin */
-    text-align: center;
-    padding: 8px;
-    border: 1px solid #e0e0e0; /* Neutral border color */
-    margin: 2px; /* Small gap between months */
-    background-color: #f5f5f5; /* Neutral background color */
-    cursor: pointer;
-  
-    &.active {
-      background-color: #4caf50; /* Active month background color */
-      color: white; /* Text color for active month */
+    //margin: 0 -2px; /* Negative margin to counteract the item margins */
+
+    .grid-item,.van-grid-item__content{
+      padding: 0 ;
+      margin:0 ;
+    }
+
+    .month {
+      width: 100%;
+
+      //width: calc(16% - 3px); /* Calculate width for 2 items per line, adjusting for margin */
+      text-align: center;
+      padding: 8px;
+      //border: 1px solid #e0e0e0; /* Neutral border color */
+      //margin: 2px; /* Small gap between months */
+      background-color: #f5f5f5; /* Neutral background color */
+      cursor: pointer;
+
+      &.active {
+        background-color: #4caf50 !important; /* Active month background color */
+        color: white; /* Text color for active month */
+      }
     }
   }
-  
-  
-  
+
+
+
   .you-might-like-section {
     //padding: 16px;
   }
-  
+
   .suggestions-container {
     display: flex;
     overflow-x: auto;
     gap: 16px;
     margin-bottom: 45px;
   }
-  
+
   .suggestion-card {
     flex: 0 0 auto;
     width: 250px; // Adjust width as needed
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); // Optional shadow for style
     border-radius: 8px; // Rounded corners for the cards
     overflow: hidden; // Ensures the image fits within the border radius
-  margin: 0 10px;
+    margin: 0 10px;
   }
-  
+
   .suggestion-image {
     width: 100%;
     height: 150px; // Adjust height as needed
     object-fit: cover; // Ensures the image covers the area appropriately
   }
-  
+
   .suggestion-details {
     padding: 8px;
     display: flex;
@@ -403,13 +380,14 @@
     justify-content: flex-start;
     gap: 8px;
   }
-  
+
   .suggestion-icon {
     // Style for the icon, you can use FontAwesome or similar
   }
-  
+
   .suggestion-title {
     font-size: 16px;
     font-weight: bold;
     // Add more styles as needed
   }
+}

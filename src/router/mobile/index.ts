@@ -12,14 +12,14 @@ export const MOBILE_ROUTES: RouteRecordRaw[] = [
     },
     component: MobileRecord,
     props: true
-  },
-  {
-    path: '/highlight',
-    name: 'highlight',
-    meta: {
-      layout: 'mobile-highlight',
-      title: 'Highlight Page'
-    },
-    component: MobileHighlight
   }
+  // {
+  //   path: '/highlight',
+  //   name: 'highlight',
+  //   meta: {
+  //     layout: 'mobile-highlight',
+  //     title: 'Highlight Page'
+  //   },
+  //   component: MobileHighlight
+  // }
 ]

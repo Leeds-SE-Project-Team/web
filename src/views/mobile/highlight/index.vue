@@ -1,110 +1,39 @@
-<script lang="ts" setup>
-import { defineComponent } from "vue";
-import { createApp } from 'vue';
-import { ImagePreview, showImagePreview } from 'vant';
+<!--<template>-->
+<!--&lt;!&ndash;  到顶部 ImagePreview 图片预览 &ndash;&gt;-->
+<!--  <div id="page-highlight">-->
+<!--    ssss-->
+<!--  </div>-->
+<!--</template>-->
 
-const actions = [
-  { title: 'See rides here' },
-  { title: 'Bookmark' },
-  // Add other actions here
-]
+<!--<script lang="ts">-->
+<!--export default {-->
+<!--  name: 'MobileHighlight'-->
+<!--}-->
+<!--</script>-->
 
-const rides = [
-  // Populate with ride data
-]
-
-const tips = [
-  // Populate with tips data
-  // Example:
-  {
-    id: 1,
-    userAvatar: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
-    userName: 'Andrus',
-    date: 'October 13, 2023 20:20',
-    content: 'Hawes Trail forms the backbone of the eponymous Hawes Trail ',
-  },
-  // Add more tip objects as needed
-  {
-    id: 1,
-    userAvatar: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
-    userName: 'Andrus',
-    date: 'October 13, 2023 20:20',
-    content: 'Hawes Trail forms the  it provides access to are some of the least technical and rocky in the Phoenix area, making it a great option for cross country riders. The beautiful desert scenery is beautiful but not without its own dangers. This is an area where shin guards are a good idea to protect yourself from the abundance of prickly cacti that line the trails.',
-  },
-  {
-    id: 1,
-    userAvatar: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
-    userName: 'Andrus',
-    date: 'October 13, 2023 20:20',
-    content: 'Hawes  reat tiful desert scenery is beautiful but not without its own dangers. This is an area where shin guards are a good idea to protect yourself from the abundance of prickly cacti that line the trails.',
-  },
-]
-
-const suggestions = [
-  // Example suggestion data
-  {
-    name: 'Wild Horse Trail',
-    imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
-    // Add more properties as needed
-  },
-  {
-    name: 'Wild Horse Trail',
-    imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
-    // Add more properties as needed
-  }, {
-    name: 'Wild Horse Trail',
-    imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
-    // Add more properties as needed
-  },
-  // ... additional suggestions ...
-]
-
-const monthlyVisits = {
-  Jan: 5,
-  Feb: 10,
-  Mar: 0,
-  Apr: 0,
-  May: 15,
-  Jun: 20,
-  Jul: 0,
-  Aug: 0,
-  Sep: 8,
-  Oct: 0,
-  Nov: 0,
-  Dec: 0,
-}
-
-showImagePreview({
-  images: [
-    'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
-    'https://fastly.jsdelivr.net/npm/@vant/assets/apple-2.jpeg',
-  ],
-  closeable: true,
-})
-</script>
+<!--<style lang="scss" scoped>-->
+<!--/* 这里是你的样式 */-->
+<!--</style>-->
 
 <template>
-  <div id="page-highlight">
-
+  <div id="mobile-page-highlight">
     <!-- Image section with click event to open preview -->
     <!-- Image and title section -->
     <div class="image-title-container">
-      <img class="trail-image" src="https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg" alt="Trail Image" />
+      <img
+        class="trail-image"
+        src="https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg"
+        alt="Trail Image"
+      />
       <h1 class="trail-title">Hawes Trail</h1>
       <p class="trail-description">Mountain Biking Highlight (Segment)</p>
     </div>
     <!-- Top section with image and action buttons -->
     <div class="highlight-top">
       <div class="actions-container">
-        <div class="action-item">
-          <i class="icon fas fa-bicycle"></i>See rides here
-        </div>
-        <div class="action-item">
-          <i class="icon fas fa-bookmark"></i>Bookmark
-        </div>
-        <div class="action-item">
-          <i class="icon fas fa-map-marker-alt"></i>Open in planner
-        </div>
+        <div class="action-item"><i class="icon fas fa-bicycle"></i>See rides here</div>
+        <div class="action-item"><i class="icon fas fa-bookmark"></i>Bookmark</div>
+        <div class="action-item"><i class="icon fas fa-map-marker-alt"></i>Open in planner</div>
       </div>
     </div>
 
@@ -112,8 +41,10 @@ showImagePreview({
     <div class="information-section">
       <div class="info-alert">
         <i class="icon fas fa-info-circle"></i>
-        <span>This Highlight goes through a protected area. Please check local regulations for: Tonto National
-          Forest</span>
+        <span
+          >This Highlight goes through a protected area. Please check local regulations for: Tonto
+          National Forest</span
+        >
       </div>
       <div class="info-credits">
         <div class="user-avatars">
@@ -198,21 +129,36 @@ showImagePreview({
       <button class="write-tip-button">WRITE A TIP</button>
     </div>
 
-
     <!-- most-visited-section section -->
-    <div class="most-visited-section">
-      <hr class="section-divider" />
+    <van-grid :gutter="10" class="months-container" :column-num="6">
+      <van-grid-item v-for="(visitCount, month) in monthlyVisits" :key="month" class="grid-item">
+        <template #text>
+          <div
+            class="month"
+            :class="{ active: visitCount > 0 }"
+            :style="{ opacity: Math.max(...Object.values(monthlyVisits)) / (visitCount + 0.01) }"
+          >
+            {{ month }}
+          </div>
+        </template>
+      </van-grid-item>
+    </van-grid>
+    <!--    <div class="most-visited-section">-->
+    <!--      <hr class="section-divider" />-->
 
-      <h2 class="section-title">MOST VISITED DURING</h2>
-      <div class="months-container">
-        <div class="month" v-for="(visitCount, month) in monthlyVisits" :key="month"
-          :class="{ 'active': visitCount > 0 }">
-          {{ month }}
-        </div>
-      </div>
-      <hr class="section-divider" />
-
-    </div>
+    <!--      <h2 class="section-title">MOST VISITED DURING</h2>-->
+    <!--      <div class="months-container">-->
+    <!--        <div-->
+    <!--          class="month"-->
+    <!--          v-for="(visitCount, month) in monthlyVisits"-->
+    <!--          :key="month"-->
+    <!--          :class="{ active: visitCount > 0 }"-->
+    <!--        >-->
+    <!--          {{ month }}-->
+    <!--        </div>-->
+    <!--      </div>-->
+    <!--      <hr class="section-divider" />-->
+    <!--    </div>-->
 
     <!-- You might also like section -->
     <div class="you-might-like-section">
@@ -231,7 +177,95 @@ showImagePreview({
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from 'vue'
+import { createApp } from 'vue'
+import { ImagePreview, showImagePreview } from 'vant'
+
+export default defineComponent({
   name: 'MobileHighlight',
-}
+  data() {
+    return {
+      actions: [
+        { title: 'See rides here' },
+        { title: 'Bookmark' }
+        // Add other actions here
+      ],
+      rides: [
+        // Populate with ride data
+      ],
+      tips: [
+        // Populate with tips data
+        // Example:
+        {
+          id: 1,
+          userAvatar: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
+          userName: 'Andrus',
+          date: 'October 13, 2023 20:20',
+          content: 'Hawes Trail forms the backbone of the eponymous Hawes Trail '
+        },
+        // Add more tip objects as needed
+        {
+          id: 1,
+          userAvatar: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
+          userName: 'Andrus',
+          date: 'October 13, 2023 20:20',
+          content:
+            'Hawes Trail forms the  it provides access to are some of the least technical and rocky in the Phoenix area, making it a great option for cross country riders. The beautiful desert scenery is beautiful but not without its own dangers. This is an area where shin guards are a good idea to protect yourself from the abundance of prickly cacti that line the trails.'
+        },
+        {
+          id: 1,
+          userAvatar: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
+          userName: 'Andrus',
+          date: 'October 13, 2023 20:20',
+          content:
+            'Hawes  reat tiful desert scenery is beautiful but not without its own dangers. This is an area where shin guards are a good idea to protect yourself from the abundance of prickly cacti that line the trails.'
+        }
+      ],
+      suggestions: [
+        // Example suggestion data
+        {
+          name: 'Wild Horse Trail',
+          imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg'
+          // Add more properties as needed
+        },
+        {
+          name: 'Wild Horse Trail',
+          imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg'
+          // Add more properties as needed
+        },
+        {
+          name: 'Wild Horse Trail',
+          imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg'
+          // Add more properties as needed
+        }
+        // ... additional suggestions ...
+      ],
+      monthlyVisits: {
+        Jan: 5,
+        Feb: 10,
+        Mar: 0,
+        Apr: 0,
+        May: 15,
+        Jun: 20,
+        Jul: 0,
+        Aug: 0,
+        Sep: 8,
+        Oct: 0,
+        Nov: 0,
+        Dec: 0
+      }
+    }
+  },
+  setup() {
+    // showImagePreview({
+    //   images: [
+    //     'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
+    //     'https://fastly.jsdelivr.net/npm/@vant/assets/apple-2.jpeg'
+    //   ],
+    //   closeable: true
+    // })
+  }
+})
 </script>
+
+<style lang="scss" scoped></style>

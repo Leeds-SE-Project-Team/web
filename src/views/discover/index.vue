@@ -129,7 +129,7 @@ import { getTourSpotExample } from '@/apis/tour/spot'
 
 const testCardInfo: TourRecord = {
   id: 0,
-  title: '这是一个用来展示一个行程的card',
+  title: 'Tour card',
   user: {
     id: 0,
     email: '234',

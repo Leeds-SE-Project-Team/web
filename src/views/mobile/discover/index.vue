@@ -1,16 +1,18 @@
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { getTimeDiffUntilNow } from '@/utils'
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
 import { useUserStore } from '@/stores/user'
-import { getTours } from '@/apis/tour'
+import { getTours, type TourRecord } from '@/apis/tour'
 import likeSvgUrl from '/interaction/video_detail_like.svg'
 import likedSvgUrl from '/interaction/video_detail_liked.svg'
 import starSvgUrl from '/interaction/star.svg'
 import starredSvgUrl from '/interaction/starred.svg'
+import { getTourImageExample } from '@/apis/tour/spot'
+import { shuffle } from 'lodash-es'
 
 const currentPlayIndex = ref(0)
 
@@ -93,7 +95,6 @@ const isStarred = ref(false)
 const itemLikeShowNum = ref(0)
 const itemStarShowNum = ref(0)
 
-const router = useRouter()
 // const handleClickAvatar = (authorId: number) => {
 //   console.log(authorId)
 //   router.push({
@@ -122,28 +123,12 @@ const adjustHeight = (animation: boolean) => {
   })
 }
 
-const resizeEventHandler = () => {
-  adjustHeight(false)
-}
-
-onMounted(() => {
-  resizeEventHandler()
-  window.addEventListener('resize', resizeEventHandler)
-  // fetchTourList()
-  fetchCollection()
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', resizeEventHandler)
-})
-
 const getTourLoading = useLoading()
 const fetchTourList = () => {
-  console.log('test')
   getTourLoading.setLoading(true)
   getTours()
     .then((apiRes) => {
-      console.log(apiRes)
+      tourList.value = apiRes.data!
     })
     .catch((e) => {
       Message.error(e)
@@ -153,12 +138,11 @@ const fetchTourList = () => {
     })
 }
 const getCollectionLoading = useLoading()
-
 const fetchCollection = () => {
   getCollectionLoading.setLoading(true)
   getTourCollection()
     .then((apiRes) => {
-      itemList.value = apiRes.data!
+      collectionList.value = apiRes.data!
     })
     .catch((e) => {
       Message.error(e)
@@ -167,7 +151,27 @@ const fetchCollection = () => {
       getCollectionLoading.setLoading(false)
     })
 }
-const itemList = ref<TourCollection[]>([])
+
+interface DisPlayItem {
+  type: 'collection' | 'tour'
+  item: TourCollection | TourRecord
+}
+
+const tourList = ref<TourRecord[]>([])
+const collectionList = ref<TourCollection[]>([])
+const itemList = computed<DisPlayItem[]>(
+  () =>
+    [
+      ...tourList.value.map((tour) => ({
+        item: tour,
+        type: 'tour'
+      })),
+      ...collectionList.value.map((collection) => ({
+        item: collection,
+        type: 'collection'
+      }))
+    ] as DisPlayItem[]
+)
 
 // itemList.value.push(exampleTourCollection)
 // itemList.value.push(exampleTourCollection2)
@@ -208,6 +212,20 @@ const handleTouchMove = (e: TouchEvent) => {
 //     }, 1000)
 //   }
 // }
+const resizeEventHandler = () => {
+  adjustHeight(false)
+}
+
+onMounted(() => {
+  resizeEventHandler()
+  window.addEventListener('resize', resizeEventHandler)
+  fetchTourList()
+  fetchCollection()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', resizeEventHandler)
+})
 </script>
 
 <template>
@@ -234,7 +252,7 @@ const handleTouchMove = (e: TouchEvent) => {
     <div class="outer-container">
       <div ref="slideList" class="slide-list-container">
         <div
-          v-for="(item, idx) in itemList"
+          v-for="(item, idx) in shuffle(itemList)"
           :key="idx"
           :style="{
             height: `${parentHeight}px`
@@ -242,13 +260,26 @@ const handleTouchMove = (e: TouchEvent) => {
           class="page-recommend-container border-1"
           @touchmove="handleTouchMove"
           @touchstart="handleTouchStart"
+          @click="$router.push({ name: item.type, query: { id: item.item.id } })"
         >
           <div :id="idx === currentPlayIndex ? 'sliderVideo' : undefined" class="feed-video">
             <div class="playerContainer">
               <div class="slider-video">
                 <div
                   :style="{
-                    backgroundImage: `url(${item.coverUrl})`
+                    backgroundImage: `url(${
+                      item.type === 'collection'
+                        ? (item.item as unknown as TourCollection).coverUrl
+                        : (() => {
+                            console.log(item)
+                            const spotsList = (item.item as unknown as TourRecord).tourSpotList
+                            if (spotsList.length > 0) {
+                              return spotsList[0].tourImages
+                            } else {
+                              return getTourImageExample(1).imageUrl
+                            }
+                          })()
+                    })`
                   }"
                   class="basePlayerContainer"
                 >
@@ -257,21 +288,42 @@ const handleTouchMove = (e: TouchEvent) => {
                       <div :id="idx === currentPlayIndex ? 'video-info-wrap' : undefined">
                         <div class="video-info-detail">
                           <a-row class="item-name">
-                            <a-tag>{{ item.name }}</a-tag>
+                            <a-tag>{{
+                              item.type === 'collection'
+                                ? (item.item as unknown as TourCollection).name
+                                : (item.item as unknown as TourRecord).type + ' Tour'
+                            }}</a-tag>
                           </a-row>
                           <a-row class="account">
                             <div class="account-name">
-                              <span>{{ itemList[idx].user.nickname }}</span>
+                              <span>{{
+                                itemList[idx].type === 'collection'
+                                  ? (itemList[idx].item as unknown as TourCollection).user.nickname
+                                  : (itemList[idx].item as unknown as TourRecord).user.nickname
+                              }}</span>
                             </div>
                             <div class="video-create-time">
-                              <span>· {{ getTimeDiffUntilNow(itemList[idx].createTime) }}</span>
+                              <span
+                                >·
+                                {{
+                                  getTimeDiffUntilNow(
+                                    itemList[idx].type === 'collection'
+                                      ? (itemList[idx].item as unknown as TourCollection).createTime
+                                      : (itemList[idx].item as unknown as TourRecord).createTime
+                                  )
+                                }}</span
+                              >
                             </div>
                           </a-row>
                           <div class="title">
                             <div class="title-container">
                               <div class="title-inner-container">
                                 <div class="title-content">
-                                  <span>{{ itemList[idx].title }}</span>
+                                  <span>{{
+                                    itemList[idx].type === 'collection'
+                                      ? (itemList[idx].item as unknown as TourCollection).title
+                                      : (itemList[idx].item as unknown as TourRecord).title
+                                  }}</span>
                                 </div>
                               </div>
                             </div>
@@ -287,7 +339,14 @@ const handleTouchMove = (e: TouchEvent) => {
                           <a-tooltip :position="'left'">
                             <div class="video-action-avatar">
                               <a>
-                                <a-avatar :image-url="item.user.avatar" :size="40"></a-avatar>
+                                <a-avatar
+                                  :image-url="
+                                    item.type === 'collection'
+                                      ? (item.item as unknown as TourCollection).user.avatar
+                                      : (item.item as unknown as TourRecord).user.avatar
+                                  "
+                                  :size="40"
+                                ></a-avatar>
                               </a>
                             </div>
                             <template #content>
@@ -400,7 +459,18 @@ const handleTouchMove = (e: TouchEvent) => {
 
                 <div
                   :style="{
-                    backgroundImage: `url(${item.coverUrl})`
+                    backgroundImage: `url(${
+                      item.type === 'collection'
+                        ? (item.item as unknown as TourCollection).coverUrl
+                        : (() => {
+                            const spotsList = (item.item as unknown as TourRecord).tourSpotList
+                            if (spotsList.length > 0) {
+                              return spotsList[0].tourImages
+                            } else {
+                              return getTourImageExample(1).imageUrl
+                            }
+                          })()
+                    })`
                   }"
                   class="blurImageContainer"
                 ></div>
