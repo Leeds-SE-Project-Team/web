@@ -146,7 +146,8 @@ const selectPoint = ref<number[]>()
           <span class="text"><span>0.00</span> km away</span>
         </div>
         <div class="pos-sheet-location">
-          Southwest Jiaotong University Xipu Campus, Pidu, Chengdu, Sichuan
+          {{ mapContainer.sheetData.address }}
+          <!--          Southwest Jiaotong University Xipu Campus, Pidu, Chengdu, Sichuan-->
         </div>
       </div>
       <div class="space"></div>

@@ -35,7 +35,8 @@ initAMapApiLoader({
     'AMap.MouseTool',
     'AMap.Geolocation',
     'AMap.Walking',
-    'AMap.Riding'
+    'AMap.Riding',
+    'AMap.Geocoder'
   ]
   //Loca:{
   //  version: '2.0.0'

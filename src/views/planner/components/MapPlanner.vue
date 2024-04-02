@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { ElAmap } from '@vuemap/vue-amap'
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { hapticsImpactLight } from '@/utils'
+import { useMapStore } from '@/stores/map'
 
 const getCurrentLocation = () => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition((status, info) => {
@@ -14,20 +14,27 @@ const getCurrentLocation = () => {
   })
 }
 const geolocationRef = ref()
+const mapRef = ref()
 const locationTrackList = ref<number[][]>([])
-
+const mapStore = useMapStore()
 const mapInit = () => {}
 
 const zoom = ref(16)
 const center = ref([116.412866, 39.88365])
 
-const handleSelectPlace = (position: number[]) => {
+const handleSelectPlace = (lnglat: AMap.LngLat) => {
   hapticsImpactLight()
-  selectPos.value = position
+  selectPos.value = [lnglat.lat, lnglat.lng]
+  mapStore.getGeocoder().getAddress(lnglat, function (status, result) {
+    if (status === 'complete' && result.info === 'OK') {
+      // result为对应的地理位置详细信息
+      sheetData.address = result.regeocode.formattedAddress
+    }
+  })
 }
 
 const handleRightClick = (e: any) => {
-  handleSelectPlace([e.lnglat.lat, e.lnglat.lng])
+  handleSelectPlace(e.lnglat)
 }
 
 const selectPos = computed({
@@ -40,12 +47,21 @@ const props = defineProps<{
   selectPoint?: number[]
 }>()
 const emits = defineEmits(['update:selectPoint'])
+
+const sheetData = reactive({
+  address: ''
+})
+
+defineExpose({
+  sheetData
+})
 </script>
 
 <template>
   <div id="map-container">
     <el-amap
       v-model:zoom="zoom"
+      ref="mapRef"
       :animateEnable="true"
       :center="center"
       :doubleClickZoom="false"
