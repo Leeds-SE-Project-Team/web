@@ -19,6 +19,7 @@ import LayoutMobileMain from '@/layout/mobile/LayoutMain.vue'
 import LayoutMobileDefault from '@/layout/mobile/LayoutDefaultMobile.vue'
 import LayoutMobileRecord from '@/layout/mobile/LayoutRecord.vue'
 import VueAMap, { initAMapApiLoader } from '@vuemap/vue-amap'
+import pinia from '@/stores'
 
 const app = createApp(App)
 
@@ -41,7 +42,7 @@ initAMapApiLoader({
   //} // 如果需要使用loca组件库，需要加载Loca
 })
 
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
 app.use(ArcoVue)
 app.use(Vant)

@@ -215,9 +215,11 @@
     }
 
     .map-area{
-      height: 500px;
-      padding: 0 10px;
+      height: 60vh;
+      margin: auto;
       margin-top: 1rem;
+      max-width: 80vw;
+      box-shadow: 5px 5px 5px #CCCCCC;
 
       #route-map{
         width: 100%;
@@ -238,43 +240,57 @@
     }
 
     .tour-scroll-container{
-      height: 600px;
+      height: auto;
       background-color: #CCCCCC;
       position: relative;
+      margin: auto;
       margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
 
       .tour-card-wrapper{
+        height: auto;
         position: relative;
-        height: 600px;
+        margin-top: -60vh;
+        margin-bottom: 20vh;
         z-index: 10;
-        overflow-y: auto;
 
         .tour-card{
-          height: 600px;
+          height: 700px;
           max-width: 600px;
+          margin-left: 10%;
           // border: red 1px solid;
         }
       }
 
-      .img-wrapper{
-        position: absolute;
+      .img-collection{
+        position: sticky;
         top: 0;
-        left: 0;
-        height: 600px;
-        width: 100%;
-        opacity: 0;
+        height: 100vh;
         z-index: 9;
 
-        &:first-child{
-          opacity: 1;
-        }
-
-        img{
-          object-fit: cover;
-          width: 100%;
+        .img-wrapper{
+          position: absolute;
+          top: 0;
+          left: 0;
           height: 100%;
+          width: 100%;
+          opacity: 0;
+          z-index: 9;
+
+          &:first-child{
+            opacity: 1;
+          }
+
+          img{
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+          }
         }
       }
+
+      
     }
   }
 }
