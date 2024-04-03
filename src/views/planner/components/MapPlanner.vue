@@ -4,6 +4,7 @@ import { hapticsImpactLight } from '@/utils'
 import { useMapStore } from '@/stores/map'
 import { type CreateTourForm, parseLocation } from '@/apis/tour'
 import _ from 'lodash-es'
+import { Message } from '@arco-design/web-vue'
 
 const getCurrentLocation = () => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition((status, info) => {
@@ -62,7 +63,7 @@ const props = defineProps<{
   selectPoint?: number[]
   tourData: CreateTourForm
 }>()
-const emits = defineEmits(['update:selectPoint', 'update:tourData'])
+const emits = defineEmits(['update:selectPoint', 'update-tourData'])
 
 const sheetData = reactive({
   address: '',
@@ -74,21 +75,23 @@ const labelOffset = [-16, -30]
 
 const handleDragendStart = (e) => {
   const lnglat: AMap.LngLat = e.lnglat
-  let newTourData = _.cloneDeep(props.tourData)
-  newTourData.startLocation = `${lnglat.lng},${lnglat.lat}`
-  emits('update:tourData', newTourData)
+  // let newTourData = _.cloneDeep(props.tourData)
+  // newTourData.startLocation = `${lnglat.lng},${lnglat.lat}`
+  emits('update-tourData', 'startLocation', `${lnglat.lng},${lnglat.lat}`)
 }
 
 const handleDragendEnd = (e) => {
   const lnglat: AMap.LngLat = e.lnglat
-  let newTourData = _.cloneDeep(props.tourData)
-  newTourData.endLocation = `${lnglat.lng},${lnglat.lat}`
-  emits('update:tourData', newTourData)
+  // let newTourData = _.cloneDeep(props.tourData)
+  // newTourData.endLocation = `${lnglat.lng},${lnglat.lat}`
+  emits('update-tourData', 'endLocation', `${lnglat.lng},${lnglat.lat}`)
 }
 
-const navigationResult = ref()
+// const layers = reactive<any[]>([])
+let layers: AMap.Overlay[] = []
 
 watch(props.tourData, (value) => {
+  const mapInstance: AMap.Map = mapRef.value.$$getInstance()
   if (mapRef.value && value.startLocation && value.endLocation) {
     mapStore
       .planRoute(
@@ -97,11 +100,18 @@ watch(props.tourData, (value) => {
         props.tourData.type,
         mapRef.value.$$getInstance()
       )
-      .then((result) => {
+      .then((result: any) => {
+        layers = mapStore.drawRoute(mapInstance, result.routes[0])
         navigationResult.value = result
       })
+  } else {
+    mapInstance.remove(layers)
+    navigationResult.value = undefined
+    // ;(mapRef.value.$$getInstance() as AMap.Map).clearMap()
   }
 })
+
+const navigationResult = ref()
 
 defineExpose({
   sheetData,

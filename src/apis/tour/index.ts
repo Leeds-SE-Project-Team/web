@@ -51,6 +51,7 @@ export interface CreateTourForm {
   type: TourType
   pons: PON[]
   tourCollectionId: number
+  result: any
 }
 
 export const parseLocation = (location: string): string[] => {

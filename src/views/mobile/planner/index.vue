@@ -15,6 +15,7 @@ import MapPlanner from '@/views/planner/components/MapPlanner.vue'
 import { hapticsImpactLight } from '@/utils'
 import { App } from '@capacitor/app'
 import { useMapStore } from '@/stores/map'
+import { has } from 'lodash-es'
 
 const tourTypeText = computed<string>(() => getTourTypeText(createTourForm.value.type))
 const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.value.type))
@@ -31,7 +32,8 @@ const createTourForm = ref<CreateTourForm>({
   endLocation: '',
   type: TourType.WALK,
   pons: [],
-  tourCollectionId: 1
+  tourCollectionId: 1,
+  result: undefined
 })
 
 const mapContainer = ref()
@@ -116,6 +118,15 @@ const setCenter = (center: number[] | string[]) => {
   console.log(center)
 }
 
+const resultPanelAnchors = [
+  250,
+  Math.round(0.4 * window.innerHeight),
+  Math.round(0.7 * window.innerHeight)
+]
+const resultPanelHeight = ref(resultPanelAnchors[0])
+
+const hasPlanned = computed(() => mapContainer.value && mapContainer.value.navigationResult)
+
 onMounted(() => {
   App.addListener('backButton', () => {
     selectPoint.value = undefined
@@ -132,7 +143,7 @@ onUnmounted(() => {
   <div id="mobile-planner">
     <div id="top-menu">
       <div class="outer-container">
-        <div class="menu-select">
+        <div class="menu-select" :style="{ height: hasPlanned ? 0 : '44px' }">
           <van-cell @click="showPicker = true">
             <template #icon
               ><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon"
@@ -158,7 +169,11 @@ onUnmounted(() => {
           </van-popup>
         </div>
         <div class="menu-locations">
-          <van-form ref="formRef" @submit="handleCreateTour">
+          <van-form
+            ref="formRef"
+            @submit="handleCreateTour"
+            :style="{ height: hasPlanned ? 0 : '78px' }"
+          >
             <van-cell-group inset>
               <van-field
                 v-model="createTourForm.startLocation"
@@ -192,7 +207,15 @@ onUnmounted(() => {
               </van-field>
             </van-cell-group>
           </van-form>
-          <div class="hint"><span>Long press to select a point</span></div>
+          <div class="hint">
+            <span v-if="selectPoint">{{ selectPoint }}</span>
+            <span
+              v-else-if="!hasPlanned && createTourForm.startLocation && createTourForm.endLocation"
+              ><van-loading :size="16"
+            /></span>
+            <span v-else-if="hasPlanned">Route planning succeed</span>
+            <span v-else>Long press to select a point</span>
+          </div>
         </div>
       </div>
     </div>
@@ -215,7 +238,12 @@ onUnmounted(() => {
     <MapPlanner
       ref="mapContainer"
       v-model:selectPoint="selectPoint"
-      v-model:tour-data="createTourForm"
+      :tour-data="createTourForm"
+      @update-tour-data="
+        (...args: [keyof CreateTourForm, never]) => {
+          createTourForm[args[0]] = args[1]
+        }
+      "
     />
     <van-floating-panel
       v-if="pointSheetHeight > 0"
@@ -243,11 +271,26 @@ onUnmounted(() => {
           </div>
           <div class="pos-sheet-location">
             {{ sheetData.address }}
-            <!--          Southwest Jiaotong University Xipu Campus, Pidu, Chengdu, Sichuan-->
           </div>
         </div>
       </div>
       <div class="space"></div>
+    </van-floating-panel>
+    <van-floating-panel
+      class="result-panel"
+      v-model:height="resultPanelHeight"
+      :anchors="resultPanelAnchors"
+      v-if="selectedAll && hasPlanned"
+    >
+      <van-cell class="result-cell">
+        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>
+        <template #title>
+          <span class="menu-title">{{ tourTypeText.toUpperCase() }}</span>
+        </template>
+        <van-button size="small" plain hairline type="primary" class="adjust-btn"
+          >ADJUST ROUTE</van-button
+        >
+      </van-cell>
     </van-floating-panel>
   </div>
 </template>

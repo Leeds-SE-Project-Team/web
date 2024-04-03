@@ -1,16 +1,28 @@
 #mobile-planner {
-  $modal-z-index: 200;
+  $modal-z-index: $mobile-footer-nav-z-index + 1;
   font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
   height: 100%;
+
+  *{
+    box-sizing: border-box;
+  }
 
   #top-menu {
     background-color: transparent;
 
+
+
     .outer-container {
       position: relative;
       z-index: 1;
+      overflow: hidden;
 
-      .menu-select {
+      *{
+        transition: height 0.2s ease-out;
+      }
+
+      .menu-select{
+        overflow: hidden;
         .van-cell {
           display: flex;
           justify-content: center;
@@ -29,8 +41,6 @@
             font-family: "PingFang SC", DFPKingGothicGB-Medium, sans-serif;
             opacity: 0.9;
           }
-
-
         }
 
         .select-items {
@@ -72,13 +82,15 @@
         }
 
         .van-form {
+          overflow: hidden;
+
           --van-field-input-disabled-text-color: white;
           --van-field-clear-icon-color: white;
           --van-field-clear-icon-size: 12px;
           --van-field-right-icon-color: white;
 
           .van-cell-group {
-            margin: 0;
+            margin: 10px 0;
             padding: 5px 0;
 
             .van-cell {
@@ -116,8 +128,7 @@
           text-align: center;
           font-size: 12px;
           color: rgba(255, 255, 255, 0.5);
-          padding: 0 5px 5px;
-          margin-top: -3px;
+          padding: 0 5px;
           height: 34px;
           justify-content: center;
           align-items: center;
@@ -214,6 +225,33 @@
 
     .space {
       height: 30px;
+    }
+  }
+
+  .result-panel{
+    z-index: $modal-z-index - 1;
+    .result-cell{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .menu-icon {
+        opacity: 0.6;
+        margin-right: 30px;
+        height: 20px;
+        width: 20px;
+      }
+
+      .van-cell__title {
+        margin: auto 0;
+        font-size: 20px;
+        font-family: "PingFang SC", DFPKingGothicGB-Medium, sans-serif;
+        opacity: 0.9;
+      }
+
+      .adjust-btn{
+        border: transparent;
+      }
     }
   }
 }

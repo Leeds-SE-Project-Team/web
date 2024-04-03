@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { getCurrentLocation } from '@/utils'
 import type { TourType } from '@/apis/tour'
 import { Message } from '@arco-design/web-vue'
+import { showNotify } from 'vant'
 
 export const useMapStore = defineStore('map', () => {
   const getGeocoder = (config?: {
@@ -55,6 +56,40 @@ export const useMapStore = defineStore('map', () => {
     return path
   }
 
+  const drawRoute = (mapInstance: AMap.Map, route: any, other?: boolean) => {
+    const path = parseRouteToPath(route, other)
+
+    const startMarker = new AMap.Marker({
+      position: path[0],
+      icon: 'https://webapi.amap.com/theme/v1.3/markers/n/start.png',
+      map: mapInstance,
+      anchor: 'bottom-center'
+    })
+
+    const endMarker = new AMap.Marker({
+      position: path[path.length - 1],
+      icon: 'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
+      map: mapInstance,
+      anchor: 'bottom-center'
+    })
+
+    const routeLine = new AMap.Polyline({
+      path: path,
+      isOutline: true,
+      outlineColor: '#ffeeee',
+      borderWeight: 2,
+      strokeWeight: 5,
+      strokeColor: '#0091ff',
+      strokeOpacity: 0.9,
+      lineJoin: 'round'
+    })
+
+    mapInstance.add(routeLine)
+    // 调整视野达到最佳显示区域
+    mapInstance.setFitView([startMarker, endMarker, routeLine])
+    return [startMarker, endMarker, routeLine]
+  }
+
   const planRoute = (
     startLocation: number[] | string[],
     endLocation: number[] | string[],
@@ -73,45 +108,13 @@ export const useMapStore = defineStore('map', () => {
         autoFitView: true
       }
       const walking = new (AMap as any).Walking(walkOption)
-      const drawRoute = (route: any, other?: boolean) => {
-        const path = parseRouteToPath(route, other)
-
-        const startMarker = new AMap.Marker({
-          position: path[0],
-          icon: 'https://webapi.amap.com/theme/v1.3/markers/n/start.png',
-          map: mapInstance,
-          anchor: 'bottom-center'
-        })
-
-        const endMarker = new AMap.Marker({
-          position: path[path.length - 1],
-          icon: 'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
-          map: mapInstance,
-          anchor: 'bottom-center'
-        })
-
-        const routeLine = new AMap.Polyline({
-          path: path,
-          isOutline: true,
-          outlineColor: '#ffeeee',
-          borderWeight: 2,
-          strokeWeight: 5,
-          strokeColor: '#0091ff',
-          strokeOpacity: 0.9,
-          lineJoin: 'round'
-        })
-
-        mapInstance.add(routeLine)
-
-        // 调整视野达到最佳显示区域
-        mapInstance.setFitView([startMarker, endMarker, routeLine])
-      }
 
       walking.search(startLocation, endLocation, function (status: any, result: any) {
         // result即是对应的路线数据信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_RidingResult
         if (status === 'complete') {
-          Message.success('路线数据查询成功')
-          drawRoute(result.routes[0])
+          showNotify({ type: 'success', message: '路线数据查询成功' })
+          // drawRoute(result.routes[0])
+          // console.log(result)
           resolve(result)
         } else {
           Message.error('路线数据查询失败' + result)
@@ -133,6 +136,7 @@ export const useMapStore = defineStore('map', () => {
     updateCurrentLocation,
     parseRouteToPath,
     planRoute,
-    screenMap
+    screenMap,
+    drawRoute
   }
 })

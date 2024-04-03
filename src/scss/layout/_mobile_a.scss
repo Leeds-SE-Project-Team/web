@@ -1,8 +1,10 @@
 $mobile-footer-nav-height: 50px;
+$mobile-footer-nav-z-index: 200;
 
 #mobile-footer-nav {
   height: $mobile-footer-nav-height;
   background-color: #383838;
+  z-index: $mobile-footer-nav-z-index;
 
   .tab-title {
     font-size: 10px;
