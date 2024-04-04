@@ -15,7 +15,6 @@ import MapPlanner from '@/views/planner/components/MapPlanner.vue'
 import { hapticsImpactLight } from '@/utils'
 import { App } from '@capacitor/app'
 import { useMapStore } from '@/stores/map'
-import { has } from 'lodash-es'
 
 const tourTypeText = computed<string>(() => getTourTypeText(createTourForm.value.type))
 const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.value.type))
@@ -90,6 +89,12 @@ watch(selectPoint, (value) => {
   }
 })
 
+watch(createTourForm, () => {
+  if (hasPlanned.value) {
+    alwaysShowTop.value = false
+  }
+})
+
 const sheetData = computed(() => mapContainer.value.sheetData)
 
 const handleSelectStart = () => {
@@ -119,7 +124,6 @@ const setCenter = (center: number[] | string[]) => {
 }
 
 const resultPanelAnchors = [
-  250,
   Math.round(0.4 * window.innerHeight),
   Math.round(0.7 * window.innerHeight)
 ]
@@ -127,6 +131,12 @@ const resultPanelHeight = ref(resultPanelAnchors[0])
 
 const hasPlanned = computed(() => mapContainer.value && mapContainer.value.navigationResult)
 
+const alwaysShowTop = ref(false)
+
+const plannedResult = computed(() => mapContainer.value.navigationResult)
+const plannedFirstRoute = computed(() =>
+  plannedResult.value ? (plannedResult.value as any).routes[0] : undefined
+)
 onMounted(() => {
   App.addListener('backButton', () => {
     selectPoint.value = undefined
@@ -143,7 +153,7 @@ onUnmounted(() => {
   <div id="mobile-planner">
     <div id="top-menu">
       <div class="outer-container">
-        <div class="menu-select" :style="{ height: hasPlanned ? 0 : '44px' }">
+        <div class="menu-select" :style="{ height: hasPlanned && !alwaysShowTop ? 0 : '44px' }">
           <van-cell @click="showPicker = true">
             <template #icon
               ><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon"
@@ -172,7 +182,7 @@ onUnmounted(() => {
           <van-form
             ref="formRef"
             @submit="handleCreateTour"
-            :style="{ height: hasPlanned ? 0 : '78px' }"
+            :style="{ height: hasPlanned && !alwaysShowTop ? 0 : '78px' }"
           >
             <van-cell-group inset>
               <van-field
@@ -213,7 +223,9 @@ onUnmounted(() => {
               v-else-if="!hasPlanned && createTourForm.startLocation && createTourForm.endLocation"
               ><van-loading :size="16"
             /></span>
-            <span v-else-if="hasPlanned">Route planning succeed</span>
+            <span v-else-if="hasPlanned" @click="alwaysShowTop = !alwaysShowTop"
+              >Route planning succeed</span
+            >
             <span v-else>Long press to select a point</span>
           </div>
         </div>
@@ -287,10 +299,40 @@ onUnmounted(() => {
         <template #title>
           <span class="menu-title">{{ tourTypeText.toUpperCase() }}</span>
         </template>
-        <van-button size="small" plain hairline type="primary" class="adjust-btn"
-          >ADJUST ROUTE</van-button
+        <van-button
+          size="small"
+          plain
+          hairline
+          type="primary"
+          class="adjust-btn"
+          :loading="mapContainer.resultLoading"
+          :loading-text="' loading'"
+          @click="alwaysShowTop = !alwaysShowTop"
         >
+          <span v-if="!alwaysShowTop">ADJUST ROUTE</span>
+          <span v-else>HIDE ROUTE</span>
+        </van-button>
       </van-cell>
+      <van-grid :gutter="10" :border="false" class="result-detail">
+        <van-grid-item icon="clock-o" text="文字" class="detail-item">
+          <template #text>
+            <span class="detail-content"> {{ Math.round(plannedFirstRoute?.time / 60) }} min </span>
+          </template>
+        </van-grid-item>
+        <van-grid-item icon="aim" class="detail-item">
+          <template #text>
+            <span class="detail-content">
+              {{ (plannedFirstRoute?.distance / 1000).toFixed(2) }} km
+            </span></template
+          >
+        </van-grid-item>
+        <van-grid-item icon="share-o" class="detail-item action-item">
+          <template #text> <span class="detail-content"> share </span></template>
+        </van-grid-item>
+        <van-grid-item icon="revoke" class="detail-item action-item">
+          <template #text> <span class="detail-content"> Reset </span></template>
+        </van-grid-item>
+      </van-grid>
     </van-floating-panel>
   </div>
 </template>

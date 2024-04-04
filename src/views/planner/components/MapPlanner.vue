@@ -5,6 +5,7 @@ import { useMapStore } from '@/stores/map'
 import { type CreateTourForm, parseLocation } from '@/apis/tour'
 import _ from 'lodash-es'
 import { Message } from '@arco-design/web-vue'
+import useLoading from '@/hooks/loading'
 
 const getCurrentLocation = () => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition((status, info) => {
@@ -90,9 +91,12 @@ const handleDragendEnd = (e) => {
 // const layers = reactive<any[]>([])
 let layers: AMap.Overlay[] = []
 
+const resultLoadingObj = useLoading()
+const resultLoading = resultLoadingObj.loading
 watch(props.tourData, (value) => {
   const mapInstance: AMap.Map = mapRef.value.$$getInstance()
   if (mapRef.value && value.startLocation && value.endLocation) {
+    resultLoadingObj.setLoading(true)
     mapStore
       .planRoute(
         parseLocation(props.tourData.startLocation),
@@ -101,8 +105,12 @@ watch(props.tourData, (value) => {
         mapRef.value.$$getInstance()
       )
       .then((result: any) => {
+        console.log(result)
         layers = mapStore.drawRoute(mapInstance, result.routes[0])
         navigationResult.value = result
+      })
+      .finally(() => {
+        resultLoadingObj.setLoading(false)
       })
   } else {
     mapInstance.remove(layers)
@@ -117,7 +125,8 @@ defineExpose({
   sheetData,
   center,
   navigationResult,
-  mapRef
+  mapRef,
+  resultLoading
 })
 </script>
 
