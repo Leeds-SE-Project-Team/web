@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { getCurrentLocation } from '@/utils'
 import type { TourType } from '@/apis/tour'
 import { Message } from '@arco-design/web-vue'
-import { showNotify } from 'vant'
 
 export const useMapStore = defineStore('map', () => {
   const getGeocoder = (config?: {
@@ -112,7 +111,7 @@ export const useMapStore = defineStore('map', () => {
       walking.search(startLocation, endLocation, function (status: any, result: any) {
         // result即是对应的路线数据信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_RidingResult
         if (status === 'complete') {
-          showNotify({ type: 'success', message: '路线数据查询成功' })
+          // showNotify({ type: 'success', message: '路线数据查询成功' })
           // drawRoute(result.routes[0])
           // console.log(result)
           resolve(result)

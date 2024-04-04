@@ -275,5 +275,9 @@
         color: rgb(25, 137, 250)
       }
     }
+
+    .collection-picker {
+      z-index: $modal-z-index;
+    }
   }
 }

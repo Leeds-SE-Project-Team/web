@@ -15,25 +15,68 @@ import MapPlanner from '@/views/planner/components/MapPlanner.vue'
 import { hapticsImpactLight } from '@/utils'
 import { App } from '@capacitor/app'
 import { useMapStore } from '@/stores/map'
+import { getTourCollectionsByUserId, type TourCollection } from '@/apis/collection'
+import { useUserStore } from '@/stores/user'
 
 const tourTypeText = computed<string>(() => getTourTypeText(createTourForm.value.type))
 const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.value.type))
 
 const showPicker = ref(false)
-
+const showCollectionPicker = ref(false)
 const onConfirm = ({ selectedOptions }: { selectedOptions: PickerOption[] }) => {
   showPicker.value = false
   createTourForm.value.type = selectedOptions[0].value as TourType
 }
+const onCollectionConfirm = ({ selectedOptions }: { selectedOptions: PickerOption[] }) => {
+  showCollectionPicker.value = false
+  selectedCollection.value = selectedOptions[0].value as number
+}
 
+const userStore = useUserStore()
+
+const userCollections = ref<TourCollection[]>([])
+const selectedCollection = ref(-1)
+
+const collectionLoadingObj = useLoading()
+const fetchTourCollections = () => {
+  // userStore
+  //   .getUserRecord()
+  //   .then((user) => {
+  collectionLoadingObj.setLoading(true)
+  getTourCollectionsByUserId(1)
+    .then((apiRes) => {
+      if (apiRes.success) {
+        userCollections.value = apiRes.data!
+        selectedCollection.value = userCollections.value[0].id
+      } else {
+        Message.error(apiRes.message)
+      }
+    })
+    .catch((reason: any) => {
+      Message.error(reason)
+    })
+    .finally(() => {
+      collectionLoadingObj.setLoading(false)
+    })
+  // })
+  // .catch((reason: any) => {
+  //   Message.error(reason)
+  // })
+}
 const createTourForm = ref<CreateTourForm>({
   startLocation: '',
   endLocation: '',
   type: TourType.WALK,
   pons: [],
-  tourCollectionId: 1,
+  tourCollectionId: -1,
   result: undefined
 })
+
+const resetForm = () => {
+  createTourForm.value.startLocation = ''
+  createTourForm.value.endLocation = ''
+  createTourForm.value.result = undefined
+}
 
 const mapContainer = ref()
 const mapStore = useMapStore()
@@ -44,7 +87,7 @@ const handleCreateTour = () => {
   formRef.value.validate().then((e: any) => {
     if (!e) {
       setLoading(true)
-      createTour(createTourForm.value)
+      createTour({ ...createTourForm.value, tourCollectionId: selectedCollection.value })
         .then((res) => {
           if (res.success) {
             Message.success(res.message)
@@ -63,7 +106,7 @@ const handleCreateTour = () => {
     }
   })
 }
-const handleScrollType = () => {
+const handleScrollPicker = () => {
   hapticsImpactLight()
 }
 
@@ -124,12 +167,19 @@ const setCenter = (center: number[] | string[]) => {
 }
 
 const resultPanelAnchors = [
+  Math.round(0.2 * window.innerHeight),
   Math.round(0.4 * window.innerHeight),
-  Math.round(0.7 * window.innerHeight)
+  Math.round(0.6 * window.innerHeight)
 ]
-const resultPanelHeight = ref(resultPanelAnchors[0])
+const resultPanelHeight = ref(resultPanelAnchors[2])
 
-const hasPlanned = computed(() => mapContainer.value && mapContainer.value.navigationResult)
+const hasPlanned = computed(() => {
+  const result = mapContainer.value && mapContainer.value.navigationResult
+  if (result) {
+    fetchTourCollections()
+  }
+  return result
+})
 
 const alwaysShowTop = ref(false)
 
@@ -153,7 +203,10 @@ onUnmounted(() => {
   <div id="mobile-planner">
     <div id="top-menu">
       <div class="outer-container">
-        <div class="menu-select" :style="{ height: hasPlanned && !alwaysShowTop ? 0 : '44px' }">
+        <div
+          :style="{ height: (hasPlanned || selectPoint) && !alwaysShowTop ? 0 : '44px' }"
+          class="menu-select"
+        >
           <van-cell @click="showPicker = true">
             <template #icon
               ><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon"
@@ -174,15 +227,15 @@ onUnmounted(() => {
               :columns="tourTypeMap"
               @cancel="showPicker = false"
               @confirm="onConfirm"
-              @scroll-into="handleScrollType"
+              @scroll-into="handleScrollPicker"
             />
           </van-popup>
         </div>
         <div class="menu-locations">
           <van-form
             ref="formRef"
+            :style="{ height: (hasPlanned || selectPoint) && !alwaysShowTop ? 0 : '78px' }"
             @submit="handleCreateTour"
-            :style="{ height: hasPlanned && !alwaysShowTop ? 0 : '78px' }"
           >
             <van-cell-group inset>
               <van-field
@@ -218,7 +271,9 @@ onUnmounted(() => {
             </van-cell-group>
           </van-form>
           <div class="hint">
-            <span v-if="selectPoint">{{ selectPoint }}</span>
+            <span v-if="selectPoint" @click="alwaysShowTop = !alwaysShowTop">{{
+              selectPoint
+            }}</span>
             <span
               v-else-if="!hasPlanned && createTourForm.startLocation && createTourForm.endLocation"
               ><van-loading :size="16"
@@ -233,6 +288,7 @@ onUnmounted(() => {
     </div>
     <div v-if="selectedAll" class="operation-container">
       <van-button
+        :loading="loading"
         class="operation-btn primary-btn-dark"
         style="background: white; color: black; border: thin solid lightgray"
         @click="handleCreateTour"
@@ -289,10 +345,10 @@ onUnmounted(() => {
       <div class="space"></div>
     </van-floating-panel>
     <van-floating-panel
-      class="result-panel"
+      v-if="selectedAll && hasPlanned && !showCollectionPicker"
       v-model:height="resultPanelHeight"
       :anchors="resultPanelAnchors"
-      v-if="selectedAll && hasPlanned"
+      class="result-panel"
     >
       <van-cell class="result-cell">
         <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>
@@ -300,40 +356,64 @@ onUnmounted(() => {
           <span class="menu-title">{{ tourTypeText.toUpperCase() }}</span>
         </template>
         <van-button
-          size="small"
-          plain
-          hairline
-          type="primary"
-          class="adjust-btn"
           :loading="mapContainer.resultLoading"
           :loading-text="' loading'"
+          class="adjust-btn"
+          hairline
+          plain
+          size="small"
+          type="primary"
           @click="alwaysShowTop = !alwaysShowTop"
         >
           <span v-if="!alwaysShowTop">ADJUST ROUTE</span>
           <span v-else>HIDE ROUTE</span>
         </van-button>
       </van-cell>
-      <van-grid :gutter="10" :border="false" class="result-detail">
-        <van-grid-item icon="clock-o" text="文字" class="detail-item">
+
+      <van-grid :border="false" :gutter="10" class="result-detail">
+        <van-grid-item class="detail-item" icon="clock-o" text="文字">
           <template #text>
             <span class="detail-content"> {{ Math.round(plannedFirstRoute?.time / 60) }} min </span>
           </template>
         </van-grid-item>
-        <van-grid-item icon="aim" class="detail-item">
+        <van-grid-item class="detail-item" icon="aim">
           <template #text>
             <span class="detail-content">
               {{ (plannedFirstRoute?.distance / 1000).toFixed(2) }} km
             </span></template
           >
         </van-grid-item>
-        <van-grid-item icon="share-o" class="detail-item action-item">
-          <template #text> <span class="detail-content"> share </span></template>
+        <van-grid-item class="detail-item action-item" icon="share-o">
+          <template #text><span class="detail-content"> share </span></template>
         </van-grid-item>
-        <van-grid-item icon="revoke" class="detail-item action-item">
-          <template #text> <span class="detail-content"> Reset </span></template>
+        <van-grid-item class="detail-item action-item" icon="revoke" @click="resetForm">
+          <template #text><span class="detail-content"> Reset </span></template>
         </van-grid-item>
       </van-grid>
+      <van-cell @click="showCollectionPicker = true">
+        <!--        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>-->
+        <template #title>
+          <span class="menu-title">Select collection</span>
+        </template>
+        <van-loading v-if="selectedCollection === -1" />
+        <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
+      </van-cell>
     </van-floating-panel>
+    <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>
+      <van-picker
+        :columns="
+          userCollections.map((collection) => ({
+            value: collection.id,
+            text: collection.name
+          }))
+        "
+        :loading="collectionLoadingObj.loading.value"
+        class="collection-picker"
+        @cancel="showCollectionPicker = false"
+        @confirm="onCollectionConfirm"
+        @scroll-into="handleScrollPicker"
+      />
+    </van-popup>
   </div>
 </template>
 

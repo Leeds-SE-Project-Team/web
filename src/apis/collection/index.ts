@@ -13,6 +13,17 @@ export interface TourCollection {
   // tours: TourRecord
 }
 
+export const getTourCollectionsByUserId: (
+  userId: number
+) => Promise<ApiResponse<TourCollection[]>> = (userId: number) =>
+  axiosRequest({
+    method: 'GET',
+    url: 'tour_collection/user',
+    headers: {
+      'User-ID': userId
+    }
+  })
+
 export const getTourCollection: () => Promise<ApiResponse<TourCollection[]>> = () =>
   axiosRequest({
     method: 'GET',
