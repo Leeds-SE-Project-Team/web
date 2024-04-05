@@ -17,7 +17,7 @@ const handleConfirm = (tourSpotForm: CreateTourSpotForm) => {
   recordMapRef.value.handleCreateSpot(tourSpotForm)
 }
 
-const tourId = ref(1)
+const tourId = ref(-1)
 provide('tourId', tourId)
 </script>
 

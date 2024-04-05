@@ -14,7 +14,7 @@ const emits = defineEmits<{
   (e: 'confirm', tourSpot: CreateTourSpotForm): void
 }>()
 
-const tourId = inject<Ref<number>>('tourId', ref(1))
+const tourId = inject<Ref<number>>('tourId', ref(-1))
 
 const locateLoading = useLoading(true)
 const currentLocation = ref('')

@@ -12,7 +12,7 @@ import {
 import type { PickerOption } from 'vant'
 import { Message } from '@arco-design/web-vue'
 import useLoading from '@/hooks/loading'
-import MapPlanner from '@/views/planner/components/MapPlanner.vue'
+import MapPlanner from '@/views/mobile/planner/components/MapPlanner.vue'
 import { hapticsImpactLight } from '@/utils'
 import { App } from '@capacitor/app'
 import { useMapStore } from '@/stores/map'

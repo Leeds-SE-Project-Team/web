@@ -1,18 +1,29 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { ElAmap } from '@vuemap/vue-amap'
-import { createTourSpot, type CreateTourSpotForm, type TourSpot } from '@/apis/tour/spot'
+import {
+  createTourSpot,
+  type CreateTourSpotForm,
+  deleteTourSpot,
+  getTourSpots,
+  type TourSpot
+} from '@/apis/tour/spot'
 import { showNotify } from 'vant'
 import { getTourById, parseLocation, parseLocationNumber, type TourRecord } from '@/apis/tour'
 import { uploadFileFromURL } from '@/utils/file'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
 import { useMapStore } from '@/stores/map'
+import useLoading from '@/hooks/loading'
 
 const route = useRoute()
-const tourId = route.params.tourId as string
+const tourId = parseInt(route.params.tourId as string)
 const tourData = ref<TourRecord>()
 const fetchTour = () => {
+  if (tourId === -1) {
+    showNotify({ type: 'primary', message: 'New adventure start!' })
+    return
+  }
   getTourById(tourId)
     .then((apiRes) => {
       if (apiRes.success) {
@@ -40,7 +51,13 @@ const mapStore = useMapStore()
 
 const zoom = ref(16)
 const spotList = ref<TourSpot[]>([])
-
+const fetchSpotList = () => {
+  getTourSpots().then((apiRes) => {
+    if (apiRes.success) {
+      spotList.value = apiRes.data!
+    }
+  })
+}
 const center = ref([116.412866, 39.88365])
 
 const markerInit = (e) => {
@@ -62,34 +79,39 @@ const getCurrentLocation = () => {
       center.value = info.position.toArray()
       const arr = info.position.toArray()
       locationTrackList.value.push(arr)
-      // Message.info(arr.toString())
     }
   })
 }
 
 const handleCreateSpot = (form: CreateTourSpotForm) => {
-  uploadFileFromURL(form.imageUrl, './')
-    .then((apiRes) => {
-      // console.log(apiRes)
-    })
-    .then(() => {
-      createTourSpot(form)
-        .then((apiRes) => {
-          // console.log(apiRes)
-          if (apiRes.success) {
-            spotList.value.push(apiRes.data!)
-            moveToPosition(parseLocationNumber(form.location))
-            showNotify({ type: 'success', message: apiRes.message })
-          } else {
-            showNotify({ type: 'primary', message: apiRes.message })
-          }
+  showNotify({ type: 'primary', message: 'uploading image...' })
+  uploadFileFromURL(form.imageUrl, `/tour/${form.tourId}/spots`)
+    .then((uploadRes) => {
+      if (uploadRes.success) {
+        createTourSpot({
+          ...form,
+          imageUrl: import.meta.env.APP_SERVER_URL + uploadRes.data!,
+          tourId: tourId
         })
-        .catch((e) => {
-          showNotify({ type: 'danger', message: e })
-        })
+          .then((apiRes) => {
+            if (apiRes.success) {
+              spotList.value.push(apiRes.data!)
+              moveToPosition(parseLocationNumber(form.location))
+              showNotify({ type: 'success', message: apiRes.message })
+            } else {
+              showNotify({ type: 'primary', message: apiRes.message })
+            }
+          })
+          .catch((e) => {
+            showNotify({ type: 'danger', message: e })
+          })
+      }
     })
     .catch((e) => {
       showNotify({ type: 'danger', message: e })
+    })
+    .finally(() => {
+      console.log('over')
     })
 }
 
@@ -119,6 +141,27 @@ const handleClickSpot = (spot: TourSpot) => {
   // spotPanelHeight.value = spotPanelAnchors[1]
 }
 
+const deleteSpotLoadingObj = useLoading()
+const handleDeleteSpot = () => {
+  if (!selectedSpot.value) {
+    return
+  }
+  deleteSpotLoadingObj.setLoading(true)
+  deleteTourSpot(selectedSpot.value.id)
+    .then((apiRes) => {
+      if (apiRes.success) {
+        showNotify({ type: 'success', message: apiRes.message })
+        selectedSpot.value = undefined
+        fetchSpotList()
+      } else {
+        showNotify({ type: 'primary', message: apiRes.message })
+      }
+    })
+    .finally(() => {
+      deleteSpotLoadingObj.setLoading(false)
+    })
+}
+
 const moveToPosition = (position: number[]) => {
   center.value = position
   zoom.value = 16
@@ -132,6 +175,8 @@ watch(selectedSpot, (value) => {
     // moveToPosition([x, y - 0.002])
     // spotPanelHeight.value = spotPanelAnchors[1]
     showSpotSheet.value = true
+  } else {
+    showSpotSheet.value = false
   }
 })
 
@@ -167,6 +212,7 @@ const polyline = computed(() => ({
 
 onMounted(() => {
   window.setInterval(getCurrentLocation, 3000)
+  fetchSpotList()
 })
 
 // onMounted(() => {
@@ -209,6 +255,7 @@ onMounted(() => {
   <div id="page-record">
     <div id="map-container">
       <el-amap
+        ref="mapRef"
         v-model:zoom="zoom"
         :animateEnable="true"
         :center="center"
@@ -217,7 +264,6 @@ onMounted(() => {
         mapStyle="amap://styles/fresh"
         @complete="getCurrentLocation"
         @init="mapInit"
-        ref="mapRef"
       >
         <el-amap-polyline
           :draggable="polyline.draggable"
@@ -236,9 +282,13 @@ onMounted(() => {
         >
           <div @click="handleClickSpot(spot)">
             <img
+              :src="
+                tourId === spot.tourId
+                  ? '//webapi.amap.com/theme/v1.3/markers/b/mark_bs.png'
+                  : '//webapi.amap.com/theme/v1.3/markers/n/mark_rs.png'
+              "
               alt="marker"
               height="32px"
-              src="//webapi.amap.com/theme/v1.3/markers/b/mark_bs.png"
               width="19px"
             />
           </div>
@@ -264,7 +314,9 @@ onMounted(() => {
       :actions="[
         {
           name: 'Delete',
-          color: 'red'
+          color: 'red',
+          callback: handleDeleteSpot,
+          loading: deleteSpotLoadingObj.loading.value
         }
       ]"
       @close="handleCloseSpotAction"
@@ -288,7 +340,7 @@ onMounted(() => {
           height="270"
           style="margin-top: 20px"
         />
-        <van-divider dashed style="color: wheat; font-size: 25px"> TOUR SPOT</van-divider>
+        <van-divider dashed style="color: wheat; font-size: 25px">TOUR HIGHLIGHT</van-divider>
       </div>
       <template #cancel>Close</template>
       <template #action="{ action }">
