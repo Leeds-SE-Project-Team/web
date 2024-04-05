@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AHeader from '@/components/header/AHeader.vue'
-import { RouterView } from 'vue-router';
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
@@ -9,7 +9,7 @@ import { RouterView } from 'vue-router';
       <AHeader />
     </a-layout-header>
     <a-layout>
-      <a-layout-content class="border-1" id="planner-content">
+      <a-layout-content class="border-1" id="layout-b-content">
         <RouterView />
       </a-layout-content>
     </a-layout>

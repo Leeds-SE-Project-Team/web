@@ -9,14 +9,17 @@ dependencies:
     specifier: ^1.0.1
     version: 1.0.1
   '@amap/amap-jsapi-types':
-    specifier: ^0.0.13
-    version: 0.0.13
+    specifier: ^0.0.15
+    version: 0.0.15
   '@amap/screenshot':
     specifier: ^0.0.3
     version: 0.0.3
   '@capacitor/android':
     specifier: ^5.6.0
     version: 5.6.0(@capacitor/core@5.6.0)
+  '@capacitor/app':
+    specifier: ^5.0.7
+    version: 5.0.7(@capacitor/core@5.6.0)
   '@capacitor/camera':
     specifier: ^5.0.9
     version: 5.0.9(@capacitor/core@5.6.0)
@@ -26,6 +29,9 @@ dependencies:
   '@capacitor/core':
     specifier: ^5.6.0
     version: 5.6.0
+  '@capacitor/haptics':
+    specifier: ^5.0.7
+    version: 5.0.7(@capacitor/core@5.6.0)
   '@vuemap/vue-amap':
     specifier: ^2.1.1
     version: 2.1.1(vue@3.4.15)
@@ -136,8 +142,8 @@ packages:
     resolution: {integrity: sha512-nPyLKt7Ow/ThHLkSvn2etQlUzqxmTVgK7bIgwdBRTg2HK5668oN7xVxkaiRe3YZEzGzfV2XgH5Jmu2T73ljejw==}
     dev: false
 
-  /@amap/amap-jsapi-types@0.0.13:
-    resolution: {integrity: sha512-hwp36URjQT9vDTmoUPYph3SEAiOvoUB+PGK0jZeZamgvaxew7rgc1XZWL/HphyMfRAqKwIYsAvXm9v8DTSjjzA==}
+  /@amap/amap-jsapi-types@0.0.15:
+    resolution: {integrity: sha512-oqyRqHpVDZh5bUe2mAJh41ZsziSj0eUzwcfIbiaBNB0eiTJnZNhKsTdk77VOklOjwuwNfsblpKW9LjmWNpeQ7A==}
     dev: false
 
   /@amap/screenshot@0.0.3:
@@ -483,6 +489,14 @@ packages:
       '@capacitor/core': 5.6.0
     dev: false
 
+  /@capacitor/app@5.0.7(@capacitor/core@5.6.0):
+    resolution: {integrity: sha512-oad0jwQu+vgQDukeS9UV56yG10dlxkAGGl26IQpZlTmg3dTI9qSJtvhmlLfkF0nEtoj5IsVQUPE+NLH1oZkgGQ==}
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
+    dependencies:
+      '@capacitor/core': 5.6.0
+    dev: false
+
   /@capacitor/camera@5.0.9(@capacitor/core@5.6.0):
     resolution: {integrity: sha512-ibuctDzQWVABnJCtIuiFdVYvLbiQNln9gKMZGNN0bZ6oSqoxzDlN7etueJwyFaaRZZlVrXc/sMWuhOkeVJEHcQ==}
     peerDependencies:
@@ -521,6 +535,14 @@ packages:
     resolution: {integrity: sha512-xJhCOUGPHw0QYDA3YH+CmL6qiV9DH4Ij3yPxSenymjrtLuXI197u9ddCZwGEwgVIkh9kGZBBKzsNkn89SZ2gdQ==}
     dependencies:
       tslib: 2.6.2
+    dev: false
+
+  /@capacitor/haptics@5.0.7(@capacitor/core@5.6.0):
+    resolution: {integrity: sha512-/j+7Qa4BxQA5aOU43cwXuiudfSXfoHFsAVfcehH5DkSjxLykZKWHEuE4uFJXqdkSIbAHjS37D0Sde6ENP6G/MA==}
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
+    dependencies:
+      '@capacitor/core': 5.6.0
     dev: false
 
   /@esbuild/aix-ppc64@0.19.12:

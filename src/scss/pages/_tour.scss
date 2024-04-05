@@ -1,11 +1,22 @@
-#tour-content {
+#layout-b-content {
     background-color: #f5f4ea;
 
-    .tour-main {
-        background-color: #f5f4ea;
-        // height: 2000px;
-        padding: 0px 6vw;
+    @media screen and (max-width:768px) {
+        .tour-main {
+            background-color: #f5f4ea;
+            // height: 2000px;
+            padding: 0;
+        }
     }
+
+    @media screen and (min-width: 768px) {
+        .tour-main {
+            background-color: #f5f4ea;
+            // height: 2000px;
+            padding: 0px 6vw;
+        }
+    }
+    
 
 
     .tour-title {
@@ -18,18 +29,17 @@
             width: 100%;
 
             .main-bg {
-                float: left;
                 height: 100%;
                 width: 61.5%;
                 img {
                     width: 100%;
                     height: 100%;
                     border: 1px solid #fff;
+                    object-fit: cover;
                 }
             }
 
             .sub {
-                float: left;
                 height: 100%;
                 width: 38.5%;
 
@@ -40,6 +50,7 @@
                         width: 100%;
                         height: 100%;
                         border: 1px solid #fff;
+                        object-fit: cover;
                     }
                 }
             }
@@ -83,6 +94,26 @@
         }
     }
 
+    @media screen and (max-width: 768px) {
+        .tour-title{
+            margin-top: 0;
+        }
+    }
+
+    @media screen and (max-width: 500px) {
+        .tour-title{
+            .bg{
+                .main-bg{
+                    width: 100%;
+                }
+                .sub{
+                    display: none;
+                }
+            }
+        }
+        
+    }
+
     .overview {
         box-shadow: 20px 20px 20px rgba(0, 0, 0, .2) !important;
         padding: 0 2%;
@@ -105,68 +136,23 @@
             }
         }
 
-        .tour-1pic {
-            width: 45vw;
-            aspect-ratio: 1.6;
-            .bg {
-                width: 100%;
+        .tour-pic {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            height: 250px;
+            .pic-container{
                 height: 100%;
-                img {
-                    float: left;
-                    width: 100%;
+                gap: 0.7rem;
+                .pic {
                     height: 100%;
-                    border: 1px solid #fff;
-                }
-            }
-        }
-
-        .tour-2pic {
-            width: 55vw;
-            aspect-ratio: 2.66667;
-            .bg {
-                width: 100%;
-                height: 100%;
-                img {
-                    float: left;
-                    width: 50%;
-                    height: 100%;
-                    border: 1px solid #fff;
-                }
-            }
-        }
-
-        .tour-3pic {
-            .bg {
-                aspect-ratio: 2.66667;
-                width: 55vw;
-    
-                .main-bg {
-                    float: left;
-                    height: 100%;
-                    width: 61.5%;
                     img {
-                        width: 100%;
                         height: 100%;
                         border: 1px solid #fff;
                     }
                 }
-    
-                .sub {
-                    float: left;
-                    height: 100%;
-                    width: 38.5%;
-    
-                    .sub-bg {
-                        width: 100%;
-                        height: 50%;
-                        img {
-                            width: 100%;
-                            height: 100%;
-                            border: 1px solid #fff;
-                        }
-                    }
-                }
             }
+            
         }
     }
 
@@ -270,6 +256,9 @@
 
     .pic-map {
         padding-bottom: 5vw;
+        .arco-card-header{
+            padding: 0;
+        }
     }
     
     .border-map {
@@ -281,81 +270,81 @@
         padding: 15px
     }
 
-    .picture-map {
-        width: 55vw;
-        position: relative;
+    // .picture-map {
+    //     width: 55vw;
+    //     position: relative;
 
-        .picture-wrapper {
-            display: flex;
-            gap: 0.25rem;
+    //     .picture-wrapper {
+    //         display: flex;
+    //         gap: 0.25rem;
 
-            &.hide {
-                display: none;
-            }
+    //         &.hide {
+    //             display: none;
+    //         }
 
-            .left {
-                width: 60%;
-                height: 400px;
-                flex-shrink: 0;
-            }
+    //         .left {
+    //             width: 60%;
+    //             height: 400px;
+    //             flex-shrink: 0;
+    //         }
 
-            .right {
-                height: 400px;
-                width: 40%;
-                flex-shrink: 0;
-                display: flex;
-                flex-direction: column;
-                gap: 0.25rem;
+    //         .right {
+    //             height: 400px;
+    //             width: 40%;
+    //             flex-shrink: 0;
+    //             display: flex;
+    //             flex-direction: column;
+    //             gap: 0.25rem;
 
-                .right-item {
-                    height: 200px;
-                }
-            }
-        }
+    //             .right-item {
+    //                 height: 200px;
+    //             }
+    //         }
+    //     }
 
-        .map-wrapper {
-            width: 100%;
-            height: 400px;
-            transition: all 2s ease-in;
+    //     .map-wrapper {
+    //         width: 100%;
+    //         height: 400px;
+    //         transition: all 2s ease-in;
 
-            &.hide {
-                display: none;
-            }
+    //         &.hide {
+    //             display: none;
+    //         }
 
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-        }
+    //         img {
+    //             width: 100%;
+    //             height: 100%;
+    //             object-fit: cover;
+    //         }
+    //     }
 
-        .switch {
-            position: absolute;
-            bottom: 2rem;
-            right: 2rem;
+    //     .switch {
+    //         position: absolute;
+    //         bottom: 2rem;
+    //         right: 2rem;
 
-            .switch-button {
-                height: 70px;
-                width: 70px;
-                border-radius: 10px;
-                border: #CCCCCC solid 3px;
-                background-color: transparent;
-                padding: 0;
-                overflow: hidden;
-                cursor: pointer;
+    //         .switch-button {
+    //             height: 70px;
+    //             width: 70px;
+    //             border-radius: 10px;
+    //             border: #CCCCCC solid 3px;
+    //             background-color: transparent;
+    //             padding: 0;
+    //             overflow: hidden;
+    //             cursor: pointer;
 
-                .small-img {
-                    width: 100%;
-                    height: 100%;
+    //             .small-img {
+    //                 width: 100%;
+    //                 height: 100%;
 
-                    img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        transition: all .2s ease-in-out;
-                    }
-                }
-            }
-        }
-    }
+    //                 img {
+    //                     width: 100%;
+    //                     height: 100%;
+    //                     object-fit: cover;
+    //                     transition: all .2s ease-in-out;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 }

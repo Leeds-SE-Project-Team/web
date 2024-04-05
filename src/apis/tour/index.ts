@@ -11,6 +11,18 @@ export enum TourType {
   PUBLIC
 }
 
+export const tourTypeMap = [
+  { text: 'hiking', value: TourType.WALK, img: 'src/assets/walk.svg' },
+  { text: 'cycling', value: TourType.CYCLING, img: 'src/assets/cycling.svg' },
+  { text: 'car', value: TourType.CAR, img: 'src/assets/drive.svg' },
+  { text: 'public', value: TourType.PUBLIC, img: 'src/assets/drive.svg' }
+]
+
+export const getTourTypeText = (type: TourType) =>
+  tourTypeMap.find((item) => item.value === type)!.text
+export const getTourTypeImg = (type: TourType) =>
+  tourTypeMap.find((item) => item.value === type)!.img
+
 export interface PON {}
 
 export interface TourRecord {
@@ -39,6 +51,7 @@ export interface CreateTourForm {
   type: TourType
   pons: PON[]
   tourCollectionId: number
+  result: any
 }
 
 export const parseLocation = (location: string): string[] => {

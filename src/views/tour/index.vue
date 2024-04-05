@@ -37,7 +37,6 @@
             experience required.</h3>
         </div>
       </section>
-
       <!-- the section of TOUR OVERVIEW -->
       <section class="overview">
         <div class="subtitle">TOUR OVERVIEW</div>
@@ -61,6 +60,7 @@
                 <a-image-preview-group>
                   <div class="left">
                     <a-image :height="'100%'" :src="testCardInfo.spots[0].coverUrl" :width="'100%'" fit="cover" />
+
                   </div>
                   <div class="right">
                     <div class="up right-item">
@@ -233,6 +233,7 @@ import { type TourRecord, TourType } from '@/apis/tour'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
 import { getTourSpotExample } from '@/apis/tour/spot'
 import { exampleUserRecord } from '@/apis/user'
+import DCard from '../discover/DCard.vue';
 
 const url = import.meta.env.APP_STATIC_URL.concat("/tour")
 const exam_pic = "https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a20012a2d4d5b9db43dfc6a01fe508c0.png~tplv-uwbnlip3yd-webp.webp"

@@ -161,6 +161,13 @@
       }
     }
 
+    @media screen and (max-width: 768px) {
+      .header-cover{
+        top:0;
+        padding: 0;
+      }
+    }
+
     .content{
       margin-top: calc(40px + 1rem);
       display: flex;
@@ -174,6 +181,7 @@
 
       .operation{
         gap: 1rem;
+        flex-wrap: wrap;
 
         .operation-button{
           min-width: 70px;
@@ -207,10 +215,17 @@
       .content-data{
         margin-top: 10px;
         gap: 1rem;
+        flex-wrap: wrap;
 
         .data-item{
           font-size: 20px;
         }
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      .content{
+        margin-top: 1rem;
       }
     }
 
@@ -224,6 +239,12 @@
       #route-map{
         width: 100%;
         height: 100%;
+      }
+    }
+
+    @media screen and (max-width: 500px) {
+      .map-area{
+        max-width: none;
       }
     }
 
@@ -260,6 +281,21 @@
           max-width: 600px;
           margin-left: 10%;
           // border: red 1px solid;
+          .d-card{
+            height: 700px;
+          }
+        }
+
+        @media screen and (max-width:500px) {
+          .tour-card{
+            margin-left: 0;
+          }
+        }
+      }
+
+      @media screen and (max-width:500px) {
+        .tour-card-wrapper{
+          margin-top: -80vh;
         }
       }
 

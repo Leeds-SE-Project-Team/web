@@ -9,7 +9,7 @@ import FooterNav from '@/components/mobile/navigation/FooterNav.vue'
       <AHeader />
     </a-layout-header>
     <a-layout>
-      <a-layout-content class="border-1" id="planner-content">
+      <a-layout-content class="border-1" id="layout-a-mobile">
         <RouterView />
       </a-layout-content>
     </a-layout>
