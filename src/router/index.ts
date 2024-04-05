@@ -4,6 +4,8 @@ import HomeView from '@/views/home/HomeView.vue'
 import LoginView from '@/views/login/index.vue'
 import DiscoverMobileView from '@/views/mobile/discover/index.vue'
 import DiscoverView from '@/views/discover/index.vue'
+import HighlightMobileView from '@/views/mobile/highlight/index.vue'
+import HighlightView from '@/views/highlight/index.vue'
 import PlannerView from '@/views/planner/index.vue'
 import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
@@ -44,34 +46,31 @@ const router = createRouter({
       path: '/discover',
       name: 'discover',
       meta: {
-        layout: 'mobile-main',
-        // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        // layout: 'mobile-main',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'Discover Page'
       }, // Render component dynamically according to platform
       // component: DiscoverMobileView
-      // component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
-      component: DiscoverMobileView,
-
-    },
-    {
-      path: '/plan',
-      name: 'planner',
-      meta: {
-        title: 'Planner Page',
-        // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default'
-        layout: 'mobile-default',
-      },
-      component: PlannerMobileView
+      component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
     },
     // {
     //   path: '/plan',
     //   name: 'planner',
     //   meta: {
     //     title: 'Planner Page',
-    //     layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default'
+    //     layout: 'mobile-default'
     //   },
-    //   component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
+    //   component: PlannerMobileView
     // },
+    {
+      path: '/plan',
+      name: 'planner',
+      meta: {
+        title: 'Planner Page',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default'
+      },
+      component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
+    },
     {
       path: '/tour',
       name: 'tour',
@@ -94,6 +93,17 @@ const router = createRouter({
         }
       },
       component: CollectionDetail
+    },
+    {
+      path: '/highlight',
+      name: 'highlight',
+      meta: {
+        // layout: 'mobile-main',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        title: 'highlight Page'
+      }, // Render component dynamically according to platform
+      // component: DiscoverMobileView
+      component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
     }
   ]
 })

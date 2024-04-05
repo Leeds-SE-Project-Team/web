@@ -1,0 +1,191 @@
+#page-highlight {
+    background-color: #f5f4ea;  
+    display: flex;
+
+    .left-page {
+        margin: 5vh 0 0 10vw;
+        width: 46vw;
+        background-color: #fff;
+        box-shadow: 20px 20px 20px rgba(0, 0, 0, .1) !important;
+    }
+
+    .right-page {
+        padding: 10px 20px;
+        margin: 5vh 0 0 2vw;
+        width: 32vw;
+        background-color: #fff;
+    }
+
+    .tour-title {
+        // margin-top: 40px;
+        .bg {
+            aspect-ratio: 2.66667;
+            width: 100%;
+
+            .main-bg {
+                float: left;
+                height: 100%;
+                width: 61.5%;
+                img {
+                    width: 100%;
+                    height: 100%;
+                    border: 1px solid #fff;
+                }
+            }
+
+            .sub {
+                float: left;
+                height: 100%;
+                width: 38.5%;
+
+                .sub-bg {
+                    width: 100%;
+                    height: 50%;
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        border: 1px solid #fff;
+                    }
+                }
+            }
+        }
+
+        .title {
+            font-size: 16px;
+            padding: 0 20px;
+            background-color: #fff;
+
+            .main-title {
+                margin: 0;
+                padding: 30px 0 0px 0;
+                font-size: 28px;
+                font-weight: 700 !important;
+            }
+
+            .des {
+                color: #666666;
+                font-size: 16px;
+                padding: 20px 0 30px 0;
+                font-weight: 500;
+            }
+
+        }
+
+        .follow {
+            padding: 0 20px;
+            .recommend {
+                float: right;
+                padding-top: 8px;
+                font-size: 16px;
+                color: #666666;
+            }
+        }
+    }
+
+    .comments-content {
+        padding: 0 20px;
+    }
+    
+    .flex-content {
+        display: flex;
+
+        .head-profile {
+            margin-right: 20px;
+        }
+
+        .content {
+            .name {
+                font-size: 16px;
+                font-weight: 500;
+            }
+
+            .com-content {
+                margin: 20px 0;
+                font-size: 16px;
+                letter-spacing: 1px;
+            }
+
+            .date {
+                font-size: 14px;
+                color: #666;
+            }
+        }
+    }
+
+    // right page part
+    .right-title {
+        font-weight: 700;
+        font-size: 16px;
+        letter-spacing: 0.4px;
+    }
+
+    .tours {
+        .title {
+            // box-shadow: 10px 5px 5px red;
+            display: flex;
+            font-size: 16px;
+            .left {
+                width: 80%;
+            }
+            .right {
+                width: 20%;
+                .icon {
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+                    svg {
+                        width: 20px;
+                        height: 20px;
+                        margin-right: 4px;
+                        path {
+                            fill: #6e6e6e
+                        }
+                    }
+                }
+                .pic {
+                    margin-top: 3px;
+                    width: 100%;
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        border-radius: 10px;
+                    }
+                }
+            }
+
+            .main-title {
+                margin: 0;
+                padding: 25px 0 25px 0;
+                font-size: 18px;
+                letter-spacing: 0.8px;
+                font-weight: 700 !important;
+            }
+
+            .category {
+                padding: 4px 4px;
+                font-size: 14px;
+                background-color: #5078ad;
+                font-weight: 600;
+                color: #fff;
+                // background-color: #383838;
+                border-radius: 4px;
+            }
+
+            .time,
+            .distance,
+            .speed {
+                margin: 0 16px;
+                font-size: 16px;
+                font-weight: 700;
+            }
+
+            .des {
+                color: #666666;
+                font-size: 16px;
+                padding: 20px 0 30px 0;
+                font-weight: 500;
+            }
+
+        }
+    }
+}
