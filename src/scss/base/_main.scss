@@ -62,3 +62,29 @@ html, body, #app {
 //    margin: 5px 0;
 //  }
 //}
+
+.primary-btn-dark {
+  margin-top: 15px;
+  background-color: $theme-ui-colors-primaryDark;
+  border-width: 0.0625rem;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5rem;
+  padding: 1.2rem 0.6875rem;
+  border-color: transparent;
+  border-radius: 8px;
+  color: #FFF;
+
+  .btn-icon {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+
+  .btn-text {
+    display: inline-flex;
+    text-align: center;
+    flex-flow: column;
+    padding-left: 0.25rem;
+    padding-right: 0;
+  }
+}

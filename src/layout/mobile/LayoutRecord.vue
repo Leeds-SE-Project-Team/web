@@ -27,7 +27,7 @@ provide('tourId', tourId)
       <AHeader />
     </a-layout-header>
     <a-layout>
-      <a-layout-content id="planner-content" class="border-1">
+      <a-layout-content id="layout-b-content" class="border-1">
         <RouterView v-slot="{ Component }">
           <component :is="Component" ref="recordMapRef" />
         </RouterView>
