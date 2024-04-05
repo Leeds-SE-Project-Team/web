@@ -44,19 +44,22 @@ const router = createRouter({
       path: '/discover',
       name: 'discover',
       meta: {
-        // layout: 'mobile-main',
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        layout: 'mobile-main',
+        // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'Discover Page'
       }, // Render component dynamically according to platform
       // component: DiscoverMobileView
-      component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
+      // component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
+      component: DiscoverMobileView,
+
     },
     {
       path: '/plan',
       name: 'planner',
       meta: {
         title: 'Planner Page',
-        layout: 'mobile-default'
+        // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default'
+        layout: 'mobile-default',
       },
       component: PlannerMobileView
     },
