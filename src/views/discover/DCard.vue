@@ -3,11 +3,11 @@
     <a-card class="d-card">
       <template #title>
         <div class="title-wrapper">
-          <div class="greeting-more" v-if="!isMinimal">
+          <div class="greeting-more" v-if="!isMinimal && !isTour">
             <h4>interesting in your region</h4>
             <span>...</span>
           </div>
-          <div class="user-wrapper" v-if="!isMinimal">
+          <div class="user-wrapper" v-if="!isMinimal && !isTour">
             <div class="avatar-wrapper">
               <a-avatar>
                 <img :src="props.info.user.avatar" alt="avatar" />
@@ -26,8 +26,8 @@
               <a-button type="primary">Follow</a-button>
             </div>
           </div>
-          <div class="split" v-if="isMinimal"></div>
-          <h3 class="title">
+          <div class="split" v-if="isMinimal && !isTour"></div>
+          <h3 class="title" v-if="!isTour">
             {{ props.info.title }}
           </h3>
           <div class="picture-map">
@@ -95,7 +95,7 @@
         </div>
       </template>
 
-      <div class="item-actions">
+      <div class="item-actions" v-if="!isTour">
         <a-list :bordered="false" class="item-actions-left">
           <a-list-item class="like-action">
             <span class="like-icon"><IconHeartFill v-if="false" /><IconHeart v-else /></span>
@@ -274,7 +274,7 @@ import type { TourRecord } from '@/apis/tour'
 
 const props = defineProps<{
   info: TourRecord,
-  mode?: 'minimal'
+  mode?: 'minimal' | 'tour'
 }>()
 
 // const commentArea = ref<HTMLDivElement | undefined>()
@@ -359,10 +359,15 @@ const newCommentContent = ref<string>('')
 
 const showCommentList = ref(false)
 const isMinimal = ref(false)
+const isTour = ref(false)
 
 onMounted(() => {
   if(props.mode==='minimal'){
     isMinimal.value = true;
+    switchStatus.value = 'map';
+    switchClick();
+  }else if(props.mode==='tour'){
+    isTour.value = true;
     switchStatus.value = 'map';
     switchClick();
   }

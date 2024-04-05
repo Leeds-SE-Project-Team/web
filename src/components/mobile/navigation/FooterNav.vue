@@ -37,11 +37,11 @@ const active = ref('discover')
       </template>
       <span class="tab-title">Profile</span>
     </van-tabbar-item>
-    <van-tabbar-item name="setting">
+    <van-tabbar-item :to="{ name: 'highlight' }" dot name="highlight">
       <template #icon>
         <van-icon :size="18" name="setting" />
       </template>
-      <span class="tab-title">Setting</span>
+      <span class="tab-title">Highlight</span>
     </van-tabbar-item>
   </van-tabbar>
 </template>
