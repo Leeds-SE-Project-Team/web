@@ -5,18 +5,20 @@ import {
   type CreateTourForm,
   getTourTypeImg,
   getTourTypeText,
+  type TourRecord,
   TourType,
   tourTypeMap
 } from '@/apis/tour'
 import type { PickerOption } from 'vant'
 import { Message } from '@arco-design/web-vue'
 import useLoading from '@/hooks/loading'
-import MapPlanner from '@/views/planner/components/MapPlanner.vue'
+import MapPlanner from '@/views/mobile/planner/components/MapPlanner.vue'
 import { hapticsImpactLight } from '@/utils'
 import { App } from '@capacitor/app'
 import { useMapStore } from '@/stores/map'
 import { getTourCollectionsByUserId, type TourCollection } from '@/apis/collection'
 import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
 
 const tourTypeText = computed<string>(() => getTourTypeText(createTourForm.value.type))
 const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.value.type))
@@ -83,15 +85,24 @@ const mapStore = useMapStore()
 
 const formRef = ref()
 const { loading, setLoading } = useLoading()
-const handleCreateTour = () => {
+
+const savedTour = ref<TourRecord>()
+
+const router = useRouter()
+
+const handleCreateTour = (navigate = false) => {
   formRef.value.validate().then((e: any) => {
     if (!e) {
       setLoading(true)
       createTour({ ...createTourForm.value, tourCollectionId: selectedCollection.value })
         .then((res) => {
           if (res.success) {
+            savedTour.value = res.data!
             Message.success(res.message)
             console.log(mapStore.screenMap(mapContainer.value.mapRef.$$getInstance()))
+            if (navigate) {
+              router.push({ name: 'record', params: { tourId: savedTour.value.id } })
+            }
           } else {
             Message.info(res.message)
           }
@@ -295,7 +306,7 @@ onUnmounted(() => {
       >
         <span class="btn-text">Save</span>
       </van-button>
-      <van-button class="operation-btn primary-btn-dark">
+      <van-button class="operation-btn primary-btn-dark" @click="handleCreateTour(true)">
         <van-icon :size="23" name="guide-o" style="display: flex"
           ><span class="btn-text" style="font-size: 16px; align-self: center"
             >Navigation</span

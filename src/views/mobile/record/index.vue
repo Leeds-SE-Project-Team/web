@@ -1,95 +1,68 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { ElAmap } from '@vuemap/vue-amap'
-import { createTourSpot, type CreateTourSpotForm, type TourSpot } from '@/apis/tour/spot'
+import {
+  createTourHighlight,
+  type CreateTourHighlightForm,
+  deleteTourHighlight,
+  getTourHighlights,
+  type TourHighlight
+} from '@/apis/tour/highlight'
 import { showNotify } from 'vant'
-import { parseLocation, parseLocationNumber } from '@/apis/tour'
+import { getTourById, parseLocation, parseLocationNumber, type TourRecord } from '@/apis/tour'
 import { uploadFileFromURL } from '@/utils/file'
+import { useRoute } from 'vue-router'
+import { Message } from '@arco-design/web-vue'
+import { useMapStore } from '@/stores/map'
+import useLoading from '@/hooks/loading'
+
+const route = useRoute()
+const tourId = parseInt(route.params.tourId as string)
+const tourData = ref<TourRecord>()
+const fetchTour = () => {
+  if (tourId === -1) {
+    showNotify({ type: 'primary', message: 'New adventure start!' })
+    return
+  }
+  getTourById(tourId)
+    .then((apiRes) => {
+      if (apiRes.success) {
+        tourData.value = apiRes.data!
+        mapStore
+          .planRoute(
+            parseLocation(tourData.value.startLocation),
+            parseLocation(tourData.value.endLocation),
+            tourData.value.type,
+            mapRef.value.$$getInstance()
+          )
+          .then((result) => {
+            mapStore.drawRoute(mapRef.value.$$getInstance(), result.routes[0])
+          })
+      } else {
+        Message.info(apiRes.message)
+      }
+    })
+    .catch((e) => {
+      Message.error(e)
+    })
+}
+const mapRef = ref()
+const mapStore = useMapStore()
 
 const zoom = ref(16)
-const spotList = ref<TourSpot[]>([])
-
-const center = ref([116.412866, 39.88365])
-
-const draggable = ref(false)
-
-const componentMarker = computed(() => ({
-  position: center.value,
-  visible: true,
-  draggable: false,
-  zoomStyleMapping: {
-    14: 0,
-    15: 0,
-    16: 1,
-    17: 1,
-    18: 1,
-    19: 1,
-    20: 1
-  },
-  styles: [
-    {
-      icon: {
-        img: 'https://a.amap.com/jsapi_demos/static/resource/img/故宫.png',
-        size: [16, 16], //可见区域的大小
-        anchor: 'bottom-center', //锚点
-        fitZoom: 14, //最合适的级别
-        scaleFactor: 2, //地图放大一级的缩放比例系数
-        maxScale: 2, //最大放大比例
-        minScale: 1 //最小放大比例
-      },
-      label: {
-        content: '祈年殿',
-        position: 'BM',
-        minZoom: 15
-      }
-    },
-    {
-      icon: {
-        img: 'https://a.amap.com/jsapi_demos/static/resource/img/qiniandian.png',
-        size: [128, 160],
-        anchor: 'bottom-center',
-        fitZoom: 17.5,
-        scaleFactor: 2,
-        maxScale: 2,
-        minScale: 0.125
-      },
-      label: {
-        content: '祈年殿',
-        position: 'BM'
-      }
+const highlightList = ref<TourHighlight[]>([])
+const fetchHighlightList = () => {
+  getTourHighlights().then((apiRes) => {
+    if (apiRes.success) {
+      console.log('tour highlights:', apiRes.data)
+      highlightList.value = apiRes.data!
     }
-  ]
-}))
-
-const changeVisible = () => {
-  componentMarker.value.visible = !componentMarker.value.visible
+  })
 }
-
-const clickMap = (e: any) => {
-  // console.log('click map: ', e)
-}
-const initMap = (map: any) => {
-  // console.log('init map: ', map)
-}
-
-const changeDraggable = () => {
-  componentMarker.value.draggable = !componentMarker.value.draggable
-}
-const clickMarker = () => {
-  alert('点击了标号')
-}
+const center = ref([116.412866, 39.88365])
 
 const markerInit = (e) => {
   // console.log('marker init: ', e)
-}
-
-const geolocationOptions: AMap.GeolocationOptions = {
-  // showButton: true, //是否显示定位按钮
-  // position: 'RT', //定位按钮的位置
-  // /* LT LB RT RB */
-  // offset: [39, 200], //定位按钮距离对应角落的距离
-  // showMarker: true, //是否显示定位点
-  // showCircle: false //是否显示定位精度圈
 }
 
 const mapInit = () => {
@@ -98,47 +71,54 @@ const mapInit = () => {
   //     center.value = currentPosition.position.toArray()
   //   })
   // })
+  fetchTour()
 }
 
 const getCurrentLocation = () => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition((status, info) => {
     if (status === 'complete') {
-      center.value = info.position.toArray()
+      // center.value = info.position.toArray()
       const arr = info.position.toArray()
       locationTrackList.value.push(arr)
-      // Message.info(arr.toString())
     }
   })
 }
 
-const handleCreateSpot = (form: CreateTourSpotForm) => {
-  uploadFileFromURL(form.imageUrl, './')
-    .then((apiRes) => {
-      // console.log(apiRes)
-    })
-    .then(() => {
-      createTourSpot(form)
-        .then((apiRes) => {
-          // console.log(apiRes)
-          if (apiRes.success) {
-            spotList.value.push(apiRes.data!)
-            moveToPosition(parseLocationNumber(form.location))
-            showNotify({ type: 'success', message: apiRes.message })
-          } else {
-            showNotify({ type: 'primary', message: apiRes.message })
-          }
+const handleCreateHighlight = (form: CreateTourHighlightForm) => {
+  showNotify({ type: 'primary', message: 'uploading image...' })
+  uploadFileFromURL(form.imageUrl, `/tour/${tourId}/highlights`)
+    .then((uploadRes) => {
+      if (uploadRes.success) {
+        createTourHighlight({
+          ...form,
+          imageUrl: import.meta.env.APP_SERVER_URL + uploadRes.data!,
+          tourId: tourId
         })
-        .catch((e) => {
-          showNotify({ type: 'danger', message: e })
-        })
+          .then((apiRes) => {
+            if (apiRes.success) {
+              // highlightList.value.push(apiRes.data!)
+              fetchHighlightList()
+              moveToPosition(parseLocationNumber(form.location))
+              showNotify({ type: 'success', message: apiRes.message })
+            } else {
+              showNotify({ type: 'primary', message: apiRes.message })
+            }
+          })
+          .catch((e) => {
+            showNotify({ type: 'danger', message: e })
+          })
+      }
     })
     .catch((e) => {
       showNotify({ type: 'danger', message: e })
     })
+    .finally(() => {
+      console.log('over')
+    })
 }
 
 defineExpose({
-  handleCreateSpot
+  handleCreateHighlight
 })
 
 const getLocation = (e: any) => {
@@ -147,20 +127,41 @@ const getLocation = (e: any) => {
 
 const geolocationRef = ref()
 
-const spotPanelAnchors = [
+const highlightPanelAnchors = [
   0,
   Math.round(0.46 * window.innerHeight),
   Math.round(0.7 * window.innerHeight)
 ]
-const spotPanelHeight = ref(spotPanelAnchors[0])
+const highlightPanelHeight = ref(highlightPanelAnchors[0])
 
-const handleClickSpot = (spot: TourSpot) => {
-  console.log(spot)
-  selectedSpot.value = spot
-  showSpotSheet.value = true
-  // const [x, y] = parseLocationNumber(spot.location)
+const handleClickHighlight = (highlight: TourHighlight) => {
+  console.log(highlight)
+  selectedHighlight.value = highlight
+  showHighlightSheet.value = true
+  // const [x, y] = parseLocationNumber(highlight.location)
   // moveToPosition([x, y - 0.002])
-  // spotPanelHeight.value = spotPanelAnchors[1]
+  // highlightPanelHeight.value = highlightPanelAnchors[1]
+}
+
+const deleteHighlightLoadingObj = useLoading()
+const handleDeleteHighlight = () => {
+  if (!selectedHighlight.value) {
+    return
+  }
+  deleteHighlightLoadingObj.setLoading(true)
+  deleteTourHighlight(selectedHighlight.value.id)
+    .then((apiRes) => {
+      if (apiRes.success) {
+        showNotify({ type: 'success', message: apiRes.message })
+        selectedHighlight.value = undefined
+        fetchHighlightList()
+      } else {
+        showNotify({ type: 'primary', message: apiRes.message })
+      }
+    })
+    .finally(() => {
+      deleteHighlightLoadingObj.setLoading(false)
+    })
 }
 
 const moveToPosition = (position: number[]) => {
@@ -168,39 +169,53 @@ const moveToPosition = (position: number[]) => {
   zoom.value = 16
 }
 
-const selectedSpot = ref<TourSpot | undefined>()
-watch(selectedSpot, (value) => {
+const selectedHighlight = ref<TourHighlight | undefined>()
+watch(selectedHighlight, (value) => {
   if (value) {
+    console.log('selectedHighlight', value)
     const [x, y] = parseLocationNumber(value.location)
     moveToPosition([x, y])
     // moveToPosition([x, y - 0.002])
-    // spotPanelHeight.value = spotPanelAnchors[1]
-    showSpotSheet.value = true
+    // highlightPanelHeight.value = highlightPanelAnchors[1]
+    showHighlightSheet.value = true
+  } else {
+    showHighlightSheet.value = false
   }
 })
 
-// watch(spotPanelHeight, (value) => {
+// watch(highlightPanelHeight, (value) => {
 //   handleHeightChange(value)
 // })
 
-const handleCloseSpotAction = () => {
-  if (selectedSpot.value) {
-    moveToPosition(parseLocationNumber(selectedSpot.value.location))
+const handleCloseHighlightAction = () => {
+  if (selectedHighlight.value) {
+    moveToPosition(parseLocationNumber(selectedHighlight.value.location))
   }
-  // selectedSpot.value = undefined
+  // selectedHighlight.value = undefined
 }
-const showSpotSheet = ref(false)
+const showHighlightSheet = ref(false)
 // const handleHeightChange = debounce((height: number) => {
-//   if (height === spotPanelAnchors[0]) {
-//     if (selectedSpot.value) {
-//       moveToPosition(parseLocationNumber(selectedSpot.value.location))
+//   if (height === highlightPanelAnchors[0]) {
+//     if (selectedHighlight.value) {
+//       moveToPosition(parseLocationNumber(selectedHighlight.value.location))
 //     }
-//     selectedSpot.value = undefined
+//     selectedHighlight.value = undefined
 //   }
 // }, 100)
 
+const locationTrackList = ref<number[][]>([])
+
+const polyline = computed(() => ({
+  path: locationTrackList.value.length > 0 ? locationTrackList.value : undefined,
+  // path: locationTrackList.value,
+  editable: false,
+  visible: true,
+  draggable: false
+}))
+
 onMounted(() => {
   window.setInterval(getCurrentLocation, 3000)
+  fetchHighlightList()
 })
 
 // onMounted(() => {
@@ -237,23 +252,13 @@ onMounted(() => {
 //   console.log('start')
 //   id = navigator.geolocation.watchPosition(success, error, options)
 // })
-
-const locationTrackList = ref<number[][]>([])
-
-const polyline = computed(() => ({
-  path: locationTrackList.value.length > 0 ? locationTrackList.value : undefined,
-  // path: locationTrackList.value,
-  editable: false,
-  visible: true,
-  draggable: false
-}))
 </script>
 
 <template>
   <div id="page-record">
-    <!--    <RecordMap ref="recordMap" />-->
     <div id="map-container">
       <el-amap
+        ref="mapRef"
         v-model:zoom="zoom"
         :animateEnable="true"
         :center="center"
@@ -271,27 +276,31 @@ const polyline = computed(() => ({
         />
 
         <el-amap-marker
-          v-for="(spot, idx) in spotList"
+          v-for="(highlight, idx) in highlightList"
           :key="idx"
           :offset="[-10, -40]"
-          :position="parseLocation(spot.location)"
+          :position="parseLocation(highlight.location)"
           :visible="true"
           @init="markerInit"
         >
-          <div @click="handleClickSpot(spot)">
+          <div @click="handleClickHighlight(highlight)">
             <img
+              :src="
+                highlight.toursId.includes(tourId)
+                  ? '//webapi.amap.com/theme/v1.3/markers/b/mark_bs.png'
+                  : '//webapi.amap.com/theme/v1.3/markers/n/mark_rs.png'
+              "
               alt="marker"
               height="32px"
-              src="//webapi.amap.com/theme/v1.3/markers/b/mark_bs.png"
               width="19px"
             />
           </div>
         </el-amap-marker>
 
         <!--        <el-amap-marker-->
-        <!--          v-for="(spot, idx) in spotList"-->
+        <!--          v-for="(highlight, idx) in highlightList"-->
         <!--          :key="idx"-->
-        <!--          :position="parseLocation(spot.location)"-->
+        <!--          :position="parseLocation(highlight.location)"-->
         <!--        />-->
         <el-amap-control-geolocation
           ref="geolocationRef"
@@ -303,66 +312,44 @@ const polyline = computed(() => ({
         />
       </el-amap>
     </div>
-
     <van-action-sheet
-      v-model:show="showSpotSheet"
+      v-model:show="showHighlightSheet"
       :actions="[
         {
           name: 'Delete',
-          color: 'red'
+          color: 'red',
+          callback: handleDeleteHighlight,
+          loading: deleteHighlightLoadingObj.loading.value
         }
       ]"
-      @close="handleCloseSpotAction"
+      @close="handleCloseHighlightAction"
       @closed="
         () => {
-          selectedSpot = undefined
+          selectedHighlight = undefined
         }
       "
     >
       <div
-        v-if="selectedSpot"
+        v-if="selectedHighlight"
         :style="{
-          backgroundImage: `url(${selectedSpot?.tourImages[0].imageUrl})`
+          backgroundImage: `url(${selectedHighlight?.tourImages[0].imageUrl})`
         }"
         class="blurImageContainer"
       ></div>
       <div style="text-align: center; padding: 0; order: 1">
-        <!--        <h2>Highlight Spot</h2>-->
+        <!--        <h2>Highlight Highlight</h2>-->
         <van-image
-          :src="selectedSpot?.tourImages[0].imageUrl"
+          :src="selectedHighlight?.tourImages[0].imageUrl"
           height="270"
           style="margin-top: 20px"
         />
-        <van-divider dashed style="color: wheat; font-size: 25px"> TOUR SPOT</van-divider>
+        <van-divider dashed style="color: wheat; font-size: 25px">TOUR HIGHLIGHT</van-divider>
       </div>
       <template #cancel>Close</template>
       <template #action="{ action }">
         <div style="order: 3">{{ action.name }}</div>
       </template>
     </van-action-sheet>
-    <!--    <van-floating-panel v-model:height="spotPanelHeight" :anchors="spotPanelAnchors">-->
-    <!--      <div-->
-    <!--        v-if="selectedSpot"-->
-    <!--        :style="{-->
-    <!--          backgroundImage: `url(${selectedSpot.imageUrl})`-->
-    <!--        }"-->
-    <!--        class="blurImageContainer"-->
-    <!--      ></div>-->
-    <!--      <div style="text-align: center; padding: 0">-->
-    <!--        &lt;!&ndash;        <h2>Highlight Spot</h2>&ndash;&gt;-->
-    <!--        <van-image :src="selectedSpot?.imageUrl" height="270" style="margin-top: 10px" />-->
-    <!--        <van-divider dashed style="color: wheat; font-size: 25px">-->
-    <!--          {{-->
-    <!--            (selectedSpot && selectedSpot.title.length > 0-->
-    <!--              ? selectedSpot?.title-->
-    <!--              : 'untitled'-->
-    <!--            )?.toLocaleUpperCase()-->
-    <!--          }}-->
-    <!--        </van-divider>-->
-
-    <!--        &lt;!&ndash;        <van-divider dashed style="margin: -18px 0; color: white">What do next?</van-divider>&ndash;&gt;-->
-    <!--      </div>-->
-    <!--    </van-floating-panel>-->
   </div>
 </template>
 

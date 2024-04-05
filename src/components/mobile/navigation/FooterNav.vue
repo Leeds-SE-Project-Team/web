@@ -25,7 +25,7 @@ const active = ref('discover')
       </template>
       <span class="tab-title">Plan</span>
     </van-tabbar-item>
-    <van-tabbar-item :to="{ name: 'record' }" dot name="record">
+    <van-tabbar-item :to="{ name: 'record', params: { tourId: -1 } }" dot name="record">
       <template #icon>
         <van-icon :size="18" name="add" />
       </template>

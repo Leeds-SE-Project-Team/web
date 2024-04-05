@@ -4,21 +4,22 @@ import MobileRecord from '@/views/mobile/record/index.vue'
 import MobileHighlight from '@/views/mobile/highlight/index.vue'
 export const MOBILE_ROUTES: RouteRecordRaw[] = [
   {
-    path: '/record',
+    path: '/record/:tourId',
     name: 'record',
     meta: {
       layout: 'mobile-record',
       title: 'Discover Page'
     },
-    component: MobileRecord
+    component: MobileRecord,
+    props: true
   },
-    {
-      path: '/highlight',
-      name: 'highlight',
-      meta: {
-        layout: 'mobile-highlight',
-        title: 'Highlight Page'
-      },
-      component: MobileHighlight
-    }
+  {
+    path: '/highlight',
+    name: 'highlight',
+    meta: {
+      layout: 'mobile-highlight',
+      title: 'Highlight Page'
+    },
+    component: MobileHighlight
+  }
 ]
