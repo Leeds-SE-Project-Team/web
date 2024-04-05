@@ -94,7 +94,7 @@ export const useMapStore = defineStore('map', () => {
     endLocation: number[] | string[],
     tourType: TourType,
     mapInstance: AMap.Map
-  ) =>
+  ): Promise<any> =>
     new Promise((resolve) => {
       mapInstance.clearMap()
 

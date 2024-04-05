@@ -3,93 +3,48 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { ElAmap } from '@vuemap/vue-amap'
 import { createTourSpot, type CreateTourSpotForm, type TourSpot } from '@/apis/tour/spot'
 import { showNotify } from 'vant'
-import { parseLocation, parseLocationNumber } from '@/apis/tour'
+import { getTourById, parseLocation, parseLocationNumber, type TourRecord } from '@/apis/tour'
 import { uploadFileFromURL } from '@/utils/file'
+import { useRoute, useRouter } from 'vue-router'
+import { Message } from '@arco-design/web-vue'
+import { useMapStore } from '@/stores/map'
+
+const route = useRoute()
+const tourId = route.params.tourId as string
+const tourData = ref<TourRecord>()
+const fetchTour = () => {
+  getTourById(tourId)
+    .then((apiRes) => {
+      if (apiRes.success) {
+        tourData.value = apiRes.data!
+        mapStore
+          .planRoute(
+            parseLocation(tourData.value.startLocation),
+            parseLocation(tourData.value.endLocation),
+            tourData.value.type,
+            mapRef.value.$$getInstance()
+          )
+          .then((result) => {
+            mapStore.drawRoute(mapRef.value.$$getInstance(), result.routes[0])
+          })
+      } else {
+        Message.info(apiRes.message)
+      }
+    })
+    .catch((e) => {
+      Message.error(e)
+    })
+}
+const mapRef = ref()
+const mapStore = useMapStore()
 
 const zoom = ref(16)
 const spotList = ref<TourSpot[]>([])
 
 const center = ref([116.412866, 39.88365])
 
-const draggable = ref(false)
-
-const componentMarker = computed(() => ({
-  position: center.value,
-  visible: true,
-  draggable: false,
-  zoomStyleMapping: {
-    14: 0,
-    15: 0,
-    16: 1,
-    17: 1,
-    18: 1,
-    19: 1,
-    20: 1
-  },
-  styles: [
-    {
-      icon: {
-        img: 'https://a.amap.com/jsapi_demos/static/resource/img/故宫.png',
-        size: [16, 16], //可见区域的大小
-        anchor: 'bottom-center', //锚点
-        fitZoom: 14, //最合适的级别
-        scaleFactor: 2, //地图放大一级的缩放比例系数
-        maxScale: 2, //最大放大比例
-        minScale: 1 //最小放大比例
-      },
-      label: {
-        content: '祈年殿',
-        position: 'BM',
-        minZoom: 15
-      }
-    },
-    {
-      icon: {
-        img: 'https://a.amap.com/jsapi_demos/static/resource/img/qiniandian.png',
-        size: [128, 160],
-        anchor: 'bottom-center',
-        fitZoom: 17.5,
-        scaleFactor: 2,
-        maxScale: 2,
-        minScale: 0.125
-      },
-      label: {
-        content: '祈年殿',
-        position: 'BM'
-      }
-    }
-  ]
-}))
-
-const changeVisible = () => {
-  componentMarker.value.visible = !componentMarker.value.visible
-}
-
-const clickMap = (e: any) => {
-  // console.log('click map: ', e)
-}
-const initMap = (map: any) => {
-  // console.log('init map: ', map)
-}
-
-const changeDraggable = () => {
-  componentMarker.value.draggable = !componentMarker.value.draggable
-}
-const clickMarker = () => {
-  alert('点击了标号')
-}
-
 const markerInit = (e) => {
   // console.log('marker init: ', e)
-}
-
-const geolocationOptions: AMap.GeolocationOptions = {
-  // showButton: true, //是否显示定位按钮
-  // position: 'RT', //定位按钮的位置
-  // /* LT LB RT RB */
-  // offset: [39, 200], //定位按钮距离对应角落的距离
-  // showMarker: true, //是否显示定位点
-  // showCircle: false //是否显示定位精度圈
 }
 
 const mapInit = () => {
@@ -98,6 +53,7 @@ const mapInit = () => {
   //     center.value = currentPosition.position.toArray()
   //   })
   // })
+  fetchTour()
 }
 
 const getCurrentLocation = () => {
@@ -199,6 +155,16 @@ const showSpotSheet = ref(false)
 //   }
 // }, 100)
 
+const locationTrackList = ref<number[][]>([])
+
+const polyline = computed(() => ({
+  path: locationTrackList.value.length > 0 ? locationTrackList.value : undefined,
+  // path: locationTrackList.value,
+  editable: false,
+  visible: true,
+  draggable: false
+}))
+
 onMounted(() => {
   window.setInterval(getCurrentLocation, 3000)
 })
@@ -237,21 +203,10 @@ onMounted(() => {
 //   console.log('start')
 //   id = navigator.geolocation.watchPosition(success, error, options)
 // })
-
-const locationTrackList = ref<number[][]>([])
-
-const polyline = computed(() => ({
-  path: locationTrackList.value.length > 0 ? locationTrackList.value : undefined,
-  // path: locationTrackList.value,
-  editable: false,
-  visible: true,
-  draggable: false
-}))
 </script>
 
 <template>
   <div id="page-record">
-    <!--    <RecordMap ref="recordMap" />-->
     <div id="map-container">
       <el-amap
         v-model:zoom="zoom"
@@ -262,6 +217,7 @@ const polyline = computed(() => ({
         mapStyle="amap://styles/fresh"
         @complete="getCurrentLocation"
         @init="mapInit"
+        ref="mapRef"
       >
         <el-amap-polyline
           :draggable="polyline.draggable"
@@ -303,7 +259,6 @@ const polyline = computed(() => ({
         />
       </el-amap>
     </div>
-
     <van-action-sheet
       v-model:show="showSpotSheet"
       :actions="[
@@ -340,29 +295,6 @@ const polyline = computed(() => ({
         <div style="order: 3">{{ action.name }}</div>
       </template>
     </van-action-sheet>
-    <!--    <van-floating-panel v-model:height="spotPanelHeight" :anchors="spotPanelAnchors">-->
-    <!--      <div-->
-    <!--        v-if="selectedSpot"-->
-    <!--        :style="{-->
-    <!--          backgroundImage: `url(${selectedSpot.imageUrl})`-->
-    <!--        }"-->
-    <!--        class="blurImageContainer"-->
-    <!--      ></div>-->
-    <!--      <div style="text-align: center; padding: 0">-->
-    <!--        &lt;!&ndash;        <h2>Highlight Spot</h2>&ndash;&gt;-->
-    <!--        <van-image :src="selectedSpot?.imageUrl" height="270" style="margin-top: 10px" />-->
-    <!--        <van-divider dashed style="color: wheat; font-size: 25px">-->
-    <!--          {{-->
-    <!--            (selectedSpot && selectedSpot.title.length > 0-->
-    <!--              ? selectedSpot?.title-->
-    <!--              : 'untitled'-->
-    <!--            )?.toLocaleUpperCase()-->
-    <!--          }}-->
-    <!--        </van-divider>-->
-
-    <!--        &lt;!&ndash;        <van-divider dashed style="margin: -18px 0; color: white">What do next?</van-divider>&ndash;&gt;-->
-    <!--      </div>-->
-    <!--    </van-floating-panel>-->
   </div>
 </template>
 

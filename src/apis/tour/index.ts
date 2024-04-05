@@ -3,6 +3,7 @@ import type { ApiResponse } from '@/apis'
 import { axiosRequest } from '@/apis'
 import type { CommentRecord } from '@/apis/comment'
 import type { TourSpot } from '@/apis/tour/spot'
+import type { TourCollection } from '@/apis/collection'
 
 export enum TourType {
   WALK,
@@ -22,6 +23,14 @@ export const getTourTypeText = (type: TourType) =>
   tourTypeMap.find((item) => item.value === type)!.text
 export const getTourTypeImg = (type: TourType) =>
   tourTypeMap.find((item) => item.value === type)!.img
+
+export const getTourById: (tourId: number | string) => Promise<ApiResponse<TourRecord>> = (
+  tourId
+) =>
+  axiosRequest({
+    method: 'GET',
+    url: `tours?id=${tourId}`
+  })
 
 export interface PON {}
 
@@ -62,7 +71,7 @@ export const parseLocationNumber = (location: string): number[] => {
   return location.split(',').map((e) => parseFloat(e))
 }
 
-export const createTour = (form: CreateTourForm): Promise<ApiResponse<void>> =>
+export const createTour = (form: CreateTourForm): Promise<ApiResponse<TourRecord>> =>
   axiosRequest({
     method: 'POST',
     url: `tours/create`,
