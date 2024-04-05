@@ -34,6 +34,13 @@ export const getTourById: (tourId: number | string) => Promise<ApiResponse<TourR
 
 export interface PON {}
 
+export interface TourImage {
+  id: number
+  imageUrl: string
+  tourHighlightId: number
+  tourSpotId: number
+  tourId: number
+}
 export interface TourRecord {
   id: number
   startLocation: string

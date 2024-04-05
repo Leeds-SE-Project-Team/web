@@ -2,12 +2,12 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { ElAmap } from '@vuemap/vue-amap'
 import {
-  createTourSpot,
-  type CreateTourSpotForm,
-  deleteTourSpot,
-  getTourSpots,
-  type TourSpot
-} from '@/apis/tour/spot'
+  createTourHighlight,
+  type CreateTourHighlightForm,
+  deleteTourHighlight,
+  getTourHighlights,
+  type TourHighlight
+} from '@/apis/tour/highlight'
 import { showNotify } from 'vant'
 import { getTourById, parseLocation, parseLocationNumber, type TourRecord } from '@/apis/tour'
 import { uploadFileFromURL } from '@/utils/file'
@@ -50,11 +50,12 @@ const mapRef = ref()
 const mapStore = useMapStore()
 
 const zoom = ref(16)
-const spotList = ref<TourSpot[]>([])
-const fetchSpotList = () => {
-  getTourSpots().then((apiRes) => {
+const highlightList = ref<TourHighlight[]>([])
+const fetchHighlightList = () => {
+  getTourHighlights().then((apiRes) => {
     if (apiRes.success) {
-      spotList.value = apiRes.data!
+      console.log('tour highlights:', apiRes.data)
+      highlightList.value = apiRes.data!
     }
   })
 }
@@ -76,26 +77,27 @@ const mapInit = () => {
 const getCurrentLocation = () => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition((status, info) => {
     if (status === 'complete') {
-      center.value = info.position.toArray()
+      // center.value = info.position.toArray()
       const arr = info.position.toArray()
       locationTrackList.value.push(arr)
     }
   })
 }
 
-const handleCreateSpot = (form: CreateTourSpotForm) => {
+const handleCreateHighlight = (form: CreateTourHighlightForm) => {
   showNotify({ type: 'primary', message: 'uploading image...' })
-  uploadFileFromURL(form.imageUrl, `/tour/${form.tourId}/spots`)
+  uploadFileFromURL(form.imageUrl, `/tour/${tourId}/highlights`)
     .then((uploadRes) => {
       if (uploadRes.success) {
-        createTourSpot({
+        createTourHighlight({
           ...form,
           imageUrl: import.meta.env.APP_SERVER_URL + uploadRes.data!,
           tourId: tourId
         })
           .then((apiRes) => {
             if (apiRes.success) {
-              spotList.value.push(apiRes.data!)
+              // highlightList.value.push(apiRes.data!)
+              fetchHighlightList()
               moveToPosition(parseLocationNumber(form.location))
               showNotify({ type: 'success', message: apiRes.message })
             } else {
@@ -116,7 +118,7 @@ const handleCreateSpot = (form: CreateTourSpotForm) => {
 }
 
 defineExpose({
-  handleCreateSpot
+  handleCreateHighlight
 })
 
 const getLocation = (e: any) => {
@@ -125,40 +127,40 @@ const getLocation = (e: any) => {
 
 const geolocationRef = ref()
 
-const spotPanelAnchors = [
+const highlightPanelAnchors = [
   0,
   Math.round(0.46 * window.innerHeight),
   Math.round(0.7 * window.innerHeight)
 ]
-const spotPanelHeight = ref(spotPanelAnchors[0])
+const highlightPanelHeight = ref(highlightPanelAnchors[0])
 
-const handleClickSpot = (spot: TourSpot) => {
-  console.log(spot)
-  selectedSpot.value = spot
-  showSpotSheet.value = true
-  // const [x, y] = parseLocationNumber(spot.location)
+const handleClickHighlight = (highlight: TourHighlight) => {
+  console.log(highlight)
+  selectedHighlight.value = highlight
+  showHighlightSheet.value = true
+  // const [x, y] = parseLocationNumber(highlight.location)
   // moveToPosition([x, y - 0.002])
-  // spotPanelHeight.value = spotPanelAnchors[1]
+  // highlightPanelHeight.value = highlightPanelAnchors[1]
 }
 
-const deleteSpotLoadingObj = useLoading()
-const handleDeleteSpot = () => {
-  if (!selectedSpot.value) {
+const deleteHighlightLoadingObj = useLoading()
+const handleDeleteHighlight = () => {
+  if (!selectedHighlight.value) {
     return
   }
-  deleteSpotLoadingObj.setLoading(true)
-  deleteTourSpot(selectedSpot.value.id)
+  deleteHighlightLoadingObj.setLoading(true)
+  deleteTourHighlight(selectedHighlight.value.id)
     .then((apiRes) => {
       if (apiRes.success) {
         showNotify({ type: 'success', message: apiRes.message })
-        selectedSpot.value = undefined
-        fetchSpotList()
+        selectedHighlight.value = undefined
+        fetchHighlightList()
       } else {
         showNotify({ type: 'primary', message: apiRes.message })
       }
     })
     .finally(() => {
-      deleteSpotLoadingObj.setLoading(false)
+      deleteHighlightLoadingObj.setLoading(false)
     })
 }
 
@@ -167,36 +169,37 @@ const moveToPosition = (position: number[]) => {
   zoom.value = 16
 }
 
-const selectedSpot = ref<TourSpot | undefined>()
-watch(selectedSpot, (value) => {
+const selectedHighlight = ref<TourHighlight | undefined>()
+watch(selectedHighlight, (value) => {
   if (value) {
+    console.log('selectedHighlight', value)
     const [x, y] = parseLocationNumber(value.location)
     moveToPosition([x, y])
     // moveToPosition([x, y - 0.002])
-    // spotPanelHeight.value = spotPanelAnchors[1]
-    showSpotSheet.value = true
+    // highlightPanelHeight.value = highlightPanelAnchors[1]
+    showHighlightSheet.value = true
   } else {
-    showSpotSheet.value = false
+    showHighlightSheet.value = false
   }
 })
 
-// watch(spotPanelHeight, (value) => {
+// watch(highlightPanelHeight, (value) => {
 //   handleHeightChange(value)
 // })
 
-const handleCloseSpotAction = () => {
-  if (selectedSpot.value) {
-    moveToPosition(parseLocationNumber(selectedSpot.value.location))
+const handleCloseHighlightAction = () => {
+  if (selectedHighlight.value) {
+    moveToPosition(parseLocationNumber(selectedHighlight.value.location))
   }
-  // selectedSpot.value = undefined
+  // selectedHighlight.value = undefined
 }
-const showSpotSheet = ref(false)
+const showHighlightSheet = ref(false)
 // const handleHeightChange = debounce((height: number) => {
-//   if (height === spotPanelAnchors[0]) {
-//     if (selectedSpot.value) {
-//       moveToPosition(parseLocationNumber(selectedSpot.value.location))
+//   if (height === highlightPanelAnchors[0]) {
+//     if (selectedHighlight.value) {
+//       moveToPosition(parseLocationNumber(selectedHighlight.value.location))
 //     }
-//     selectedSpot.value = undefined
+//     selectedHighlight.value = undefined
 //   }
 // }, 100)
 
@@ -212,7 +215,7 @@ const polyline = computed(() => ({
 
 onMounted(() => {
   window.setInterval(getCurrentLocation, 3000)
-  fetchSpotList()
+  fetchHighlightList()
 })
 
 // onMounted(() => {
@@ -273,17 +276,17 @@ onMounted(() => {
         />
 
         <el-amap-marker
-          v-for="(spot, idx) in spotList"
+          v-for="(highlight, idx) in highlightList"
           :key="idx"
           :offset="[-10, -40]"
-          :position="parseLocation(spot.location)"
+          :position="parseLocation(highlight.location)"
           :visible="true"
           @init="markerInit"
         >
-          <div @click="handleClickSpot(spot)">
+          <div @click="handleClickHighlight(highlight)">
             <img
               :src="
-                tourId === spot.tourId
+                highlight.toursId.includes(tourId)
                   ? '//webapi.amap.com/theme/v1.3/markers/b/mark_bs.png'
                   : '//webapi.amap.com/theme/v1.3/markers/n/mark_rs.png'
               "
@@ -295,9 +298,9 @@ onMounted(() => {
         </el-amap-marker>
 
         <!--        <el-amap-marker-->
-        <!--          v-for="(spot, idx) in spotList"-->
+        <!--          v-for="(highlight, idx) in highlightList"-->
         <!--          :key="idx"-->
-        <!--          :position="parseLocation(spot.location)"-->
+        <!--          :position="parseLocation(highlight.location)"-->
         <!--        />-->
         <el-amap-control-geolocation
           ref="geolocationRef"
@@ -310,33 +313,33 @@ onMounted(() => {
       </el-amap>
     </div>
     <van-action-sheet
-      v-model:show="showSpotSheet"
+      v-model:show="showHighlightSheet"
       :actions="[
         {
           name: 'Delete',
           color: 'red',
-          callback: handleDeleteSpot,
-          loading: deleteSpotLoadingObj.loading.value
+          callback: handleDeleteHighlight,
+          loading: deleteHighlightLoadingObj.loading.value
         }
       ]"
-      @close="handleCloseSpotAction"
+      @close="handleCloseHighlightAction"
       @closed="
         () => {
-          selectedSpot = undefined
+          selectedHighlight = undefined
         }
       "
     >
       <div
-        v-if="selectedSpot"
+        v-if="selectedHighlight"
         :style="{
-          backgroundImage: `url(${selectedSpot?.tourImages[0].imageUrl})`
+          backgroundImage: `url(${selectedHighlight?.tourImages[0].imageUrl})`
         }"
         class="blurImageContainer"
       ></div>
       <div style="text-align: center; padding: 0; order: 1">
-        <!--        <h2>Highlight Spot</h2>-->
+        <!--        <h2>Highlight Highlight</h2>-->
         <van-image
-          :src="selectedSpot?.tourImages[0].imageUrl"
+          :src="selectedHighlight?.tourImages[0].imageUrl"
           height="270"
           style="margin-top: 20px"
         />

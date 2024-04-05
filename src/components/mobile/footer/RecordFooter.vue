@@ -15,11 +15,11 @@ const takePicture = async () => {
   // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
   if (image.webPath != null) {
     const imageUrl = image.webPath.replace(/(?<!http:)\/\//, '/')
-    emits('createSpot', imageUrl)
+    emits('createHighlight', imageUrl)
   }
 }
 
-const emits = defineEmits(['createSpot'])
+const emits = defineEmits(['createHighlight'])
 </script>
 
 <template>
@@ -31,7 +31,7 @@ const emits = defineEmits(['createSpot'])
     </van-action-bar-icon>
     <van-action-bar-button
       style="margin: 0 10px 0 10px"
-      text="Add Spot"
+      text="Add Highlight"
       type="primary"
       @click="takePicture"
     />

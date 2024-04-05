@@ -1,20 +1,20 @@
 <script lang="ts" setup>
 import AHeader from '@/components/header/AHeader.vue'
 import RecordFooter from '@/components/mobile/footer/RecordFooter.vue'
-import CreateSpotModal from '@/views/mobile/record/components/CreateSpotModal.vue'
+import CreateHighlightModal from '@/views/mobile/record/components/CreateHighlightModal.vue'
 import { provide, ref } from 'vue'
-import { type CreateTourSpotForm } from '@/apis/tour/spot'
+import { type CreateTourHighlightForm } from '@/apis/tour/highlight'
 
 const imageUrl = ref('')
 
-const handleShowCreateSpot = (url: string) => {
-  createSpotRef.value.show = true
+const handleShowCreateHighlight = (url: string) => {
+  createHighlightRef.value.show = true
   imageUrl.value = url
 }
-const createSpotRef = ref()
+const createHighlightRef = ref()
 const recordMapRef = ref()
-const handleConfirm = (tourSpotForm: CreateTourSpotForm) => {
-  recordMapRef.value.handleCreateSpot(tourSpotForm)
+const handleConfirm = (tourHighlightForm: CreateTourHighlightForm) => {
+  recordMapRef.value.handleCreateHighlight(tourHighlightForm)
 }
 
 const tourId = ref(-1)
@@ -34,11 +34,11 @@ provide('tourId', tourId)
       </a-layout-content>
     </a-layout>
     <a-layout-footer>
-      <RecordFooter @create-spot="handleShowCreateSpot" />
+      <RecordFooter @create-highlight="handleShowCreateHighlight" />
     </a-layout-footer>
     <!-- <a-layout-footer>Footer</a-layout-footer> -->
   </a-layout>
-  <CreateSpotModal ref="createSpotRef" :image-url="imageUrl" @confirm="handleConfirm" />
+  <CreateHighlightModal ref="createHighlightRef" :image-url="imageUrl" @confirm="handleConfirm" />
 </template>
 
 <style scoped></style>

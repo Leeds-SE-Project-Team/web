@@ -1,18 +1,11 @@
 import { type ApiResponse, axiosRequest } from '@/apis'
+import type { TourImage } from '@/apis/tour'
 
 export interface TourSpot {
   id: number
   tourId: number
   tourImages: TourImage[]
   location: string
-}
-
-export interface TourImage {
-  id: number
-  imageUrl: string
-  tourHighlightId: number
-  tourSpotId: number
-  tourId: number
 }
 
 export interface CreateTourSpotForm {

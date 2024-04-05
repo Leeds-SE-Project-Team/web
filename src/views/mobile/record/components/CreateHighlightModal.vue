@@ -2,25 +2,25 @@
 import { computed, inject, type Ref, ref } from 'vue'
 import useLoading from '@/hooks/loading'
 import { getCurrentLocation } from '@/utils'
-import type { CreateTourSpotForm } from '@/apis/tour/spot'
+import type { CreateTourHighlightForm } from '@/apis/tour/highlight'
 
 const show = ref(false)
-const spotTitle = ref('')
+const highlightTitle = ref('')
 const props = defineProps<{
   imageUrl: string
 }>()
 // 基于类型
 const emits = defineEmits<{
-  (e: 'confirm', tourSpot: CreateTourSpotForm): void
+  (e: 'confirm', tourHighlight: CreateTourHighlightForm): void
 }>()
 
 const tourId = inject<Ref<number>>('tourId', ref(-1))
 
 const locateLoading = useLoading(true)
 const currentLocation = ref('')
-const tourSpot = computed<CreateTourSpotForm>(() => ({
+const tourHighlight = computed<CreateTourHighlightForm>(() => ({
   location: currentLocation.value,
-  title: spotTitle.value,
+  title: highlightTitle.value,
   imageUrl: props.imageUrl,
   tourId: tourId.value
 }))
@@ -35,7 +35,7 @@ const handleOpened = () => {
       locateLoading.setLoading(false)
     })
 }
-// const emits = defineEmits(['createSpot'])
+// const emits = defineEmits(['createHighlight'])
 const confirmButtonText = computed(() => (locateLoading.loading.value ? 'Locating...' : 'Confirm'))
 defineExpose({ show })
 </script>
@@ -46,20 +46,20 @@ defineExpose({ show })
     :confirmButtonDisabled="locateLoading.loading.value"
     :confirmButtonText="confirmButtonText"
     show-cancel-button
-    title="Create Highlight Spot"
+    title="Create Highlight"
     transition="van-slide-down"
-    @confirm="emits('confirm', tourSpot)"
+    @confirm="emits('confirm', tourHighlight)"
     @opened="handleOpened"
   >
     <van-cell-group inset>
       <van-field
-        v-model="spotTitle"
+        v-model="highlightTitle"
         input-align="center"
         maxlength="20"
         placeholder="Enter a title"
       />
     </van-cell-group>
-    <van-image :src="props.imageUrl" alt="highlight spot">
+    <van-image :src="props.imageUrl" alt="highlight highlight">
       <template v-slot:loading>
         <van-loading size="20" type="spinner" />
       </template>
