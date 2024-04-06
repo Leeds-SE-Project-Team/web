@@ -105,8 +105,9 @@ watch(props.tourData, (value) => {
         mapRef.value.$$getInstance()
       )
       .then((result: any) => {
-        console.log(result)
-        layers = mapStore.drawRoute(mapInstance, result.routes[0])
+        layers = mapStore.drawRoute(mapInstance, result.routes[0], {
+          lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
+        })
         navigationResult.value = result
       })
       .finally(() => {

@@ -1,6 +1,7 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed } from 'vue'
-import { RouterView, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
+
 const route = useRoute()
 // 配置布局
 const layout = computed(
@@ -13,7 +14,7 @@ const layout = computed(
   <!-- Component Library Config Provider-->
   <a-config-provider>
     <!--    Layout & Router View-->
-    <component :is="layout"> </component>
+    <component :is="layout"></component>
     <!--    Layout & Router View-->
   </a-config-provider>
   <!-- Component Library Config Provider-->

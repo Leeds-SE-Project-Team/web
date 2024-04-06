@@ -36,7 +36,7 @@ export const useMapStore = defineStore('map', () => {
   /**
    * 将路径数据转为经纬度数组
    * @param route 路径数据
-   * @param other 是否跳过处理,用于对GPX的处理,默认为flase
+   * @param other 是否跳过处理,用于对GPX的处理,默认为 false
    */
   const parseRouteToPath = (route: any, other?: boolean) => {
     if (other) {
@@ -55,38 +55,68 @@ export const useMapStore = defineStore('map', () => {
     return path
   }
 
-  const drawRoute = (mapInstance: AMap.Map, route: any, other?: boolean) => {
+  const drawRoute = (
+    mapInstance: AMap.Map,
+    route: any,
+    options: {
+      startMarker?: boolean
+      endMarker?: boolean
+      routeLine?: boolean
+      reCenter?: boolean
+      lineOptions?: AMap.BezierCurveOptions
+    },
+    other?: boolean
+  ) => {
     const path = parseRouteToPath(route, other)
 
-    const startMarker = new AMap.Marker({
-      position: path[0],
-      icon: 'https://webapi.amap.com/theme/v1.3/markers/n/start.png',
-      map: mapInstance,
-      anchor: 'bottom-center'
-    })
+    let startMarker
+    if (options.startMarker !== false) {
+      startMarker = new AMap.Marker({
+        position: path[0],
+        icon: 'https://webapi.amap.com/theme/v1.3/markers/n/start.png',
+        map: mapInstance,
+        anchor: 'bottom-center'
+      })
+    }
 
-    const endMarker = new AMap.Marker({
-      position: path[path.length - 1],
-      icon: 'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
-      map: mapInstance,
-      anchor: 'bottom-center'
-    })
+    let endMarker
+    if (options.endMarker !== false) {
+      endMarker = new AMap.Marker({
+        position: path[path.length - 1],
+        icon: 'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
+        map: mapInstance,
+        anchor: 'bottom-center'
+      })
+    }
 
-    const routeLine = new AMap.Polyline({
-      path: path,
-      isOutline: true,
-      outlineColor: '#ffeeee',
-      borderWeight: 2,
-      strokeWeight: 5,
-      strokeColor: '#0091ff',
-      strokeOpacity: 0.9,
-      lineJoin: 'round'
-    })
+    let routeLine
+    if (options.routeLine !== false) {
+      routeLine = new AMap.Polyline({
+        path: path,
+        isOutline: true,
+        outlineColor: '#ffeeee',
+        borderWeight: 2,
+        strokeWeight: 5,
+        strokeColor: '#0091ff',
+        strokeOpacity: 0.9,
+        lineJoin: 'round',
+        ...options.lineOptions
+      })
+    }
 
-    mapInstance.add(routeLine)
+    if (routeLine) {
+      mapInstance.add(routeLine)
+    }
+    const compArr: AMap.VectorLayer | AMap.Overlay[] = [
+      startMarker!,
+      endMarker!,
+      routeLine!
+    ].filter((e) => !!e)
     // 调整视野达到最佳显示区域
-    mapInstance.setFitView([startMarker, endMarker, routeLine])
-    return [startMarker, endMarker, routeLine]
+    if (options.reCenter !== false) {
+      mapInstance.setFitView(compArr)
+    }
+    return compArr
   }
 
   const planRoute = (

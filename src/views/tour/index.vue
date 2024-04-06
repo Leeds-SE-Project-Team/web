@@ -43,7 +43,6 @@
                 <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" alt="">
               </div>
             </div>
-            
           </div>
         </a-timeline-item>
 
@@ -128,11 +127,9 @@
             </div>
           </div>
         </a-timeline-item>
-
         <a-timeline-item class="pic-map" lineType="dashed">
           <h4>结束</h4>
         </a-timeline-item>
-      
       </a-timeline>
     </section>
 
@@ -236,12 +233,13 @@ import { type TourRecord, TourType } from '@/apis/tour'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
 import { getTourSpotExample } from '@/apis/tour/spot'
 import { exampleUserRecord } from '@/apis/user'
-import DCard from '../discover/DCard.vue';
+import DCard from '../discover/DCard.vue'
 
-const url = import.meta.env.APP_STATIC_URL.concat("/tour")
-const exam_pic = "https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a20012a2d4d5b9db43dfc6a01fe508c0.png~tplv-uwbnlip3yd-webp.webp"
+const url = import.meta.env.APP_STATIC_URL.concat('/tour')
+const exam_pic =
+  'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a20012a2d4d5b9db43dfc6a01fe508c0.png~tplv-uwbnlip3yd-webp.webp'
 
-const mode = "minimal"
+const mode = 'minimal'
 const testCardInfo: TourRecord = {
   id: 0,
   title: '这是一个用来展示一个行程的card',

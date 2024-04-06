@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { UserRecord } from '@/apis/user'
 
@@ -13,5 +13,5 @@ export const useUserStore = defineStore('user', () => {
       }
     })
 
-  return { getUserRecord }
+  return { getUserRecord, curUser }
 })

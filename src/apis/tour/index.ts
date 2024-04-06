@@ -13,11 +13,15 @@ export enum TourType {
   PUBLIC
 }
 
+import walkSvgUrl from '@/assets/walk.svg'
+import cyclingSvgUrl from '@/assets/cycling.svg'
+import driveSvgUrl from '@/assets/drive.svg'
+
 export const tourTypeMap = [
-  { text: 'hiking', value: TourType.WALK, img: 'src/assets/walk.svg' },
-  { text: 'cycling', value: TourType.CYCLING, img: 'src/assets/cycling.svg' },
-  { text: 'car', value: TourType.CAR, img: 'src/assets/drive.svg' },
-  { text: 'public', value: TourType.PUBLIC, img: 'src/assets/drive.svg' }
+  { text: 'hiking', value: TourType.WALK, img: walkSvgUrl },
+  { text: 'cycling', value: TourType.CYCLING, img: cyclingSvgUrl },
+  { text: 'car', value: TourType.CAR, img: driveSvgUrl },
+  { text: 'public', value: TourType.PUBLIC, img: driveSvgUrl }
 ]
 
 export const getTourTypeText = (type: TourType) =>
