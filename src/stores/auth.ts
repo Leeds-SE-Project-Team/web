@@ -4,6 +4,7 @@ import { getUserByToken } from '@/apis/user'
 import { useUserStore } from '@/stores/user'
 import { Message } from '@arco-design/web-vue'
 
+
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string | null>(null)
   const refreshAccessToken = (newToken: string | null) => {

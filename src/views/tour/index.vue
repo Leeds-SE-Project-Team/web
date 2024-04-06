@@ -5,23 +5,14 @@
       <!-- the bg part -->
       <div class="bg flex-r">
         <div class="main-bg">
-          <img
-            src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
-            alt=""
-          />
+          <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" alt="">
         </div>
         <div class="sub">
           <div class="sub-bg">
-            <img
-              src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40"
-              alt=""
-            />
+            <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40" alt="">
           </div>
           <div class="sub-bg">
-            <img
-              src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40"
-              alt=""
-            />
+            <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40" alt="">
           </div>
         </div>
       </div>
@@ -32,12 +23,10 @@
         <div>
           <span class="category">Expert</span>
           <span class="time">07:10</span>
-          <span class="distance">18.4</span>km <span class="speed">2.6</span>km/h
+          <span class="distance">18.4</span>km
+          <span class="speed">2.6</span>km/h
         </div>
-        <h3 class="des">
-          Expert Hiking Tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine
-          experience required.
-        </h3>
+        <h3 class="des">Expert Hiking Tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine experience required.</h3>
       </div>
     </section>
 
@@ -51,10 +40,7 @@
           <div class="tour-pic">
             <div class="pic-container flex-r">
               <div class="pic">
-                <img
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
-                  alt=""
-                />
+                <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" alt="">
               </div>
             </div>
           </div>
@@ -116,47 +102,31 @@
           <div class="tour-pic">
             <div class="pic-container flex-r">
               <div class="pic">
-                <img
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40"
-                  alt=""
-                />
+                  <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40" alt="">
               </div>
               <div class="pic">
-                <img
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
-                  alt=""
-                />
+                <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" alt="">
               </div>
               <div class="pic">
-                <img
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40"
-                  alt=""
-                />
+                <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40" alt="">
               </div>
             </div>
           </div>
         </a-timeline-item>
-
+        
         <a-timeline-item class="pic-map" label="2017-03-10 8:20" lineType="dashed">
           <div class="mile">3 km</div>
           <div class="tour-pic">
             <div class="pic-container flex-r">
               <div class="pic">
-                <img
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40"
-                  alt=""
-                />
+                  <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40" alt="">
               </div>
               <div class="pic">
-                <img
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
-                  alt=""
-                />
+                <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" alt="">
               </div>
             </div>
           </div>
         </a-timeline-item>
-
         <a-timeline-item class="pic-map" lineType="dashed">
           <h4>结束</h4>
         </a-timeline-item>
@@ -165,20 +135,27 @@
 
     <!-- the section of map -->
     <section class="map">
-      <div class="subtitle">MAP</div>
+      <div class="subtitle">
+        MAP
+      </div>
       <div class="map-img"></div>
     </section>
 
     <!-- the section of weather and profile .. and so on -->
     <section class="profile">
-      <div class="subtitle">PROFIEL</div>
+      <div class="subtitle">
+        PROFIEL
+      </div>
     </section>
 
     <section class="weather">
-      <div class="subtitle">WEATHER</div>
+      <div class="subtitle">
+        WEATHER
+      </div>
     </section>
   </div>
 
+  
   <div class="comments">
     <a-space size="large">
       <a-avatar
@@ -191,7 +168,7 @@
         <p>September 13, 2017</p>
       </div>
     </a-space>
-
+    
     <div class="like">
       <a-button class="button-icon">
         <template #icon>
@@ -201,7 +178,7 @@
           </div>
         </template>
       </a-button>
-
+      
       <div class="follower">
         <a-space :size="32">
           <a-avatar-group :max-count="5">
@@ -215,10 +192,11 @@
           </a-avatar-group>
         </a-space>
       </div>
+
     </div>
 
     <div class="subtitle comment-title">COMMENTS</div>
-
+    
     <div class="comments-content" v-for="i in Array(3)" :key="i">
       <a-divider />
       <div class="flex-content">
@@ -234,22 +212,18 @@
 
         <div class="content">
           <h3 class="name">George</h3>
-          <p class="com-content">
-            The Rennsteig begins at the Werraufer in Hörschel. Here, so it is custom, you should
-            take a pebble, which you throw in the hall at the end of your tour. The first stage
-            leads you about 19 kilometers almost steadily uphill. At the large Eichelberg (310 m
-            above sea level) offers a beautiful view of the
-          </p>
+          <p class="com-content">The Rennsteig begins at the Werraufer in Hörschel. Here, so it is custom, you should take a pebble, which you throw in the hall at the end of your tour. The first stage leads you about 19 kilometers almost steadily uphill. At the large Eichelberg (310 m above sea level) offers a beautiful view of the</p>
           <p class="date">August 31, 2017</p>
         </div>
       </div>
+
     </div>
   </div>
 </template>
 
 <script lang="ts">
 export default {
-  name: 'TourPage'
+    name: "TourPage"
 }
 </script>
 
@@ -356,10 +330,10 @@ const switchClick = () => {
 const isMinimal = ref(false)
 
 onMounted(() => {
-  if (mode === 'minimal') {
-    isMinimal.value = true
-    switchStatus.value = 'map'
-    switchClick()
+  if(mode==='minimal'){
+    isMinimal.value = true;
+    switchStatus.value = 'map';
+    switchClick();
   }
 })
 </script>
