@@ -1,6 +1,6 @@
 import { ref, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
-import { getUserByEmail } from '@/apis/user'
+// import { getUserByEmail } from '@/apis/user'
 
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref('root')
