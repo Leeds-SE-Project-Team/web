@@ -5,18 +5,20 @@ import { Camera, CameraResultType } from '@capacitor/camera'
 const takePicture = async () => {
   const image = await Camera.getPhoto({
     quality: 90,
-    // allowEditing: true,
-    resultType: CameraResultType.Uri
+    resultType: CameraResultType.DataUrl
   })
-
-  // image.webPath will contain a path that can be set as an image src.
-  // You can access the original file using image.path, which can be
-  // passed to the Filesystem API to read the raw data of the image,
-  // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-  if (image.webPath != null) {
-    const imageUrl = image.webPath.replace(/(?<!http:)\/\//, '/')
-    emits('createHighlight', imageUrl)
-  }
+  const imageUrl = image.dataUrl
+  emits('createHighlight', imageUrl)
+  // console.log(image)
+  // console.log(image.path)
+  // // image.webPath will contain a path that can be set as an image src.
+  // // You can access the original file using image.path, which can be
+  // // passed to the Filesystem API to read the raw data of the image,
+  // // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
+  // if (image.webPath != null) {
+  //   const imageUrl = image.webPath.replace(/(?<!http:)\/\//, '/')
+  //   emits('createHighlight', imageUrl)
+  // }
 }
 
 const emits = defineEmits(['createHighlight'])
