@@ -36,7 +36,9 @@ const fetchTour = () => {
             mapRef.value.$$getInstance()
           )
           .then((result) => {
-            mapStore.drawRoute(mapRef.value.$$getInstance(), result.routes[0])
+            mapStore.drawRoute(mapRef.value.$$getInstance(), result.routes[0], {
+              lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
+            })
           })
       } else {
         Message.info(apiRes.message)
@@ -54,7 +56,6 @@ const highlightList = ref<TourHighlight[]>([])
 const fetchHighlightList = () => {
   getTourHighlights().then((apiRes) => {
     if (apiRes.success) {
-      console.log('tour highlights:', apiRes.data)
       highlightList.value = apiRes.data!
     }
   })
@@ -74,12 +75,26 @@ const mapInit = () => {
   fetchTour()
 }
 
-const getCurrentLocation = () => {
+let layers: AMap.Overlay[] = []
+
+const getCurrentLocation = (toCenter?: boolean) => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition((status, info) => {
     if (status === 'complete') {
-      // center.value = info.position.toArray()
-      const arr = info.position.toArray()
-      locationTrackList.value.push(arr)
+      if (toCenter === true) {
+        center.value = info.position.toArray()
+      }
+      ;(mapRef.value.$$getInstance() as AMap.Map).remove(layers)
+      locationTrackList.value.push(info.position)
+      layers = mapStore.drawRoute(
+        mapRef.value.$$getInstance(),
+        locationTrackList.value,
+        {
+          startMarker: false,
+          endMarker: false,
+          reCenter: false
+        },
+        true
+      )
     }
   })
 }
@@ -203,15 +218,19 @@ const showHighlightSheet = ref(false)
 //   }
 // }, 100)
 
-const locationTrackList = ref<number[][]>([])
+const locationTrackList = ref<AMap.LngLat[]>([])
 
-const polyline = computed(() => ({
-  path: locationTrackList.value.length > 0 ? locationTrackList.value : undefined,
-  // path: locationTrackList.value,
-  editable: false,
-  visible: true,
-  draggable: false
-}))
+// const polyline = computed(() => ({
+//   path: locationTrackList.value.length > 0 ? locationTrackList.value : undefined,
+//   // path: locationTrackList.value,
+//   editable: false,
+//   visible: true,
+//   draggable: false
+// }))
+
+const handleClickLocation = () => {
+  console.log('!')
+}
 
 onMounted(() => {
   window.setInterval(getCurrentLocation, 3000)
@@ -265,15 +284,15 @@ onMounted(() => {
         :doubleClickZoom="false"
         :scrollWheel="true"
         mapStyle="amap://styles/fresh"
-        @complete="getCurrentLocation"
+        @complete="getCurrentLocation(true)"
         @init="mapInit"
       >
-        <el-amap-polyline
-          :draggable="polyline.draggable"
-          :editable="polyline.editable"
-          :path="polyline.path"
-          :visible="polyline.visible"
-        />
+        <!--        <el-amap-polyline-->
+        <!--          :draggable="polyline.draggable"-->
+        <!--          :editable="polyline.editable"-->
+        <!--          :path="polyline.path"-->
+        <!--          :visible="polyline.visible"-->
+        <!--        />-->
 
         <el-amap-marker
           v-for="(highlight, idx) in highlightList"
@@ -297,18 +316,15 @@ onMounted(() => {
           </div>
         </el-amap-marker>
 
-        <!--        <el-amap-marker-->
-        <!--          v-for="(highlight, idx) in highlightList"-->
-        <!--          :key="idx"-->
-        <!--          :position="parseLocation(highlight.location)"-->
-        <!--        />-->
         <el-amap-control-geolocation
           ref="geolocationRef"
           :circleOptions="{
             fillOpacity: 0,
             strokeOpacity: 0
           }"
-          @complete="getLocation"
+          :visible="false"
+          :pan-to-location="false"
+          :zoom-to-accuracy="false"
         />
       </el-amap>
     </div>

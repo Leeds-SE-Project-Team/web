@@ -10,6 +10,7 @@ import AMapLoader from '@amap/amap-jsapi-loader'
 import { Message } from '@arco-design/web-vue'
 import { type CreateTourForm, parseLocation, TourType } from '@/apis/tour'
 import { Screenshot } from '@amap/screenshot'
+import { useMapStore } from '@/stores/map'
 
 const map = ref<any>(null)
 const screenshot = ref<Screenshot | null>(null)
@@ -101,10 +102,11 @@ const drawRoute = (route: any, other?: boolean) => {
 /**
  * 将GPX数据通过高德API转换为高德经纬度数据并绘制在地图上
  */
+const mapStore = useMapStore()
 const drawGPX = (route: any) => {
   AMap.convertFrom(route, 'gps', (status: any, result: any) => {
     if (result.info == 'ok') {
-      drawRoute(result.locations, true)
+      mapStore.drawRoute(map.value, result.locations, {}, true)
     }
   })
 }
