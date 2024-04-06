@@ -21,29 +21,27 @@ export const useAuthStore = defineStore('auth', () => {
   watch(
     () => accessToken.value,
     (value) => {
-      validateToken(value)
-        .then((valid) => {
-          isTokenValid.value = valid
-          if (valid) {
-            getUserByToken(value!)
-              .then((apiRes) => {
-                if (apiRes.success) {
-                  userStore.curUser = apiRes.data!
-                } else {
-                  throw apiRes.message
-                }
+      validateToken(value).then((valid) => {
+        isTokenValid.value = valid
+        if (valid) {
+          getUserByToken(value!)
+            .then((apiRes) => {
+              if (apiRes.success) {
+                userStore.curUser = apiRes.data!
+                refreshAccessToken(value)
+              } else {
+                throw apiRes.message
+              }
+            })
+            .catch((e) => {
+              Message.error({
+                content: e,
+                id: 'tokenValidation'
               })
-              .catch((e) => {
-                Message.error({
-                  content: e,
-                  id: 'tokenValidation'
-                })
-              })
-          }
-        })
-        .finally(() => {
-          refreshAccessToken(value)
-        })
+              refreshAccessToken(null)
+            })
+        }
+      })
     }
   )
 
