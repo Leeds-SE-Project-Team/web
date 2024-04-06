@@ -26,6 +26,10 @@ axiosInstance.interceptors.request.use(
       return config
     }
 
+    // if (!authStore.isTokenValid && authStore.accessToken) {
+    //   authStore.refreshAccessToken(null)
+    // }
+
     const userStore = useUserStore()
     if (userStore.curUser) {
       config.headers.set('User-ID', userStore.curUser.id)

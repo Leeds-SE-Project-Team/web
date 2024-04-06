@@ -19,6 +19,7 @@ import { useMapStore } from '@/stores/map'
 import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
+import { uploadFileFromURL } from '@/utils/file'
 
 const tourTypeText = computed<string>(() => getTourTypeText(createTourForm.value.type))
 const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.value.type))
@@ -95,24 +96,37 @@ const handleCreateTour = (navigate = false) => {
   formRef.value.validate().then((e: any) => {
     if (!e) {
       setLoading(true)
-      createTour({ ...createTourForm.value, tourCollectionId: selectedCollection.value })
+      createTour({
+        ...createTourForm.value,
+        tourCollectionId: selectedCollection.value
+      })
         .then((res) => {
           if (res.success) {
-            savedTour.value = res.data!
-            Message.success(res.message)
-            console.log(mapStore.screenMap(mapContainer.value.mapRef.$$getInstance()))
-            if (navigate) {
-              router.push({ name: 'record', params: { tourId: savedTour.value.id } })
-            }
+            uploadFileFromURL(
+              mapStore.screenMap(mapContainer.value.mapRef.$$getInstance())!,
+              `/tour/${res.data!.id}/map_screenshot.jpg`
+            )
+              .then((uploadRes) => {
+                if (uploadRes.success) {
+                  savedTour.value = res.data!
+                  Message.success(res.message)
+                  if (navigate) {
+                    router.push({ name: 'record', params: { tourId: savedTour.value.id } })
+                  }
+                } else {
+                  throw uploadRes.message
+                }
+              })
+              .finally(() => {
+                setLoading(false)
+              })
           } else {
-            Message.info(res.message)
+            throw res.message
           }
         })
         .catch((e) => {
           console.log(e)
           Message.error(e)
-        })
-        .finally(() => {
           setLoading(false)
         })
     }

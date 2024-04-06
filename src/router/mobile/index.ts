@@ -1,7 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router'
-import { Capacitor } from '@capacitor/core'
 import MobileRecord from '@/views/mobile/record/index.vue'
-import MobileHighlight from '@/views/mobile/highlight/index.vue'
+
 export const MOBILE_ROUTES: RouteRecordRaw[] = [
   {
     path: '/record/:tourId',
@@ -11,7 +10,12 @@ export const MOBILE_ROUTES: RouteRecordRaw[] = [
       title: 'Discover Page'
     },
     component: MobileRecord,
-    props: true
+    props: true,
+    beforeEnter: (to) => {
+      if (!to.params.tourId) {
+        return { path: '/discover' }
+      }
+    }
   }
   // {
   //   path: '/highlight',

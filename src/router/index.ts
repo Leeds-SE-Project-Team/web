@@ -12,6 +12,8 @@ import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import { Capacitor } from '@capacitor/core'
 import { MOBILE_ROUTES } from '@/router/mobile'
+import { useAuthStore } from '@/stores/auth'
+import { getUserByToken } from '@/apis/user'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,7 +32,8 @@ const router = createRouter({
       name: 'home',
       meta: {
         title: 'Home Page',
-        layout: 'a'
+        layout: 'a',
+        auth: ['admin', 'user']
       },
       component: HomeView
     },
@@ -48,12 +51,12 @@ const router = createRouter({
       meta: {
         // layout: 'mobile-main',
         layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
-        title: 'Discover Page'
+        title: 'Discover Page',
+        auth: ['admin', 'user']
       }, // Render component dynamically according to platform
       // component: DiscoverMobileView
       component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
-    },
-    // {
+    }, // {
     //   path: '/plan',
     //   name: 'planner',
     //   meta: {
@@ -67,7 +70,8 @@ const router = createRouter({
       name: 'planner',
       meta: {
         title: 'Planner Page',
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default'
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default',
+        auth: ['user']
       },
       component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
     },
@@ -76,7 +80,8 @@ const router = createRouter({
       name: 'tour',
       meta: {
         layout: 'b',
-        title: 'Tour Page'
+        title: 'Tour Page',
+        auth: ['admin', 'user']
       },
       component: TourView
     },
@@ -85,7 +90,8 @@ const router = createRouter({
       name: 'collection',
       meta: {
         layout: 'b',
-        title: 'Collection Detail Page'
+        title: 'Collection Detail Page',
+        auth: ['admin', 'user']
       },
       beforeEnter: (to) => {
         if (!to.query.id) {
@@ -100,12 +106,39 @@ const router = createRouter({
       meta: {
         // layout: 'mobile-main',
         layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
-        title: 'highlight Page'
+        title: 'highlight Page',
+        auth: ['admin', 'user']
       }, // Render component dynamically according to platform
       // component: DiscoverMobileView
       component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.auth && (to.meta.auth as string[]).length > 0) {
+    const authStore = useAuthStore()
+    if (authStore.isTokenValid) {
+      next()
+    } else {
+      const accessToken = localStorage.getItem('accessToken')
+      console.log(accessToken)
+      if (accessToken) {
+        getUserByToken(accessToken).then((apiRes) => {
+          console.log(apiRes)
+          if (apiRes.success) {
+            next()
+          } else {
+            next('/')
+          }
+        })
+      } else {
+        next('/')
+      }
+    }
+  } else {
+    next()
+  }
 })
 
 export default router
