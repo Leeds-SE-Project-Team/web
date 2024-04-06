@@ -1,5 +1,7 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse, HttpStatusCode } from 'axios'
 import { useAuthStore } from '@/stores/auth'
+import { useUserStore } from '@/stores/user'
+import { getUserByToken } from '@/apis/user'
 
 // axios 全局配置
 const axiosInstance = axios.create({
@@ -7,8 +9,8 @@ const axiosInstance = axios.create({
   timeout: 30000,
   headers: {
     common: {
-      'Content-Type': 'application/json',
-      'User-ID': 1
+      'Content-Type': 'application/json'
+      // 'User-ID': 1
     }
   }
 })
@@ -17,7 +19,26 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   function (config) {
     const authStore = useAuthStore()
+    authStore.refreshAccessToken(localStorage.getItem('accessToken'))
     config.headers.setAuthorization(authStore.accessToken)
+
+    if (config.headers.byPass) {
+      return config
+    }
+
+    const userStore = useUserStore()
+    if (userStore.curUser) {
+      config.headers.set('User-ID', userStore.curUser.id)
+    } else if (authStore.accessToken) {
+      return new Promise((resolve) => {
+        getUserByToken(authStore.accessToken!).then((apiRes) => {
+          if (apiRes.success) {
+            config.headers.set('User-ID', apiRes.data!.id)
+            resolve(config)
+          }
+        })
+      })
+    }
     return config
   },
   function (error) {

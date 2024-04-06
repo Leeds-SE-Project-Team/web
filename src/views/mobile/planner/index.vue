@@ -16,7 +16,7 @@ import MapPlanner from '@/views/mobile/planner/components/MapPlanner.vue'
 import { hapticsImpactLight } from '@/utils'
 import { App } from '@capacitor/app'
 import { useMapStore } from '@/stores/map'
-import { getTourCollectionsByUserId, type TourCollection } from '@/apis/collection'
+import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 
@@ -45,8 +45,9 @@ const fetchTourCollections = () => {
   //   .getUserRecord()
   //   .then((user) => {
   collectionLoadingObj.setLoading(true)
-  getTourCollectionsByUserId(1)
+  getTourCollectionsByCurUser
     .then((apiRes) => {
+      console.log(apiRes)
       if (apiRes.success) {
         userCollections.value = apiRes.data!
         selectedCollection.value = userCollections.value[0].id
@@ -409,6 +410,7 @@ onUnmounted(() => {
         <van-loading v-if="selectedCollection === -1" />
         <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
       </van-cell>
+      <!--      TODO: tour title-->
     </van-floating-panel>
     <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>
       <van-picker

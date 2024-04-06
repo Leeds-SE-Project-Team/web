@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { getTimeDiffUntilNow } from '@/utils'
 import useLoading from '@/hooks/loading'
-import { useRouter } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
 import { useUserStore } from '@/stores/user'
@@ -240,13 +239,16 @@ onUnmounted(() => {
   <!--    </div>-->
   <!--  </div>-->
   <van-floating-bubble
-    axis="xy"
-    magnetic="x"
     :offset="{
       x: 315,
       y: 70
     }"
-    ><template #default> <van-icon :size="23" name="guide-o" /></template>
+    axis="xy"
+    magnetic="x"
+  >
+    <template #default>
+      <van-icon :size="23" name="guide-o" />
+    </template>
   </van-floating-bubble>
   <div id="slide-list" @wheel.passive="handleWheel">
     <div class="outer-container">
@@ -258,9 +260,9 @@ onUnmounted(() => {
             height: `${parentHeight}px`
           }"
           class="page-recommend-container border-1"
+          @click="$router.push({ name: item.type, query: { id: item.item.id } })"
           @touchmove="handleTouchMove"
           @touchstart="handleTouchStart"
-          @click="$router.push({ name: item.type, query: { id: item.item.id } })"
         >
           <div :id="idx === currentPlayIndex ? 'sliderVideo' : undefined" class="feed-video">
             <div class="playerContainer">
@@ -271,11 +273,12 @@ onUnmounted(() => {
                       item.type === 'collection'
                         ? (item.item as unknown as TourCollection).coverUrl
                         : (() => {
-                            console.log(item)
-                            const spotsList = (item.item as unknown as TourRecord).tourSpotList
-                            if (spotsList.length > 0) {
-                              return spotsList[0].tourImages
+                            const highlightList = (item.item as unknown as TourRecord)
+                              .tourHighlightList
+                            if (highlightList.length > 0) {
+                              return highlightList[0].tourImages[0].imageUrl
                             } else {
+                              // TODO: 改为截图
                               return getTourImageExample(1).imageUrl
                             }
                           })()
@@ -288,11 +291,13 @@ onUnmounted(() => {
                       <div :id="idx === currentPlayIndex ? 'video-info-wrap' : undefined">
                         <div class="video-info-detail">
                           <a-row class="item-name">
-                            <a-tag>{{
-                              item.type === 'collection'
-                                ? (item.item as unknown as TourCollection).name
-                                : (item.item as unknown as TourRecord).type + ' Tour'
-                            }}</a-tag>
+                            <a-tag
+                              >{{
+                                item.type === 'collection'
+                                  ? (item.item as unknown as TourCollection).name
+                                  : (item.item as unknown as TourRecord).type + ' Tour'
+                              }}
+                            </a-tag>
                           </a-row>
                           <a-row class="account">
                             <div class="account-name">
@@ -366,8 +371,8 @@ onUnmounted(() => {
                                 <img
                                   :height="45"
                                   :src="isLiked ? likedSvgUrl : likeSvgUrl"
-                                  alt="like"
                                   :width="45"
+                                  alt="like"
                                 />
                               </div>
                               <div class="video-action-statistic">{{ itemLikeShowNum }}</div>
@@ -436,8 +441,8 @@ onUnmounted(() => {
                               <div class="video-action-icon">
                                 <img
                                   :height="45"
-                                  alt="more"
                                   :width="45"
+                                  alt="more"
                                   src="/interaction/more.svg"
                                 />
                               </div>
@@ -463,10 +468,12 @@ onUnmounted(() => {
                       item.type === 'collection'
                         ? (item.item as unknown as TourCollection).coverUrl
                         : (() => {
-                            const spotsList = (item.item as unknown as TourRecord).tourSpotList
-                            if (spotsList.length > 0) {
-                              return spotsList[0].tourImages
+                            const highlightList = (item.item as unknown as TourRecord)
+                              .tourHighlightList
+                            if (highlightList.length > 0) {
+                              return highlightList[0].tourImages[0].imageUrl
                             } else {
+                              // TODO: 改为截图
                               return getTourImageExample(1).imageUrl
                             }
                           })()

@@ -36,6 +36,15 @@ export interface QueryUserForm {
   id?: string
 }
 
+export const getUserByToken = (token: string): Promise<ApiResponse<UserRecord>> =>
+  axiosRequest({
+    method: 'GET',
+    url: `users/token/${token}`,
+    headers: {
+      byPass: true
+    }
+  })
+
 export const checkUserExist = (form: QueryUserForm): Promise<ApiResponse<void>> => {
   const emailString = form.email ? `email=${form.email}` : ''
   const idString = form.id ? `id=${form.id}` : ''
