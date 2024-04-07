@@ -104,14 +104,14 @@
     <h2 class="text-center">Tours</h2>
     <div ref="scrollContainer" class="tour-scroll-container">
       <div ref="imgCollection" class="img-collection">
-        <div v-for="(_, i) in 3" :key="i" class="img-wrapper">
-          <img :src="testCardInfo.spots[i].tourImages[0].imageUrl" alt="" />
+        <div v-for="(_, i) in testCardInfo" :key="i" class="img-wrapper">
+          <img v-if="flag" :src="testCardInfo[i].tourHighlightList[i].tourImages[0].imageUrl" alt="" />
         </div>
       </div>
       <div class="tianchong"></div>
       <div ref="tourScroll" class="tour-card-wrapper w-full">
-        <div v-for="(_, i) in 3" :key="i" class="tour-card flex-c flex-justify-c">
-          <DCard :info="testCardInfo" mode="minimal" style="overflow: hidden"></DCard>
+        <div v-for="(_, i) in testCardInfo" :key="i" class="tour-card flex-c flex-justify-c">
+          <DCard v-if="flag" :tour-data="testCardInfo[i]" mode="minimal" style="overflow: hidden"></DCard>
         </div>
       </div>
     </div>
@@ -123,65 +123,14 @@
 import { onMounted, ref } from 'vue'
 // import MapContainer from '@/components/map/MapContainer.vue';
 import DCard from './DCard.vue'
-import { exampleUserRecord } from '@/apis/user'
-import { getTourSpotExample } from '@/apis/tour/spot'
-import { type TourRecord, TourType } from '@/apis/tour'
+import { type TourRecord, TourType, getTourById } from '@/apis/tour'
 
 const tourScroll = ref<HTMLDivElement | null>(null)
 const scrollContainer = ref<HTMLDivElement | null>(null)
 const imgCollection = ref<HTMLDivElement | null>(null)
 var ticking = false
 
-const testCardInfo: TourRecord = {
-  id: 0,
-  title: 'Tour card',
-  user: {
-    id: 0,
-    email: '234',
-    nickname: 'test user',
-    avatar: '//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif',
-    registerTime: '234',
-    latestLoginTime: '25'
-  },
-  spots: [getTourSpotExample(1), getTourSpotExample(2), getTourSpotExample(3)],
-  mapUrl: import.meta.env.APP_STATIC_URL.concat('/tour/example/map/map.png'),
-  // map: '//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg',
-  // like: 100,
-  // comment: 3,
-  comments: [
-    {
-      id: 1,
-      tourId: 1,
-      author: exampleUserRecord,
-      content: 'this is a sample content',
-      publishTime: '2024-3-4 00:00:00',
-      replies: []
-    },
-    {
-      id: 2,
-      tourId: 1,
-      author: exampleUserRecord,
-      content: 'this is a sample content',
-      publishTime: '2024-3-4 00:00:00',
-      replies: []
-    },
-    {
-      id: 3,
-      tourId: 1,
-      author: exampleUserRecord,
-      content: 'this is a sample content',
-      publishTime: '2024-3-4 00:00:00',
-      replies: []
-    }
-  ],
-  startLocation: '',
-  endLocation: '',
-  createTime: '2024-3-4 00:00:00',
-  type: TourType.WALK,
-  pons: [],
-  status: 'awaitApproval',
-  tourCollectionId: 1
-}
+const testCardInfo = ref<TourRecord[]>([])
 
 function switching(
   imgs: HTMLCollectionOf<HTMLDivElement>,
@@ -234,6 +183,14 @@ function switching(
   }
 }
 
+const flag = ref(false)
+getTourById(18).then((res)=>{
+  if(res.success){
+    testCardInfo.value.push(res.data!)
+    flag.value = true
+  }
+})
+
 onMounted(() => {
   if (tourScroll.value && scrollContainer.value) {
     const imgs = scrollContainer.value.getElementsByClassName(
@@ -257,3 +214,8 @@ onMounted(() => {
   }
 })
 </script>
+<style scoped>
+:deep(.arco-btn-size-medium svg){
+  vertical-align: -6px;
+}
+</style>
