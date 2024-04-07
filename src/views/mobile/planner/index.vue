@@ -73,13 +73,15 @@ const createTourForm = ref<CreateTourForm>({
   type: TourType.WALK,
   pons: [],
   tourCollectionId: -1,
-  result: undefined
+  result: undefined,
+  title: 'Untitled'
 })
 
 const resetForm = () => {
   createTourForm.value.startLocation = ''
   createTourForm.value.endLocation = ''
   createTourForm.value.result = undefined
+  createTourForm.value.title = 'untitled'
 }
 
 const mapContainer = ref()
@@ -96,6 +98,9 @@ const handleCreateTour = (navigate = false) => {
   formRef.value.validate().then((e: any) => {
     if (!e) {
       setLoading(true)
+      if (createTourForm.value.title === '') {
+        createTourForm.value.title = 'untitled'
+      }
       createTour({
         ...createTourForm.value,
         tourCollectionId: selectedCollection.value
@@ -104,7 +109,8 @@ const handleCreateTour = (navigate = false) => {
           if (res.success) {
             uploadFileFromURL(
               mapStore.screenMap(mapContainer.value.mapRef.$$getInstance())!,
-              `/tour/${res.data!.id}`, 'map_screenshot.jpg'
+              `/tour/${res.data!.id}`,
+              'map_screenshot.jpg'
             )
               .then((uploadRes) => {
                 if (uploadRes.success) {
@@ -426,6 +432,9 @@ onUnmounted(() => {
         <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
       </van-cell>
       <!--      TODO: tour title-->
+      <van-cell>
+        <van-field v-model="createTourForm.title" label="Title" placeholder="请输入标题" />
+      </van-cell>
     </van-floating-panel>
     <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>
       <van-picker

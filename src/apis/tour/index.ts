@@ -58,7 +58,7 @@ export interface TourRecord {
   pons: PON[]
   user: UserRecord
   tourCollectionId: number
-  mapCapture: string
+  mapUrl: string
 
   tourSpotList: TourSpot[]
   tourHighlightList: TourHighlight[]
@@ -74,6 +74,7 @@ export interface CreateTourForm {
   pons: PON[]
   tourCollectionId: number
   result: any
+  title: string
 }
 
 export const parseLocation = (location: string): string[] => {

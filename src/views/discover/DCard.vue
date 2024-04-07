@@ -3,11 +3,11 @@
     <a-card class="d-card" style="background: rgba(255, 255, 255, 0.8)">
       <template #title>
         <div class="title-wrapper">
-          <div class="greeting-more" v-if="!isMinimal && !isTour">
+          <div v-if="!isMinimal && !isTour" class="greeting-more">
             <h4>interesting in your region</h4>
             <span>...</span>
           </div>
-          <div class="user-wrapper" v-if="!isMinimal && !isTour">
+          <div v-if="!isMinimal && !isTour" class="user-wrapper">
             <div class="avatar-wrapper">
               <a-avatar>
                 <img :src="props.info.user.avatar" alt="avatar" />
@@ -26,8 +26,8 @@
               <a-button type="primary">Follow</a-button>
             </div>
           </div>
-          <div class="split" v-if="isMinimal && !isTour"></div>
-          <h3 class="title" v-if="!isTour">
+          <div v-if="isMinimal && !isTour" class="split"></div>
+          <h3 v-if="!isTour" class="title">
             {{ props.info.title }}
           </h3>
           <div class="picture-map">
@@ -62,7 +62,7 @@
               </a-image-preview-group>
             </div>
             <div ref="mapWrapper" class="map-wrapper hide">
-              <img :src="props.info.mapCapture" alt="" />
+              <img :src="props.info.mapUrl" alt="" />
             </div>
             <div class="switch">
               <button class="switch-button" @click="switchClick">
@@ -95,22 +95,28 @@
         </div>
       </template>
 
-      <div class="item-actions" v-if="!isTour">
+      <div v-if="!isTour" class="item-actions">
         <a-list :bordered="false" class="item-actions-left">
           <a-list-item class="like-action">
-            <span class="like-icon"><IconHeartFill v-if="false" /><IconHeart v-else /></span>
+            <span class="like-icon">
+              <IconHeartFill v-if="false" />
+              <IconHeart v-else />
+            </span>
             <span>{{ 1 }}</span>
           </a-list-item>
           <a-list-item class="star-action">
-            <span class="star-icon"><IconStarFill v-if="false" /><IconStar v-else /></span>
+            <span class="star-icon">
+              <IconStarFill v-if="false" />
+              <IconStar v-else />
+            </span>
             <span>{{ 1 }}</span>
           </a-list-item>
-          <a-list-item style="cursor: pointer" @click="commentClick" v-if="!isMinimal">
+          <a-list-item v-if="!isMinimal" style="cursor: pointer" @click="commentClick">
             <icon-message />
             <span>{{ comments.length > 0 ? comments.length : 'view' }}</span>
           </a-list-item>
         </a-list>
-        <div class="item-actions-right" v-if="!isMinimal">
+        <div v-if="!isMinimal" class="item-actions-right">
           <a-tag
             v-if="props.info.status === 'awaitApproval'"
             :color="'arcoblue'"
@@ -282,7 +288,7 @@ const mapWrapper = ref<HTMLDivElement | undefined>()
 const picWrapper = ref<HTMLDivElement | undefined>()
 // const textA = ref('')
 
-const smallImg = ref(props.info.mapCapture)
+const smallImg = ref(props.info.mapUrl)
 // const commentList = props.info.comments
 
 const switchStatus = ref<'map' | 'pic'>('map')
@@ -339,7 +345,7 @@ const switchClick = () => {
       if (mapWrapper.value) {
         mapWrapper.value.classList.add('hide')
       }
-      smallImg.value = props.info.mapCapture
+      smallImg.value = props.info.mapUrl
       break
   }
 }

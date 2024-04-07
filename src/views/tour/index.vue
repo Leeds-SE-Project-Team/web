@@ -5,14 +5,23 @@
       <!-- the bg part -->
       <div class="bg flex-r">
         <div class="main-bg">
-          <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" alt="">
+          <img
+            alt=""
+            src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
+          />
         </div>
         <div class="sub">
           <div class="sub-bg">
-            <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40" alt="">
+            <img
+              alt=""
+              src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40"
+            />
           </div>
           <div class="sub-bg">
-            <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40" alt="">
+            <img
+              alt=""
+              src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40"
+            />
           </div>
         </div>
       </div>
@@ -20,13 +29,15 @@
       <!-- the title part -->
       <div class="title">
         <h1 class="main-title">Alberta - Plain of Six Glaciers</h1>
-        <div>
+        <div class="main-info">
           <span class="category">Expert</span>
-          <span class="time">07:10</span>
-          <span class="distance">18.4</span>km
-          <span class="speed">2.6</span>km/h
+          <span class="time">{{ info ? info.createTime : '' }}</span>
+          <span class="distance">18.4</span>km <span class="speed">2.6</span>km/h
         </div>
-        <h3 class="des">Expert Hiking Tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine experience required.</h3>
+        <h3 class="des">
+          Expert Hiking Tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine
+          experience required.
+        </h3>
       </div>
     </section>
 
@@ -34,13 +45,16 @@
     <section class="overview">
       <div class="subtitle">TOUR OVERVIEW</div>
       <a-divider />
-      <a-timeline labelPosition="same" class="timeline">
+      <a-timeline class="timeline" labelPosition="same">
         <a-timeline-item class="pic-map" label="2017-03-10 8:20" lineType="dashed">
           <div class="mile">3 km</div>
           <div class="tour-pic">
             <div class="pic-container flex-r">
               <div class="pic">
-                <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" alt="">
+                <img
+                  alt=""
+                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
+                />
               </div>
             </div>
           </div>
@@ -94,7 +108,7 @@
             <p>Card content</p>
             <p>Card content</p>
           </div> -->
-          <DCard mode="tour" :info="testCardInfo"></DCard>
+          <DCard :info="testCardInfo" mode="tour"></DCard>
         </a-timeline-item>
 
         <a-timeline-item class="pic-map" label="2017-03-10 8:20" lineType="dashed">
@@ -102,27 +116,42 @@
           <div class="tour-pic">
             <div class="pic-container flex-r">
               <div class="pic">
-                  <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40" alt="">
+                <img
+                  alt=""
+                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40"
+                />
               </div>
               <div class="pic">
-                <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" alt="">
+                <img
+                  alt=""
+                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
+                />
               </div>
               <div class="pic">
-                <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40" alt="">
+                <img
+                  alt=""
+                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40"
+                />
               </div>
             </div>
           </div>
         </a-timeline-item>
-        
+
         <a-timeline-item class="pic-map" label="2017-03-10 8:20" lineType="dashed">
           <div class="mile">3 km</div>
           <div class="tour-pic">
             <div class="pic-container flex-r">
               <div class="pic">
-                  <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40" alt="">
+                <img
+                  alt=""
+                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40"
+                />
               </div>
               <div class="pic">
-                <img src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" alt="">
+                <img
+                  alt=""
+                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
+                />
               </div>
             </div>
           </div>
@@ -134,28 +163,27 @@
     </section>
 
     <!-- the section of map -->
-    <section class="map">
+    <!-- <section class="map">
       <div class="subtitle">
         MAP
       </div>
       <div class="map-img"></div>
-    </section>
+    </section> -->
 
     <!-- the section of weather and profile .. and so on -->
-    <section class="profile">
+    <!-- <section class="profile">
       <div class="subtitle">
         PROFIEL
       </div>
-    </section>
+    </section> -->
 
-    <section class="weather">
+    <!-- <section class="weather">
       <div class="subtitle">
         WEATHER
       </div>
-    </section>
+    </section> -->
   </div>
 
-  
   <div class="comments">
     <a-space size="large">
       <a-avatar
@@ -168,7 +196,7 @@
         <p>September 13, 2017</p>
       </div>
     </a-space>
-    
+
     <div class="like">
       <a-button class="button-icon">
         <template #icon>
@@ -178,7 +206,7 @@
           </div>
         </template>
       </a-button>
-      
+
       <div class="follower">
         <a-space :size="32">
           <a-avatar-group :max-count="5">
@@ -192,12 +220,11 @@
           </a-avatar-group>
         </a-space>
       </div>
-
     </div>
 
     <div class="subtitle comment-title">COMMENTS</div>
-    
-    <div class="comments-content" v-for="i in Array(3)" :key="i">
+
+    <div v-for="i in Array(3)" :key="i" class="comments-content">
       <a-divider />
       <div class="flex-content">
         <div class="head-profile">
@@ -212,35 +239,43 @@
 
         <div class="content">
           <h3 class="name">George</h3>
-          <p class="com-content">The Rennsteig begins at the Werraufer in Hörschel. Here, so it is custom, you should take a pebble, which you throw in the hall at the end of your tour. The first stage leads you about 19 kilometers almost steadily uphill. At the large Eichelberg (310 m above sea level) offers a beautiful view of the</p>
+          <p class="com-content">
+            The Rennsteig begins at the Werraufer in Hörschel. Here, so it is custom, you should
+            take a pebble, which you throw in the hall at the end of your tour. The first stage
+            leads you about 19 kilometers almost steadily uphill. At the large Eichelberg (310 m
+            above sea level) offers a beautiful view of the
+          </p>
           <p class="date">August 31, 2017</p>
         </div>
       </div>
-
     </div>
   </div>
 </template>
 
 <script lang="ts">
 export default {
-    name: "TourPage"
+  name: 'TourPage'
 }
 </script>
 
-<script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { type TourRecord, TourType } from '@/apis/tour'
-import { getTourCollection, type TourCollection } from '@/apis/collection'
+<script lang="ts" setup>
+import { onMounted, ref, reactive } from 'vue'
+import { type TourRecord, TourType, getTourById } from '@/apis/tour'
 import { getTourSpotExample } from '@/apis/tour/spot'
 import { exampleUserRecord } from '@/apis/user'
 import DCard from '../discover/DCard.vue'
+import { useRoute } from 'vue-router'
+import { getStaticRes } from '@/apis'
 
 const url = import.meta.env.APP_STATIC_URL.concat('/tour')
 const exam_pic =
   'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a20012a2d4d5b9db43dfc6a01fe508c0.png~tplv-uwbnlip3yd-webp.webp'
 
+const route = useRoute()
 const mode = 'minimal'
-const testCardInfo: TourRecord = {
+const info = ref<TourRecord>()
+
+const testCardInfo = reactive<TourRecord>({
   id: 0,
   title: '这是一个用来展示一个行程的card',
   user: {
@@ -252,7 +287,7 @@ const testCardInfo: TourRecord = {
     latestLoginTime: '25'
   },
   spots: [getTourSpotExample(1), getTourSpotExample(2), getTourSpotExample(3)],
-  mapCapture: import.meta.env.APP_STATIC_URL.concat('/tour/example/map/map.png'),
+  mapUrl: getStaticRes(`/tour/${route.query.id}/map_screenshot.jpg`),
   // map: '//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg',
   // like: 100,
   // comment: 3,
@@ -289,14 +324,14 @@ const testCardInfo: TourRecord = {
   pons: [],
   status: 'awaitApproval',
   tourCollectionId: 1
-}
+})
 
 // const commentArea = ref<HTMLDivElement | undefined>()
 const mapWrapper = ref<HTMLDivElement | undefined>()
 const picWrapper = ref<HTMLDivElement | undefined>()
 // const textA = ref('')
 
-const smallImg = ref(testCardInfo.mapCapture)
+const smallImg = ref(testCardInfo.mapUrl)
 // const commentList = testCardInfo.comments
 
 const switchStatus = ref<'map' | 'pic'>('map')
@@ -322,18 +357,25 @@ const switchClick = () => {
       if (mapWrapper.value) {
         mapWrapper.value.classList.add('hide')
       }
-      smallImg.value = testCardInfo.mapCapture
+      smallImg.value = testCardInfo.mapUrl
       break
   }
 }
 
 const isMinimal = ref(false)
 
+getTourById(route.query.id as string).then((res) => {
+  if (res.success) {
+    console.log(res)
+    info.value = res.data
+  }
+})
+
 onMounted(() => {
-  if(mode==='minimal'){
-    isMinimal.value = true;
-    switchStatus.value = 'map';
-    switchClick();
+  if (mode === 'minimal') {
+    isMinimal.value = true
+    switchStatus.value = 'map'
+    switchClick()
   }
 })
 </script>

@@ -158,18 +158,17 @@ interface DisPlayItem {
 
 const tourList = ref<TourRecord[]>([])
 const collectionList = ref<TourCollection[]>([])
-const itemList = computed<DisPlayItem[]>(
-  () =>
-    [
-      ...tourList.value.map((tour) => ({
-        item: tour,
-        type: 'tour'
-      })),
-      ...collectionList.value.map((collection) => ({
-        item: collection,
-        type: 'collection'
-      }))
-    ] as DisPlayItem[]
+const itemList = computed<DisPlayItem[]>(() =>
+  shuffle([
+    ...tourList.value.map((tour) => ({
+      item: tour,
+      type: 'tour'
+    })),
+    ...collectionList.value.map((collection) => ({
+      item: collection,
+      type: 'collection'
+    }))
+  ] as DisPlayItem[])
 )
 
 // itemList.value.push(exampleTourCollection)
@@ -254,7 +253,7 @@ onUnmounted(() => {
     <div class="outer-container">
       <div ref="slideList" class="slide-list-container">
         <div
-          v-for="(item, idx) in shuffle(itemList)"
+          v-for="(item, idx) in itemList"
           :key="idx"
           :style="{
             height: `${parentHeight}px`
@@ -273,13 +272,12 @@ onUnmounted(() => {
                       item.type === 'collection'
                         ? (item.item as unknown as TourCollection).coverUrl
                         : (() => {
-                            const highlightList = (item.item as unknown as TourRecord)
-                              .tourHighlightList
+                            const tour = item.item as unknown as TourRecord
+                            const highlightList = tour.tourHighlightList
                             if (highlightList.length > 0) {
                               return highlightList[0].tourImages[0].imageUrl
                             } else {
-                              // TODO: 改为截图
-                              return (item.item as TourRecord).mapCapture
+                              return tour.mapUrl
                             }
                           })()
                     })`
@@ -468,13 +466,12 @@ onUnmounted(() => {
                       item.type === 'collection'
                         ? (item.item as unknown as TourCollection).coverUrl
                         : (() => {
-                            const highlightList = (item.item as unknown as TourRecord)
-                              .tourHighlightList
+                            const tour = item.item as unknown as TourRecord
+                            const highlightList = tour.tourHighlightList
                             if (highlightList.length > 0) {
                               return highlightList[0].tourImages[0].imageUrl
                             } else {
-                              // TODO: 改为截图
-                              return getTourImageExample(1).imageUrl
+                              return tour.mapUrl
                             }
                           })()
                     })`

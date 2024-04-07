@@ -104,13 +104,13 @@
     <h2 class="text-center">Tours</h2>
     <div ref="scrollContainer" class="tour-scroll-container">
       <div ref="imgCollection" class="img-collection">
-        <div class="img-wrapper" v-for="(_, i) in 3" :key="i">
+        <div v-for="(_, i) in 3" :key="i" class="img-wrapper">
           <img :src="testCardInfo.spots[i].tourImages[0].imageUrl" alt="" />
         </div>
       </div>
       <div class="tianchong"></div>
       <div ref="tourScroll" class="tour-card-wrapper w-full">
-        <div class="tour-card flex-c flex-justify-c" v-for="(_, i) in 3" :key="i">
+        <div v-for="(_, i) in 3" :key="i" class="tour-card flex-c flex-justify-c">
           <DCard :info="testCardInfo" mode="minimal" style="overflow: hidden"></DCard>
         </div>
       </div>
@@ -144,7 +144,7 @@ const testCardInfo: TourRecord = {
     latestLoginTime: '25'
   },
   spots: [getTourSpotExample(1), getTourSpotExample(2), getTourSpotExample(3)],
-  mapCapture: import.meta.env.APP_STATIC_URL.concat('/tour/example/map/map.png'),
+  mapUrl: import.meta.env.APP_STATIC_URL.concat('/tour/example/map/map.png'),
   // map: '//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg',
   // like: 100,
   // comment: 3,

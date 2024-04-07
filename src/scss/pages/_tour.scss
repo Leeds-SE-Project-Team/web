@@ -1,350 +1,362 @@
 #layout-b-content {
-    background-color: #f5f4ea;
+  background-color: #f5f4ea;
 
-    @media screen and (max-width:768px) {
-        .tour-main {
-            background-color: #f5f4ea;
-            // height: 2000px;
-            padding: 0;
-        }
+  @media screen and (max-width: 768px) {
+    .tour-main {
+      background-color: #f5f4ea;
+      // height: 2000px;
+      padding: 0;
     }
+  }
 
-    @media screen and (min-width: 768px) {
-        .tour-main {
-            background-color: #f5f4ea;
-            // height: 2000px;
-            padding: 0px 6vw;
-        }
+  @media screen and (min-width: 768px) {
+    .tour-main {
+      background-color: #f5f4ea;
+      // height: 2000px;
+      padding: 0px 6vw;
     }
-    
+  }
 
 
-    .tour-title {
-        margin-top: 40px;
-        // background-color: #f5f4ea;
-        box-shadow: 20px 20px 20px rgba(0, 0, 0, .2) !important;
+  .tour-title {
+    margin-top: 40px;
+    // background-color: #f5f4ea;
+    box-shadow: 20px 20px 20px rgba(0, 0, 0, .2) !important;
 
-        .bg {
-            aspect-ratio: 2.66667;
+    .bg {
+      aspect-ratio: 2.66667;
+      width: 100%;
+
+      .main-bg {
+        height: 100%;
+        width: 61.5%;
+
+        img {
+          width: 100%;
+          height: 100%;
+          border: 1px solid #fff;
+          object-fit: cover;
+        }
+      }
+
+      .sub {
+        height: 100%;
+        width: 38.5%;
+
+        .sub-bg {
+          width: 100%;
+          height: 50%;
+
+          img {
             width: 100%;
-
-            .main-bg {
-                height: 100%;
-                width: 61.5%;
-                img {
-                    width: 100%;
-                    height: 100%;
-                    border: 1px solid #fff;
-                    object-fit: cover;
-                }
-            }
-
-            .sub {
-                height: 100%;
-                width: 38.5%;
-
-                .sub-bg {
-                    width: 100%;
-                    height: 50%;
-                    img {
-                        width: 100%;
-                        height: 100%;
-                        border: 1px solid #fff;
-                        object-fit: cover;
-                    }
-                }
-            }
+            height: 100%;
+            border: 1px solid #fff;
+            object-fit: cover;
+          }
         }
-
-        .title {
-            // box-shadow: 10px 5px 5px red;
-            font-size: 16px;
-            padding: 0 2%;
-            background-color: #fff;
-
-            .main-title {
-                margin: 0;
-                padding: 30px 0 30px 0;
-                font-size: 28px;
-                font-weight: 700 !important;
-            }
-
-            .category {
-                padding: 4px 4px;
-                color: #fff;
-                background-color: #383838;
-                border-radius: 4px;
-            }
-
-            .time,
-            .distance,
-            .speed {
-                margin: 0 16px;
-                font-size: 16px;
-                font-weight: 700;
-            }
-
-            .des {
-                color: #666666;
-                font-size: 16px;
-                padding: 20px 0 30px 0;
-                font-weight: 500;
-            }
-
-        }
-    }
-
-    @media screen and (max-width: 768px) {
-        .tour-title{
-            margin-top: 0;
-        }
-    }
-
-    @media screen and (max-width: 500px) {
-        .tour-title{
-            .bg{
-                .main-bg{
-                    width: 100%;
-                }
-                .sub{
-                    display: none;
-                }
-            }
-        }
-        
-    }
-
-    .overview {
-        box-shadow: 20px 20px 20px rgba(0, 0, 0, .2) !important;
-        padding: 0 2%;
-        background-color: #fff;
-
-        .subtitle {
-            color: #666;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .timeline {
-            .mile {
-                font-size: 14px;
-                color: #666666;
-            }
-
-            .arco-timeline-item-dot-line {
-                border-left-width: 3px;
-            }
-        }
-
-        .tour-pic {
-            width: 100%;
-            overflow-x: auto;
-            overflow-y: hidden;
-            height: 250px;
-            .pic-container{
-                height: 100%;
-                gap: 0.7rem;
-                .pic {
-                    height: 100%;
-                    img {
-                        height: 100%;
-                        border: 1px solid #fff;
-                    }
-                }
-            }
-            
-        }
-    }
-
-    .subtitle {
-        color: #666;
-        font-size: 16px;
-        font-weight: 700;
-    }
-
-    .map,
-    .profile,
-    .weather {
-        box-shadow: 20px 20px 20px rgba(0, 0, 0, .2) !important;
-        padding: 40px 2% 5px 2%;
-        background-color: #fff;
-    }
-
-    .comments {
-        padding: 0px 6vw;
-        margin-top: 40px;
-
-        // height: 1000px;
-        .rigion {
-            display: inline-flex;
-            flex-direction: column;
-
-            h3 {
-                size: 16px;
-                font-weight: 500;
-                margin-bottom: 5px;
-            }
-
-            p {
-                color: #666;
-            }
-        }
-    }
-
-    .like {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        .button-icon {
-            margin-top: 20px;
-            border-radius: 4px;
-            background-color: #fff;
-            border: 1px solid #666;
-            width: 66px;
-            height: 36px;
-            padding: 4px;
-            font-size: 20px;
-            font-weight: 600;
-
-            .icon {
-                display: flex;
-                align-items: center;
-            }
-        }
-
-        .follower {
-            margin-top: 20px;
-            display: flex;
-        }
-
-        .button {
-            width: 30px;
-            height: 20px;
-        }
-    }
-
-    .comment-title {
-        margin-top: 28px;
-    }
-
-    .flex-content {
-        display: flex;
-
-        .head-profile {
-            margin-right: 20px;
-        }
-
-        .content {
-            .name {
-                font-size: 16px;
-                font-weight: 500;
-            }
-
-            .com-content {
-                margin: 20px 0;
-                font-size: 16px;
-                letter-spacing: 1px;
-            }
-
-            .date {
-                font-size: 14px;
-                color: #666;
-            }
-        }
-    }
-
-    .pic-map {
-        padding-bottom: 5vw;
-        .arco-card-header{
-            padding: 0;
-        }
-    }
-    
-    .border-map {
-        border: 1px solid #e5e6ea;
-        width: 55vw;
+      }
     }
 
     .title {
-        padding: 15px
+      // box-shadow: 10px 5px 5px red;
+      font-size: 16px;
+      padding: 0 2%;
+      background-color: #fff;
+
+      .main-title {
+        margin: 0;
+        padding: 30px 0 30px 0;
+        font-size: 28px;
+        font-weight: 700 !important;
+      }
+
+      .main-info {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .category {
+        padding: 4px 4px;
+        color: #fff;
+        background-color: #383838;
+        border-radius: 4px;
+      }
+
+      .time,
+      .distance,
+      .speed {
+        margin: 0 16px;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .des {
+        color: #666666;
+        font-size: 16px;
+        padding: 20px 0 30px 0;
+        font-weight: 500;
+      }
+
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .tour-title {
+      margin-top: 0;
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    .tour-title {
+      .bg {
+        .main-bg {
+          width: 100%;
+        }
+
+        .sub {
+          display: none;
+        }
+      }
     }
 
-    // .picture-map {
-    //     width: 55vw;
-    //     position: relative;
+  }
 
-    //     .picture-wrapper {
-    //         display: flex;
-    //         gap: 0.25rem;
+  .overview {
+    box-shadow: 20px 20px 20px rgba(0, 0, 0, .2) !important;
+    padding: 0 2%;
+    background-color: #fff;
 
-    //         &.hide {
-    //             display: none;
-    //         }
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+      font-weight: 700;
+    }
 
-    //         .left {
-    //             width: 60%;
-    //             height: 400px;
-    //             flex-shrink: 0;
-    //         }
+    .timeline {
+      .mile {
+        font-size: 14px;
+        color: #666666;
+      }
 
-    //         .right {
-    //             height: 400px;
-    //             width: 40%;
-    //             flex-shrink: 0;
-    //             display: flex;
-    //             flex-direction: column;
-    //             gap: 0.25rem;
+      .arco-timeline-item-dot-line {
+        border-left-width: 3px;
+      }
+    }
 
-    //             .right-item {
-    //                 height: 200px;
-    //             }
-    //         }
-    //     }
+    .tour-pic {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      height: 250px;
 
-    //     .map-wrapper {
-    //         width: 100%;
-    //         height: 400px;
-    //         transition: all 2s ease-in;
+      .pic-container {
+        height: 100%;
+        gap: 0.7rem;
 
-    //         &.hide {
-    //             display: none;
-    //         }
+        .pic {
+          height: 100%;
 
-    //         img {
-    //             width: 100%;
-    //             height: 100%;
-    //             object-fit: cover;
-    //         }
-    //     }
+          img {
+            height: 100%;
+            border: 1px solid #fff;
+          }
+        }
+      }
 
-    //     .switch {
-    //         position: absolute;
-    //         bottom: 2rem;
-    //         right: 2rem;
+    }
+  }
 
-    //         .switch-button {
-    //             height: 70px;
-    //             width: 70px;
-    //             border-radius: 10px;
-    //             border: #CCCCCC solid 3px;
-    //             background-color: transparent;
-    //             padding: 0;
-    //             overflow: hidden;
-    //             cursor: pointer;
+  .subtitle {
+    color: #666;
+    font-size: 16px;
+    font-weight: 700;
+  }
 
-    //             .small-img {
-    //                 width: 100%;
-    //                 height: 100%;
+  .map,
+  .profile,
+  .weather {
+    box-shadow: 20px 20px 20px rgba(0, 0, 0, .2) !important;
+    padding: 40px 2% 5px 2%;
+    background-color: #fff;
+  }
 
-    //                 img {
-    //                     width: 100%;
-    //                     height: 100%;
-    //                     object-fit: cover;
-    //                     transition: all .2s ease-in-out;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+  .comments {
+    padding: 0px 6vw;
+    margin-top: 40px;
+
+    // height: 1000px;
+    .rigion {
+      display: inline-flex;
+      flex-direction: column;
+
+      h3 {
+        size: 16px;
+        font-weight: 500;
+        margin-bottom: 5px;
+      }
+
+      p {
+        color: #666;
+      }
+    }
+  }
+
+  .like {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .button-icon {
+      margin-top: 20px;
+      border-radius: 4px;
+      background-color: #fff;
+      border: 1px solid #666;
+      width: 66px;
+      height: 36px;
+      padding: 4px;
+      font-size: 20px;
+      font-weight: 600;
+
+      .icon {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .follower {
+      margin-top: 20px;
+      display: flex;
+    }
+
+    .button {
+      width: 30px;
+      height: 20px;
+    }
+  }
+
+  .comment-title {
+    margin-top: 28px;
+  }
+
+  .flex-content {
+    display: flex;
+
+    .head-profile {
+      margin-right: 20px;
+    }
+
+    .content {
+      .name {
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .com-content {
+        margin: 20px 0;
+        font-size: 16px;
+        letter-spacing: 1px;
+      }
+
+      .date {
+        font-size: 14px;
+        color: #666;
+      }
+    }
+  }
+
+  .pic-map {
+    padding-bottom: 5vw;
+
+    .arco-card-header {
+      padding: 0;
+    }
+  }
+
+  .border-map {
+    border: 1px solid #e5e6ea;
+    width: 55vw;
+  }
+
+  .title {
+    padding: 15px
+  }
+
+  // .picture-map {
+  //     width: 55vw;
+  //     position: relative;
+
+  //     .picture-wrapper {
+  //         display: flex;
+  //         gap: 0.25rem;
+
+  //         &.hide {
+  //             display: none;
+  //         }
+
+  //         .left {
+  //             width: 60%;
+  //             height: 400px;
+  //             flex-shrink: 0;
+  //         }
+
+  //         .right {
+  //             height: 400px;
+  //             width: 40%;
+  //             flex-shrink: 0;
+  //             display: flex;
+  //             flex-direction: column;
+  //             gap: 0.25rem;
+
+  //             .right-item {
+  //                 height: 200px;
+  //             }
+  //         }
+  //     }
+
+  //     .map-wrapper {
+  //         width: 100%;
+  //         height: 400px;
+  //         transition: all 2s ease-in;
+
+  //         &.hide {
+  //             display: none;
+  //         }
+
+  //         img {
+  //             width: 100%;
+  //             height: 100%;
+  //             object-fit: cover;
+  //         }
+  //     }
+
+  //     .switch {
+  //         position: absolute;
+  //         bottom: 2rem;
+  //         right: 2rem;
+
+  //         .switch-button {
+  //             height: 70px;
+  //             width: 70px;
+  //             border-radius: 10px;
+  //             border: #CCCCCC solid 3px;
+  //             background-color: transparent;
+  //             padding: 0;
+  //             overflow: hidden;
+  //             cursor: pointer;
+
+  //             .small-img {
+  //                 width: 100%;
+  //                 height: 100%;
+
+  //                 img {
+  //                     width: 100%;
+  //                     height: 100%;
+  //                     object-fit: cover;
+  //                     transition: all .2s ease-in-out;
+  //                 }
+  //             }
+  //         }
+  //     }
+  // }
 }

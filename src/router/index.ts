@@ -45,6 +45,7 @@ const router = createRouter({
       },
       component: LoginView
     },
+
     {
       path: '/discover',
       name: 'discover',
@@ -56,7 +57,22 @@ const router = createRouter({
       }, // Render component dynamically according to platform
       // component: DiscoverMobileView
       component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
-    }, // {
+    },
+
+    // {
+    //   path: '/discover',
+    //   name: 'discover',
+    //   meta: {
+    //     // layout: 'mobile-main',
+    //     layout: 'mobile-main',
+    //     title: 'Discover Page',
+    //     auth: ['admin', 'user']
+    //   }, // Render component dynamically according to platform
+    //   // component: DiscoverMobileView
+    //   component: DiscoverMobileView
+    // },
+
+    // {
     //   path: '/plan',
     //   name: 'planner',
     //   meta: {
