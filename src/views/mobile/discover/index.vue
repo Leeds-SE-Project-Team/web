@@ -279,7 +279,7 @@ onUnmounted(() => {
                               return highlightList[0].tourImages[0].imageUrl
                             } else {
                               // TODO: 改为截图
-                              return getTourImageExample(1).imageUrl
+                              return (item.item as TourRecord).mapCapture
                             }
                           })()
                     })`
