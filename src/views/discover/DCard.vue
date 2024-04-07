@@ -10,13 +10,13 @@
           <div v-if="!isMinimal && !isTour" class="user-wrapper">
             <div class="avatar-wrapper">
               <a-avatar>
-                <img :src="props.info.user.avatar" alt="avatar" />
+                <img :src="props.tourData.user.avatar" alt="avatar" />
               </a-avatar>
             </div>
             <div class="info-wrapper">
               <span
                 ><a-link href="#" style="margin: 0; padding: 0; background-color: transparent">{{
-                  props.info.user.nickname
+                  props.tourData.user.nickname
                 }}</a-link>
                 goes there</span
               >
@@ -28,7 +28,7 @@
           </div>
           <div v-if="isMinimal && !isTour" class="split"></div>
           <h3 v-if="!isTour" class="title">
-            {{ props.info.title }}
+            {{ props.tourData.title }}
           </h3>
           <div class="picture-map">
             <div ref="picWrapper" class="picture-wrapper">
@@ -36,7 +36,7 @@
                 <div class="left">
                   <a-image
                     :height="'100%'"
-                    :src="props.info.spots[0].tourImages[0].imageUrl"
+                    :src="props.tourData.tourHighlightList[0].tourImages[0].imageUrl"
                     :width="'100%'"
                     fit="cover"
                   />
@@ -45,7 +45,7 @@
                   <div class="up right-item">
                     <a-image
                       :height="'100%'"
-                      :src="props.info.spots[1].tourImages[0].imageUrl"
+                      :src="props.tourData.tourHighlightList[1].tourImages[0].imageUrl"
                       :width="'100%'"
                       fit="cover"
                     />
@@ -53,7 +53,7 @@
                   <div class="down right-item">
                     <a-image
                       :height="'100%'"
-                      :src="props.info.spots[2].tourImages[0].imageUrl"
+                      :src="props.tourData.tourHighlightList[2].tourImages[0].imageUrl"
                       :width="'100%'"
                       fit="cover"
                     />
@@ -62,7 +62,7 @@
               </a-image-preview-group>
             </div>
             <div ref="mapWrapper" class="map-wrapper hide">
-              <img :src="props.info.mapUrl" alt="" />
+              <img :src="props.tourData.mapUrl" alt="" />
             </div>
             <div class="switch">
               <button class="switch-button" @click="switchClick">
@@ -79,7 +79,7 @@
           <!--                  <template #icon>-->
           <!--                    <icon-heart :size="20" />-->
           <!--                  </template>-->
-          <!--                  {{ props.info.like }}-->
+          <!--                  {{ props.tourData.like }}-->
           <!--                </a-button>-->
           <!--              </div>-->
           <!--              <div class="comment">-->
@@ -87,7 +87,7 @@
           <!--                  <template #icon>-->
           <!--                    <icon-message :size="20" />-->
           <!--                  </template>-->
-          <!--                  {{ props.info.comment }}-->
+          <!--                  {{ props.tourData.comment }}-->
           <!--                </a-button>-->
           <!--              </div>-->
           <!--            </div>-->
@@ -118,7 +118,7 @@
         </a-list>
         <div v-if="!isMinimal" class="item-actions-right">
           <a-tag
-            v-if="props.info.status === 'awaitApproval'"
+            v-if="props.tourData.status === 'awaitApproval'"
             :color="'arcoblue'"
             :size="'small'"
             bordered
@@ -127,7 +127,7 @@
             >审核中
           </a-tag>
           <a-tag
-            v-else-if="props.info.status === 'offline'"
+            v-else-if="props.tourData.status === 'offline'"
             :color="'red'"
             :size="'small'"
             bordered
@@ -144,7 +144,7 @@
           </a-button>
           <div class="publish-time">
             <span>发布时间：</span>
-            <span>{{ props.info.createTime }}</span>
+            <span>{{ props.tourData.createTime }}</span>
           </div>
         </div>
       </div>
@@ -218,7 +218,7 @@
       <!--                    <div class="avatar">-->
       <!--                        <a-avatar>-->
       <!--                            <img-->
-      <!--                                :src="props.info.user.avatar"-->
+      <!--                                :src="props.tourData.user.avatar"-->
       <!--                                alt="avatar"-->
       <!--                            >-->
       <!--                        </a-avatar>-->
@@ -276,7 +276,7 @@ import { Message } from '@arco-design/web-vue'
 import type { TourRecord } from '@/apis/tour'
 
 const props = defineProps<{
-  info: TourRecord
+  tourData: TourRecord
   mode?: 'minimal' | 'tour'
 }>()
 
@@ -285,8 +285,8 @@ const mapWrapper = ref<HTMLDivElement | undefined>()
 const picWrapper = ref<HTMLDivElement | undefined>()
 // const textA = ref('')
 
-const smallImg = ref(props.info.mapUrl)
-// const commentList = props.info.comments
+const smallImg = ref(props.tourData.mapUrl)
+// const commentList = props.tourData.comments
 
 const switchStatus = ref<'map' | 'pic'>('map')
 
@@ -294,7 +294,7 @@ const comments = ref<CommentRecord[]>([])
 const fetchCommentLoading = useLoading()
 const fetchComments = () => {
   fetchCommentLoading.setLoading(true)
-  getCommentsByTourId(props.info.id).then((apiRes) => {
+  getCommentsByTourId(props.tourData.id).then((apiRes) => {
     if (apiRes.success) {
       comments.value = apiRes.data!
     } else {
@@ -331,7 +331,7 @@ const switchClick = () => {
       if (mapWrapper.value) {
         mapWrapper.value.classList.remove('hide')
       }
-      smallImg.value = props.info.spots[0].tourImages[0].imageUrl
+      smallImg.value = props.tourData.tourHighlightList[0].tourImages[0].imageUrl
       break
 
     case 'pic':
@@ -342,7 +342,7 @@ const switchClick = () => {
       if (mapWrapper.value) {
         mapWrapper.value.classList.add('hide')
       }
-      smallImg.value = props.info.mapUrl
+      smallImg.value = props.tourData.mapUrl
       break
   }
 }
@@ -354,7 +354,7 @@ const newCommentContent = ref<string>('')
 //     author: 'aiiiieee',
 //     dateTime: 'now',
 //     content: textA.value,
-//     avatar: props.info.user.avatar
+//     avatar: props.tourData.user.avatar
 //   }
 //   commentList.unshift(temp)
 //   textA.value = ''
@@ -364,16 +364,26 @@ const showCommentList = ref(false)
 const isMinimal = ref(false)
 const isTour = ref(false)
 
+if (props.mode === 'minimal') {
+  isMinimal.value = true
+  switchStatus.value = 'map'
+  // switchClick()
+} else if (props.mode === 'tour') {
+  isTour.value = true
+  switchStatus.value = 'map'
+  // switchClick()
+}
+
 onMounted(() => {
-  if (props.mode === 'minimal') {
-    isMinimal.value = true
-    switchStatus.value = 'map'
-    switchClick()
-  } else if (props.mode === 'tour') {
-    isTour.value = true
-    switchStatus.value = 'map'
-    switchClick()
-  }
+  // if (props.mode === 'minimal') {
+  //   isMinimal.value = true
+  //   switchStatus.value = 'map'
+  //   switchClick()
+  // } else if (props.mode === 'tour') {
+  //   isTour.value = true
+  //   switchStatus.value = 'map'
+  //   switchClick()
+  // }
 })
 </script>
 

@@ -28,16 +28,19 @@
 
       <!-- the title part -->
       <div class="title">
-        <h1 class="main-title">Alberta - Plain of Six Glaciers</h1>
+        <h1 class="main-title">{{ tourRecord?.title }}</h1>
         <div class="main-info">
-          <span class="category">Expert</span>
-          <span class="time">{{ info ? info.createTime : '' }}</span>
-          <span class="distance">18.4</span>km <span class="speed">2.6</span>km/h
+          <span class="category">{{ tourRecord?.type }}</span>
+          <span class="time">{{ tourRecord ? tourRecord.createTime : '' }}</span>
+          <div style="margin: 10px 0">
+            <span class="distance" style="margin: 0">18.4</span>km
+            <span class="speed">2.6</span>km/h
+          </div>
         </div>
-        <h3 class="des">
-          Expert Hiking Tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine
-          experience required.
-        </h3>
+        <!--        <h3 class="des">-->
+        <!--          Expert Hiking Tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine-->
+        <!--          experience required.-->
+        <!--        </h3>-->
       </div>
     </section>
 
@@ -46,7 +49,7 @@
       <div class="subtitle">TOUR OVERVIEW</div>
       <a-divider />
       <a-timeline class="timeline" labelPosition="same">
-        <a-timeline-item class="pic-map" label="2017-03-10 8:20" lineType="dashed">
+        <!-- <a-timeline-item class="pic-map" label="开始" lineType="dashed">
           <div class="mile">3 km</div>
           <div class="tour-pic">
             <div class="pic-container flex-r">
@@ -58,86 +61,44 @@
               </div>
             </div>
           </div>
+        </a-timeline-item> -->
+        <a-timeline-item class="pic-map" lineType="dashed">
+          <h4>Start</h4>
         </a-timeline-item>
-
-        <a-timeline-item class="pic-map" label="2018-03-10 13:10" lineType="dashed">
-          <!-- <div class="picture-map border-map">
-            <div ref="picWrapper" class="picture-wrapper">
-              <a-image-preview-group>
-                <div class="left">
-                  <a-image
-                    :height="'100%'"
-                    :src="testCardInfo.spots[0].coverUrl"
-                    :width="'100%'"
-                    fit="cover"
-                  />
-                </div>
-                <div class="right">
-                  <div class="up right-item">
-                    <a-image
-                      :height="'100%'"
-                      :src="testCardInfo.spots[1].coverUrl"
-                      :width="'100%'"
-                      fit="cover"
-                    />
-                  </div>
-                  <div class="down right-item">
-                    <a-image
-                      :height="'100%'"
-                      :src="testCardInfo.spots[2].coverUrl"
-                      :width="'100%'"
-                      fit="cover"
-                    />
-                  </div>
-                </div>
-              </a-image-preview-group>
-            </div>
-            <div ref="mapWrapper" class="map-wrapper hide">
-              <img :src="testCardInfo.mapCapture" alt="" />
-            </div>
-            <div class="switch">
-              <button class="switch-button" @click="switchClick()">
-                <div class="small-img">
-                  <img :src="smallImg" alt="" />
-                </div>
-              </button>
-            </div>
-          </div>
-          <div class="title border-map">
-            <h3>CART TITLE</h3>
-            <p>Card content</p>
-            <p>Card content</p>
-          </div> -->
-          <DCard :info="testCardInfo" mode="tour"></DCard>
+        <a-timeline-item
+          v-for="(highlight, idx) in tourRecord?.tourHighlightList"
+          :key="idx"
+          :label="`Tour Highlight ${idx + 1}`"
+          class="pic-map"
+          lineType="dashed"
+        >
+          <DHighlight :data="highlight"></DHighlight>
         </a-timeline-item>
-
+        <a-timeline-item class="pic-map" lineType="dashed">
+          <h4>End</h4>
+        </a-timeline-item>
+        <!--
         <a-timeline-item class="pic-map" label="2017-03-10 8:20" lineType="dashed">
           <div class="mile">3 m</div>
           <div class="tour-pic">
             <div class="pic-container flex-r">
               <div class="pic">
-                <img
-                  alt=""
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40"
-                />
+                <img alt=""
+                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40" />
               </div>
               <div class="pic">
-                <img
-                  alt=""
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
-                />
+                <img alt=""
+                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" />
               </div>
               <div class="pic">
-                <img
-                  alt=""
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40"
-                />
+                <img alt=""
+                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40" />
               </div>
             </div>
           </div>
-        </a-timeline-item>
+        </a-timeline-item> -->
 
-        <a-timeline-item class="pic-map" label="2017-03-10 8:20" lineType="dashed">
+        <!-- <a-timeline-item class="pic-map" label="2017-03-10 8:20" lineType="dashed">
           <div class="mile">3 km</div>
           <div class="tour-pic">
             <div class="pic-container flex-r">
@@ -155,10 +116,7 @@
               </div>
             </div>
           </div>
-        </a-timeline-item>
-        <a-timeline-item class="pic-map" lineType="dashed">
-          <h4>结束</h4>
-        </a-timeline-item>
+        </a-timeline-item> -->
       </a-timeline>
     </section>
 
@@ -184,7 +142,7 @@
     </section> -->
   </div>
 
-  <div class="comments">
+  <div v-if="false" class="comments">
     <a-space size="large">
       <a-avatar
         :size="50"
@@ -260,12 +218,13 @@ export default {
 
 <script lang="ts" setup>
 import { onMounted, ref, reactive } from 'vue'
-import { type TourRecord, TourType, getTourById } from '@/apis/tour'
+import { type TourRecord, TourType, getTourById, getTourTypeText } from '@/apis/tour'
 import { getTourSpotExample } from '@/apis/tour/spot'
 import { exampleUserRecord } from '@/apis/user'
 import DCard from '../discover/DCard.vue'
 import { useRoute } from 'vue-router'
 import { getStaticRes } from '@/apis'
+import DHighlight from '@/views/discover/DHighlight.vue'
 
 const url = import.meta.env.APP_STATIC_URL.concat('/tour')
 const exam_pic =
@@ -273,110 +232,111 @@ const exam_pic =
 
 const route = useRoute()
 const mode = 'minimal'
-const info = ref<TourRecord>()
+const tourRecord = ref<TourRecord>()
 
-const testCardInfo = reactive<TourRecord>({
-  id: 0,
-  title: '这是一个用来展示一个行程的card',
-  user: {
-    id: 0,
-    email: '234',
-    nickname: 'test user',
-    avatar: '//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif',
-    registerTime: '234',
-    latestLoginTime: '25'
-  },
-  spots: [getTourSpotExample(1), getTourSpotExample(2), getTourSpotExample(3)],
-  mapUrl: getStaticRes(`/tour/${route.query.id}/map_screenshot.jpg`),
-  // map: '//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg',
-  // like: 100,
-  // comment: 3,
-  comments: [
-    {
-      id: 1,
-      tourId: 1,
-      author: exampleUserRecord,
-      content: 'this is a sample content',
-      publishTime: '2024-3-4 00:00:00',
-      replies: []
-    },
-    {
-      id: 2,
-      tourId: 1,
-      author: exampleUserRecord,
-      content: 'this is a sample content',
-      publishTime: '2024-3-4 00:00:00',
-      replies: []
-    },
-    {
-      id: 3,
-      tourId: 1,
-      author: exampleUserRecord,
-      content: 'this is a sample content',
-      publishTime: '2024-3-4 00:00:00',
-      replies: []
-    }
-  ],
-  startLocation: '',
-  endLocation: '',
-  createTime: '2024-3-4 00:00:00',
-  type: TourType.WALK,
-  pons: [],
-  status: 'awaitApproval',
-  tourCollectionId: 1
-})
+// const testCardInfo = reactive<TourRecord>({
+//   id: 0,
+//   title: '这是一个用来展示一个行程的card',
+//   user: {
+//     id: 0,
+//     email: '234',
+//     nickname: 'test user',
+//     avatar: '//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif',
+//     registerTime: '234',
+//     latestLoginTime: '25'
+//   },
+//   tourSpotList: [],
+//   tourHighlightList:[],
+//   mapUrl: getStaticRes(`/tour/${route.query.id}/map_screenshot.jpg`),
+//   // map: '//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg',
+//   // like: 100,
+//   // comment: 3,
+//   comments: [
+//     {
+//       id: 1,
+//       tourId: 1,
+//       author: exampleUserRecord,
+//       content: 'this is a sample content',
+//       publishTime: '2024-3-4 00:00:00',
+//       replies: []
+//     },
+//     {
+//       id: 2,
+//       tourId: 1,
+//       author: exampleUserRecord,
+//       content: 'this is a sample content',
+//       publishTime: '2024-3-4 00:00:00',
+//       replies: []
+//     },
+//     {
+//       id: 3,
+//       tourId: 1,
+//       author: exampleUserRecord,
+//       content: 'this is a sample content',
+//       publishTime: '2024-3-4 00:00:00',
+//       replies: []
+//     }
+//   ],
+//   startLocation: '',
+//   endLocation: '',
+//   createTime: '2024-3-4 00:00:00',
+//   type: TourType.WALK,
+//   pons: [],
+//   status: 'awaitApproval',
+//   tourCollectionId: 1
+// })
 
 // const commentArea = ref<HTMLDivElement | undefined>()
-const mapWrapper = ref<HTMLDivElement | undefined>()
-const picWrapper = ref<HTMLDivElement | undefined>()
+// const mapWrapper = ref<HTMLDivElement | undefined>()
+// const picWrapper = ref<HTMLDivElement | undefined>()
 // const textA = ref('')
 
-const smallImg = ref(testCardInfo.mapUrl)
+// const smallImg = ref(testCardInfo.mapUrl)
 // const commentList = testCardInfo.comments
 
 const switchStatus = ref<'map' | 'pic'>('map')
 
-const switchClick = () => {
-  switch (switchStatus.value) {
-    case 'map':
-      switchStatus.value = 'pic'
-      if (picWrapper.value) {
-        picWrapper.value.classList.add('hide')
-      }
-      if (mapWrapper.value) {
-        mapWrapper.value.classList.remove('hide')
-      }
-      smallImg.value = testCardInfo.spots[0].coverUrl
-      break
+// const switchClick = () => {
+//   switch (switchStatus.value) {
+//     case 'map':
+//       switchStatus.value = 'pic'
+//       if (picWrapper.value) {
+//         picWrapper.value.classList.add('hide')
+//       }
+//       if (mapWrapper.value) {
+//         mapWrapper.value.classList.remove('hide')
+//       }
+//       smallImg.value = testCardInfo.spots[0].coverUrl
+//       break
 
-    case 'pic':
-      switchStatus.value = 'map'
-      if (picWrapper.value) {
-        picWrapper.value.classList.remove('hide')
-      }
-      if (mapWrapper.value) {
-        mapWrapper.value.classList.add('hide')
-      }
-      smallImg.value = testCardInfo.mapUrl
-      break
-  }
-}
+//     case 'pic':
+//       switchStatus.value = 'map'
+//       if (picWrapper.value) {
+//         picWrapper.value.classList.remove('hide')
+//       }
+//       if (mapWrapper.value) {
+//         mapWrapper.value.classList.add('hide')
+//       }
+//       smallImg.value = testCardInfo.mapUrl
+//       break
+//   }
+// }
 
 const isMinimal = ref(false)
 
-getTourById(route.query.id as string).then((res) => {
-  if (res.success) {
-    console.log(res)
-    info.value = res.data
-  }
-})
+if (mode === 'minimal') {
+  isMinimal.value = true
+  switchStatus.value = 'map'
+  // switchClick()
+}
 
 onMounted(() => {
-  if (mode === 'minimal') {
-    isMinimal.value = true
-    switchStatus.value = 'map'
-    switchClick()
-  }
+  getTourById(route.query.id as string).then((res) => {
+    if (res.success) {
+      tourRecord.value = res.data
+      console.log(tourRecord.value)
+    }
+  })
 })
 </script>
 
