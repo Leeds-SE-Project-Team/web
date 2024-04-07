@@ -22,11 +22,14 @@
     <div class="image-title-container">
       <img
         class="trail-image"
-        src="https://file.wmzspace.space//resource/cover.jpg"
+        src="https://ts1.cn.mm.bing.net/th/id/R-C.fb5c419af8a68620f260141329de4871?rik=TithX9%2fgPjEddg&riu=http%3a%2f%2fpic1.k1u.com%2fk1u%2fmb%2fd%2ffile%2f20201127%2f1606451147136550_836_10000.jpg&ehk=Z0DADLY7u52CbaEwT7xc70kBlZcEco%2b4uLxBpIsNOWk%3d&risl=&pid=ImgRaw&r=0"
         alt="Trail Image"
       />
-      <h1 class="trail-title">The Third Teaching Building</h1>
-      <p class="trail-description">Won the National Architecture Award</p>
+      <h1 class="trail-title">Chengdu Giant Panda Base</h1>
+      <p class="trail-description">
+        The Panda Base is a world-renowned giant panda relocation protection base, scientific research and breeding base, 
+        science popularization education base
+      </p>
     </div>
     <!-- Top section with image and action buttons -->
     <div class="highlight-top">
@@ -63,7 +66,7 @@
       <hr class="section-divider" />
       <h2 class="section-title">HIGHLIGHT LOCATION</h2>
       <div class="location-map-placeholder">
-        <img style="width: 100%;height: 100%; object-fit: cover" src="https://file.wmzspace.space//resource/highlight_map.png" alt="">
+        <img style="width: 100%;height: 100%; object-fit: cover" src="https://file.wmzspace.space//tour/21/map_screenshot.jpg" alt="">
       </div>
       <div class="location-distance">7,424 mi away</div>
     </div>
@@ -107,7 +110,7 @@
             </div>
           </div>
         </div>
-        <div class="ride-card">
+        <!-- <div class="ride-card">
           <div class="ride-level">Expert</div>
           <div class="ride-info">
             <h3> Chengdu DISNEY</h3>
@@ -122,7 +125,7 @@
             </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -194,7 +197,7 @@ import { createApp } from 'vue'
 import { ImagePreview, showImagePreview } from 'vant'
 
 export default defineComponent({
-  name: 'MobileHighlight',
+  name: 'AnoMobileHighlight',
   data() {
     return {
       actions: [
@@ -212,8 +215,9 @@ export default defineComponent({
           id: 1,
           userAvatar: 'https://file.wmzspace.space/user/default/avatar/avatar.jpg',
           userName: 'Andrus',
-          date: 'October 13, 2023 20:20',
-          content: 'The coffee on the first floor of Sanjiao is very delicious'
+          date: 'August 31, 2023',
+          content: 'It is recommended to go to the panda base in the morning. Panda babies are cute and lively, \
+              and there are not many people. It is best to go outside of holidays'
         },
         // Add more tip objects as needed
         // {

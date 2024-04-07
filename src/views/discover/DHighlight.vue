@@ -50,6 +50,9 @@
           </div>
         </div>
       </template>
+      <div>
+        <a-button @click="emits('jump')">View</a-button>
+      </div>
     </a-card>
   </div>
 </template>
@@ -64,6 +67,8 @@ import type { TourHighlight } from '@/apis/tour/highlight'
 const props = defineProps<{
   data: TourHighlight
 }>()
+
+const emits = defineEmits(['jump'])
 
 const highlightMapUrl = 'https://file.wmzspace.space/resource/highlight.png'
 

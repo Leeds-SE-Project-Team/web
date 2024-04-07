@@ -2,7 +2,7 @@
   <div id="page-highlight">
     <div class="left-page">
       <!-- the section of bg and title in tour page -->
-      <section class="tour-title">
+      <section class="tour-title" style="box-shadow: none !important;">
         <!-- the bg part -->
         <div class="bg">
           <div class="main-bg">
@@ -29,15 +29,15 @@
 
         <!-- the title part -->
         <div class="title">
-          <h1 class="main-title">Alberta - Plain of Six Glaciers</h1>
+          <h1 class="main-title">Chengdu Giant Panda Base</h1>
           <h3 class="des">
-            Expert Hiking Tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine
-            experience required.
+            The Panda Base is a world-renowned giant panda relocation protection base, scientific research and breeding base, 
+            science popularization education base, and cultural tourism base, covering an area of 3.07 square kilometers.
           </h3>
         </div>
 
         <!-- follow part -->
-        <div class="follow">
+        <!-- <div class="follow">
           <a-divider />
           <a-avatar-group :size="30" :max-count="3">
             <a-avatar :style="{ backgroundColor: '#7BC616' }">A</a-avatar>
@@ -47,10 +47,10 @@
             <a-avatar :style="{ backgroundColor: '#FFC72E' }">Design</a-avatar>
           </a-avatar-group>
           <div class="recommend">Recommended by 31 cyclists</div>
-        </div>
+        </div> -->
       </section>
 
-      <div class="comments-content" v-for="i in Array(3)" :key="i">
+      <div class="comments-content">
         <a-divider />
         <div class="flex-content">
           <div class="head-profile">
@@ -66,23 +66,23 @@
           <div class="content">
             <h3 class="name">George</h3>
             <p class="com-content">
-              The Rennstei Wes sostom, you should take a pebble, which you throw in the hall at the
-              end of your tour. The first stage leads you about 19 kilometers almost steadily uph=e
+              It is recommended to go to the panda base in the morning. Panda babies are cute and lively, 
+              and there are not many people. It is best to go outside of holidays
             </p>
-            <p class="date">August 31, 2017</p>
+            <p class="date">August 31, 2023</p>
           </div>
         </div>
       </div>
     </div>
 
     <div class="right-page">
-      <h3 class="right-title">Top Touring Cycling Routes to The Heron Farm Shop and Cafe</h3>
-      <div class="tours" v-for="i in Array(3)" :key="i">
+      <h3 class="right-title">Top Touring Cycling Routes to Chengdu Giant Panda Base</h3>
+      <div class="tours">
         <a-divider />
         <div class="title">
           <div class="left">
             <span class="category">Expert</span>
-            <h1 class="main-title">Alberta - Plain of Six Glaciers</h1>
+            <h1 class="main-title">Chengdu Giant Panda Base</h1>
             <div>
               <span class="time">07:10</span>
               <span class="distance">18.4</span>km <span class="speed">2.6</span>km/h
@@ -115,7 +115,7 @@
             </div>
             <div class="pic">
               <img
-                src="https://tourpic-vector.maps.komoot.net/r/small/ik~%60@xonAKj@FhAe@DAd@U@QvBFrDLz@hAeAHnDEvCBtCfAdFFbAPx@BnALjAd@dA%5EbB~@o@VGFFGGWF_An@_@cBe@eAMkACoAQy@GcAgAeFCuCDwCIoDiAdAM%7B@GsDPwBTA@e@d@EGiAJk@/?width=200&height=200&crop=true&q=40&quot"
+                src="https://file.wmzspace.space//tour/21/map_screenshot.jpg"
                 alt=""
               />
             </div>

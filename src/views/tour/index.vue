@@ -75,7 +75,7 @@
         <a-timeline-item class="pic-map" lineType="dashed">
           <h4>Start</h4>
         </a-timeline-item>
-        <a-timeline-item>
+        <a-timeline-item v-if="fakeSpots.length">
           <div class="tour-pic">
             <div class="pic-container flex-r">
               <div v-for="(spots,i) in fakeSpots" :key="i" class="pic">
@@ -92,7 +92,7 @@
           class="pic-map"
           lineType="dashed"
         >
-          <DHighlight :data="highlight"></DHighlight>
+          <DHighlight @jump="toTour" :data="highlight"></DHighlight>
         </a-timeline-item>
         <a-timeline-item class="pic-map" lineType="dashed">
           <h4>End</h4>
@@ -239,7 +239,7 @@ export default {
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { type TourRecord, getTourById } from '@/apis/tour'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import DHighlight from '@/views/discover/DHighlight.vue'
 
 const url = import.meta.env.APP_STATIC_URL.concat('/tour')
@@ -247,8 +247,13 @@ const exam_pic =
   'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a20012a2d4d5b9db43dfc6a01fe508c0.png~tplv-uwbnlip3yd-webp.webp'
 
 const route = useRoute()
+const router = useRouter()
 const mode = 'minimal'
 const tourRecord = ref<TourRecord>()
+
+const toTour = ()=>{
+  router.push({name:'highlight'})
+}
 
 // const testCardInfo = reactive<TourRecord>({
 //   id: 0,

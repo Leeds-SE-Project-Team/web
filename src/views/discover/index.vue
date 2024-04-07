@@ -54,8 +54,7 @@
                 <a-button
                   type="primary"
                   style="background-color: rgb(79, 133, 13); font-weight: bold"
-                  >Search</a-button
-                >
+                  >Search</a-button>
               </div>
             </div>
           </div>

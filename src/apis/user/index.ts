@@ -12,7 +12,8 @@ export interface UserRecord {
 }
 
 export const exampleUserRecord: UserRecord = {
-  avatar: getStaticRes('user/default/avatar/avatar.jpg'),
+  // avatar: getStaticRes('user/default/avatar/avatar.jpg'),
+  avatar: '',
   email: 'sc21m2w@leeds.ac.uk',
   id: 1,
   latestLoginTime: '2024-03-03 15:35:23',

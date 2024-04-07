@@ -10,6 +10,7 @@ import PlannerView from '@/views/planner/index.vue'
 import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
+import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 import { Capacitor } from '@capacitor/core'
 import { MOBILE_ROUTES } from '@/router/mobile'
 import { useAuthStore } from '@/stores/auth'
@@ -50,13 +51,13 @@ const router = createRouter({
       path: '/discover',
       name: 'discover',
       meta: {
-        // layout: 'mobile-main',
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        layout: 'mobile-main',
+        // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'Discover Page',
         auth: ['admin', 'user']
       }, // Render component dynamically according to platform
-      // component: DiscoverMobileView
-      component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
+      component: DiscoverMobileView
+      // component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
     },
 
     // {
@@ -127,6 +128,16 @@ const router = createRouter({
       }, // Render component dynamically according to platform
       // component: DiscoverMobileView
       component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
+    },
+    {
+      path: '/highlightano',
+      name: 'anotherHighlight',
+      meta: {
+        layout: 'mobile-main',
+        title: 'highlight Page',
+        auth: ['admin', 'user']
+      },
+      component: AnoHighlightView
     }
   ]
 })

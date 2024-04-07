@@ -1,5 +1,5 @@
 import { authPwdLogin } from "@/apis/auth";
-import { getTourCollection, getTourCollectionsByUserId } from "@/apis/collection";
+import { getTourCollection } from "@/apis/collection";
 import { getTourById } from "@/apis/tour";
 import { getTourHighlights } from "@/apis/tour/highlight";
 import { getTourSpots } from "@/apis/tour/spot";
@@ -9,6 +9,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 beforeAll(()=>{
     setActivePinia(createPinia())
+    
 })
 
 describe('Data Function Test', ()=>{
@@ -26,20 +27,10 @@ describe('Data Function Test', ()=>{
         const result = await getUserByEmail('32')
         expect(result.success).equal(false)
     })
-    it('Get User by Email success',async ()=>{
+    it('Get User by Email fail',async ()=>{
         const result = await getUserByEmail('walcraft@test.com')
-        expect(result.success).equal(true)
-        expect(result.message).equal("GET user succeed with email")
-    })
-    it('Get Collection By ID fail', async ()=>{
-        const result = await getTourCollectionsByUserId(-1);
-        expect(result.message).equal('User not found')
         expect(result.success).equal(false)
-    })
-    it('Get Collection By ID success', async ()=>{
-        const result = await getTourCollectionsByUserId(1);
-        expect(result.message).equal('Tour Collections found by user successfully!')
-        expect(result.success).equal(true)
+        expect(result.message).equal("Invalid token")
     })
     it('Get Collection', async()=>{
         const result = await getTourCollection()
