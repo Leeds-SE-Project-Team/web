@@ -17,7 +17,6 @@ import { hapticsImpactLight } from '@/utils'
 import { App } from '@capacitor/app'
 import { useMapStore } from '@/stores/map'
 import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection'
-import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import { uploadFileFromURL } from '@/utils/file'
 
@@ -34,8 +33,6 @@ const onCollectionConfirm = ({ selectedOptions }: { selectedOptions: PickerOptio
   showCollectionPicker.value = false
   selectedCollection.value = selectedOptions[0].value as number
 }
-
-const userStore = useUserStore()
 
 const userCollections = ref<TourCollection[]>([])
 const selectedCollection = ref(-1)
@@ -67,6 +64,8 @@ const fetchTourCollections = () => {
   //   Message.error(reason)
   // })
 }
+
+const tourTitleInput = ref('')
 const createTourForm = ref<CreateTourForm>({
   startLocation: '',
   endLocation: '',
@@ -98,12 +97,13 @@ const handleCreateTour = (navigate = false) => {
   formRef.value.validate().then((e: any) => {
     if (!e) {
       setLoading(true)
-      if (createTourForm.value.title === '') {
-        createTourForm.value.title = 'untitled'
-      }
+      // if (createTourForm.value.title === '') {
+      //   createTourForm.value.title = 'untitled'
+      // }
       createTour({
         ...createTourForm.value,
-        tourCollectionId: selectedCollection.value
+        tourCollectionId: selectedCollection.value,
+        title: tourTitleInput.value.length > 0 ? tourTitleInput.value : 'Untitled'
       })
         .then((res) => {
           if (res.success) {
@@ -285,6 +285,14 @@ onUnmounted(() => {
                 <template #extra>
                   <van-icon class="field-icon" color="white" name="wap-nav" size="20" />
                 </template>
+                <template #input
+                  ><span style="font-weight: bold; color: white">{{
+                    !createTourForm.startLocation ||
+                    createTourForm.startLocation === mapStore.currentLocation.join(',')
+                      ? 'Current location'
+                      : createTourForm.startLocation
+                  }}</span></template
+                >
               </van-field>
               <van-field
                 v-model="createTourForm.endLocation"
@@ -433,7 +441,7 @@ onUnmounted(() => {
       </van-cell>
       <!--      TODO: tour title-->
       <van-cell>
-        <van-field v-model="createTourForm.title" label="Title" placeholder="请输入标题" />
+        <van-field v-model="tourTitleInput" label="Title" placeholder="Untitled" />
       </van-cell>
     </van-floating-panel>
     <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>

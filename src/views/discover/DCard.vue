@@ -159,10 +159,7 @@
         <div class="new-comment">
           <a-row :wrap="false">
             <a-avatar style="cursor: default">
-              <img
-                alt="avatar"
-                src="http://walcraft.wmzspace.space/static/user/default/avatar/avatar.jpg"
-              />
+              <img alt="avatar" src="https://file.wmzspace.space/user/default/avatar/avatar.jpg" />
             </a-avatar>
 
             <a-input

@@ -25,7 +25,7 @@ export const getTourCollection: () => Promise<ApiResponse<TourCollection[]>> = (
   })
 
 export const exampleTourCollection: TourCollection = {
-  coverUrl: 'http://walcraft.wmzspace.space/static/tour/example/1.png',
+  coverUrl: 'https://file.wmzspace.space/tour/example/1.png',
   createTime: '2024-3-1 00:00:00',
   description:
     'For those who love cycling, adventure and, more generally, the outdoors, the idea of conquering epic mountains is certainly a strong driving force.',
@@ -36,7 +36,7 @@ export const exampleTourCollection: TourCollection = {
 }
 
 export const exampleTourCollection2: TourCollection = {
-  coverUrl: 'http://walcraft.wmzspace.space/static/tour/example/2.png',
+  coverUrl: 'https://file.wmzspace.space/tour/example/2.png',
   createTime: '2024-3-3 00:00:00',
   description:
     'For those who love cycling, adventure and, more generally, the outdoors, the idea of conquering epic mountains is certainly a strong driving force.',

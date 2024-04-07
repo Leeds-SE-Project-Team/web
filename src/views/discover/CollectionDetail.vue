@@ -2,13 +2,13 @@
   <div id="page-collection-detail">
     <div
       class="head-background"
-      style="background: url('http://walcraft.wmzspace.space/static//tour/example/4.png')"
+      style="background: url('https://file.wmzspace.space//tour/example/4.png')"
     ></div>
     <!-- 可能的面包屑 -->
     <div></div>
     <div class="header-cover">
       <div class="img-wrapper">
-        <img alt="" src="http://walcraft.wmzspace.space/static//tour/example/4.png" />
+        <img alt="" src="https://file.wmzspace.space//tour/example/4.png" />
       </div>
     </div>
     <div class="content">

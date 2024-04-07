@@ -95,6 +95,10 @@ const resultLoadingObj = useLoading()
 const resultLoading = resultLoadingObj.loading
 watch(props.tourData, (value) => {
   const mapInstance: AMap.Map = mapRef.value.$$getInstance()
+  if (!value.startLocation) {
+    value.startLocation = mapStore.currentLocation.join(',')
+    return
+  }
   if (mapRef.value && value.startLocation && value.endLocation) {
     resultLoadingObj.setLoading(true)
     mapStore
@@ -159,7 +163,11 @@ defineExpose({
         </div>
       </el-amap-marker>
       <el-amap-marker
-        v-if="!navigationResult && tourData.startLocation"
+        v-if="
+          !navigationResult &&
+          tourData.startLocation &&
+          tourData.startLocation !== mapStore.currentLocation.join(',')
+        "
         :draggable="true"
         :label="{ content: 'A', offset: labelOffset }"
         :position="parseLocation(tourData.startLocation)"
@@ -198,6 +206,7 @@ defineExpose({
           fillOpacity: 0,
           strokeOpacity: 0
         }"
+        style="z-index: -1"
       />
     </el-amap>
   </div>
