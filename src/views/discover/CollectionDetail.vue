@@ -2,17 +2,17 @@
   <div id="page-collection-detail">
     <div
       class="head-background"
-      style="background: url('https://file.wmzspace.space//tour/example/4.png')"
+      style="background: url('https://file.wmzspace.space//collection/6/cover.png')"
     ></div>
     <!-- 可能的面包屑 -->
     <div></div>
     <div class="header-cover">
       <div class="img-wrapper">
-        <img alt="" src="https://file.wmzspace.space//tour/example/4.png" />
+        <img alt="" src="https://file.wmzspace.space//collection/6/cover.jpg" />
       </div>
     </div>
     <div class="content">
-      <h1 class="content-title">随便写点标题</h1>
+      <h1 class="content-title" style="font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;">3-DAY-Chengdu Tour</h1>
       <div class="user flex-r flex-justify-c">
         <div class="info-wrapper flex-c">
           <div class="avatar-wrapper flex-r flex-justify-c">
@@ -21,12 +21,12 @@
             </a-avatar>
           </div>
           <div class="specify flex-r flex-justify-c">
-            <span>一些简单的介绍 by<a href="#">mingzi</a></span>
+            <span><a href="#">Test</a></span>
           </div>
         </div>
       </div>
       <div class="content-data flex-r w-full flex-justify-c">
-        <div class="data-item flex-r">
+        <!-- <div class="data-item flex-r">
           <div class="icon"></div>
           <span>100</span>
           <span>Tours</span>
@@ -40,10 +40,10 @@
           <div class="icon"></div>
           <span>100</span>
           <span>Tours</span>
-        </div>
+        </div> -->
         <div class="data-item flex-r">
           <div class="icon"></div>
-          <span>100</span>
+          <span>3</span>
           <span>Tours</span>
         </div>
       </div>
@@ -53,7 +53,7 @@
             <template #icon>
               <icon-heart :size="28" />
             </template>
-            1000
+            1
           </a-button>
         </div>
         <div class="operation-item">
@@ -61,7 +61,7 @@
             <template #icon>
               <icon-message :size="28" />
             </template>
-            30
+            0
           </a-button>
         </div>
         <div class="operation-item">
@@ -80,23 +80,24 @@
         </div>
       </div>
       <div class="main-content flex-r flex-justify-c">
-        <p>这里写一写主要的对旅途的简述</p>
+        <p>家人们谁懂啊，成都这里真好玩！</p>
       </div>
     </div>
     <div class="divider w-full">
       <span></span>
     </div>
     <h2 class="text-center">On the Map</h2>
-    <div class="map-area w-full">
+    <div class="map-area w-full" style="display: flex; justify-content: center;margin-top: 0;">
       <!--      <RouteMap></RouteMap>-->
-      <el-amap :scroll-wheel="false" style="width: 100%; height: 100%">
+      <!-- <el-amap :scroll-wheel="false" style="width: 100%; height: 100%">
         <el-amap-control-geolocation
           :circleOptions="{
             fillOpacity: 0,
             strokeOpacity: 0
           }"
         />
-      </el-amap>
+      </el-amap> -->
+      <img  src="https://file.wmzspace.space//collection/6/map.jpg" alt="" width="80%" style="object-fit: contain; margin: 0 auto"/>
     </div>
     <div class="divider">
       <span></span>
@@ -105,17 +106,43 @@
     <div ref="scrollContainer" class="tour-scroll-container">
       <div ref="imgCollection" class="img-collection">
         <div v-for="(_, i) in testCardInfo" :key="i" class="img-wrapper">
-          <img v-if="flag" :src="testCardInfo[i].tourHighlightList[i].tourImages[0].imageUrl" alt="" />
+          <img v-if="flag" :src="testCardInfo[i].tourHighlightList[0].tourImages[0].imageUrl" alt="" />
         </div>
       </div>
       <div class="tianchong"></div>
       <div ref="tourScroll" class="tour-card-wrapper w-full">
-        <div v-for="(_, i) in testCardInfo" :key="i" class="tour-card flex-c flex-justify-c">
-          <DCard v-if="flag" :tour-data="testCardInfo[i]" mode="minimal" style="overflow: hidden"></DCard>
+        <div v-for="(tc, i) in testCardInfo" :key="i" class="tour-card flex-c flex-justify-c">
+          <DCard
+            v-if="flag"
+            :tour-data="testCardInfo[i]" mode="minimal"
+            style="overflow: hidden"
+            @jump="toTour(tc.id)"
+          ></DCard>
         </div>
       </div>
     </div>
-    <div style="height: 800px"></div>
+    <!-- <div>
+      <a-input
+              :max-length="400"
+              class="comment-input"
+              placeholder="留下你的精彩评论吧"
+            >
+              <template #suffix>
+                <a-tooltip>
+                  <template #content> 没有可以@的朋友</template>
+                  <img alt="at_friend" class="icon-at" src="/interaction/comment_at.svg" />
+                </a-tooltip>
+                <a-tooltip>
+                  <template #content>发布评论</template>
+                  <img
+                    alt="send_comment"
+                    class="icon-send"
+                    src="/interaction/send_comment.svg"
+                  />
+                </a-tooltip>
+              </template>
+            </a-input>
+    </div> -->
   </div>
 </template>
 
@@ -124,11 +151,14 @@ import { onMounted, ref } from 'vue'
 // import MapContainer from '@/components/map/MapContainer.vue';
 import DCard from './DCard.vue'
 import { type TourRecord, TourType, getTourById } from '@/apis/tour'
+import { useRouter } from 'vue-router';
 
 const tourScroll = ref<HTMLDivElement | null>(null)
 const scrollContainer = ref<HTMLDivElement | null>(null)
 const imgCollection = ref<HTMLDivElement | null>(null)
 var ticking = false
+
+const router = useRouter()
 
 const testCardInfo = ref<TourRecord[]>([])
 
@@ -187,9 +217,29 @@ const flag = ref(false)
 getTourById(18).then((res)=>{
   if(res.success){
     testCardInfo.value.push(res.data!)
+  }
+  return getTourById(20)
+}).then((res)=>{
+  if(res.success){
+    testCardInfo.value.push(res.data!)
+  }
+  return getTourById(21)
+}).then((res)=>{
+  if(res.success){
+    testCardInfo.value.push(res.data!)
+  }
+  return getTourById(22)
+}).then((res)=>{
+  if(res.success){
+    testCardInfo.value.push(res.data!)
     flag.value = true
   }
+  console.log(testCardInfo.value)
 })
+
+const toTour = (id:string|number)=>{
+  router.push({name:'tour', query:{id: id}})
+}
 
 onMounted(() => {
   if (tourScroll.value && scrollContainer.value) {

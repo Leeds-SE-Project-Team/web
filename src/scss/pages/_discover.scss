@@ -284,6 +284,10 @@
           // border: red 1px solid;
           .d-card {
             height: 700px;
+
+            @media screen and (max-width: 500px) {
+              height: 520px;
+            }
           }
         }
 
@@ -556,6 +560,10 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+
+    @media screen and (max-width:500px) {
+      gap: 0;
+    }
 
     .greeting-more {
 

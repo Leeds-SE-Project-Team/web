@@ -176,9 +176,19 @@
   .map,
   .profile,
   .weather {
-    box-shadow: 20px 20px 20px rgba(0, 0, 0, .2) !important;
-    padding: 40px 2% 5px 2%;
+    // box-shadow: 20px 20px 20px rgba(0, 0, 0, .2) !important;
+    padding: 0px 2% 5px 2%;
     background-color: #fff;
+
+    .map-img{
+      width: 100%;
+
+      img{
+        width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+      }
+    }
   }
 
   .comments {

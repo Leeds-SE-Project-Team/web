@@ -65,7 +65,7 @@ const props = defineProps<{
   data: TourHighlight
 }>()
 
-const highlightMapUrl = ref('https://file.wmzspace.space/resource/highlight.png')
+const highlightMapUrl = 'https://file.wmzspace.space/resource/highlight.png'
 
 // const commentArea = ref<HTMLDivElement | undefined>()
 const mapWrapper = ref<HTMLDivElement | undefined>()
@@ -129,7 +129,7 @@ const switchClick = () => {
       if (mapWrapper.value) {
         mapWrapper.value.classList.add('hide')
       }
-      smallImg.value = highlightMapUrl.value
+      smallImg.value = highlightMapUrl
       break
   }
 }

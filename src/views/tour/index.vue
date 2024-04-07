@@ -3,14 +3,14 @@
     <!-- the section of bg and title in tour page -->
     <section class="tour-title">
       <!-- the bg part -->
-      <div class="bg flex-r">
+      <div v-if="tourRecord" class="bg flex-r">
         <div class="main-bg">
           <img
             alt=""
-            src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
+            :src="tourRecord.tourHighlightList[0].tourImages[0].imageUrl"
           />
         </div>
-        <div class="sub">
+        <!-- <div class="sub">
           <div class="sub-bg">
             <img
               alt=""
@@ -23,7 +23,7 @@
               src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40"
             />
           </div>
-        </div>
+        </div> -->
       </div>
 
       <!-- the title part -->
@@ -62,8 +62,28 @@
             </div>
           </div>
         </a-timeline-item> -->
+
+        <section class="map" style="margin-bottom: 1rem">
+          <div class="subtitle">
+            MAP
+          </div>
+          <div v-if="tourRecord" class="map-img">
+            <img :src="tourRecord.mapUrl" alt="">
+          </div>
+        </section>
+
         <a-timeline-item class="pic-map" lineType="dashed">
           <h4>Start</h4>
+        </a-timeline-item>
+        <a-timeline-item>
+          <div class="tour-pic">
+            <div class="pic-container flex-r">
+              <div v-for="(spots,i) in fakeSpots" :key="i" class="pic">
+                <img alt=""
+                  :src="spots" />
+              </div>
+            </div>
+          </div>
         </a-timeline-item>
         <a-timeline-item
           v-for="(highlight, idx) in tourRecord?.tourHighlightList"
@@ -217,13 +237,9 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import { onMounted, ref, reactive } from 'vue'
-import { type TourRecord, TourType, getTourById, getTourTypeText } from '@/apis/tour'
-import { getTourSpotExample } from '@/apis/tour/spot'
-import { exampleUserRecord } from '@/apis/user'
-import DCard from '../discover/DCard.vue'
+import { onMounted, ref } from 'vue'
+import { type TourRecord, getTourById } from '@/apis/tour'
 import { useRoute } from 'vue-router'
-import { getStaticRes } from '@/apis'
 import DHighlight from '@/views/discover/DHighlight.vue'
 
 const url = import.meta.env.APP_STATIC_URL.concat('/tour')
@@ -323,6 +339,20 @@ const switchStatus = ref<'map' | 'pic'>('map')
 // }
 
 const isMinimal = ref(false)
+
+// 这里是假数据
+const fakeSpots = ref<string[]>([])
+if(route.query.id === '20'){
+  fakeSpots.value.push('https://api.wmzspace.space/tour/20/spots/p1.jpg')
+  fakeSpots.value.push('https://api.wmzspace.space/tour/20/spots/p2.jpg')
+  fakeSpots.value.push('https://api.wmzspace.space/tour/20/spots/p3.jpg')
+  fakeSpots.value.push('https://api.wmzspace.space/tour/20/spots/p4.jpg')
+}else if(route.query.id === '21'){
+  fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/baby.jpeg')
+  fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/huahua.jpg')
+  fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/panda.jpg')
+  fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/pandas.jpg')
+}
 
 if (mode === 'minimal') {
   isMinimal.value = true

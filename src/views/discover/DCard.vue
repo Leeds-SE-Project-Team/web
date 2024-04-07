@@ -26,14 +26,15 @@
               <a-button type="primary">Follow</a-button>
             </div>
           </div>
-          <div v-if="isMinimal && !isTour" class="split"></div>
-          <h3 v-if="!isTour" class="title">
+          <div v-if="!isMinimal && !isTour" class="split"></div>
+          <h3 v-if="!isTour" class="title" @click="emits('jump')">
             {{ props.tourData.title }}
           </h3>
           <div class="picture-map">
             <div ref="picWrapper" class="picture-wrapper">
               <a-image-preview-group>
-                <div class="left">
+                <div class="left" 
+                :style="{ width: props.tourData.tourHighlightList.length >= 2 ? '60%' : '100%' }">
                   <a-image
                     :height="'100%'"
                     :src="props.tourData.tourHighlightList[0].tourImages[0].imageUrl"
@@ -41,7 +42,7 @@
                     fit="cover"
                   />
                 </div>
-                <div class="right">
+                <div class="right" v-if="props.tourData.tourHighlightList.length >= 2">
                   <div class="up right-item">
                     <a-image
                       :height="'100%'"
@@ -50,7 +51,7 @@
                       fit="cover"
                     />
                   </div>
-                  <div class="down right-item">
+                  <div class="down right-item" v-if="props.tourData.tourHighlightList.length >= 3">
                     <a-image
                       :height="'100%'"
                       :src="props.tourData.tourHighlightList[2].tourImages[0].imageUrl"
@@ -279,6 +280,8 @@ const props = defineProps<{
   tourData: TourRecord
   mode?: 'minimal' | 'tour'
 }>()
+
+const emits = defineEmits(["jump"])
 
 // const commentArea = ref<HTMLDivElement | undefined>()
 const mapWrapper = ref<HTMLDivElement | undefined>()
