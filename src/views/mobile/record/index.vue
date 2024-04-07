@@ -336,6 +336,12 @@ onMounted(() => {
           color: 'red',
           callback: handleDeleteHighlight,
           loading: deleteHighlightLoadingObj.loading.value
+        },
+        {
+          name: 'View',
+          color: 'black',
+          callback: ()=>{$router.push({name:'highlight'})},
+          loading: deleteHighlightLoadingObj.loading.value
         }
       ]"
       @close="handleCloseHighlightAction"

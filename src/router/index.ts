@@ -73,25 +73,25 @@ const router = createRouter({
     //   component: DiscoverMobileView
     // },
 
-    // {
-    //   path: '/plan',
-    //   name: 'planner',
-    //   meta: {
-    //     title: 'Planner Page',
-    //     layout: 'mobile-default'
-    //   },
-    //   component: PlannerMobileView
-    // },
     {
       path: '/plan',
       name: 'planner',
       meta: {
         title: 'Planner Page',
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default',
-        auth: ['user']
+        layout: 'mobile-default'
       },
-      component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
+      component: PlannerMobileView
     },
+    // {
+    //   path: '/plan',
+    //   name: 'planner',
+    //   meta: {
+    //     title: 'Planner Page',
+    //     layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default',
+    //     auth: ['user']
+    //   },
+    //   component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
+    // },
     {
       path: '/tour',
       name: 'tour',
@@ -121,13 +121,13 @@ const router = createRouter({
       path: '/highlight',
       name: 'highlight',
       meta: {
-        // layout: 'mobile-main',
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        layout: 'mobile-main',
+        // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'highlight Page',
         auth: ['admin', 'user']
       }, // Render component dynamically according to platform
-      // component: DiscoverMobileView
-      component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
+      component: HighlightMobileView
+      // component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
     },
     {
       path: '/highlightano',

@@ -252,7 +252,7 @@ const mode = 'minimal'
 const tourRecord = ref<TourRecord>()
 
 const toTour = ()=>{
-  router.push({name:'highlight'})
+  router.push({name:'anotherHighlight'})
 }
 
 // const testCardInfo = reactive<TourRecord>({
