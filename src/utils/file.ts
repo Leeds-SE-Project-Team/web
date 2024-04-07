@@ -3,7 +3,8 @@ import { reject } from 'lodash-es'
 
 export async function uploadFileFromURL(
   resURL: string,
-  uploadURL: string
+  uploadURL: string,
+  filename?: string
 ): Promise<ApiResponse<string>> {
   // try {
   const response = await fetch(resURL)
@@ -11,6 +12,9 @@ export async function uploadFileFromURL(
   const formData = new FormData()
   formData.append('file', blob, 'image.jpg')
   formData.append('uploadURL', uploadURL)
+  if(filename){
+    formData.append('filename',filename);
+  } 
   return axiosRequest({
     method: 'POST',
     url: 'users/upload',

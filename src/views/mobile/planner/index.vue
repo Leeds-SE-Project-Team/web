@@ -104,10 +104,11 @@ const handleCreateTour = (navigate = false) => {
           if (res.success) {
             uploadFileFromURL(
               mapStore.screenMap(mapContainer.value.mapRef.$$getInstance())!,
-              `/tour/${res.data!.id}/map_screenshot.jpg`
+              `/tour/${res.data!.id}`, 'map_screenshot.jpg'
             )
               .then((uploadRes) => {
                 if (uploadRes.success) {
+                  console.log(res)
                   savedTour.value = res.data!
                   Message.success(res.message)
                   if (navigate) {
