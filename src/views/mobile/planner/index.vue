@@ -45,7 +45,6 @@ const fetchTourCollections = () => {
   collectionLoadingObj.setLoading(true)
   getTourCollectionsByCurUser
     .then((apiRes) => {
-      console.log(apiRes)
       if (apiRes.success) {
         userCollections.value = apiRes.data!
         selectedCollection.value = userCollections.value[0].id
@@ -281,6 +280,7 @@ onUnmounted(() => {
                 label="A:"
                 name="startLocation"
                 placeholder="Current Location"
+                @click-input="router.push({ name: 'search' })"
               >
                 <template #extra>
                   <van-icon class="field-icon" color="white" name="wap-nav" size="20" />

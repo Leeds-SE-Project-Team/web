@@ -7,7 +7,6 @@ import Vant, { PullRefresh } from 'vant'
 import ArcoVueIcon from '@arco-design/web-vue/es/icon'
 import '@arco-design/web-vue/dist/arco.css'
 import 'vant/lib/index.css'
-import { createPinia } from 'pinia'
 import './scss/app.scss'
 import '@vuemap/vue-amap/dist/style.css'
 import App from './App.vue'
@@ -18,6 +17,7 @@ import LayoutB from '@/layout/LayoutB.vue'
 import LayoutMobileMain from '@/layout/mobile/LayoutMain.vue'
 import LayoutMobileDefault from '@/layout/mobile/LayoutDefaultMobile.vue'
 import LayoutMobileRecord from '@/layout/mobile/LayoutRecord.vue'
+import LayoutMobilePure from '@/layout/mobile/LayoutPure.vue'
 import VueAMap, { initAMapApiLoader } from '@vuemap/vue-amap'
 import pinia from '@/stores'
 
@@ -56,6 +56,7 @@ app.component('layout-default', LayoutDefault)
 app.component('layout-a', LayoutA)
 app.component('layout-b', LayoutB)
 app.component('layout-mobile-main', LayoutMobileMain)
+app.component('layout-mobile-pure', LayoutMobilePure)
 app.component('layout-mobile-default', LayoutMobileDefault)
 app.component('layout-mobile-record', LayoutMobileRecord)
 app.mount('#app')

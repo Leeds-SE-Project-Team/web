@@ -1,0 +1,59 @@
+#search-view {
+
+  .nav-bar {
+    --van-nav-bar-background: #3f3f3f;
+    --van-nav-bar-icon-color: white;
+    --van-nav-bar-height: $header-height;
+
+    .nav-field {
+      background-color: #3f3f3f;
+      --van-field-input-text-color: white;
+      --van-field-placeholder-text-color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+      font-weight: normal;
+    }
+  }
+
+  .search-btn-group {
+    --van-grid-item-content-padding: 16px 8px 6px;
+
+    .van-grid-item {
+      .van-grid-item__content {
+        justify-content: flex-start;
+
+        .search-btn-icon {
+          font-size: 16px;
+          background-color: rgba(0, 0, 0, 0.1);
+          border-radius: 100%;
+          padding: 8px;
+          color: #0275d7
+        }
+
+        .van-grid-item__text {
+          font-size: 10px;
+          word-break: break-word;
+          text-align: center;
+          line-height: 12px;
+          margin: 7px 0;
+        }
+      }
+    }
+
+  }
+
+  .divider-1 {
+    margin: 0;
+    --van-divider-border-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .recent-search {
+    margin: 20px 8px 10px;
+
+    .recent-search-title {
+      font-size: 18px;
+      color: rgba(0, 0, 0, 0.5);
+      font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+
+    }
+  }
+}
