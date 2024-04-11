@@ -483,9 +483,15 @@ onUnmounted(() => {
       />
     </van-popup>
   </div>
-  <van-overlay id="search-overlay" :show="showSelector">
+  <van-overlay id="search-overlay" :lock-scroll="false" :show="showSelector">
     <SearchPlaceView
       @cancel="showSelector = false"
+      @reset="
+        () => {
+          resetForm()
+          showSelector = false
+        }
+      "
       @select="
         (lnglat) => {
           mapContainer.handleSelectPlace(lnglat)

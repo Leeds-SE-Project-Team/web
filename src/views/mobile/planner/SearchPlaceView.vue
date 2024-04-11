@@ -7,7 +7,7 @@ import { showNotify } from 'vant'
 
 const searchInput = ref('')
 /* search main */
-const recentSearchList = ref(['Southwest Jiaotong University', 'Chunxi Road'])
+const recentSearchList = ref<string[]>([])
 const loadingObjPOI = useLoading()
 const finishedPOI = ref(false)
 const onLoadPOI = () => {
@@ -72,6 +72,7 @@ const handleSearch = debounce((value: string, oldValue?: string) => {
           finishedResult.value = true
         }
         searchResultList.value.push(...res.poiList.pois)
+        recentSearchList.value = [...new Set([value, ...recentSearchList.value])].slice(0, 5)
       })
       .catch((e) => {
         showNotify({ type: 'danger', message: e })
@@ -87,7 +88,21 @@ const searchResultList = ref<any[]>([])
 const emits = defineEmits<{
   (e: 'select', lnglat: AMap.LngLat): void
   (e: 'cancel'): void
+  (e: 'reset'): void
 }>()
+const handleClickCurrentLocation = () => {
+  emits('select', new AMap.LngLat(mapStore.currentLocation[0], mapStore.currentLocation[1]))
+}
+const handleClickChooseOnMap = () => {
+  showNotify({ type: 'primary', message: 'Long press to select a point' })
+  emits('cancel')
+}
+const handleClickSelectStarred = () => {
+  showNotify({ type: 'primary', message: 'This feature is current unavailable' })
+}
+const handleClickDeleteWaypoint = () => {
+  emits('reset')
+}
 </script>
 
 <template>
@@ -114,37 +129,42 @@ const emits = defineEmits<{
     <div v-if="!searchInput">
       <!--    search main-->
       <van-grid :border="false" class="search-btn-group">
-        <van-grid-item text="Use Current Location">
+        <van-grid-item text="Use Current Location" @click="handleClickCurrentLocation">
           <template #icon>
             <van-icon class="search-btn-icon" name="location"></van-icon>
           </template>
         </van-grid-item>
-        <van-grid-item text="Choose On Map">
+        <van-grid-item text="Choose On Map" @click="handleClickChooseOnMap">
           <template #icon>
             <van-icon class="search-btn-icon" name="map-marked"></van-icon>
           </template>
         </van-grid-item>
-        <van-grid-item text="Select From Starred Place">
+        <van-grid-item text="Select From Starred Place" @click="handleClickSelectStarred">
           <template #icon>
             <van-icon class="search-btn-icon" name="star"></van-icon>
           </template>
         </van-grid-item>
-        <van-grid-item text="Delete Waypoint">
+        <van-grid-item text="Delete Waypoint" @click="handleClickDeleteWaypoint">
           <template #icon>
             <van-icon class="search-btn-icon" name="delete"></van-icon>
           </template>
         </van-grid-item>
       </van-grid>
       <van-divider class="divider-1"></van-divider>
-      <div class="search-content-area">
+      <div v-if="recentSearchList.length" class="search-content-area">
         <p class="search-content-area-title">Recent searches</p>
-        <van-list class="search-content-area-list van-hairline--bottom" finished-text="loaded all">
-          <van-cell v-for="(item, idx) in recentSearchList" :key="idx" :center="true">
+        <van-list class="search-content-area-list" finished-text="loaded all">
+          <van-cell
+            v-for="(item, idx) in recentSearchList"
+            :key="idx"
+            :center="true"
+            @click="searchInput = item"
+          >
             <template #icon>
               <van-icon class="search-content-area-list-icon" name="underway-o"></van-icon>
             </template>
             <template #title>
-              <span class="search-content-area-content van-hairline--bottom">{{ item }}</span>
+              <span class="search-content-area-content">{{ item }}</span>
             </template>
           </van-cell>
         </van-list>
@@ -186,7 +206,12 @@ const emits = defineEmits<{
           :key="idx"
           class="search-result-area-list-item"
           is-link
-          @click="emits('select', item.location)"
+          @click="
+            () => {
+              searchInput = ''
+              emits('select', item.location)
+            }
+          "
         >
           <template #icon>
             <van-icon class="search-result-area-list-icon" name="location"></van-icon>
