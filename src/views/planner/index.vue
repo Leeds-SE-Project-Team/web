@@ -17,7 +17,9 @@ const createTourForm = reactive<CreateTourForm>({
   endLocation: '',
   type: TourType.WALK,
   pons: [],
-  tourCollectionId: 1
+  tourCollectionId: 1,
+  result: undefined,
+  title: ''
 })
 
 const mapContainer = ref()

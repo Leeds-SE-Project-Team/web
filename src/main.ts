@@ -36,7 +36,9 @@ initAMapApiLoader({
     'AMap.Geolocation',
     'AMap.Walking',
     'AMap.Riding',
-    'AMap.Geocoder'
+    'AMap.Geocoder',
+    'AMap.PlaceSearch',
+    'AMap.AutoComplete'
   ]
   //Loca:{
   //  version: '2.0.0'
