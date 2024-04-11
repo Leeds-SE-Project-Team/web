@@ -270,7 +270,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import CommentCard from '@/views/discover/components/CommentCard.vue'
+import CommentCard from '@/views/web/discover/components/CommentCard.vue'
 import useLoading from '@/hooks/loading'
 import { type CommentRecord, getCommentsByTourId } from '@/apis/comment'
 import { Message } from '@arco-design/web-vue'
