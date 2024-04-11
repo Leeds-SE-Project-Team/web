@@ -4,13 +4,11 @@ import { getTimeDiffUntilNow } from '@/utils'
 import useLoading from '@/hooks/loading'
 import { Message } from '@arco-design/web-vue'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
-import { useUserStore } from '@/stores/user'
 import { getTours, type TourRecord } from '@/apis/tour'
 import likeSvgUrl from '/interaction/video_detail_like.svg'
 import likedSvgUrl from '/interaction/video_detail_liked.svg'
 import starSvgUrl from '/interaction/star.svg'
 import starredSvgUrl from '/interaction/starred.svg'
-import { getTourImageExample } from '@/apis/tour/spot'
 import { shuffle } from 'lodash-es'
 
 const currentPlayIndex = ref(0)
@@ -85,22 +83,12 @@ const handleWheel = (event: WheelEvent) => {
   }
 }
 
-const userStore = useUserStore()
-
-const currentItem = computed(() => itemList.value[currentPlayIndex.value])
+// const currentItem = computed(() => itemList.value[currentPlayIndex.value])
 const isLiked = ref(false)
 const isStarred = ref(false)
 
 const itemLikeShowNum = ref(0)
 const itemStarShowNum = ref(0)
-
-// const handleClickAvatar = (authorId: number) => {
-//   console.log(authorId)
-//   router.push({
-//     name: 'userProfile',
-//     params: { user_id: authorId }
-//   })
-// }
 
 const slideList = ref()
 

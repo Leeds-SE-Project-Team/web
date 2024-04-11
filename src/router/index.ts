@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import IndexView from '@/views/home/index.vue'
-import HomeView from '@/views/home/HomeView.vue'
-import LoginView from '@/views/login/index.vue'
+import IndexView from '@/views/both/home/index.vue'
+import HomeView from '@/views/both/home/HomeView.vue'
+import LoginView from '@/views/both/login/LoginView.vue'
 import DiscoverMobileView from '@/views/mobile/discover/index.vue'
-import DiscoverView from '@/views/discover/index.vue'
+import DiscoverView from '@/views/web/discover/index.vue'
 import HighlightMobileView from '@/views/mobile/highlight/index.vue'
-import HighlightView from '@/views/highlight/index.vue'
-import PlannerView from '@/views/planner/index.vue'
+import HighlightView from '@/views/web/highlight/index.vue'
+import PlannerView from '@/views/web/planner/index.vue'
 import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
@@ -51,27 +51,14 @@ const router = createRouter({
       path: '/discover',
       name: 'discover',
       meta: {
-        layout: 'mobile-main',
-        // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        // layout: 'mobile-main',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'Discover Page',
         auth: ['admin', 'user']
       }, // Render component dynamically according to platform
-      component: DiscoverMobileView
-      // component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
+      // component: DiscoverMobileView
+      component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
     },
-
-    // {
-    //   path: '/discover',
-    //   name: 'discover',
-    //   meta: {
-    //     // layout: 'mobile-main',
-    //     layout: 'mobile-main',
-    //     title: 'Discover Page',
-    //     auth: ['admin', 'user']
-    //   }, // Render component dynamically according to platform
-    //   // component: DiscoverMobileView
-    //   component: DiscoverMobileView
-    // },
 
     {
       path: '/plan',

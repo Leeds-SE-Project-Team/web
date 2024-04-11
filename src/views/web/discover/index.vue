@@ -82,13 +82,11 @@
         </div>
         <a-divider class="discover-divider" />
         <ul class="content-list">
-          <li>
+          <li v-for="(item,i) in itemList" :key="i">
             <!--            TOUR-->
-            <DCard :info="testCardInfo" style="margin: 10px"></DCard>
-          </li>
-          <li v-for="ele in articleInfos" :key="ele.id">
+            <DCard v-if="item.type==='tour'" :tour-data="(item.item as TourRecord)" style="margin: 10px"></DCard>
             <!--          COLLECTION-->
-            <DArticle :info="ele"></DArticle>
+            <DArticle v-if="item.type==='collection'" :info="(item.item as TourCollection)"></DArticle>
           </li>
         </ul>
       </div>
@@ -97,108 +95,69 @@
 </template>
 
 <script lang="ts" setup>
-import DArticle from '@/views/discover/DArticle.vue'
-import DCard from './DCard.vue'
+import DArticle from '@/views/web/discover/components/DArticle.vue'
+import DCard from '@/views/web/discover/components/DCard.vue'
 // import type { articleInfo } from './type'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
 import { onMounted, ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
-import { type TourRecord, TourType } from '@/apis/tour'
-import { exampleUserRecord } from '@/apis/user'
-import { getTourSpotExample } from '@/apis/tour/spot'
+import { type TourRecord, getTours } from '@/apis/tour'
+import useLoading from '@/hooks/loading'
+import { computed } from 'vue'
+import { shuffle } from 'lodash-es'
 
-// const testInfo: articleInfo = {
-//   username: '测试用户',
-//   userFollower: 10000,
-//   userFollowing: 10,
-//   userAvatar:
-//     '//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif',
-//   backgroundUrl: '//fp1.fghrsh.net/2020/01/12/1e8c4232da6be35942f6ecd630797f60.jpg',
-//   collection: 'hiking',
-//   title: '随便写点',
-//   specify: '12334235',
-//   introduction:
-//     '我不会再退缩 \
-//                     送给你纯白色的花,塞西莉亚,塞西莉亚,盛开在起风的地方,沐浴九月的骄阳,\
-//                     偷偷放在你的身上,替我传达,我不敢说的话,在流浪的路上,你是我唯一牵挂,\
-//                     无尽海上的星光,所以别让我担心啊',
-//   like: 123345,
-//   comment: 234234
-// }
-
-const testCardInfo: TourRecord = {
-  id: 0,
-  title: 'Tour card',
-  user: {
-    id: 0,
-    email: '234',
-    nickname: 'test user',
-    avatar: '//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif',
-    registerTime: '234',
-    latestLoginTime: '25'
-  },
-  spots: [getTourSpotExample(1), getTourSpotExample(2), getTourSpotExample(3)],
-  mapCapture: import.meta.env.APP_STATIC_URL.concat('/tour/example/map/map.png'),
-  // map: '//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg',
-  // like: 100,
-  // comment: 3,
-  comments: [
-    {
-      id: 1,
-      tourId: 1,
-      author: exampleUserRecord,
-      content: 'this is a sample content',
-      publishTime: '2024-3-4 00:00:00',
-      replies: []
-    },
-    {
-      id: 2,
-      tourId: 1,
-      author: exampleUserRecord,
-      content: 'this is a sample content',
-      publishTime: '2024-3-4 00:00:00',
-      replies: []
-    },
-    {
-      id: 3,
-      tourId: 1,
-      author: exampleUserRecord,
-      content: 'this is a sample content',
-      publishTime: '2024-3-4 00:00:00',
-      replies: []
-    }
-  ],
-  startLocation: '',
-  endLocation: '',
-  createTime: '2024-3-4 00:00:00',
-  type: TourType.WALK,
-  pons: [],
-  status: 'awaitApproval',
-  tourCollectionId: 1
+interface DisPlayItem {
+  type: 'collection' | 'tour'
+  item: TourCollection | TourRecord
 }
 
-const articleInfos = ref<TourCollection[] | undefined>()
+const tourList = ref<TourRecord[]>([])
+const collectionList = ref<TourCollection[]>([])
+const itemList = computed<DisPlayItem[]>(() =>
+  shuffle([
+    ...tourList.value.map((tour) => ({
+      item: tour,
+      type: 'tour'
+    })),
+    ...collectionList.value.map((collection) => ({
+      item: collection,
+      type: 'collection'
+    }))
+  ] as DisPlayItem[])
+)
 
-const fetchTourCollection = () => {
-  getTourCollection()
-    .then((tours) => {
-      if (!tours.success) {
-        Message.info(tours.message)
-      }
-      tours.data?.forEach((ele) => {
-        if (ele.description.length > 50) {
-          ele.description = ele.description.substring(0, 50) + '...'
-        }
-      })
-      articleInfos.value = tours.data
+const getTourLoading = useLoading()
+const fetchTourList = () => {
+  getTourLoading.setLoading(true)
+  getTours()
+    .then((apiRes) => {
+      tourList.value = apiRes.data!
     })
-    .catch((reason: any) => {
-      Message.error(reason)
+    .catch((e) => {
+      Message.error(e)
+    })
+    .finally(() => {
+      getTourLoading.setLoading(false)
+    })
+}
+const getCollectionLoading = useLoading()
+const fetchCollection = () => {
+  getCollectionLoading.setLoading(true)
+  getTourCollection()
+    .then((apiRes) => {
+      collectionList.value = apiRes.data!
+    })
+    .catch((e) => {
+      Message.error(e)
+    })
+    .finally(() => {
+      getCollectionLoading.setLoading(false)
     })
 }
 
 onMounted(() => {
-  fetchTourCollection()
+  fetchTourList()
+  fetchCollection()
 })
 </script>
 

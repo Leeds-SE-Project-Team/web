@@ -49,20 +49,6 @@
       <div class="subtitle">TOUR OVERVIEW</div>
       <a-divider />
       <a-timeline class="timeline" labelPosition="same">
-        <!-- <a-timeline-item class="pic-map" label="开始" lineType="dashed">
-          <div class="mile">3 km</div>
-          <div class="tour-pic">
-            <div class="pic-container flex-r">
-              <div class="pic">
-                <img
-                  alt=""
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
-                />
-              </div>
-            </div>
-          </div>
-        </a-timeline-item> -->
-
         <section class="map" style="margin-bottom: 1rem">
           <div class="subtitle">
             MAP
@@ -97,46 +83,6 @@
         <a-timeline-item class="pic-map" lineType="dashed">
           <h4>End</h4>
         </a-timeline-item>
-        <!--
-        <a-timeline-item class="pic-map" label="2017-03-10 8:20" lineType="dashed">
-          <div class="mile">3 m</div>
-          <div class="tour-pic">
-            <div class="pic-container flex-r">
-              <div class="pic">
-                <img alt=""
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40" />
-              </div>
-              <div class="pic">
-                <img alt=""
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40" />
-              </div>
-              <div class="pic">
-                <img alt=""
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40" />
-              </div>
-            </div>
-          </div>
-        </a-timeline-item> -->
-
-        <!-- <a-timeline-item class="pic-map" label="2017-03-10 8:20" lineType="dashed">
-          <div class="mile">3 km</div>
-          <div class="tour-pic">
-            <div class="pic-container flex-r">
-              <div class="pic">
-                <img
-                  alt=""
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40"
-                />
-              </div>
-              <div class="pic">
-                <img
-                  alt=""
-                  src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tj/tjg6zittau7y7yt2j21g2dlc3nihg66r-uhi28292624/0?width=1000&height=620&crop=true&q=40"
-                />
-              </div>
-            </div>
-          </div>
-        </a-timeline-item> -->
       </a-timeline>
     </section>
 
@@ -240,7 +186,7 @@ export default {
 import { onMounted, ref } from 'vue'
 import { type TourRecord, getTourById } from '@/apis/tour'
 import { useRoute, useRouter } from 'vue-router'
-import DHighlight from '@/views/discover/DHighlight.vue'
+import DHighlight from '@/views/mobile/discover/DHighlight.vue'
 
 const url = import.meta.env.APP_STATIC_URL.concat('/tour')
 const exam_pic =
@@ -248,102 +194,16 @@ const exam_pic =
 
 const route = useRoute()
 const router = useRouter()
-const mode = 'minimal'
 const tourRecord = ref<TourRecord>()
 
 const toTour = ()=>{
   router.push({name:'anotherHighlight'})
 }
 
-// const testCardInfo = reactive<TourRecord>({
-//   id: 0,
-//   title: '这是一个用来展示一个行程的card',
-//   user: {
-//     id: 0,
-//     email: '234',
-//     nickname: 'test user',
-//     avatar: '//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif',
-//     registerTime: '234',
-//     latestLoginTime: '25'
-//   },
-//   tourSpotList: [],
-//   tourHighlightList:[],
-//   mapUrl: getStaticRes(`/tour/${route.query.id}/map_screenshot.jpg`),
-//   // map: '//fp1.fghrsh.net/2020/01/12/b51236a90d69167c8f4b5af47ab57861.jpg',
-//   // like: 100,
-//   // comment: 3,
-//   comments: [
-//     {
-//       id: 1,
-//       tourId: 1,
-//       author: exampleUserRecord,
-//       content: 'this is a sample content',
-//       publishTime: '2024-3-4 00:00:00',
-//       replies: []
-//     },
-//     {
-//       id: 2,
-//       tourId: 1,
-//       author: exampleUserRecord,
-//       content: 'this is a sample content',
-//       publishTime: '2024-3-4 00:00:00',
-//       replies: []
-//     },
-//     {
-//       id: 3,
-//       tourId: 1,
-//       author: exampleUserRecord,
-//       content: 'this is a sample content',
-//       publishTime: '2024-3-4 00:00:00',
-//       replies: []
-//     }
-//   ],
-//   startLocation: '',
-//   endLocation: '',
-//   createTime: '2024-3-4 00:00:00',
-//   type: TourType.WALK,
-//   pons: [],
-//   status: 'awaitApproval',
-//   tourCollectionId: 1
-// })
-
 // const commentArea = ref<HTMLDivElement | undefined>()
 // const mapWrapper = ref<HTMLDivElement | undefined>()
 // const picWrapper = ref<HTMLDivElement | undefined>()
 // const textA = ref('')
-
-// const smallImg = ref(testCardInfo.mapUrl)
-// const commentList = testCardInfo.comments
-
-const switchStatus = ref<'map' | 'pic'>('map')
-
-// const switchClick = () => {
-//   switch (switchStatus.value) {
-//     case 'map':
-//       switchStatus.value = 'pic'
-//       if (picWrapper.value) {
-//         picWrapper.value.classList.add('hide')
-//       }
-//       if (mapWrapper.value) {
-//         mapWrapper.value.classList.remove('hide')
-//       }
-//       smallImg.value = testCardInfo.spots[0].coverUrl
-//       break
-
-//     case 'pic':
-//       switchStatus.value = 'map'
-//       if (picWrapper.value) {
-//         picWrapper.value.classList.remove('hide')
-//       }
-//       if (mapWrapper.value) {
-//         mapWrapper.value.classList.add('hide')
-//       }
-//       smallImg.value = testCardInfo.mapUrl
-//       break
-//   }
-// }
-
-const isMinimal = ref(false)
 
 // 这里是假数据
 const fakeSpots = ref<string[]>([])
@@ -357,12 +217,6 @@ if(route.query.id === '20'){
   fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/huahua.jpg')
   fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/panda.jpg')
   fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/pandas.jpg')
-}
-
-if (mode === 'minimal') {
-  isMinimal.value = true
-  switchStatus.value = 'map'
-  // switchClick()
 }
 
 onMounted(() => {
