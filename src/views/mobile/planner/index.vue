@@ -483,7 +483,7 @@ onUnmounted(() => {
       />
     </van-popup>
   </div>
-  <van-overlay :show="showSelector">
+  <van-overlay id="search-overlay" :show="showSelector">
     <SearchPlaceView
       @cancel="showSelector = false"
       @select="

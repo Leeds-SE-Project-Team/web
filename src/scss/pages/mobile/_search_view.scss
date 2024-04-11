@@ -1,6 +1,4 @@
-.van-overlay:has(#search-view) {
-  //position: absolute;
-  //top: 0;
+#search-overlay {
   z-index: $mobile-footer-nav-z-index + 1 !important;
   height: 100%;
   width: 100%;
