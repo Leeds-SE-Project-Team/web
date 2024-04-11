@@ -25,7 +25,6 @@ export const useMapStore = defineStore('map', () => {
   const updateCurrentLocation = (value?: number[]) => {
     if (value === undefined) {
       getCurrentLocation().then((res) => {
-        console.log(res)
         currentLocation.value = res.position
       })
     } else {
@@ -158,6 +157,30 @@ export const useMapStore = defineStore('map', () => {
     }
   }
 
+  const searchPlace = (keywords: string, options?: any) =>
+    new Promise((resolve, reject) => {
+      AMap.plugin('AMap.PlaceSearch', function () {
+        const autoOptions = {
+          // city: '成都', // TODO: 修改默认城市为当前城市
+          type: '', //数据类别
+          pageSize: 10, //每页结果数,默认10
+          pageIndex: 1, //请求页码，默认1
+          extensions: 'base', //返回信息详略，默认为base（基本信息）
+          // lang: 'en',
+          ...options
+        }
+        const placeSearch = new (AMap as any).PlaceSearch(autoOptions)
+        placeSearch.search(keywords, function (status: any, result: any) {
+          // 搜索成功时，result即是对应的匹配数据
+          if (status === 'complete') {
+            resolve(result)
+          } else {
+            reject(result)
+          }
+        })
+      })
+    }) as Promise<any>
+
   return {
     getGeocoder,
     getDistance,
@@ -166,6 +189,7 @@ export const useMapStore = defineStore('map', () => {
     parseRouteToPath,
     planRoute,
     screenMap,
-    drawRoute
+    drawRoute,
+    searchPlace
   }
 })
