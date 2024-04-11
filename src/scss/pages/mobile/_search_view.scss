@@ -46,14 +46,29 @@
     --van-divider-border-color: rgba(0, 0, 0, 0.5);
   }
 
-  .recent-search {
-    margin: 20px 8px 10px;
+  .search-content-area {
+    margin: 20px 18px 10px;
 
-    .recent-search-title {
+    .search-content-area-title {
       font-size: 18px;
       color: rgba(0, 0, 0, 0.5);
       font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+      margin-bottom: 10px;
+    }
 
+    .search-content-area-list {
+      --van-cell-horizontal-padding: 0;
+
+      .search-content-area-list-icon {
+        font-size: 21px;
+        font-weight: bold;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .search-content-area-content {
+        font-size: 16px;
+        margin-left: 38px;
+      }
     }
   }
 }
