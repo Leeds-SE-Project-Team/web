@@ -104,7 +104,8 @@ const handleCreateTour = (navigate = false) => {
       createTour({
         ...createTourForm.value,
         tourCollectionId: selectedCollection.value,
-        title: tourTitleInput.value.length > 0 ? tourTitleInput.value : 'Untitled'
+        title: tourTitleInput.value.length > 0 ? tourTitleInput.value : 'Untitled',
+        result: mapContainer.value.navigationResult
       })
         .then((res) => {
           if (res.success) {
