@@ -1,5 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router'
 import MobileRecord from '@/views/mobile/record/index.vue'
+import SearchPlaceView from '@/views/mobile/planner/SearchPlaceView.vue'
 
 export const MOBILE_ROUTES: RouteRecordRaw[] = [
   {
@@ -16,6 +17,16 @@ export const MOBILE_ROUTES: RouteRecordRaw[] = [
         return { path: '/discover' }
       }
     }
+  },
+  {
+    path: '/search',
+    name: 'search',
+    meta: {
+      title: 'Search Place',
+      layout: 'mobile-pure',
+      auth: ['user']
+    },
+    component: SearchPlaceView
   }
   // {
   //   path: '/highlight',

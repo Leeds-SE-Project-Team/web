@@ -3,10 +3,12 @@ import { computed, reactive, ref, watch } from 'vue'
 import { hapticsImpactLight } from '@/utils'
 import { useMapStore } from '@/stores/map'
 import { type CreateTourForm, parseLocation } from '@/apis/tour'
-import _ from 'lodash-es'
-import { Message } from '@arco-design/web-vue'
 import useLoading from '@/hooks/loading'
 
+const handleMapComplete = () => {
+  emits('complete')
+  getCurrentLocation()
+}
 const getCurrentLocation = () => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition((status, info) => {
     if (status === 'complete') {
@@ -28,12 +30,10 @@ const zoom = ref(16)
 const center = ref([116.412866, 39.88365])
 
 const handleSelectPlace = (lnglat: AMap.LngLat) => {
-  hapticsImpactLight()
-
   sheetData.loading = true
   selectPos.value = [lnglat.lng, lnglat.lat]
   center.value = [lnglat.lng, lnglat.lat]
-  mapStore.getGeocoder().getAddress(lnglat, function (status, result) {
+  mapStore.getGeocoder().getAddress(lnglat, function (status: any, result: any) {
     if (status === 'complete' && result.info === 'OK') {
       // result为对应的地理位置详细信息
       sheetData.address = result.regeocode.formattedAddress
@@ -50,6 +50,8 @@ const handleSelectPlace = (lnglat: AMap.LngLat) => {
 }
 
 const handleRightClick = (e: any) => {
+  hapticsImpactLight()
+
   handleSelectPlace(e.lnglat)
 }
 
@@ -64,7 +66,7 @@ const props = defineProps<{
   selectPoint?: number[]
   tourData: CreateTourForm
 }>()
-const emits = defineEmits(['update:selectPoint', 'update-tourData'])
+const emits = defineEmits(['update:selectPoint', 'update-tourData', 'complete'])
 
 const sheetData = reactive({
   address: '',
@@ -74,14 +76,14 @@ const sheetData = reactive({
 
 const labelOffset = [-16, -30]
 
-const handleDragendStart = (e) => {
+const handleDragendStart = (e: any) => {
   const lnglat: AMap.LngLat = e.lnglat
   // let newTourData = _.cloneDeep(props.tourData)
   // newTourData.startLocation = `${lnglat.lng},${lnglat.lat}`
   emits('update-tourData', 'startLocation', `${lnglat.lng},${lnglat.lat}`)
 }
 
-const handleDragendEnd = (e) => {
+const handleDragendEnd = (e: any) => {
   const lnglat: AMap.LngLat = e.lnglat
   // let newTourData = _.cloneDeep(props.tourData)
   // newTourData.endLocation = `${lnglat.lng},${lnglat.lat}`
@@ -131,7 +133,8 @@ defineExpose({
   center,
   navigationResult,
   mapRef,
-  resultLoading
+  resultLoading,
+  handleSelectPlace
 })
 </script>
 
@@ -148,7 +151,7 @@ defineExpose({
       :doubleClickZoom="false"
       :scrollWheel="true"
       mapStyle="amap://styles/fresh"
-      @complete="getCurrentLocation"
+      @complete="handleMapComplete"
       @init="mapInit"
       @rightclick="handleRightClick"
     >

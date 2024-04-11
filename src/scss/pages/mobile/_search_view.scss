@@ -1,0 +1,129 @@
+.van-overlay:has(#search-view) {
+  //position: absolute;
+  //top: 0;
+  z-index: $mobile-footer-nav-z-index + 1 !important;
+  height: 100%;
+  width: 100%;
+  background-color: white;
+}
+
+#search-view {
+  height: 100%;
+  overflow: scroll;
+
+  .nav-bar {
+    --van-nav-bar-background: #3f3f3f;
+    --van-nav-bar-icon-color: white;
+    --van-nav-bar-height: $header-height;
+
+    .nav-field {
+      background-color: #3f3f3f;
+      --van-field-input-text-color: white;
+      --van-field-placeholder-text-color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+      font-weight: normal;
+    }
+  }
+
+  .search-btn-group {
+    --van-grid-item-content-padding: 16px 8px 6px;
+
+    .van-grid-item {
+      .van-grid-item__content {
+        justify-content: flex-start;
+
+        .search-btn-icon {
+          font-size: 16px;
+          background-color: rgba(0, 0, 0, 0.1);
+          border-radius: 100%;
+          padding: 8px;
+          color: #0275d7
+        }
+
+        .van-grid-item__text {
+          font-size: 10px;
+          word-break: break-word;
+          text-align: center;
+          line-height: 12px;
+          margin: 7px 0;
+        }
+      }
+    }
+
+  }
+
+  .divider-1 {
+    margin: 0;
+    --van-divider-border-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .search-content-area {
+    margin: 20px 18px 10px;
+
+    .search-content-area-title {
+      font-size: 18px;
+      color: rgba(0, 0, 0, 0.5);
+      font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+      margin-bottom: 10px;
+    }
+
+    .search-content-area-list {
+      --van-cell-horizontal-padding: 0;
+
+      .search-content-area-list-icon {
+        font-size: 21px;
+        font-weight: bold;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .search-content-area-content {
+        font-size: 16px;
+        margin-left: 38px;
+      }
+    }
+  }
+
+  .search-result-area {
+    font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+
+    .search-result-area-list {
+
+      .search-result-area-list-item {
+
+        .search-result-area-list-icon {
+          font-size: 18px;
+          font-weight: bold;
+          margin-top: 1px;
+          color: rgba(0, 0, 0, 0.6);
+        }
+
+        .van-cell__title {
+          width: 100%;
+          margin-left: 10px;
+
+          .search-result-area-content {
+            width: 100%;
+            font-size: 11px;
+            padding-right: 10%;
+
+          }
+
+          .search-result-area-label {
+            font-size: 10px;
+
+            .search-result-area-label-text {
+              width: 100%;
+
+            }
+
+            .search-result-area-label-tag {
+              margin: 3px 6px 0 0;
+              font-size: 8px;
+            }
+          }
+        }
+
+      }
+    }
+  }
+}

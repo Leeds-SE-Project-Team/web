@@ -5,6 +5,7 @@ import {
   type CreateTourForm,
   getTourTypeImg,
   getTourTypeText,
+  parseLocation,
   type TourRecord,
   TourType,
   tourTypeMap
@@ -17,8 +18,9 @@ import { hapticsImpactLight } from '@/utils'
 import { App } from '@capacitor/app'
 import { useMapStore } from '@/stores/map'
 import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { uploadFileFromURL } from '@/utils/file'
+import SearchPlaceView from '@/views/mobile/planner/SearchPlaceView.vue'
 
 const tourTypeText = computed<string>(() => getTourTypeText(createTourForm.value.type))
 const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.value.type))
@@ -45,7 +47,6 @@ const fetchTourCollections = () => {
   collectionLoadingObj.setLoading(true)
   getTourCollectionsByCurUser
     .then((apiRes) => {
-      console.log(apiRes)
       if (apiRes.success) {
         userCollections.value = apiRes.data!
         selectedCollection.value = userCollections.value[0].id
@@ -114,7 +115,6 @@ const handleCreateTour = (navigate = false) => {
             )
               .then((uploadRes) => {
                 if (uploadRes.success) {
-                  console.log(res)
                   savedTour.value = res.data!
                   Message.success(res.message)
                   if (navigate) {
@@ -220,6 +220,18 @@ const plannedResult = computed(() => mapContainer.value.navigationResult)
 const plannedFirstRoute = computed(() =>
   plannedResult.value ? (plannedResult.value as any).routes[0] : undefined
 )
+
+const route = useRoute()
+const queryLocation = route.query.location
+const handleMapComplete = () => {
+  if (queryLocation) {
+    const location = parseLocation(queryLocation as string).map((i) => parseFloat(i))
+    mapContainer.value.handleSelectPlace(new AMap.LngLat(location[0], location[1]))
+  }
+}
+
+const showSelector = ref(false)
+
 onMounted(() => {
   App.addListener('backButton', () => {
     selectPoint.value = undefined
@@ -281,18 +293,21 @@ onUnmounted(() => {
                 label="A:"
                 name="startLocation"
                 placeholder="Current Location"
+                @click-input="showSelector = true"
               >
                 <template #extra>
                   <van-icon class="field-icon" color="white" name="wap-nav" size="20" />
                 </template>
-                <template #input
-                  ><span style="font-weight: bold; color: white">{{
-                    !createTourForm.startLocation ||
-                    createTourForm.startLocation === mapStore.currentLocation.join(',')
-                      ? 'Current location'
-                      : createTourForm.startLocation
-                  }}</span></template
-                >
+                <template #input>
+                  <span style="font-weight: bold; color: white">
+                    {{
+                      !createTourForm.startLocation ||
+                      createTourForm.startLocation === mapStore.currentLocation.join(',')
+                        ? 'Current location'
+                        : createTourForm.startLocation
+                    }}
+                  </span>
+                </template>
               </van-field>
               <van-field
                 v-model="createTourForm.endLocation"
@@ -304,9 +319,16 @@ onUnmounted(() => {
                 label="B:"
                 name="endLocation"
                 placeholder="Choose Destination"
+                @click-input="showSelector = true"
               >
                 <template #extra>
                   <van-icon class="field-icon" color="white" name="wap-nav" size="20" />
+                </template>
+                <template #input>
+                  <span v-if="createTourForm.endLocation" style="font-weight: bold; color: white">
+                    {{ createTourForm.endLocation }}
+                  </span>
+                  <span v-else style="color: white">Select Destination</span>
                 </template>
               </van-field>
             </van-cell-group>
@@ -348,6 +370,7 @@ onUnmounted(() => {
       ref="mapContainer"
       v-model:selectPoint="selectPoint"
       :tour-data="createTourForm"
+      @complete="handleMapComplete"
       @update-tour-data="
         (...args: [keyof CreateTourForm, never]) => {
           createTourForm[args[0]] = args[1]
@@ -460,6 +483,17 @@ onUnmounted(() => {
       />
     </van-popup>
   </div>
+  <van-overlay :show="showSelector">
+    <SearchPlaceView
+      @cancel="showSelector = false"
+      @select="
+        (lnglat) => {
+          mapContainer.handleSelectPlace(lnglat)
+          showSelector = false
+        }
+      "
+    />
+  </van-overlay>
 </template>
 
 <style scoped></style>
