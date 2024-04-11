@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import IndexView from '@/views/both/home/index.vue'
 import HomeView from '@/views/both/home/HomeView.vue'
-import LoginView from '@/views/both/login/LoginView.vue'
+import LoginView from '@/views/both/login/index.vue'
 import DiscoverMobileView from '@/views/mobile/discover/index.vue'
 import DiscoverView from '@/views/web/discover/index.vue'
 import HighlightMobileView from '@/views/mobile/highlight/index.vue'

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 
-import LoginDefault from '@/views/login/LoginDefault.vue'
-import SignupView from '@/views/login/SignupView.vue'
-import LoginView from '@/views/login/LoginView.vue'
+import LoginDefault from '@/views/both/login/LoginDefault.vue'
+import SignupView from '@/views/both/login/SignupView.vue'
+import LoginView from '@/views/both/login/LoginView.vue'
 
 type Status = 'default' | 'signup' | 'login'
 const status = ref<Status>('default')
