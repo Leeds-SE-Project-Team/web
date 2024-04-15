@@ -1,5 +1,6 @@
 // groupCollection page scss
 #group-collection-page {
+    margin-bottom: 3vw;
     .bg {
         position: relative;
         width: 80vw;
@@ -57,7 +58,23 @@
         border-right: 1px solid rgb(204, 204, 204);
         
         .profile {
+            margin-left: 10vw;
+            width: 60vw;
             height: 200px;
+            padding: 40px 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            .group-name {
+                font-weight: 600;
+                font-size: 40px;
+                background-color: #4f850d;
+                padding: 10px;
+                color: #f0f0f0;
+                letter-spacing: 0.8px;
+                border-radius: 4px;
+                margin-bottom: 10px;
+            }
         }
 
         .des {
@@ -70,11 +87,16 @@
         }
     }
 
+    .every-tour:last-child {
+        border-bottom: 1px solid rgb(204, 204, 204);
+    }
+
     .every-tour {
         position: relative;
         width: 80vw;
         margin-left: 10vw;
         padding-top: 90px;
+        padding-bottom: 40px;
         background-color: #fff;
         border-left: 1px solid rgb(204, 204, 204);
         border-right: 1px solid rgb(204, 204, 204);

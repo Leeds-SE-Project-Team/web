@@ -2,6 +2,26 @@
     "collectionName": "ChengDu Tour, ChengDu Play!",
     "des": "If you roam the mountains for days, high up where Alpine goats and marmots are your only companion, with only the occasional cloud crossing your path, it might happen that you simply forget the other world, far down. Up here, it is just more important where the next trail marking is and where you’ll find the next hut. The weather here determines more than anything else—how your day goes, where you take breaks and how difficult or easy it is for you to keep putting one foot in front of the other—with high Alpine trails being known as the supreme discipline of multi-day hikes. Ideally, they’ll demand just enough from you as to prevent any boredom setting in, though you can always guarantee one thing: the landscape will take your breath away. What are you waiting for?",
     "imgUrl": "https://www.komoot.com/images/topics/content-22/header-v001.jpg?width=2800&height=1400&crop=true&q=40",
+    "groupName": "we are btm group",
+    "everyOne": [
+        {
+            "userName": "George Xiang",
+            "header": "https://ts1.cn.mm.bing.net/th/id/R-C.fd81516a06ce33c15b194494272fa6e9?rik=XAfnJ6A9NFvAyA&riu=http%3a%2f%2fimg.touxiangwu.com%2fuploads%2fallimg%2f2022053117%2fivhiashhpu1.jpg&ehk=Yi2aDhWvd0rnBKl1xloJy8F1RfGd8%2bcC75k4ff8dVXk%3d&risl=&pid=ImgRaw&r=0"
+        },
+        {
+            "userName": "Mianzi Wu",
+            "header": "https://ts1.cn.mm.bing.net/th/id/R-C.79b0f0a50f0027cca441b67ed950e853?rik=kPgxfrXLzOAq2A&riu=http%3a%2f%2fimg.touxiangwu.com%2fuploads%2fallimg%2f2022053118%2ff1pe3chclkt.jpg&ehk=f8VCRu%2bXHjFSD%2biAxDALRgZR%2b7kBFqdthB5IjIXEXNE%3d&risl=&pid=ImgRaw&r=0"
+        },
+        {
+            "userName": "Keli Wu",
+            "header": "https://tupian.qqw21.com/article/UploadPic/2020-3/20203231746425555.jpg"
+        },
+        {
+            "userName": "Kaiying Han",
+            "header": "https://gd-hbimg.huaban.com/88df63394294cf31641285a63f322874facea3cea2dd-stPHys_fw236"
+        }    
+    
+    ],
     "data": 
         [
             { "name":"Broad and Narrow Alley" ,

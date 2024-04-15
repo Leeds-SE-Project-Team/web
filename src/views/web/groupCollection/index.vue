@@ -16,6 +16,21 @@
         <!-- the section of profile and detail -->
         <section class="detail">
             <div class="profile">
+                <a-avatar class="leader" trigger-type="mask" :size="90">
+                  <img alt="avatar" :src="userData[0]?.header"/>
+                </a-avatar>
+
+                <div class="group-name">
+                    {{groupName}}
+                </div>
+
+                <a-space class="others" :size="48">
+                    <a-avatar-group>
+                        <a-avatar :size="48" trigger-type="mask" v-for="user in userData.slice(1)" :key="user.userName">
+                          <img alt="avatar" :src="user.header"/>
+                        </a-avatar>
+                    </a-avatar-group>
+                </a-space>
             </div>
             <div class="des">
                 {{des}}
@@ -59,14 +74,28 @@ export default {
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
 // define all the varibles
+
+// big bg img at first and some des
+const collectionName = ref<string>('')
+const bgImg = ref<string>('')
+const des = ref<string>('')
+const groupName = ref<string>('')
+
+// user data
+interface userInfo {
+    userName: string
+    header: string
+}
+const userData = ref<userInfo[]>([])
+
+// about BGIMAG of every tour
 const allImgData = ref<any>({})
+const picNum = ref<any>([])
 const allImgNum = ref<any>({})
 
-const bgImg = ref('')
-const collectionName = ref('')
-const des = ref('')
+// tour content
 const groupTour = ref<any>([])
-const picNum = ref<any>([])
+
 
 
 // onMounted is here
@@ -81,30 +110,44 @@ onMounted(async () => {
                 des.value = res.data.des
                 bgImg.value = res.data.imgUrl
                 picNum.value = res.data.data.map(() => 0)
-                console.log(allImgNum.value)
-                console.log(picNum.value[0])
+                userData.value = res.data.everyOne
+                groupName.value = res.data.groupName
                })
 })
+
+// 自动播放
+// onMounted(()=>{
+//     setInterval(()=>{
+//         for(let i = 0; i < picNum.value.length; i++) {
+//             if (picNum.value[i]+1 === allImgNum.value[i]) {
+//                 picNum.value[i] = 0
+//             } else {
+//                 picNum.value[i]++
+//             }
+//             changeHeight(i, picNum.value[i])
+//         }
+//     }, 3000)
+// })
 
 function changeHeight(index1: any, index2: any) {
     picNum.value[index1] = index2
 
     const imgs = document.querySelectorAll(".img-everyone")
     const everyimgs = document.querySelectorAll(".everyone")
+
     let count = 0
-    console.log(imgs)
     for(let i = 0; i < picNum.value.length; i++) {
         for (let j = 0; j < allImgNum.value[i]; j++) {
             if (i !== index1) {
                 count++
                 continue
             }
-            if(index1 === i && index2 ===j) {
-                imgs[count].style.padding = "0px";
-                everyimgs[count].style.opacity = 1;
+            if (index1 === i && index2 ===j) {
+                (imgs[count] as HTMLElement).style.padding = "10px";
+                (everyimgs[count] as HTMLElement).style.opacity = "1";
             } else {
-                imgs[count].style.padding = "20px";
-                everyimgs[count].style.opacity = 0.7;
+                (imgs[count] as HTMLElement).style.padding = "20px";
+                (everyimgs[count] as HTMLElement).style.opacity = "0.7";
             }
             count++
         }
