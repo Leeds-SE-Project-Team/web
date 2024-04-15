@@ -16,6 +16,7 @@ export enum TourType {
 import walkSvgUrl from '@/assets/walk.svg'
 import cyclingSvgUrl from '@/assets/cycling.svg'
 import driveSvgUrl from '@/assets/drive.svg'
+import axios from 'axios'
 
 export const tourTypeMap = [
   { text: 'hiking', value: TourType.WALK, img: walkSvgUrl },
@@ -35,6 +36,11 @@ export const getTourById: (tourId: number | string) => Promise<ApiResponse<TourR
   axiosRequest({
     method: 'GET',
     url: `tours?id=${tourId}`
+  })
+
+export const fetchTourDataJson = (tour: TourRecord) =>
+  axios.get(tour.dataUrl, {
+    headers: { 'Content-Type': 'application/json' }
   })
 
 export interface PON {}
@@ -59,6 +65,7 @@ export interface TourRecord {
   user: UserRecord
   tourCollectionId: number
   mapUrl: string
+  dataUrl: string
 
   tourSpotList: TourSpot[]
   tourHighlightList: TourHighlight[]

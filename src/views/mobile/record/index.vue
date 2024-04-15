@@ -9,7 +9,13 @@ import {
   type TourHighlight
 } from '@/apis/tour/highlight'
 import { showNotify } from 'vant'
-import { getTourById, parseLocation, parseLocationNumber, type TourRecord } from '@/apis/tour'
+import {
+  fetchTourDataJson,
+  getTourById,
+  parseLocation,
+  parseLocationNumber,
+  type TourRecord
+} from '@/apis/tour'
 import { uploadFileFromURL } from '@/utils/file'
 import { useRoute } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
@@ -28,18 +34,27 @@ const fetchTour = () => {
     .then((apiRes) => {
       if (apiRes.success) {
         tourData.value = apiRes.data!
-        mapStore
-          .planRoute(
-            parseLocation(tourData.value.startLocation),
-            parseLocation(tourData.value.endLocation),
-            tourData.value.type,
-            mapRef.value.$$getInstance()
-          )
-          .then((result) => {
-            mapStore.drawRoute(mapRef.value.$$getInstance(), result.routes[0], {
-              lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
-            })
+        fetchTourDataJson(tourData.value).then((res) => {
+          const result = res.data
+          mapStore.drawRoute(mapRef.value.$$getInstance(), result.routes[0], {
+            lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
           })
+        })
+        // mapStore.drawRoute(mapRef.value.$$getInstance(), result.routes[0], {
+        //   lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
+        // })
+        // mapStore
+        //   .planRoute(
+        //     parseLocation(tourData.value.startLocation),
+        //     parseLocation(tourData.value.endLocation),
+        //     tourData.value.type,
+        //     mapRef.value.$$getInstance()
+        //   )
+        //   .then((result) => {
+        //     mapStore.drawRoute(mapRef.value.$$getInstance(), result.routes[0], {
+        //       lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
+        //     })
+        //   })
       } else {
         Message.info(apiRes.message)
       }
@@ -340,7 +355,9 @@ onMounted(() => {
         {
           name: 'View',
           color: 'black',
-          callback: ()=>{$router.push({name:'highlight'})},
+          callback: () => {
+            $router.push({ name: 'highlight' })
+          },
           loading: deleteHighlightLoadingObj.loading.value
         }
       ]"
