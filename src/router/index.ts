@@ -11,6 +11,7 @@ import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
+import groupCollection from '@/views/web/groupCollection/index.vue'
 import { Capacitor } from '@capacitor/core'
 import { MOBILE_ROUTES } from '@/router/mobile'
 import { useAuthStore } from '@/stores/auth'
@@ -125,7 +126,16 @@ const router = createRouter({
         auth: ['admin', 'user']
       },
       component: AnoHighlightView
-    }
+    },
+    {
+      path: '/groupcollection',
+      name: 'groucollection',
+      meta: {
+        layout: 'b',
+        title: 'group collection Page',
+      },
+      component: groupCollection
+    },
   ]
 })
 
