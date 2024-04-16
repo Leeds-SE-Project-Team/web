@@ -13,7 +13,7 @@ import { Screenshot } from '@amap/screenshot'
 import { useMapStore } from '@/stores/map'
 
 const map = ref<any>(null)
-const screenshot = ref<Screenshot | null>(null)
+// const screenshot = ref<Screenshot | null>(null)
 const mapRef = ref<HTMLDivElement | null>(null)
 
 // TODO: screen shot
@@ -151,7 +151,7 @@ onMounted(() => {
       'AMap.Geolocation',
       'AMap.Walking',
       'AMap.Riding'
-    ]
+    ],
   })
     .then((AMap) => {
       /* ---------- 地图实例化 ----------*/
@@ -161,7 +161,8 @@ onMounted(() => {
         center: [116.397428, 39.90923], // 初始化地图中心点
         // 配置地图截图
         WebGLParams: {
-          preserveDrawingBuffer: true
+          preserveDrawingBuffer: true,
+          willReadFrequently: true,
         }
       })
       /*---------- 地图实例化 ----------*/
@@ -281,11 +282,7 @@ onMounted(() => {
       // AMap.plugin(["AMap.Geolocation"], function() {
       const geolocation = new AMap.Geolocation(options)
       map.value.addControl(geolocation)
-      console.log('geo:', geolocation)
-      geolocation.getCurrentPosition((status, result) => {
-        Message.info(JSON.stringify(status) + JSON.stringify(result))
-        console.log(JSON.stringify(status) + JSON.stringify(result))
-      })
+      geolocation.getCurrentPosition()
 
       // geolocation.getCurrentPosition(undefined, undefined, undefined)
       // });
@@ -343,6 +340,9 @@ onMounted(() => {
             if (status === 'complete') {
               Message.success('路线数据查询成功')
               drawRoute(result.routes[0])
+              const form = props.createTourForm;
+              form.result = result.routes[0];
+              emits('update-createTourForm', form)
             } else {
               Message.error('路线数据查询失败' + result)
               console.log(result)
@@ -394,7 +394,7 @@ onMounted(() => {
       //
 
       map.value.setFitView()
-      screenshot.value = new Screenshot(map.value)
+      // screenshot.value = new Screenshot(map.value)
     })
     .catch((e) => {
       Message.error({

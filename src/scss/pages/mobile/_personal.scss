@@ -1,0 +1,49 @@
+#personal-page{
+    background-color: #f5f4ea;
+    min-height: 100%;
+    .header{
+        padding: 0.5rem;
+        padding-top: 3rem;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+        color: green;
+    }
+    
+    .user-info{
+        margin-top: 2rem;
+        padding: 2rem 1.5rem;
+
+        .user-text{
+            margin-left: 1rem;
+            justify-content: center;
+            gap: 0.25em;
+            .username{
+                font-size: 1.5rem;
+                font-weight: 700;
+            }
+            .email{
+                font-size: 1rem;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .options{
+        background-color: white;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        flex: 1;
+
+        .options-list{
+            margin-top: 2rem;
+
+            .list-text{
+                padding-left: 1rem;
+                font-size: 1rem;
+                color: black;
+                font-weight: 550;
+            }
+        }
+    }
+}

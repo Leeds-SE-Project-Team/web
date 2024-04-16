@@ -12,10 +12,13 @@ import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 import groupCollection from '@/views/web/groupCollection/index.vue'
+import personalIndex from '@/views/mobile/personal/index.vue'
+import TourDetail from '@/views/mobile/personal/TourDetail.vue'
 import { Capacitor } from '@capacitor/core'
 import { MOBILE_ROUTES } from '@/router/mobile'
 import { useAuthStore } from '@/stores/auth'
 import { getUserByToken } from '@/apis/user'
+import PersonMain from '@/views/mobile/personal/PersonMain.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,25 +64,25 @@ const router = createRouter({
       component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
     },
 
-    {
-      path: '/plan',
-      name: 'planner',
-      meta: {
-        title: 'Planner Page',
-        layout: 'mobile-default'
-      },
-      component: PlannerMobileView
-    },
     // {
     //   path: '/plan',
     //   name: 'planner',
     //   meta: {
     //     title: 'Planner Page',
-    //     layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default',
-    //     auth: ['user']
+    //     layout: 'mobile-default'
     //   },
-    //   component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
+    //   component: PlannerMobileView
     // },
+    {
+      path: '/plan',
+      name: 'planner',
+      meta: {
+        title: 'Planner Page',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default',
+        auth: ['user']
+      },
+      component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
+    },
     {
       path: '/tour',
       name: 'tour',
@@ -136,6 +139,25 @@ const router = createRouter({
       },
       component: groupCollection
     },
+    {
+      path: '/personal',
+      meta: {
+        title: 'personal',
+        auth: ['admin','user']
+      },
+      component: personalIndex,
+      children: [
+        {
+          path: '',
+          name: 'personal',
+          component: PersonMain,
+        },
+        {
+          path: 'tour',
+          component: TourDetail,
+        }
+      ],
+    }
   ]
 })
 
