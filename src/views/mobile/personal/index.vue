@@ -1,7 +1,7 @@
 <template>
     <div id="personal-page" class="flex-c">
         <header class="header flex-r">
-            <van-icon :size="32" name="arrow-left" />
+            <van-icon :size="32" name="arrow-left" @click="back"/>
             <div style="font-size: 1.5rem;">Profile</div>
             <van-icon :size="32" name="envelop-o" />
         </header>
@@ -16,6 +16,11 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
+import { RouterView, useRouter } from 'vue-router';
 
+const router = useRouter();
+
+const back = ()=>{
+    router.back();
+}
 </script>

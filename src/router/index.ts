@@ -19,6 +19,7 @@ import { MOBILE_ROUTES } from '@/router/mobile'
 import { useAuthStore } from '@/stores/auth'
 import { getUserByToken } from '@/apis/user'
 import PersonMain from '@/views/mobile/personal/PersonMain.vue'
+import DetailInfo from '@/views/mobile/personal/DetailInfo.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -154,7 +155,13 @@ const router = createRouter({
         },
         {
           path: 'tour',
+          name: 'personal-tour',
           component: TourDetail,
+        },
+        {
+          path: 'detail',
+          name: 'personal-detail',
+          component: DetailInfo,
         }
       ],
     }

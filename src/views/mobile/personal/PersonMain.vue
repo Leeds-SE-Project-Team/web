@@ -19,7 +19,7 @@
     </section>
     <section class="options">
         <van-list class="options-list">
-            <van-cell>
+            <van-cell @click="toDetail">
                 <template #icon>
                     <van-icon :size="24" name="contact-o" />
                 </template>
@@ -30,7 +30,7 @@
                     <van-icon :size="24" name="arrow" />
                 </template>
             </van-cell>
-            <van-cell>
+            <van-cell @click="toTour">
                 <template #icon>
                     <van-icon :size="24" name="orders-o" />
                 </template>
@@ -64,7 +64,7 @@
                 </template>
             </van-cell>
             <div class="flex-r flex-justify-c" style="margin: 2.5rem 0;">
-                <van-button hairline type="primary">Logout</van-button>
+                <van-button hairline type="primary" @click="authStore.handleLogout">Logout</van-button>
             </div>
         </van-list>
     </section>
@@ -72,17 +72,30 @@
 
 <script setup lang="ts">
 import type { UserRecord } from '@/apis/user';
+import { useAuthStore } from '@/stores/auth';
 import { useUserStore } from '@/stores/user';
 import { Message } from '@arco-design/web-vue';
+import { onMounted } from 'vue';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const userStore = useUserStore();
 const user = ref<UserRecord | null>(null);
+const router = useRouter();
+const authStore = useAuthStore();
 
-userStore.getUserRecord().then(res=>{
-    user.value = res
-}).catch(e=>{
-    Message.info(e)
+const toDetail = ()=>{
+    router.push('/personal/detail')
+}
+const toTour = ()=>{
+    router.push('/personal/tour')
+}
+onMounted(()=>{
+    userStore.getUserRecord().then(res=>{
+        user.value = res
+    }).catch(e=>{
+        Message.info(e)
+    })
 })
 </script>
 
