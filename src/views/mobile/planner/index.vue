@@ -455,17 +455,22 @@ onUnmounted(() => {
           <template #text><span class="detail-content"> Reset </span></template>
         </van-grid-item>
       </van-grid>
-      <van-cell @click="showCollectionPicker = true">
+      <van-cell>
+        <van-field
+          v-model="tourTitleInput"
+          class="title-input"
+          label="Tour title"
+          placeholder="Untitled"
+        />
+      </van-cell>
+
+      <van-cell class="collection-select" @click="showCollectionPicker = true">
         <!--        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>-->
         <template #title>
           <span class="menu-title">Select collection</span>
         </template>
         <van-loading v-if="selectedCollection === -1" />
         <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
-      </van-cell>
-      <!--      TODO: tour title-->
-      <van-cell>
-        <van-field v-model="tourTitleInput" label="Title" placeholder="Untitled" />
       </van-cell>
     </van-floating-panel>
     <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>

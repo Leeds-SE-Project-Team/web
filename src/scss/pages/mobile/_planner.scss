@@ -261,19 +261,39 @@
       justify-content: space-around;
       align-items: center;
 
+      .detail-item {
+        .van-grid-item__content {
+          padding: 10px 0px;
+        }
+
+        &:not(.action-item) {
+          opacity: 0.6;
+        }
+      }
+
       .detail-content {
         font-weight: bold;
         margin-top: 8px;
       }
 
-      .detail-item:not(.action-item) {
-        opacity: 0.6;
-      }
 
       .action-item {
         opacity: 0.7;
         color: rgb(25, 137, 250)
       }
+    }
+
+    .title-input {
+      padding: 0;
+
+      input {
+        text-align: right;
+      }
+    }
+
+    .collection-select {
+
+
     }
 
     .collection-picker {
