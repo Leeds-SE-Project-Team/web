@@ -52,7 +52,7 @@ app.use(Vant)
 // Lazyload 指令需要单独进行注册
 // app.use(Vant.Lazyload)
 app.use(ArcoVueIcon)
-app.use(PullRefresh)
+// app.use(PullRefresh)
 app.use(VueAMap)
 app.component('layout-default', LayoutDefault)
 app.component('layout-a', LayoutA)

@@ -19,7 +19,7 @@ const createTourForm = reactive<CreateTourForm>({
   pons: [],
   tourCollectionId: 1,
   result: undefined,
-  title: ''
+  title: 'sample'
 })
 
 const mapContainer = ref()
@@ -33,6 +33,7 @@ const handleCreateTour = () => {
       setLoading(true)
       createTour(createTourForm)
         .then((res) => {
+          console.log(res)
           if (res.success) {
             Message.success(res.message)
             mapContainer.value.screenMap()
@@ -46,6 +47,7 @@ const handleCreateTour = () => {
         .finally(() => {
           setLoading(false)
         })
+      // console.log(createTourForm);
     }
   })
 }
