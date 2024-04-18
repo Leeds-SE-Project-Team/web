@@ -3,8 +3,11 @@ import type { ApiResponse } from '@/apis'
 import { axiosRequest } from '@/apis'
 import type { CommentRecord } from '@/apis/comment'
 import type { TourSpot } from '@/apis/tour/spot'
-import type { TourCollection } from '@/apis/collection'
 import type { TourHighlight } from '@/apis/tour/highlight'
+import walkSvgUrl from '@/assets/walk.svg'
+import cyclingSvgUrl from '@/assets/cycling.svg'
+import driveSvgUrl from '@/assets/drive.svg'
+import axios from 'axios'
 
 export enum TourType {
   WALK,
@@ -13,16 +16,15 @@ export enum TourType {
   PUBLIC
 }
 
-import walkSvgUrl from '@/assets/walk.svg'
-import cyclingSvgUrl from '@/assets/cycling.svg'
-import driveSvgUrl from '@/assets/drive.svg'
-import axios from 'axios'
-
 export const tourTypeMap = [
   { text: 'hiking', value: TourType.WALK, img: walkSvgUrl },
-  { text: 'cycling', value: TourType.CYCLING, img: cyclingSvgUrl },
-  { text: 'car', value: TourType.CAR, img: driveSvgUrl },
-  { text: 'public', value: TourType.PUBLIC, img: driveSvgUrl }
+  {
+    text: 'cycling',
+    value: TourType.CYCLING,
+    img: cyclingSvgUrl
+  },
+  { text: 'car', value: TourType.CAR, img: driveSvgUrl }
+  // { text: 'public', value: TourType.PUBLIC, img: driveSvgUrl }
 ]
 
 export const getTourTypeText = (type: TourType) =>
@@ -43,7 +45,11 @@ export const fetchTourDataJson = (tour: TourRecord) =>
     headers: { 'Content-Type': 'application/json' }
   })
 
-export interface PON {}
+export interface PON {
+  name: string
+  location: string
+  sequence: number
+}
 
 export interface TourImage {
   id: number
@@ -52,6 +58,7 @@ export interface TourImage {
   tourSpotId: number
   tourId: number
 }
+
 export interface TourRecord {
   id: number
   startLocation: string

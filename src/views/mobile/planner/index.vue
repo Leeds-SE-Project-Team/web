@@ -82,6 +82,7 @@ const resetForm = () => {
   createTourForm.value.endLocation = ''
   createTourForm.value.result = undefined
   createTourForm.value.title = 'untitled'
+  createTourForm.value.pons = []
 }
 
 const mapContainer = ref()
@@ -133,7 +134,6 @@ const handleCreateTour = (navigate = false) => {
           }
         })
         .catch((e) => {
-          console.log(e)
           Message.error(e)
           setLoading(false)
         })
@@ -146,7 +146,7 @@ const handleScrollPicker = () => {
 
 const selectPoint = ref<number[]>()
 const pointSheetHeight = ref(0)
-const floatSheetHeight = window.innerHeight * 0.35
+const floatSheetHeight = window.innerHeight * 0.4
 const floatSheetAnchors = [0, floatSheetHeight]
 
 let timer = 0
@@ -154,6 +154,7 @@ watch(selectPoint, (value) => {
   if (value) {
     clearInterval(timer)
     pointSheetHeight.value = floatSheetHeight
+    // resultPanelHeight.value = resultPanelAnchors[0]
   } else {
     timer = setInterval(() => {
       if (pointSheetHeight.value > 1) {
@@ -187,6 +188,20 @@ const handleSelectEnd = () => {
   }
 }
 
+const handleSelectWaypoint = () => {
+  if (selectPoint.value) {
+    createTourForm.value.pons.push({
+      name: sheetData.value.neighborhood,
+      location: selectPoint.value.join(','),
+      sequence: -1
+    })
+    createTourForm.value.pons.forEach((pon, idx) => {
+      pon.sequence = idx + 1
+    })
+    selectPoint.value = undefined
+  }
+}
+
 const selectedAll = computed({
   get: () => createTourForm.value.startLocation && createTourForm.value.endLocation,
   set: () => {
@@ -205,7 +220,7 @@ const resultPanelAnchors = [
   Math.round(0.4 * window.innerHeight),
   Math.round(0.6 * window.innerHeight)
 ]
-const resultPanelHeight = ref(resultPanelAnchors[2])
+const resultPanelHeight = ref(resultPanelAnchors[1])
 
 const hasPlanned = computed(() => {
   const result = mapContainer.value && mapContainer.value.navigationResult
@@ -219,7 +234,11 @@ const alwaysShowTop = ref(false)
 
 const plannedResult = computed(() => mapContainer.value.navigationResult)
 const plannedFirstRoute = computed(() =>
-  plannedResult.value ? (plannedResult.value as any).routes[0] : undefined
+  plannedResult.value
+    ? createTourForm.value.type === TourType.PUBLIC
+      ? (plannedResult.value as any).plans[0]
+      : (plannedResult.value as any).routes[0]
+    : undefined
 )
 
 const route = useRoute()
@@ -278,9 +297,19 @@ onUnmounted(() => {
           </van-popup>
         </div>
         <div class="menu-locations">
+          <!--          '78px'-->
           <van-form
             ref="formRef"
-            :style="{ height: (hasPlanned || selectPoint) && !alwaysShowTop ? 0 : '78px' }"
+            :style="{
+              height:
+                (hasPlanned || selectPoint) && !alwaysShowTop
+                  ? 0
+                  : 80 +
+                    (createTourForm.type === TourType.CAR && createTourForm.pons.length > 0
+                      ? createTourForm.pons.length * 34 + 44
+                      : 0) +
+                    'px'
+            }"
             @submit="handleCreateTour"
           >
             <van-cell-group inset>
@@ -310,6 +339,60 @@ onUnmounted(() => {
                   </span>
                 </template>
               </van-field>
+              <div v-if="createTourForm.type === TourType.CAR && createTourForm.pons.length > 0">
+                <van-divider
+                  dashed
+                  style="
+                    color: rgba(255, 255, 255, 0.5);
+                    border-color: white;
+                    margin: 5px 0 0 0;
+                    height: 18px;
+                    padding: 0 24px;
+                  "
+                >
+                  click to delete
+                </van-divider>
+                <van-field
+                  v-for="(pon, idx) in createTourForm.pons"
+                  :key="idx"
+                  :border="false"
+                  clear-icon="delete"
+                  clear-trigger="always"
+                  clearable
+                  disabled
+                  label=""
+                  name="waypoints"
+                  placeholder="Add Waypoints"
+                  @click-input="
+                    () => {
+                      createTourForm.pons.splice(idx, 1)
+                    }
+                  "
+                >
+                  <template #label>
+                    <van-icon name="weapp-nav" />
+                  </template>
+                  <template #extra>
+                    <van-icon class="field-icon" color="white" name="wap-nav" size="20" />
+                  </template>
+                  <template #input>
+                    <span style="color: white">Waypoint {{ idx + 1 }}</span>
+                  </template>
+                </van-field>
+                <van-divider
+                  dashed
+                  style="
+                    color: rgba(255, 255, 255, 0.5);
+                    border-color: white;
+                    margin: 0 0 5px 0;
+                    height: 18px;
+                    padding: 0 24px;
+                  "
+                >
+                  {{ createTourForm.pons.length }} way points
+                </van-divider>
+              </div>
+
               <van-field
                 v-model="createTourForm.endLocation"
                 :border="false"
@@ -339,7 +422,10 @@ onUnmounted(() => {
               selectPoint
             }}</span>
             <span
-              v-else-if="!hasPlanned && createTourForm.startLocation && createTourForm.endLocation"
+              v-else-if="
+                (mapContainer && mapContainer.resultLoading) ||
+                (!hasPlanned && createTourForm.startLocation && createTourForm.endLocation)
+              "
               ><van-loading :size="16"
             /></span>
             <span v-else-if="hasPlanned" @click="alwaysShowTop = !alwaysShowTop"
@@ -385,32 +471,56 @@ onUnmounted(() => {
       :anchors="floatSheetAnchors"
     >
       <div class="pos-sheet-btn-container">
-        <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectStart">
-          <span class="btn-text">Start here</span>
-        </van-button>
-        <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectEnd">
-          <span class="btn-text">Set as end point</span>
-        </van-button>
+        <div v-if="!plannedResult">
+          <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectStart">
+            <span class="btn-text">Start here</span>
+          </van-button>
+          <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectEnd">
+            <span class="btn-text">Set as end point</span>
+          </van-button>
+        </div>
+        <div v-else>
+          <van-button
+            :disabled="createTourForm.type !== TourType.CAR"
+            class="pos-sheet-btn primary-btn-dark"
+            @click="handleSelectWaypoint"
+          >
+            <span class="btn-text">Add way point to route</span>
+          </van-button>
+        </div>
       </div>
       <div class="pos-sheet-text-container">
-        <p class="name">New waypoint</p>
+        <p class="name van-multi-ellipsis--l2">{{ sheetData.neighborhood || sheetData.street }}</p>
         <van-loading v-if="sheetData.loading" class="loading" color="#1989fa" />
         <div v-else>
+          <van-tag
+            v-for="(tag, idx) in sheetData.neighborhoodType
+              .split(';')
+              .filter((type: string) => type.length > 0)"
+            :key="idx"
+            class="search-result-area-label-tag"
+            plain
+            size="large"
+            type="primary"
+          >
+            {{ tag }}
+          </van-tag>
           <div class="pos-sheet-distance">
             <van-icon :size="23" class="icon" name="location" />
             <span class="text"
               ><span>{{ sheetData.distance }}</span> km away</span
             >
           </div>
-          <div class="pos-sheet-location">
+
+          <div class="pos-sheet-location van-multi-ellipsis--l3">
             {{ sheetData.address }}
           </div>
         </div>
       </div>
-      <div class="space"></div>
+      <!--      <div class="space"></div>-->
     </van-floating-panel>
     <van-floating-panel
-      v-if="selectedAll && hasPlanned && !showCollectionPicker"
+      v-if="selectedAll && hasPlanned && !showCollectionPicker && !(pointSheetHeight > 0)"
       v-model:height="resultPanelHeight"
       :anchors="resultPanelAnchors"
       class="result-panel"
@@ -455,17 +565,22 @@ onUnmounted(() => {
           <template #text><span class="detail-content"> Reset </span></template>
         </van-grid-item>
       </van-grid>
-      <van-cell @click="showCollectionPicker = true">
+      <van-cell>
+        <van-field
+          v-model="tourTitleInput"
+          class="title-input"
+          label="Tour title"
+          placeholder="Untitled"
+        />
+      </van-cell>
+
+      <van-cell class="collection-select" @click="showCollectionPicker = true">
         <!--        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>-->
         <template #title>
           <span class="menu-title">Select collection</span>
         </template>
         <van-loading v-if="selectedCollection === -1" />
         <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
-      </van-cell>
-      <!--      TODO: tour title-->
-      <van-cell>
-        <van-field v-model="tourTitleInput" label="Title" placeholder="Untitled" />
       </van-cell>
     </van-floating-panel>
     <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>
