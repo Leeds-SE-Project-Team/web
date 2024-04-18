@@ -2,7 +2,7 @@ import '@amap/amap-jsapi-types'
 
 import { createApp } from 'vue'
 import ArcoVue from '@arco-design/web-vue'
-import Vant, { PullRefresh } from 'vant'
+import Vant from 'vant'
 // 额外引入图标库
 import ArcoVueIcon from '@arco-design/web-vue/es/icon'
 import '@arco-design/web-vue/dist/arco.css'
@@ -35,14 +35,16 @@ initAMapApiLoader({
     'AMap.MouseTool',
     'AMap.Geolocation',
     'AMap.Walking',
+    'AMap.Driving',
+    'AMap.Transfer',
     'AMap.Riding',
     'AMap.Geocoder',
     'AMap.PlaceSearch',
     'AMap.AutoComplete'
-  ]
-  //Loca:{
-  //  version: '2.0.0'
-  //} // 如果需要使用loca组件库，需要加载Loca
+  ], // Loca: {
+  //   version: '2.0.0'
+  // },
+  version: '2.0'
 })
 
 app.use(pinia)

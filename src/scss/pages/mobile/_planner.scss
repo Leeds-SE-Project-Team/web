@@ -181,50 +181,61 @@
       border-radius: 10px;
     }
 
-    .pos-sheet-btn-container {
-      .pos-sheet-btn {
-        margin: 10px 8px 10px 0;
-        letter-spacing: 1px;
-        padding: 10px;
-        height: 32px;
-        font-size: 15px;
-      }
-    }
+    .van-floating-panel__content {
+      overflow: hidden;
 
-    .pos-sheet-text-container {
-      .name {
-        font-size: 23px;
-        margin: 5px 0 15px 5px;
-        font-weight: bold;
+      .pos-sheet-btn-container {
+        .pos-sheet-btn {
+          margin: 10px 8px 10px 0;
+          letter-spacing: 1px;
+          padding: 10px;
+          height: 32px;
+          font-size: 15px;
+        }
       }
 
-      .loading {
-        margin-top: 30px;
-        display: flex;
-        justify-content: center;
-      }
-
-      .pos-sheet-distance {
-        .icon {
-          margin-right: 15px;
+      .pos-sheet-text-container {
+        .name {
+          font-size: 23px;
+          margin: 5px 0 15px 5px;
+          font-weight: bold;
         }
 
-        .text {
-          font-size: 18px;
+        .loading {
+          margin-top: 30px;
+          display: flex;
+          justify-content: center;
         }
 
-        margin-bottom: 15px;
+        .pos-sheet-distance {
+          .icon {
+            margin-right: 15px;
+          }
+
+          .text {
+            font-size: 18px;
+          }
+
+          margin-bottom: 15px;
+        }
+      }
+
+      .pos-sheet-location {
+        margin: 5px;
+        font-size: 18px;
+      }
+
+      .search-result-area-label-tag {
+        margin: 0 6px 12px 6px;
+        //font-size: 18px;
+      }
+
+      .space {
+        height: 30px;
       }
     }
 
-    .pos-sheet-location {
-      margin: 5px;
-      font-size: 18px;
-    }
 
-    .space {
-      height: 30px;
-    }
   }
 
   .result-panel {

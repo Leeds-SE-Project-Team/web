@@ -1,17 +1,19 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getCurrentLocation } from '@/utils'
-import type { TourType } from '@/apis/tour'
+import { TourType } from '@/apis/tour'
 import { Message } from '@arco-design/web-vue'
 
 export const useMapStore = defineStore('map', () => {
-  const getGeocoder = (config?: {
-    radius: 1000 //以已知坐标为中心点，radius为半径，返回范围内兴趣点和道路信息
-    extensions: 'all' //返回地址描述以及附近兴趣点和道路信息，默认“base”
-  }) => {
+  const getGeocoder = (config?: any) => {
     const geocoder = ref()
     AMap.plugin('AMap.Geocoder', function () {
-      geocoder.value = new (AMap as any).Geocoder(config)
+      geocoder.value = new (AMap as any).Geocoder({
+        // radius: 1000, //以已知坐标为中心点，radius为半径，返回范围内兴趣点和道路信息
+        extensions: 'base', //返回地址描述以及附近兴趣点和道路信息，默认“base”
+        // lang: 'en',
+        ...config
+      })
     })
     return geocoder.value
   }
@@ -35,16 +37,31 @@ export const useMapStore = defineStore('map', () => {
   /**
    * 将路径数据转为经纬度数组
    * @param route 路径数据
+   * @param tourType
    * @param other 是否跳过处理,用于对GPX的处理,默认为 false
    */
-  const parseRouteToPath = (route: any, other?: boolean) => {
+  const parseRouteToPath = (route: any, tourType: TourType, other?: boolean) => {
     if (other) {
       return route
     }
+    switch (tourType) {
+      case TourType.WALK:
+        route = route.steps
+        break
+      case TourType.CYCLING:
+        route = route.rides
+        break
+      case TourType.CAR:
+        route = route.steps
+        break
+      case TourType.PUBLIC:
+        break
+    }
+
     const path = []
 
-    for (let i = 0, l = route.steps.length; i < l; i++) {
-      const step = route.steps[i]
+    for (let i = 0, l = route.length; i < l; i++) {
+      const step = route[i]
 
       for (let j = 0, n = step.path.length; j < n; j++) {
         path.push(step.path[j])
@@ -57,6 +74,7 @@ export const useMapStore = defineStore('map', () => {
   const drawRoute = (
     mapInstance: AMap.Map,
     route: any,
+    tourType: TourType,
     options: {
       startMarker?: boolean
       endMarker?: boolean
@@ -66,7 +84,7 @@ export const useMapStore = defineStore('map', () => {
     },
     other?: boolean
   ) => {
-    const path = parseRouteToPath(route, other)
+    const path = parseRouteToPath(route, tourType, other)
 
     let startMarker
     if (options.startMarker !== false) {
@@ -121,29 +139,58 @@ export const useMapStore = defineStore('map', () => {
   const planRoute = (
     startLocation: number[] | string[],
     endLocation: number[] | string[],
+    pons: number[][] | string[][],
     tourType: TourType,
     mapInstance: AMap.Map
   ): Promise<any> =>
     new Promise((resolve) => {
-      mapInstance.clearMap()
+      // mapInstance.clearMap()
 
-      const walkOption = {
+      const navigateOption = {
         map: mapInstance,
-        panel: 'panel',
         hideMarkers: false,
         isOutline: true,
         outlineColor: '#ffeeee',
         autoFitView: true
       }
-      const walking = new (AMap as any).Walking(walkOption)
+      let navigate: any
+      const searchArgs = [startLocation, endLocation] as any[]
+      // const waypoints = [new AMap.LngLat(103.973617, 30.829483)]
 
-      walking.search(startLocation, endLocation, function (status: any, result: any) {
-        // result即是对应的路线数据信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_RidingResult
+      switch (tourType) {
+        case TourType.WALK:
+          navigate = new (AMap as any).Walking(navigateOption)
+          break
+        case TourType.CYCLING:
+          navigate = new (AMap as any).Riding(navigateOption)
+          break
+        case TourType.CAR:
+          navigate = new (AMap as any).Driving(navigateOption)
+          searchArgs.push({ waypoints: pons })
+          break
+        case TourType.PUBLIC:
+          navigate = new (AMap as any).Transfer(navigateOption)
+          break
+      }
+
+      // navigate.search(startLocation, endLocation, function (status: any, result: any) {
+      //   // result即是对应的路线数据信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_RidingResult
+      //   if (status === 'complete') {
+      //     // navigate.clear()
+      //     // mapInstance.remove(mapInstance.getLayersDangerous())
+      //     resolve({
+      //       result,
+      //       navigate
+      //     })
+      //   } else {
+      //     Message.error('路线数据查询失败' + result)
+      //   }
+      // })
+
+      // 设置途径点
+      navigate.search(...searchArgs, function (status: any, result: any) {
         if (status === 'complete') {
-          // showNotify({ type: 'success', message: '路线数据查询成功' })
-          // drawRoute(result.routes[0])
-          // console.log(result)
-          resolve(result)
+          resolve({ result, navigate })
         } else {
           Message.error('路线数据查询失败' + result)
         }
