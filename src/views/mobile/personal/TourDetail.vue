@@ -3,15 +3,20 @@
         <van-tabs style="background-color: transparent;">
             <van-tab title="Completed">
                 <van-list>
-                    <div class="completed-tour flex-r">
-                        <van-image width="100" height="100" src="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a8c8cdb109cb051163646151a4a5083b.png~tplv-uwbnlip3yd-webp.webp"/>
+                    <div
+                        v-for="item in tours"
+                        :key="item.id"
+                        class="completed-tour flex-r"
+                        @click="toTour(item.id)"
+                    >
+                        <van-image width="100" height="100" :src="item.mapUrl"/>
                         <div class="tour-info flex-c flex-justify-c">
                             <div class="info-title">
-                                Title
+                                {{ item.title }}
                             </div>
                             <div class="info-time flex-r">
                                 <van-icon name="completed-o" />
-                                <span>2022-22-2-2</span>
+                                <span style="margin-left: 0.25rem;">{{ item.createTime }}</span>
                             </div>
                         </div>
                     </div>
@@ -23,7 +28,26 @@
 </template>
 
 <script setup lang="ts">
+import { getTourByUser, type TourRecord } from '@/apis/tour';
+import { Message } from '@arco-design/web-vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const tours = ref<TourRecord[]>([])
+const router = useRouter();
+
+const toTour = (id: number)=>{
+    router.push({path: '/tour', query:{id}})
+}
+
+getTourByUser().then(res=>{
+    if(res.success){
+        console.log(res);
+        tours.value = res.data!
+    }else{
+        Message.error(res.message)
+    }
+})
 </script>
 
 <style scoped>

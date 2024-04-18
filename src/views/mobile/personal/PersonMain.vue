@@ -36,7 +36,7 @@
           <van-icon :size="24" name="arrow" />
         </template>
       </van-cell>
-      <van-cell>
+      <van-cell @click="toCollection">
         <template #icon>
           <van-icon :size="24" name="description-o" />
         </template>
@@ -48,6 +48,18 @@
         </template>
       </van-cell>
       <van-cell>
+        <template #icon>
+          <van-icon :size="24" name="friends-o" />
+        </template>
+        <div class="flex-r list-text">
+          <span>My Group</span>
+        </div>
+        <template #right-icon>
+          <!-- <van-icon :size="24" name="arrow" /> -->
+          <van-icon :size="24" name="credit-pay" />
+        </template>
+      </van-cell>
+      <van-cell @click="showSuccessToast('VIP!')" >
         <template #icon>
           <van-icon :size="24" name="/account/vip.svg" />
         </template>
@@ -72,6 +84,7 @@ import { useUserStore } from '@/stores/user'
 import { Message } from '@arco-design/web-vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { showSuccessToast } from 'vant'
 
 const userStore = useUserStore()
 const user = ref<UserRecord | null>(null)
@@ -84,11 +97,15 @@ const toDetail = () => {
 const toTour = () => {
   router.push('/personal/tour')
 }
+const toCollection = ()=>{
+  router.push('/personal/collection')
+}
 onMounted(() => {
   userStore
     .getUserRecord()
     .then((res) => {
       console.log(res)
+      user.value = res;
     })
     .catch((e) => {
       Message.info(e)

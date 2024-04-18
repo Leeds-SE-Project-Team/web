@@ -104,3 +104,9 @@ export const getTours = (): Promise<ApiResponse<TourRecord[]>> =>
     method: 'GET',
     url: 'tours/all'
   })
+
+export const getTourByUser = ():Promise<ApiResponse<TourRecord[]>> => 
+  axiosRequest({
+    method: 'GET',
+    url: 'tours/user'
+  })

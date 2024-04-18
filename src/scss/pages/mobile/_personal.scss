@@ -54,10 +54,34 @@
             .tour-info{
                 gap:0.5rem;
                 padding-left: 0.5rem;
+                overflow: hidden;
+                flex: 1;
 
                 .info-title{
                     font-size: 1.25rem;
                     font-weight: 600;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+            }
+        }
+        
+    }
+    #collection-detail{
+        .collection{
+            background-color: rgba(255,255,255,0.5);
+            padding: 0.5rem;
+            .collection-info{
+                gap:0.5rem;
+                padding-left: 0.5rem;
+                overflow: hidden;
+                flex: 1;
+
+                .info-title{
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
                 }
             }
         }

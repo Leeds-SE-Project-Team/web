@@ -45,3 +45,9 @@ export const exampleTourCollection2: TourCollection = {
   user: exampleUserRecord,
   name: 'Hiking Collection'
 }
+
+export const getCollectionByUser = ():Promise<ApiResponse<TourCollection[]>> => 
+  axiosRequest({
+    method: "GET",
+    url: 'tour_collection/user',
+  })
