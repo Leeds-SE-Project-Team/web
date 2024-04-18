@@ -5,7 +5,6 @@ import LoginView from '@/views/both/login/index.vue'
 import DiscoverMobileView from '@/views/mobile/discover/index.vue'
 import DiscoverView from '@/views/web/discover/index.vue'
 import HighlightMobileView from '@/views/mobile/highlight/index.vue'
-import HighlightView from '@/views/web/highlight/index.vue'
 import PlannerView from '@/views/web/planner/index.vue'
 import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
@@ -20,6 +19,7 @@ import { useAuthStore } from '@/stores/auth'
 import { getUserByToken } from '@/apis/user'
 import PersonMain from '@/views/mobile/personal/PersonMain.vue'
 import DetailInfo from '@/views/mobile/personal/DetailInfo.vue'
+import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -113,8 +113,7 @@ const router = createRouter({
       path: '/highlight',
       name: 'highlight',
       meta: {
-        layout: 'mobile-main',
-        // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        layout: 'mobile-main', // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'highlight Page',
         auth: ['admin', 'user']
       }, // Render component dynamically according to platform
@@ -136,7 +135,7 @@ const router = createRouter({
       name: 'groucollection',
       meta: {
         layout: 'b',
-        title: 'group collection Page',
+        title: 'group collection Page'
       },
       component: groupCollection
     },
@@ -144,26 +143,26 @@ const router = createRouter({
       path: '/personal',
       meta: {
         title: 'personal',
-        auth: ['admin','user']
+        auth: ['admin', 'user']
       },
       component: personalIndex,
       children: [
         {
           path: '',
           name: 'personal',
-          component: PersonMain,
+          component: PersonMain
         },
         {
           path: 'tour',
           name: 'personal-tour',
-          component: TourDetail,
+          component: TourDetail
         },
         {
           path: 'detail',
           name: 'personal-detail',
-          component: DetailInfo,
+          component: DetailInfo
         }
-      ],
+      ]
     }
   ]
 })
@@ -171,15 +170,15 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.meta.auth && (to.meta.auth as string[]).length > 0) {
     const authStore = useAuthStore()
+    const userStore = useUserStore()
     if (authStore.isTokenValid) {
       next()
     } else {
       const accessToken = localStorage.getItem('accessToken')
-      console.log(accessToken)
       if (accessToken) {
         getUserByToken(accessToken).then((apiRes) => {
-          console.log(apiRes)
           if (apiRes.success) {
+            userStore.curUser = apiRes.data!
             next()
           } else {
             next('/')
