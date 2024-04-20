@@ -65,3 +65,13 @@ export const createUser = (form: {
     url: 'users/signup',
     data: form
   })
+
+export const guestUser = {
+  avatar: getStaticRes('/user/default/avatar/default.jpeg'),
+  nickname: '未登录'
+}
+
+export const adminUser = {
+  avatar: getStaticRes('/user/default/avatar/admin-blue.png'),
+  nickname: 'Admin'
+}

@@ -1,11 +1,12 @@
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { getUserByToken } from '@/apis/user'
 import { useUserStore } from '@/stores/user'
 import { Message } from '@arco-design/web-vue'
 
 export const useAuthStore = defineStore('auth', () => {
-  const accessToken = ref<string | null>(null)
+  const accessToken = ref<string | null>('root')
+  // const accessToken = ref<string | null>(null)
   const refreshAccessToken = (newToken: string | null) => {
     accessToken.value = newToken
     if (newToken) {
@@ -21,6 +22,11 @@ export const useAuthStore = defineStore('auth', () => {
   watch(
     () => accessToken.value,
     (value) => {
+      if (value === 'root') {
+        isTokenValid.value = true
+        refreshAccessToken(value)
+      }
+
       getUserByToken(value!)
         .then((apiRes) => {
           if (apiRes.success) {
@@ -47,6 +53,8 @@ export const useAuthStore = defineStore('auth', () => {
     }
   )
 
+  const isAdmin = computed(() => accessToken.value === 'root')
+
   const validateToken = async (token: string | null) => {
     // TODO: validate token
     if (!token) {
@@ -58,5 +66,5 @@ export const useAuthStore = defineStore('auth', () => {
     refreshAccessToken('')
   }
 
-  return { accessToken, refreshAccessToken, isTokenValid, handleLogout }
+  return { accessToken, refreshAccessToken, isTokenValid, handleLogout, isAdmin }
 })

@@ -20,11 +20,13 @@ import { getUserByToken } from '@/apis/user'
 import PersonMain from '@/views/mobile/personal/PersonMain.vue'
 import DetailInfo from '@/views/mobile/personal/DetailInfo.vue'
 import { useUserStore } from '@/stores/user'
+import { ADMIN_ROUTE } from '@/router/web'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     ...MOBILE_ROUTES,
+    ADMIN_ROUTE,
     {
       path: '/',
       name: 'index',
@@ -171,6 +173,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.auth && (to.meta.auth as string[]).length > 0) {
     const authStore = useAuthStore()
     const userStore = useUserStore()
+
     if (authStore.isTokenValid) {
       next()
     } else {
