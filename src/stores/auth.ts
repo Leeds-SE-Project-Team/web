@@ -72,6 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
   const handleLogout = () => {
     refreshAccessToken('')
+    location.replace('/')
   }
 
   return { accessToken, refreshAccessToken, isTokenValid, handleLogout, isAdmin }

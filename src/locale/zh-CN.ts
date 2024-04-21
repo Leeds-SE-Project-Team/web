@@ -6,7 +6,7 @@ import localeDashboard from '@/views/web/admin/dashboard/locale/zh-CN'
 // import localeMonitor from '@/views/dashboard/monitor/locale/zh-CN'
 //
 import localeSearchUserTable from '@/views/web/admin/search/search-user/locale/zh-CN'
-import localeSearchVideoTable from '@/views/web/admin/search/search-video/locale/zh-CN'
+import localeSearchVideoTable from '@/views/web/admin/search/search-tour/locale/zh-CN'
 // import localeCardList from '@/views/list/card/locale/zh-CN'
 //
 // import localePostVideo from '@/views/admin/post-video/locale/zh-CN'

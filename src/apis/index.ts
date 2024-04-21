@@ -25,7 +25,6 @@ axiosInstance.interceptors.request.use(
     if (config.headers.byPass) {
       return config
     }
-
     // if (!authStore.isTokenValid && authStore.accessToken) {
     //   authStore.refreshAccessToken(null)
     // }
@@ -36,7 +35,7 @@ axiosInstance.interceptors.request.use(
       if (authStore.accessToken === 'root') {
         return config
       }
-
+      console.log('!')
       return new Promise((resolve) => {
         getUserByToken(authStore.accessToken!).then((apiRes) => {
           if (apiRes.success) {

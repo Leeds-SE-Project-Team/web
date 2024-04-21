@@ -175,12 +175,14 @@ router.beforeEach((to, from, next) => {
     const userStore = useUserStore()
     if (authStore.isTokenValid) {
       next()
+      return
     } else {
       const accessToken = localStorage.getItem('accessToken')
-
       if (accessToken) {
         if (accessToken === 'root') {
+          authStore.isTokenValid = true
           next()
+          return
         }
         getUserByToken(accessToken)
           .then((apiRes) => {
@@ -188,9 +190,11 @@ router.beforeEach((to, from, next) => {
               userStore.curUser = apiRes.data!
               authStore.refreshAccessToken(accessToken)
               next()
+              return
             } else {
               authStore.refreshAccessToken(null)
               next('/')
+              return
             }
           })
           .catch(() => {
@@ -199,10 +203,12 @@ router.beforeEach((to, from, next) => {
       } else {
         authStore.refreshAccessToken(null)
         next('/')
+        return
       }
     }
   } else {
     next()
+    return
   }
 })
 

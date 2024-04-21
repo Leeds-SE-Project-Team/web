@@ -26,7 +26,7 @@
       <a-menu-item key="searchUser" @click="$router.push({ name: 'searchUser' })"
         >用户管理
       </a-menu-item>
-      <a-menu-item key="searchVideo" @click="$router.push({ name: 'searchVideo' })"
+      <a-menu-item key="searchTour" @click="$router.push({ name: 'searchTour' })"
         >行程管理
       </a-menu-item>
     </a-sub-menu>
@@ -45,7 +45,7 @@
       日志
     </a-menu-item>
 
-    <a-menu-item key="postVideo" @click="handleClickPost">
+    <a-menu-item key="postTour" @click="handleClickPost">
       <IconCalendar />
       发布行程
     </a-menu-item>
@@ -81,7 +81,7 @@ const handleClickPost = () => {
       id: 'handleClickPost',
       content: 'Unavailable'
     })
-    // router.push({ name: 'postVideo' })
+    // router.push({ name: 'postTour' })
   }
 }
 </script>

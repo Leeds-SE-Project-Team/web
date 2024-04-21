@@ -17,7 +17,7 @@
           }"
           :heading="5"
         >
-          {{ authStore.isAdmin ? '后台管理平台' : '创作者中心' }}
+          {{ authStore.isAdmin ? '后台管理平台' : '未登录' }}
         </a-typography-title>
       </a-space>
     </div>

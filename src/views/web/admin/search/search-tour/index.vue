@@ -1,76 +1,76 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.list', 'menu.list.video.searchTable']" />
-    <a-card class="general-card" :title="$t('menu.list.video.searchTable')">
+    <Breadcrumb :items="['menu.list', 'menu.list.tour.searchTable']" />
+    <a-card :title="$t('menu.list.tour.searchTable')" class="general-card">
       <a-row>
         <a-col :flex="1">
           <a-form
-            :model="formModel"
             :label-col-props="{ span: 6 }"
+            :model="formModel"
             :wrapper-col-props="{ span: 18 }"
             label-align="left"
           >
             <a-row :gutter="16">
               <a-col :span="8">
-                <a-form-item field="videoTitle" :label="$t('searchTable.form.videoTitle')">
+                <a-form-item :label="$t('searchTable.form.title')" field="title">
                   <a-input
-                    v-model="formModel.videoTitle"
-                    :placeholder="$t('searchTable.form.videoTitle.placeholder')"
+                    v-model="formModel.title"
+                    :placeholder="$t('searchTable.form.title.placeholder')"
                   />
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item field="authorName" :label="$t('searchTable.form.authorName')">
+                <a-form-item :label="$t('searchTable.form.authorName')" field="authorName">
                   <a-input
                     v-model="formModel.authorName"
                     :placeholder="$t('searchTable.form.authorName.placeholder')"
                   />
                 </a-form-item>
               </a-col>
+              <!--              <a-col :span="8">-->
+              <!--                <a-form-item field="tourId" :label="$t('searchTable.form.tourTags')">-->
+              <!--                  <a-select-->
+              <!--                    v-model="formModel.tags"-->
+              <!--                    v-model:input-value="inputValue"-->
+              <!--                    :options="options"-->
+              <!--                    :placeholder="$t('searchTable.form.tourTags.placeholder')"-->
+              <!--                    multiple-->
+              <!--                    @search="handleSearch"-->
+              <!--                    @inputValueChange="handleInputValueChange"-->
+              <!--                    @change="handleTagsChange"-->
+              <!--                    :allow-clear="true"-->
+              <!--                  />-->
+              <!--                </a-form-item>-->
+              <!--              </a-col>-->
               <a-col :span="8">
-                <a-form-item field="videoId" :label="$t('searchTable.form.videoTags')">
+                <a-form-item :label="$t('searchTable.form.contentType')" field="contentType">
                   <a-select
-                    v-model="formModel.tags"
-                    v-model:input-value="inputValue"
-                    :options="options"
-                    :placeholder="$t('searchTable.form.videoTags.placeholder')"
-                    multiple
-                    @search="handleSearch"
-                    @inputValueChange="handleInputValueChange"
-                    @change="handleTagsChange"
-                    :allow-clear="true"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="contentType" :label="$t('searchTable.form.contentType')">
-                  <a-select
-                    v-model="formModel.contentType"
-                    :options="contentTypeOptions"
+                    v-model="formModel.type"
+                    :options="typeOptions"
                     :placeholder="$t('searchTable.form.selectDefault')"
                   />
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item field="publishTime" :label="$t('searchTable.form.publishTime')">
+                <a-form-item :label="$t('searchTable.form.publishTime')" field="publishTime">
                   <a-range-picker v-model="formModel.publishTime" style="width: 100%" />
                 </a-form-item>
               </a-col>
-              <a-col :span="8">
-                <a-form-item field="status" :label="$t('searchTable.form.status')">
-                  <a-select
-                    v-model="formModel.status"
-                    :options="statusOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
-                  />
-                </a-form-item>
-              </a-col>
+              <!--              <a-col :span="8">-->
+              <!--                <a-form-item field="status" :label="$t('searchTable.form.status')">-->
+              <!--                  <a-select-->
+              <!--                    v-model="formModel.status"-->
+              <!--                    :options="statusOptions"-->
+              <!--                    :placeholder="$t('searchTable.form.selectDefault')"-->
+              <!--                  />-->
+              <!--                </a-form-item>-->
+              <!--              </a-col>-->
             </a-row>
           </a-form>
         </a-col>
-        <a-divider style="height: 84px" direction="vertical" />
+        <a-divider direction="vertical" style="height: 84px" />
         <a-col :flex="'86px'" style="text-align: right">
-          <a-space direction="vertical" :size="18">
+          <a-space :size="18" direction="vertical">
             <a-button type="primary" @click="search">
               <template #icon>
                 <icon-search />
@@ -90,7 +90,7 @@
       <a-row style="margin-bottom: 16px">
         <a-col :span="12">
           <a-space>
-            <a-button type="primary" @click="mainStore.setGoToPost(true)">
+            <a-button type="primary">
               <template #icon>
                 <icon-plus />
               </template>
@@ -126,14 +126,16 @@
           <!--          </a-tooltip>-->
           <a-dropdown @select="handleSelectDensity">
             <a-tooltip :content="$t('searchTable.actions.density')">
-              <div class="action-icon"><icon-line-height size="18" /></div>
+              <div class="action-icon">
+                <icon-line-height size="18" />
+              </div>
             </a-tooltip>
             <template #content>
               <a-doption
                 v-for="item in densityList"
                 :key="item.value"
-                :value="item.value"
                 :class="{ active: item.value === size }"
+                :value="item.value"
               >
                 <span>{{ item.name }}</span>
               </a-doption>
@@ -166,21 +168,21 @@
         </a-col>
       </a-row>
       <a-table
-        row-key="id"
-        :loading="loading || editLoading"
-        :pagination="pagination"
+        :bordered="false"
         :columns="cloneColumns as TableColumnData[]"
         :data="renderData"
-        :bordered="false"
-        :size="size"
+        :loading="loading || editLoading"
+        :pagination="pagination"
         :scroll="{
           x: 1000,
           y: '100%'
         }"
         :scrollbar="true"
+        :size="size"
         column-resizable
-        @page-change="onPageChange"
+        row-key="id"
         @sorterChange="onSortChange"
+        @page-change="onPageChange"
       >
         <template #index="{ rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
@@ -189,89 +191,76 @@
           <!--          <span v-if="record.status === 'offline'" class="circle"></span>-->
           <!--          <span v-else class="circle pass"></span>-->
           <a-select
+            v-if="editingData[getRecordIndex(rowIndex)].isEditing"
             v-model="editingData[getRecordIndex(rowIndex)].status"
             :options="statusOptions"
             :placeholder="$t('searchTable.form.selectDefault')"
-            v-if="editingData[getRecordIndex(rowIndex)].isEditing"
           />
           <span
             v-else
             :style="{
               color: (() => {
                 switch (record.status) {
-                  case 'online':
+                  case TourStatus.ONLINE:
                     return '#52C41A'
-                  case 'awaitApproval':
+                  case TourStatus.AWAIT_APPROVAL:
                     return '#B37FEB'
-                  case 'offline':
+                  case TourStatus.OFFLINE:
                     return '#F5222D'
                 }
               })()
             }"
-            >{{ $t(`searchTable.form.status.${record.status}`) }}</span
+            >{{ $t(`searchTable.form.status.${TourStatusMap[record.status as TourStatus]}`) }}</span
           >
         </template>
-        <template #videoTitle="{ record, rowIndex }">
+        <template #title="{ record, rowIndex }">
           <a-input
-            v-model.trim="editingData[getRecordIndex(rowIndex)].videoTitle"
-            :placeholder="$t('searchTable.edit.videoTitle.placeholder')"
             v-if="editingData[getRecordIndex(rowIndex)].isEditing"
+            v-model.trim="editingData[getRecordIndex(rowIndex)].title"
             :max-length="100"
+            :placeholder="$t('searchTable.edit.title.placeholder')"
           />
           <a-tooltip v-else>
-            <div class="one-line">{{ record.videoTitle }}</div>
-            <template #content>{{ record.videoTitle }}</template>
+            <div class="one-line">{{ record.title }}</div>
+            <template #content>{{ record.title }}</template>
           </a-tooltip>
         </template>
-        <template #videoTags="{ record }">
+        <template #tourTags="{ record }">
           <a-tooltip>
             <div class="one-line">
               <a-link v-for="(tag, index) in record.tags" :key="index" :hoverable="false">
-                #{{ tag }}</a-link
-              >
+                #{{ tag }}
+              </a-link>
             </div>
-            <template #content
-              ><a-link
+            <template #content>
+              <a-link
                 v-for="(tag, index) in record.tags"
                 :key="index"
                 :hoverable="false"
                 style="color: white"
               >
-                #{{ tag }}</a-link
-              ></template
-            >
+                #{{ tag }}
+              </a-link>
+            </template>
           </a-tooltip>
         </template>
         <template #authorName="{ record, rowIndex }">
           <a-input-number
-            v-model="editingData[getRecordIndex(rowIndex)].authorId"
             v-if="editingData[getRecordIndex(rowIndex)].isEditing"
+            v-model="editingData[getRecordIndex(rowIndex)].user.id"
             :placeholder="$t('searchTable.edit.authorId.placeholder')"
           />
           <a-tooltip v-else>
-            <div class="one-line">{{ record.authorName }}</div>
-            <template #content>{{ record.authorName }}</template>
+            <div class="one-line">{{ record.user.nickname }}</div>
+            <template #content>{{ record.user.nickname }}</template>
           </a-tooltip>
         </template>
-        <template #contentType="{ record }">
+        <template #type="{ record }">
           <a-space>
-            <a-avatar v-if="record.contentType === 'img'" :size="16" shape="square">
-              <img
-                alt="avatar"
-                src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/581b17753093199839f2e327e726b157.svg~tplv-49unhts6dw-image.image"
-              />
+            <a-avatar :size="16" shape="square">
+              <img alt="avatar" :src="getTourTypeImg(record.type)" />
             </a-avatar>
-            <a-avatar
-              v-else-if="record.contentType === 'horizontalVideo'"
-              :size="16"
-              shape="square"
-            >
-              <img alt="avatar" src="/images/admin/upload/horizontal.png" />
-            </a-avatar>
-            <a-avatar v-else :size="16" shape="square">
-              <img alt="avatar" src="/images/admin/upload/vertical.png" />
-            </a-avatar>
-            {{ $t(`searchTable.form.contentType.${record.contentType}`) }}
+            {{ $t(`searchTable.form.contentType.${getTourTypeText(record.type)}`) }}
           </a-space>
         </template>
         <template #filterType="{ record }">
@@ -280,29 +269,29 @@
         <template #operations="{ record, rowIndex }">
           <div style="display: flex; align-items: center; justify-content: center">
             <a-button
-              type="text"
               size="small"
               style="padding: 8px"
-              @click="handleSwitchEdit(record, rowIndex)"
-              >{{ editingData[getRecordIndex(rowIndex)].isEditing ? '取消' : '编辑' }}</a-button
-            >
-            <a-button
               type="text"
-              size="small"
-              :status="'success'"
-              style="padding: 6px"
+              @click="handleSwitchEdit(record, rowIndex)"
+              >{{ editingData[getRecordIndex(rowIndex)].isEditing ? '取消' : '编辑' }}
+            </a-button>
+            <a-button
               v-if="editingData[getRecordIndex(rowIndex)].isEditing"
+              :status="'success'"
+              size="small"
+              style="padding: 6px"
+              type="text"
               @click="handleSaveEdit(record, rowIndex)"
             >
               保存
             </a-button>
             <a-button
-              type="text"
-              size="small"
-              :status="'danger'"
-              style="padding: 6px"
               v-if="!editingData[getRecordIndex(rowIndex)].isEditing"
-              @click="handleDeleteVideo(record, rowIndex)"
+              :status="'danger'"
+              size="small"
+              style="padding: 6px"
+              type="text"
+              @click="handleDeleteTour(record, rowIndex)"
             >
               删除
             </a-button>
@@ -314,48 +303,37 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, reactive, watch, nextTick, onMounted } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import useLoading from '@/hooks/loading'
-import {
-  type VideoRecord,
-  type PolicyParamsVideo,
-  type VideoListRes,
-  type VideoQueryForm,
-  type VideoRecordCanEdit
-} from '@/api/list'
+
 import type { Pagination } from '@/types/global'
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface'
 import type { TableColumnData } from '@arco-design/web-vue/es/table/interface'
-import cloneDeep from 'lodash/cloneDeep'
-import Sortable from 'sortablejs'
-import { prefix_url } from '@/api'
-import {
-  deleteVideoById,
-  editVideoById,
-  type EditVideoForm,
-  getVideoActionUsersByVideoId,
-  getVideoInfoById,
-  pullVideo
-} from '@/utils/video'
-import { reject } from 'lodash-es'
+
 import { Message } from '@arco-design/web-vue'
-import { useUserStore } from '@/store'
-import { getAllTags, tagSuffixes } from '@/utils/tag'
-import { isTimeInRange } from '@/utils/tools'
-import { useMainStore } from '@/store/main'
-import _ from 'lodash'
+import type { PolicyParamsTour, SearchTourForm, TourListRes, TourRecordCanEdit } from '@/apis/list'
+import {
+  getTours,
+  getTourTypeImg,
+  getTourTypeText,
+  TourStatus,
+  TourStatusMap,
+  updateTour,
+  type UpdateTourForm
+} from '@/apis/tour'
+import { useUserStore } from '@/stores'
+import { isTimeInRange } from '@/utils'
+import { cloneDeep } from 'lodash-es'
 
 type SizeProps = 'mini' | 'small' | 'medium' | 'large'
 type Column = TableColumnData & { checked?: true }
-
-const mainStore = useMainStore()
 
 const getRecordIndex = (rowIndex: number) => {
   return pagination.pageSize * (pagination.current - 1) + rowIndex
 }
 
-const handleSwitchEdit = (record: VideoRecordCanEdit, rowIndex: number) => {
+const handleSwitchEdit = (record: TourRecordCanEdit, rowIndex: number) => {
   // editingData.value = _.cloneDeep(renderData.value)
   if (!editingData.value[getRecordIndex(rowIndex)].isEditing) {
     isEditingTable.value = false
@@ -367,23 +345,21 @@ const handleSwitchEdit = (record: VideoRecordCanEdit, rowIndex: number) => {
 const editLoadObject = useLoading()
 const editLoading = editLoadObject.loading
 const setEditLoading = editLoadObject.setLoading
-const handleSaveEdit = (record: VideoRecordCanEdit, rowIndex: number) => {
+const handleSaveEdit = (record: TourRecordCanEdit, rowIndex: number) => {
   setEditLoading(true)
-  if (record.videoId !== editingData.value[getRecordIndex(rowIndex)].videoId) {
+  if (record.id !== editingData.value[getRecordIndex(rowIndex)].id) {
     Message.error({
-      id: 'videoEdit',
+      id: 'tourEdit',
       content: '保存失败：数据异常'
     })
     location.reload()
   }
   const rowEditData = editingData.value[getRecordIndex(rowIndex)]
-  const editForm: EditVideoForm = {
-    authorId: rowEditData.authorId,
-    status: rowEditData.status,
-    title: rowEditData.videoTitle,
-    videoId: rowEditData.videoId
+  const editForm: UpdateTourForm = {
+    title: rowEditData.title
   }
-  editVideoById(editForm)
+
+  updateTour(editForm)
     .then(() => {
       search()
     })
@@ -392,45 +368,41 @@ const handleSaveEdit = (record: VideoRecordCanEdit, rowIndex: number) => {
     })
 }
 
-const handleDeleteVideo = (record: VideoRecordCanEdit, rowIndex: number) => {
+const handleDeleteTour = (record: TourRecordCanEdit, rowIndex: number) => {
   setEditLoading(true)
-  if (record.videoId !== editingData.value[getRecordIndex(rowIndex)].videoId) {
+  if (record.id !== editingData.value[getRecordIndex(rowIndex)].id) {
     Message.error({
-      id: 'videoEdit',
+      id: 'tourEdit',
       content: '删除失败：数据异常'
     })
     location.reload()
   }
 
-  deleteVideoById(record.videoId)
-    .then((msg) => {
-      Message.success({
-        id: 'videoEdit',
-        content: msg
-      })
-      search()
-    })
-    .catch((e) => {
-      Message.success({
-        id: 'videoEdit',
-        content: e
-      })
-    })
-    .finally(() => {
-      setEditLoading(false)
-    })
+  // deleteTourById(record.tourId)
+  //   .then((msg) => {
+  //     Message.success({
+  //       id: 'tourEdit',
+  //       content: msg
+  //     })
+  //     search()
+  //   })
+  //   .catch((e) => {
+  //     Message.success({
+  //       id: 'tourEdit',
+  //       content: e
+  //     })
+  //   })
+  //   .finally(() => {
+  //     setEditLoading(false)
+  //   })
 }
 
 const generateFormModel = () => {
-  let record: VideoQueryForm = {
-    videoId: undefined,
-    videoTitle: undefined,
-    contentType: undefined,
-    // filterType: '',
-    authorName: undefined,
-    publishTime: [],
-    status: undefined,
-    tags: undefined
+  let record: SearchTourForm = {
+    authorName: '',
+    publishTime: undefined,
+    title: '',
+    type: undefined
   }
   return record
 }
@@ -439,8 +411,8 @@ const userStore = useUserStore()
 const { loading, setLoading } = useLoading(true)
 const { t } = useI18n()
 
-const editingData = ref<VideoRecordCanEdit[]>([])
-const renderData = ref<VideoRecordCanEdit[]>([])
+const editingData = ref<TourRecordCanEdit[]>([])
+const renderData = ref<TourRecordCanEdit[]>([])
 const formModel = ref(generateFormModel())
 const cloneColumns = ref<Column[]>([])
 const showColumns = ref<Column[]>([])
@@ -508,17 +480,17 @@ const columns = computed<TableColumnData[]>(() => [
     }
   },
   {
-    title: t('searchTable.columns.videoTitle'),
-    dataIndex: 'videoTitle',
-    slotName: 'videoTitle',
+    title: t('searchTable.columns.title'),
+    dataIndex: 'title',
+    slotName: 'title',
     width: 200
   },
-  {
-    title: t('searchTable.columns.videoTags'),
-    dataIndex: 'tags',
-    slotName: 'videoTags',
-    width: 150
-  },
+  // {
+  //   title: t('searchTable.columns.tourTags'),
+  //   dataIndex: 'tags',
+  //   slotName: 'tourTags',
+  //   width: 150
+  // },
   {
     title: isEditingTable.value ? '作者编号/名称' : '作者名称',
     dataIndex: 'authorName',
@@ -531,46 +503,46 @@ const columns = computed<TableColumnData[]>(() => [
 
   {
     title: t('searchTable.columns.contentType'),
-    dataIndex: 'contentType',
-    slotName: 'contentType',
+    dataIndex: 'type',
+    slotName: 'type',
     width: 130,
     sortable: {
       sortDirections: ['ascend', 'descend']
     }
   },
-  {
-    title: t('searchTable.columns.likeCount'),
-    dataIndex: 'likeCount',
-    slotName: 'likeCount',
-    align: 'center',
-    width: 100,
-    sortable: {
-      sortDirections: ['descend', 'ascend']
-    }
-  },
-  {
-    title: t('searchTable.columns.starCount'),
-    dataIndex: 'starCount',
-    slotName: 'starCount',
-    align: 'center',
-    width: 100,
-    sortable: {
-      sortDirections: ['descend', 'ascend']
-    }
-  },
-  {
-    title: t('searchTable.columns.commentCount'),
-    dataIndex: 'commentCount',
-    slotName: 'commentCount',
-    align: 'center',
-    width: 100,
-    sortable: {
-      sortDirections: ['descend', 'ascend']
-    }
-  },
+  // {
+  //   title: t('searchTable.columns.likeCount'),
+  //   dataIndex: 'likeCount',
+  //   slotName: 'likeCount',
+  //   align: 'center',
+  //   width: 100,
+  //   sortable: {
+  //     sortDirections: ['descend', 'ascend']
+  //   }
+  // },
+  // {
+  //   title: t('searchTable.columns.starCount'),
+  //   dataIndex: 'starCount',
+  //   slotName: 'starCount',
+  //   align: 'center',
+  //   width: 100,
+  //   sortable: {
+  //     sortDirections: ['descend', 'ascend']
+  //   }
+  // },
+  // {
+  //   title: t('searchTable.columns.commentCount'),
+  //   dataIndex: 'commentCount',
+  //   slotName: 'commentCount',
+  //   align: 'center',
+  //   width: 100,
+  //   sortable: {
+  //     sortDirections: ['descend', 'ascend']
+  //   }
+  // },
   {
     title: t('searchTable.columns.publishTime'),
-    dataIndex: 'publishTime',
+    dataIndex: 'createTime',
     width: 180,
     sortable: {
       sortDirections: ['descend', 'ascend']
@@ -586,18 +558,18 @@ const columns = computed<TableColumnData[]>(() => [
     width: 100
   }
 ])
-const contentTypeOptions = computed<SelectOptionData[]>(() => [
+const typeOptions = computed<SelectOptionData[]>(() => [
   // {
   //   label: t('searchTable.form.contentType.img'),
   //   value: 'img'
   // },
   {
-    label: t('searchTable.form.contentType.horizontalVideo'),
-    value: 'horizontalVideo'
+    label: t('searchTable.form.contentType.horizontalTour'),
+    value: 'horizontalTour'
   },
   {
-    label: t('searchTable.form.contentType.verticalVideo'),
-    value: 'verticalVideo'
+    label: t('searchTable.form.contentType.verticalTour'),
+    value: 'verticalTour'
   }
 ])
 const filterTypeOptions = computed<SelectOptionData[]>(() => [
@@ -634,10 +606,10 @@ const inputValue = ref('')
 const options = ref<string[]>([])
 const allTags = ref<string[]>([])
 onMounted(() => {
-  getAllTags().then((tags) => {
-    allTags.value = tags
-    options.value = tags
-  })
+  // getAllTags().then((tags) => {
+  //   allTags.value = tags
+  //   options.value = tags
+  // })
 })
 
 const onSortChange = () => {
@@ -654,79 +626,76 @@ const handleTagsChange = () => {
 const handleSearch = (value: string) => {
   value = value.trim()
   options.value = allTags.value
-  if (!options.value.includes(value) && value.length > 0) {
-    options.value = tagSuffixes().map((suffix) => value.concat(suffix))
-  }
+  // if (!options.value.includes(value) && value.length > 0) {
+  //   options.value = tagSuffixes().map((suffix) => value.concat(suffix))
+  // }
 }
 const handleInputValueChange = (value: string) => {
   inputValue.value = inputValue.value.trim()
 }
 
-const fetchData = async (params: PolicyParamsVideo = { current: 1, pageSize: 20 }) => {
+const fetchData = async (params: PolicyParamsTour = { current: 1, pageSize: 20 }) => {
   setLoading(true)
-  pullVideo({
-    tagsName: params.tags,
-    tagFilterMode: 'filterAll',
-    sort: 'sort',
-    allStatus: 'all'
-  })
-    .then((videos) => {
-      const promises = videos.map(
-        async (video): Promise<VideoRecord> =>
-          getVideoInfoById(video.id)
-            .then((record) => record)
-            .catch((e) => {
-              // 处理错误
-              Message.error({
-                id: 'videoList',
-                content: e.message
-              })
-              // 返回一个标记错误的值或者抛出一个新的错误，具体取决于你的需求
-              throw e.message
-            })
-      )
-      Promise.all(promises).then((records) => {
-        let results = records
+  getTours()
+    .then((apiRes) => {
+      if (apiRes.success) {
+        // const promises = apiRes.data!.map(
+        //   async (tour): Promise<TourRecord> =>
+        //     getTourInfoById(tour.id)
+        //       .then((record) => record)
+        //       .catch((e) => {
+        //         // 处理错误
+        //         Message.error({
+        //           id: 'tourList',
+        //           content: e.message
+        //         })
+        //         // 返回一个标记错误的值或者抛出一个新的错误，具体取决于你的需求
+        //         throw e.message
+        //       })
+        // )
+        // Promise.all(promises).then((records) => {
+        let results = apiRes.data!
         if (params.authorName) {
           results = results.filter((record) =>
-            record.authorName.includes(params.authorName as string)
+            record.user.nickname.includes(params.authorName as string)
           )
         }
-        if (params.videoTitle) {
-          results = results.filter((record) =>
-            record.videoTitle.includes(params.videoTitle as string)
-          )
+        if (params.title) {
+          results = results.filter((record) => record.title.includes(params.title as string))
         }
-        if (params.contentType) {
-          results = results.filter((record) => record.contentType === params.contentType)
+        if (params.type) {
+          results = results.filter((record) => record.type === params.type)
         }
-        if (params.status) {
-          results = results.filter((record) => record.status === params.status)
-        }
+        // if (params.status) {
+        //   results = results.filter((record) => record.status === params.status)
+        // }
         if (params.publishTime && params.publishTime.length === 2) {
           results = results.filter((record) =>
-            isTimeInRange(params.publishTime as unknown as string[], record.publishTime)
+            isTimeInRange(params.publishTime as unknown as string[], record.createTime)
           )
         }
 
-        const data: VideoListRes = {
+        const data: TourListRes = {
           list: results,
           total: results.length
         }
-        const editableList = data.list as VideoRecordCanEdit[]
+        const editableList = data.list as TourRecordCanEdit[]
         editableList.forEach((item) => (item.isEditing = false))
         renderData.value = editableList
-        editingData.value = _.cloneDeep(renderData.value)
+        editingData.value = cloneDeep(renderData.value)
         pagination.current = params.current
         pagination.total = data.total
-        setLoading(false)
-      })
+        // })
+      }
     })
     .catch((e) => {
       Message.error({
-        id: 'videoList',
+        id: 'tourList',
         content: e.message
       })
+    })
+    .finally(() => {
+      setLoading(false)
     })
 }
 
@@ -734,7 +703,7 @@ const search = () => {
   fetchData({
     ...basePagination,
     ...formModel.value
-  } as unknown as PolicyParamsVideo)
+  } as unknown as PolicyParamsTour)
 }
 const onPageChange = (current: number) => {
   fetchData({ ...basePagination, current })
@@ -781,15 +750,16 @@ watch(
 
 <script lang="ts">
 export default {
-  name: 'SearchTableVideo'
+  name: 'SearchTableTour'
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .container {
   padding: 0 20px 20px 20px;
   overflow-y: scroll;
 }
+
 :deep(.arco-table-th) {
   &:last-child {
     .arco-table-th-item-title {
@@ -797,18 +767,22 @@ export default {
     }
   }
 }
+
 .action-icon {
   margin-left: 12px;
   cursor: pointer;
 }
+
 .active {
   color: #0960bd;
   background-color: #e3f4fc;
 }
+
 .setting {
   display: flex;
   align-items: center;
   width: 200px;
+
   .title {
     margin-left: 12px;
     cursor: pointer;

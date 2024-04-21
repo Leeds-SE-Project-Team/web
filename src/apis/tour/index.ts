@@ -78,8 +78,20 @@ export interface TourRecord {
   tourSpotList: TourSpot[]
   tourHighlightList: TourHighlight[]
   comments: CommentRecord[]
-  status: 'online' | 'offline' | 'awaitApproval'
+  status: TourStatus
   title: string
+}
+
+export enum TourStatus {
+  ONLINE,
+  OFFLINE,
+  AWAIT_APPROVAL
+}
+
+export const TourStatusMap = {
+  0: 'online',
+  1: 'offline',
+  2: 'awaitApproval'
 }
 
 export interface CreateTourForm {
@@ -89,6 +101,10 @@ export interface CreateTourForm {
   pons: PON[]
   tourCollectionId: number
   result: any
+  title: string
+}
+
+export interface UpdateTourForm {
   title: string
 }
 
@@ -117,4 +133,11 @@ export const getToursWeeklyData = (): Promise<ApiResponse<ContentDataRecord[]>> 
   axiosRequest({
     method: 'GET',
     url: 'tours/weekly'
+  })
+
+export const updateTour = (form: UpdateTourForm): Promise<ApiResponse<TourRecord>> =>
+  axiosRequest({
+    method: 'PUT',
+    url: 'tours',
+    data: form
   })

@@ -32,6 +32,7 @@
     "echarts": "^5.5.0",
     "lodash-es": "^4.17.21",
     "pinia": "^2.1.7",
+    "query-string": "^9.0.0",
     "vant": "^4.8.5",
     "vue": "^3.3.11",
     "vue-echarts": "^6.6.9",

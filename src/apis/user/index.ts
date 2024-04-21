@@ -9,6 +9,21 @@ export interface UserRecord {
   // TODO: Time format: '%Y-%m-%d %H:%M:%S'
   registerTime: string
   latestLoginTime: string
+
+  type: UserType
+  // tourNum: number
+}
+
+export enum UserType {
+  COMMON,
+  VIP,
+  ADMIN
+}
+
+export const UserTypeMap = {
+  0: 'common',
+  1: 'VIP',
+  2: 'admin'
 }
 
 export const exampleUserRecord: UserRecord = {
@@ -18,7 +33,8 @@ export const exampleUserRecord: UserRecord = {
   id: 1,
   latestLoginTime: '2024-03-03 15:35:23',
   nickname: 'Walcraft User',
-  registerTime: '2024-03-03 15:35:23'
+  registerTime: '2024-03-03 15:35:23',
+  type: UserType.COMMON
 }
 // API for query single user
 // export const getUserById = (userId: number): Promise<UserRecord> =>
@@ -36,6 +52,12 @@ export interface QueryUserForm {
   email?: string
   id?: string
 }
+
+export const getAllUsers = (): Promise<ApiResponse<UserRecord[]>> =>
+  axiosRequest({
+    method: 'GET',
+    url: `users/all`
+  })
 
 export const getUserByToken = (token: string): Promise<ApiResponse<UserRecord>> =>
   axiosRequest({

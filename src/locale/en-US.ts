@@ -6,7 +6,7 @@ import localeDashboard from '@/views/web/admin/dashboard/locale/en-US'
 // import localeMonitor from '@/views/dashboard/monitor/locale/en-US'
 //
 import localeSearchUserTable from '@/views/web/admin/search/search-user/locale/en-US'
-import localeSearchVideoTable from '@/views/web/admin/search/search-video/locale/en-US'
+import localeSearchVideoTable from '@/views/web/admin/search/search-tour/locale/en-US'
 // import localeCardList from '@/views/list/card/locale/en-US'
 //
 // import localePostVideo from '@/views/admin/post-video/locale/en-US'

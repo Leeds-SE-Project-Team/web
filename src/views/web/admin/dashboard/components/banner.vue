@@ -16,7 +16,7 @@ import { useUserStore } from '@/stores'
 const userStore = useUserStore()
 const userInfo = computed(() => {
   return {
-    name: userStore.getUserNickname()
+    name: userStore.getUserNickname
   }
 })
 </script>
