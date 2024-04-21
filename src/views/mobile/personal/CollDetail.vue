@@ -27,7 +27,7 @@ const collections = ref<TourCollection[]>([])
 const router = useRouter();
 
 const toCollection = (id: number)=>{
-    router.push({path:'/collecton', query:{id}})
+    router.push({path:'/collection', query:{id}})
 }
 
 getCollectionByUser().then(res=>{

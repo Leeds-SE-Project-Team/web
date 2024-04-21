@@ -1,7 +1,7 @@
 <template>
   <section class="user-info flex-r">
     <div class="user-avatar">
-      <van-image :src="user?.avatar" height="100" round width="100" />
+      <van-image :src="user?.avatar" height="100" round width="100" fit="cover" />
     </div>
     <div class="user-text flex-c">
       <div class="username flex-r">

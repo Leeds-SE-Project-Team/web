@@ -12,7 +12,7 @@
             </van-cell>
         </van-list>
         <van-collapse v-if="!showSearch" v-model="activeNames">
-            <van-collapse-item title="我创建的" name="1">
+            <van-collapse-item title="My Created" name="1">
                 <van-list>
                     <div class="list-group flex-r" >
                         <van-image style="flex: 1; max-height: 100px;" :src="'//fp1.fghrsh.net/2020/01/12/1e8c4232da6be35942f6ecd630797f60.jpg'" fit="cover"/>
@@ -24,7 +24,7 @@
                     </div>
                 </van-list>
             </van-collapse-item>
-            <van-collapse-item title="我加入的" name="2">
+            <van-collapse-item title="My Joined" name="2">
                 <van-list>
                     <div class="list-group flex-r" >
                         <van-image style="flex: 1; max-height: 100px;" :src="''"/>
@@ -68,6 +68,6 @@ const createGroup = ()=>{
     showCreate.value = true;
 }
 const beforeClose: Interceptor = (action:string)=>{
-    const coverUrl = `${import.meta.env.APP_STATIC_URL}Group/`
+    
 }
 </script>
