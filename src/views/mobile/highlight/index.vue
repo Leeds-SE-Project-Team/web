@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getTourHighlightExample, type TourHighlight } from '@/apis/tour/highlight';
+import { getTourHighlightById, type TourHighlight } from '@/apis/tour/highlight';
 import { computed, onMounted, ref } from 'vue';
 
 
@@ -8,9 +8,15 @@ const highlightData = ref<TourHighlight>();
 // this is the len of img
 
 onMounted(() => {
-  highlightData.value = getTourHighlightExample(1);
-  console.log(highlightData.value.title)
-});
+  getTourHighlightById(1)
+  .then(response => {
+    const highlight: TourHighlight|undefined = response.data;
+    highlightData.value = highlight;
+  })
+  .catch(error => {
+    console.error('Error fetching highlight data:', error);
+  });
+})
 
 </script>
 

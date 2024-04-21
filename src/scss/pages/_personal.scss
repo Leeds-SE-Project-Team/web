@@ -1,0 +1,51 @@
+#personal-page {
+    // display: flex;
+    .left-sider{
+        width: 30vw !important;
+        padding-top: 5vh;
+        padding-left: calc(30vw - 400px);
+        padding-right: calc(2vw);
+        height: calc(100vh - 50px);
+        // position: fixed;
+
+        .pic-profile{
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #999;
+        }
+
+        .name{
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 26px;
+        }
+
+        .banner {
+            margin-top: 30px;
+            display: flex;
+            font-size: 16px;
+            justify-content: space-between;
+            .num-b{
+                font-weight: 600;
+            }
+        }
+
+        .menu {
+            margin-top: 100px;
+            .arco-menu-item {
+                font-weight: 600;
+                font-size: 16px;
+            }
+            .arco-menu-selected {
+                font-weight: 600;
+                color: #5c8429;
+            }
+        }
+    }
+
+    .right-content {
+        padding: 0 6vw 0 3vw;
+        // margin-left: 30vw;
+    }
+}

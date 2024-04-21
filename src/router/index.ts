@@ -12,10 +12,59 @@ import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 import groupCollection from '@/views/web/groupCollection/index.vue'
+import personalPage from '@/views/web/personal/index.vue'
+import personalTours from '@/views/web/personal/tours.vue'
+import personalProfile from '@/views/web/personal/profile.vue'
+import personalHighlights from '@/views/web/personal/highlights.vue'
+import personalCollections from '@/views/web/personal/profile.vue'
+import personalGroup from '@/views/web/personal/group.vue'
 import { Capacitor } from '@capacitor/core'
 import { MOBILE_ROUTES } from '@/router/mobile'
 import { useAuthStore } from '@/stores/auth'
 import { getUserByToken } from '@/apis/user'
+
+const web_personal_children = [
+  {
+    path: 'personalprofile',
+    name: 'personalprofile',
+    meta: {
+      title: 'personalprofile',
+    },
+    component: personalProfile
+  },
+  {
+    path: 'personaltours',
+    name: 'personaltours',
+    meta: {
+      title: 'personaltours',
+    },
+    component: personalTours
+  },
+  {
+    path: 'personalhighlights',
+    name: 'personalhighlights',
+    meta: {
+      title: 'personalhighlights',
+    },
+    component: personalHighlights
+  },
+  {
+    path: 'personalcollections',
+    name: 'personalcollections',
+    meta: {
+      title: 'personalcollections',
+    },
+    component: personalCollections
+  },
+  {
+    path: 'personalgroup',
+    name: 'personalgroup',
+    meta: {
+      title: 'personalgroup',
+    },
+    component: personalGroup
+  }
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -135,9 +184,20 @@ const router = createRouter({
         title: 'group collection Page',
       },
       component: groupCollection
+    },    
+    {
+      path: '/personal',
+      name: 'personal',
+      meta: {
+        layout: 'b',
+        title: 'personal',
+      },
+      component: personalPage,
+      children: web_personal_children,
     },
   ]
 })
+
 
 router.beforeEach((to, from, next) => {
   if (to.meta.auth && (to.meta.auth as string[]).length > 0) {
