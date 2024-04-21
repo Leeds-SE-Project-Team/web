@@ -56,11 +56,13 @@ const personalMobileChildren:RouteRecordRaw[] = [
     component: GroupList,
   }
 ]
+import { ADMIN_ROUTE } from '@/router/web'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     ...MOBILE_ROUTES,
+    ADMIN_ROUTE,
     {
       path: '/',
       name: 'index',
@@ -200,23 +202,40 @@ router.beforeEach((to, from, next) => {
     const userStore = useUserStore()
     if (authStore.isTokenValid) {
       next()
+      return
     } else {
       const accessToken = localStorage.getItem('accessToken')
       if (accessToken) {
-        getUserByToken(accessToken).then((apiRes) => {
-          if (apiRes.success) {
-            userStore.curUser = apiRes.data!
-            next()
-          } else {
-            next('/')
-          }
-        })
+        if (accessToken === 'root') {
+          authStore.isTokenValid = true
+          next()
+          return
+        }
+        getUserByToken(accessToken)
+          .then((apiRes) => {
+            if (apiRes.success) {
+              userStore.curUser = apiRes.data!
+              authStore.refreshAccessToken(accessToken)
+              next()
+              return
+            } else {
+              authStore.refreshAccessToken(null)
+              next('/')
+              return
+            }
+          })
+          .catch(() => {
+            authStore.refreshAccessToken(null)
+          })
       } else {
+        authStore.refreshAccessToken(null)
         next('/')
+        return
       }
     }
   } else {
     next()
+    return
   }
 })
 

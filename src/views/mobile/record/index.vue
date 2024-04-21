@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { ElAmap } from '@vuemap/vue-amap'
 import {
   createTourHighlight,
@@ -14,7 +14,8 @@ import {
   getTourById,
   parseLocation,
   parseLocationNumber,
-  type TourRecord
+  type TourRecord,
+  TourType
 } from '@/apis/tour'
 import { uploadFileFromURL } from '@/utils/file'
 import { useRoute } from 'vue-router'
@@ -36,9 +37,14 @@ const fetchTour = () => {
         tourData.value = apiRes.data!
         fetchTourDataJson(tourData.value).then((res) => {
           const result = res.data
-          mapStore.drawRoute(mapRef.value.$$getInstance(), result.routes[0], {
-            lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
-          })
+          mapStore.drawRoute(
+            mapRef.value.$$getInstance(),
+            tourData.value!.type === TourType.PUBLIC ? result.plans[0] : result.routes[0],
+            tourData.value!.type,
+            {
+              lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
+            }
+          )
         })
         // mapStore.drawRoute(mapRef.value.$$getInstance(), result.routes[0], {
         //   lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
@@ -103,6 +109,7 @@ const getCurrentLocation = (toCenter?: boolean) => {
       layers = mapStore.drawRoute(
         mapRef.value.$$getInstance(),
         locationTrackList.value,
+        tourData.value!.type,
         {
           startMarker: false,
           endMarker: false,
@@ -137,14 +144,14 @@ const handleCreateHighlight = (form: CreateTourHighlightForm) => {
           .catch((e) => {
             showNotify({ type: 'danger', message: e })
           })
+      } else {
+        showNotify({ type: 'danger', message: uploadRes.message })
       }
     })
     .catch((e) => {
       showNotify({ type: 'danger', message: e })
     })
-    .finally(() => {
-      console.log('over')
-    })
+    .finally(() => {})
 }
 
 defineExpose({
@@ -337,8 +344,8 @@ onMounted(() => {
             fillOpacity: 0,
             strokeOpacity: 0
           }"
-          :visible="false"
           :pan-to-location="false"
+          :visible="false"
           :zoom-to-accuracy="false"
         />
       </el-amap>

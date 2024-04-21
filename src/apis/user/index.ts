@@ -9,18 +9,32 @@ export interface UserRecord {
   // TODO: Time format: '%Y-%m-%d %H:%M:%S'
   registerTime: string
   latestLoginTime: string
-  type: number
+  type: UserType
 }
 
-// export const exampleUserRecord: UserRecord = {
-//   // avatar: getStaticRes('user/default/avatar/avatar.jpg'),
-//   avatar: '',
-//   email: 'sc21m2w@leeds.ac.uk',
-//   id: 1,
-//   latestLoginTime: '2024-03-03 15:35:23',
-//   nickname: 'Walcraft User',
-//   registerTime: '2024-03-03 15:35:23'
-// }
+export enum UserType {
+  COMMON,
+  VIP,
+  ADMIN
+}
+
+export const UserTypeMap = {
+  0: 'common',
+  1: 'VIP',
+  2: 'admin'
+}
+
+export const exampleUserRecord: UserRecord = {
+  // avatar: getStaticRes('user/default/avatar/avatar.jpg'),
+  avatar: '',
+  email: 'sc21m2w@leeds.ac.uk',
+  id: 1,
+  latestLoginTime: '2024-03-03 15:35:23',
+  nickname: 'Walcraft User',
+  registerTime: '2024-03-03 15:35:23',
+  type: UserType.COMMON
+}
+
 // API for query single user
 // export const getUserById = (userId: number): Promise<UserRecord> =>
 //   axiosRequest({
@@ -37,6 +51,12 @@ export interface QueryUserForm {
   email?: string
   id?: string
 }
+
+export const getAllUsers = (): Promise<ApiResponse<UserRecord[]>> =>
+  axiosRequest({
+    method: 'GET',
+    url: `users/all`
+  })
 
 export const getUserByToken = (token: string): Promise<ApiResponse<UserRecord>> =>
   axiosRequest({
@@ -86,3 +106,13 @@ export const upgradeUser = (form:any):Promise<ApiResponse<string>> =>
     url: 'users/type',
     data: form
   })
+
+export const guestUser = {
+  avatar: getStaticRes('/user/default/avatar/default.jpeg'),
+  nickname: '未登录'
+}
+
+export const adminUser = {
+  avatar: getStaticRes('/user/default/avatar/admin-blue.png'),
+  nickname: 'Admin'
+}
