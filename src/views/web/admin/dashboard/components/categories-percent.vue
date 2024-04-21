@@ -1,16 +1,16 @@
 <template>
   <a-spin :loading="loading" style="width: 100%">
     <a-card
-      class="general-card"
-      :header-style="{ paddingBottom: '0' }"
       :body-style="{
         padding: '20px'
       }"
+      :header-style="{ paddingBottom: '0' }"
+      class="general-card"
     >
       <template #title>
         {{ $t('workplace.categoriesPercent') }}
       </template>
-      <Chart height="310px" :option="chartOption" />
+      <Chart :option="chartOption" height="310px" />
     </a-card>
   </a-spin>
 </template>
@@ -19,26 +19,41 @@
 import useLoading from '@/hooks/loading'
 import useChartOption from '@/hooks/chart-option'
 import { computed, ref } from 'vue'
-import { getTagStatistic } from '@/utils/tag'
-import { getVideoInfoAll } from '@/utils/video'
-import { simplifyNumber } from '@/utils/tools'
+import { getTours, getTourTypeText, TourType } from '@/apis/tour'
+import { countBy } from 'lodash-es'
 
 const { loading, setLoading } = useLoading()
 
-const tagStatistic = ref<{ name: string; count: number }[]>([])
+const typeStatistic = ref<{ type: TourType; count: number }[]>([])
 const SHOW_TAGS_NUM = 5
-const tagNames = computed(() => tagStatistic.value.slice(0, SHOW_TAGS_NUM).map((e) => e.name))
-const tagCount = computed(() => tagStatistic.value.slice(0, SHOW_TAGS_NUM).map((e) => e.count))
-getTagStatistic().then((data) => {
-  tagStatistic.value = data
-})
+const typeNames = computed(() =>
+  typeStatistic.value.slice(0, SHOW_TAGS_NUM).map((e) => getTourTypeText(e.type))
+)
+const typeCount = computed(() => typeStatistic.value.slice(0, SHOW_TAGS_NUM).map((e) => e.count))
+// getTagStatistic().then((data) => {
+//   typeStatistic.value = data
+// })
 
 const totalContentNum = ref(0)
 
+// getVideoInfoAll()
+//   .then((videos) => {
+//     totalContentNum.value = videos.length
+//   })
+//   .finally(() => {
+//     setLoading(false)
+//   })
 setLoading(true)
-getVideoInfoAll()
-  .then((videos) => {
-    totalContentNum.value = videos.length
+getTours()
+  .then((apiRes) => {
+    if (apiRes.success) {
+      const tourList = apiRes.data!
+      totalContentNum.value = tourList.length
+      typeStatistic.value = Object.entries(countBy(tourList, 'type')).map((entry) => ({
+        type: parseInt(entry[0]) as TourType,
+        count: entry[1]
+      }))
+    }
   })
   .finally(() => {
     setLoading(false)
@@ -50,7 +65,7 @@ const { chartOption } = useChartOption((isDark) => {
   return {
     legend: {
       left: 'center',
-      data: tagNames.value,
+      data: typeNames.value,
       bottom: 0,
       icon: 'circle',
       itemWidth: 8,
@@ -106,10 +121,10 @@ const { chartOption } = useChartOption((isDark) => {
           borderColor: isDark ? '#232324' : '#fff',
           borderWidth: 1
         },
-        data: tagNames.value.map((_, index) => {
+        data: typeNames.value.map((_, index) => {
           return {
-            value: tagCount.value[index],
-            name: tagNames.value[index],
+            value: typeCount.value[index],
+            name: typeNames.value[index],
             itemStyle: {
               color: isDark ? itemStyles[index].dark : itemStyles[index].light
             }
@@ -118,22 +133,22 @@ const { chartOption } = useChartOption((isDark) => {
 
         //   [
         //   {
-        //     value: tagCount.value[0],
-        //     name: tagNames.value[0],
+        //     value: typeCount.value[0],
+        //     name: typeNames.value[0],
         //     itemStyle: {
         //       color: isDark ? itemStyles[0].dark : itemStyles[0].light
         //     }
         //   },
         //   {
-        //     value: tagCount.value[1],
-        //     name: tagNames.value[1],
+        //     value: typeCount.value[1],
+        //     name: typeNames.value[1],
         //     itemStyle: {
         //       color: isDark ? itemStyles[1].dark : itemStyles[1].light
         //     }
         //   },
         //   {
-        //     value: tagCount.value[2],
-        //     name: tagNames.value[2],
+        //     value: typeCount.value[2],
+        //     name: typeNames.value[2],
         //     itemStyle: {
         //       color: isDark ? itemStyles[2].dark : itemStyles[2].light
         //     }
@@ -169,4 +184,4 @@ const itemStyles = [
 ]
 </script>
 
-<style scoped lang="less"></style>
+<style lang="less" scoped></style>

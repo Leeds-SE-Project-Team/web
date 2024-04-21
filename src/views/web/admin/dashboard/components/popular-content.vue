@@ -1,9 +1,9 @@
 <template>
   <a-spin :loading="loading" style="width: 100%">
     <a-card
-      class="general-card"
-      :header-style="{ paddingBottom: '0' }"
       :body-style="{ padding: '17px 20px 21px 20px' }"
+      :header-style="{ paddingBottom: '0' }"
+      class="general-card"
     >
       <template #title>
         {{ $t('workplace.popularContent') }}
@@ -12,26 +12,26 @@
         <!--        <a-link>{{ $t('workplace.viewMore') }}</a-link>-->
         <span>热度 Top10</span>
       </template>
-      <a-space direction="vertical" :size="10" fill>
+      <a-space :size="10" direction="vertical" fill>
         <a-radio-group v-model:model-value="type" type="button">
           <a-radio value="video">
             {{ $t('workplace.popularContent.video') }}
           </a-radio>
-          <a-radio value="image" disabled>
+          <a-radio disabled value="image">
             {{ $t('workplace.popularContent.image') }}
           </a-radio>
-          <a-radio value="text" disabled>
+          <a-radio disabled value="text">
             {{ $t('workplace.popularContent.text') }}
           </a-radio>
         </a-radio-group>
         <a-table
+          :bordered="false"
           :data="renderList"
           :pagination="false"
-          :bordered="false"
           :scroll="{ x: '100%', y: '264px' }"
         >
           <template #columns>
-            <a-table-column title="排名" data-index="index" :align="'center'" :fixed="'left'">
+            <a-table-column :align="'center'" :fixed="'left'" data-index="index" title="排名">
               <template #cell="{ rowIndex }">
                 <a-typography-paragraph
                   :ellipsis="{
@@ -42,7 +42,7 @@
                 </a-typography-paragraph>
               </template>
             </a-table-column>
-            <a-table-column title="内容标题" data-index="videoTitle">
+            <a-table-column data-index="videoTitle" title="内容标题">
               <template #cell="{ record }">
                 <a-typography-paragraph
                   :ellipsis="{
@@ -53,7 +53,7 @@
                 </a-typography-paragraph>
               </template>
             </a-table-column>
-            <a-table-column title="点击量" data-index="playCount" :align="'center'">
+            <a-table-column :align="'center'" data-index="playCount" title="点击量">
               <template #cell="{ record }">
                 <a-typography-paragraph
                   :ellipsis="{
@@ -92,8 +92,7 @@
 import { computed, ref } from 'vue'
 import useLoading from '@/hooks/loading'
 import type { TableData } from '@arco-design/web-vue/es/table/interface'
-import { getVideoInfoAll } from '@/utils/video'
-import { getRankings, simplifyNumber } from '@/utils/tools'
+import { getRankings, simplifyNumber } from '@/utils'
 
 const type = ref('video')
 const { loading, setLoading } = useLoading()
@@ -103,28 +102,32 @@ const rankingArr = computed(() =>
 )
 
 setLoading(true)
-getVideoInfoAll()
-  .then((records) => {
-    renderList.value = records.sort((a, b) => b.playCount - a.playCount).slice(0, 10)
-  })
-  .finally(() => {
-    setLoading(false)
-  })
+// getVideoInfoAll()
+//   .then((records) => {
+//     renderList.value = records.sort((a, b) => b.playCount - a.playCount).slice(0, 10)
+//   })
+//   .finally(() => {
+//     setLoading(false)
+//   })
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .general-card {
   min-height: 395px;
 }
+
 :deep(.arco-table-tr) {
   height: 44px;
+
   .arco-typography {
     margin-bottom: 0;
   }
 }
+
 .increases-cell {
   display: flex;
   align-items: center;
+
   span {
     margin-right: 4px;
   }

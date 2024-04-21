@@ -1,13 +1,13 @@
 <template>
   <a-grid :cols="24" :row-gap="16" class="panel">
-    <a-grid-item class="panel-col" :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }">
+    <a-grid-item :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }" class="panel-col">
       <a-space>
         <a-avatar :size="54" class="col-avatar">
           <a-image
-            show-loader
-            alt="avatar"
-            :src="'/images/admin/dashboard/1.png'"
             :preview-visible="false"
+            :src="'/admin/dashboard/1.png'"
+            alt="avatar"
+            show-loader
           />
         </a-avatar>
         <a-statistic
@@ -23,14 +23,14 @@
         </a-statistic>
       </a-space>
     </a-grid-item>
-    <a-grid-item class="panel-col" :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }">
+    <a-grid-item :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }" class="panel-col">
       <a-space>
         <a-avatar :size="54" class="col-avatar">
           <a-image
-            show-loader
-            alt="avatar"
-            :src="'/images/admin/dashboard/2.png'"
             :preview-visible="false"
+            :src="'/admin/dashboard/2.png'"
+            alt="avatar"
+            show-loader
           />
         </a-avatar>
         <a-statistic
@@ -46,14 +46,14 @@
         </a-statistic>
       </a-space>
     </a-grid-item>
-    <a-grid-item class="panel-col" :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }">
+    <a-grid-item :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }" class="panel-col">
       <a-space>
         <a-avatar :size="54" class="col-avatar">
           <a-image
-            show-loader
-            alt="avatar"
-            :src="'/images/admin/dashboard/3.png'"
             :preview-visible="false"
+            :src="'/admin/dashboard/3.png'"
+            alt="avatar"
+            show-loader
           />
         </a-avatar>
         <a-statistic
@@ -70,33 +70,33 @@
       </a-space>
     </a-grid-item>
     <a-grid-item
-      class="panel-col"
       :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
+      class="panel-col"
       style="border-right: none"
     >
       <a-space>
         <a-avatar :size="54" class="col-avatar">
           <a-image
-            show-loader
-            alt="avatar"
-            :src="'/images/admin/dashboard/4.png'"
             :preview-visible="false"
+            :src="'/admin/dashboard/4.png'"
+            alt="avatar"
+            show-loader
           />
         </a-avatar>
         <a-statistic
+          :precision="1"
           :title="$t('workplace.newFromYesterday')"
           :value="newplayNumRate"
-          :precision="1"
           :value-from="0"
           animation
         >
           <template #suffix>
             %
             <icon-caret-up
-              class="success-icon"
               v-if="newplayNumRate >= 0 || isNaN(newplayNumRate)"
+              class="success-icon"
             />
-            <icon-caret-down class="danger-icon" v-else />
+            <icon-caret-down v-else class="danger-icon" />
           </template>
         </a-statistic>
       </a-space>
@@ -108,19 +108,15 @@
 </template>
 
 <script lang="ts" setup>
-import { pullVideo } from '@/utils/video'
-import type { VideoMedia } from '@/types'
-import { computed, onMounted, reactive, ref } from 'vue'
-import type { VideoRecord } from '@/api/list'
-import { simplifyNumber } from '@/utils/tools'
-import { prefix_url } from '@/api'
-import type { ContentDataRecord } from '@/api/dashboard'
-import { Message } from '@arco-design/web-vue'
+import { computed, onMounted, ref } from 'vue'
+import { simplifyNumber } from '@/utils'
+import { getTours, type TourRecord } from '@/apis/tour'
+import type { ContentDataRecord } from '../types'
 
-const videoList = ref<VideoMedia[]>([])
-const allContentNum = computed(() => simplifyNumber(videoList.value.length, 0, 'EN'))
+const tourList = ref<TourRecord[]>([])
+const allContentNum = computed(() => simplifyNumber(tourList.value.length, 0, 'EN'))
 const onlineContentNum = computed(() =>
-  simplifyNumber(videoList.value.filter((video) => video.status === 'online').length, 0, 'EN')
+  simplifyNumber(tourList.value.filter((tour) => tour.status === 'online').length, 0, 'EN')
 )
 
 const weeklyPlayNumList = ref<ContentDataRecord[]>([])
@@ -153,24 +149,29 @@ const newplayNumRate = computed(() => {
 // })
 
 onMounted(() => {
-  pullVideo({
-    allStatus: 'all'
-  }).then((videos) => {
-    videoList.value = videos
+  getTours().then((apiRes) => {
+    if (apiRes.success) {
+      tourList.value = apiRes.data!
+    }
   })
-  fetch(prefix_url.concat('video/get/weekly'))
-    .then((res) => {
-      if (res.ok) {
-        res.json().then((data: ContentDataRecord[]) => {
-          weeklyPlayNumList.value = data
-        })
-      } else {
-        Message.error(res.statusText)
-      }
-    })
-    .catch((e) => {
-      Message.error(e.message)
-    })
+  // pullVideo({
+  //   allStatus: 'all'
+  // }).then((videos) => {
+  //   tourList.value = videos
+  // })
+  // fetch(prefix_url.concat('tour/get/weekly'))
+  //   .then((res) => {
+  //     if (res.ok) {
+  //       res.json().then((data: ContentDataRecord[]) => {
+  //         weeklyPlayNumList.value = data
+  //       })
+  //     } else {
+  //       Message.error(res.statusText)
+  //     }
+  //   })
+  //   .catch((e) => {
+  //     Message.error(e.message)
+  //   })
 })
 </script>
 
@@ -179,17 +180,21 @@ onMounted(() => {
   margin-bottom: 0;
   padding: 16px 20px 0 20px;
 }
+
 .panel-col {
   padding-left: 43px;
   border-right: 1px solid rgb(var(--gray-2));
 }
+
 .col-avatar {
   margin-right: 12px;
   background-color: var(--color-fill-2);
 }
+
 .danger-icon {
   color: rgb(var(--red-6));
 }
+
 .success-icon {
   color: #06be5e;
 }
@@ -199,6 +204,7 @@ onMounted(() => {
   color: rgb(var(--gray-8));
   font-size: 12px;
 }
+
 :deep(.panel-border) {
   margin: 4px 0 0 0;
 }

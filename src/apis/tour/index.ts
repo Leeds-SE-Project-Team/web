@@ -8,6 +8,7 @@ import walkSvgUrl from '@/assets/walk.svg'
 import cyclingSvgUrl from '@/assets/cycling.svg'
 import driveSvgUrl from '@/assets/drive.svg'
 import axios from 'axios'
+import type { ContentDataRecord } from '@/views/web/admin/dashboard/types'
 
 export enum TourType {
   WALK,
@@ -110,4 +111,10 @@ export const getTours = (): Promise<ApiResponse<TourRecord[]>> =>
   axiosRequest({
     method: 'GET',
     url: 'tours/all'
+  })
+
+export const getToursWeeklyData = (): Promise<ApiResponse<ContentDataRecord[]>> =>
+  axiosRequest({
+    method: 'GET',
+    url: 'tours/weekly'
   })

@@ -3,15 +3,15 @@
     <div class="left-side">
       <div class="panel">
         <Banner />
-        <!--        <DataPanel />-->
-        <!--        <ContentChart />-->
+        <DataPanel />
+        <ContentChart />
       </div>
       <a-grid :col-gap="16" :cols="24" :row-gap="16" style="margin-top: 16px">
         <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }">
-          <!--          <PopularContent />-->
+          <PopularContent />
         </a-grid-item>
         <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }">
-          <!--          <CategoriesPercent />-->
+          <CategoriesPercent />
         </a-grid-item>
       </a-grid>
     </div>
@@ -27,7 +27,7 @@
           <Carousel />
         </a-grid-item>
         <a-grid-item :span="24" class="panel">
-          <!--          <Announcement />-->
+          <Announcement />
         </a-grid-item>
         <a-grid-item :span="24" class="panel">
           <Docs />
@@ -39,6 +39,11 @@
 
 <script lang="ts" setup>
 import Banner from './components/banner.vue'
+import DataPanel from './components/data-panel.vue'
+import ContentChart from './components/content-chart.vue'
+import PopularContent from './components/popular-content.vue'
+import CategoriesPercent from './components/categories-percent.vue'
+import Announcement from './components/announcement.vue'
 import RecentlyVisited from './components/recently-visited.vue'
 import QuickOperation from './components/quick-operation.vue'
 import Carousel from './components/carousel.vue'

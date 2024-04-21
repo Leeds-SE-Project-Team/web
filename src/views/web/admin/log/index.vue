@@ -1,12 +1,12 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.list', 'menu.list.user.searchTable']" />
-    <a-card class="general-card" :title="$t('menu.list.user.searchTable')">
+    <a-card :title="$t('menu.list.user.searchTable')" class="general-card">
       <a-row>
         <a-col :flex="1">
           <a-form
-            :model="formModel"
             :label-col-props="{ span: 6 }"
+            :model="formModel"
             :wrapper-col-props="{ span: 18 }"
             label-align="left"
           >
@@ -42,9 +42,9 @@
             </a-row>
           </a-form>
         </a-col>
-        <a-divider style="height: 84px" direction="vertical" />
+        <a-divider direction="vertical" style="height: 84px" />
         <a-col :flex="'86px'" style="text-align: right">
-          <a-space direction="vertical" :size="18">
+          <a-space :size="18" direction="vertical">
             <a-button type="primary" @click="search">
               <template #icon>
                 <icon-search />
@@ -64,7 +64,7 @@
       <a-row style="margin-bottom: 16px">
         <a-col :span="12">
           <a-space>
-            <a-button :type="'secondary'" :status="'danger'" @click="handleDeleteAllLogs">
+            <a-button :status="'danger'" :type="'secondary'" @click="handleDeleteAllLogs">
               <template #icon>
                 <icon-delete />
               </template>
@@ -90,14 +90,16 @@
           <!--          </a-tooltip>-->
           <a-dropdown @select="handleSelectDensity">
             <a-tooltip :content="$t('searchTable.actions.density')">
-              <div class="action-icon"><icon-line-height size="18" /></div>
+              <div class="action-icon">
+                <icon-line-height size="18" />
+              </div>
             </a-tooltip>
             <template #content>
               <a-doption
                 v-for="item in densityList"
                 :key="item.value"
-                :value="item.value"
                 :class="{ active: item.value === size }"
+                :value="item.value"
               >
                 <span>{{ item.name }}</span>
               </a-doption>
@@ -106,19 +108,19 @@
         </a-col>
       </a-row>
       <a-table
-        row-key="id"
-        :loading="loading || editLoading"
-        :pagination="true"
+        :bordered="false"
         :columns="cloneColumns as TableColumnData[]"
         :data="renderData"
-        :bordered="false"
-        :size="size"
+        :loading="loading || editLoading"
+        :pagination="true"
         :scroll="{
           x: 1000,
           y: '100%'
         }"
         :scrollbar="true"
+        :size="size"
         column-resizable
+        row-key="id"
         @page-change="onPageChange"
       >
         <template #index="{ rowIndex }">
@@ -158,47 +160,23 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, reactive, watch, nextTick, onMounted } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import useLoading from '@/hooks/loading'
 import {
-  type VideoRecord,
-  type PolicyParamsVideo,
-  type VideoListRes,
-  type VideoQueryForm,
-  type VideoRecordCanEdit,
-  type UserQueryForm,
-  type UserListRes,
-  type UserRecord,
-  type PolicyParamsUser,
-  type PolicyParamsLog,
   type LogListRes,
+  type LogQueryForm,
   type LogRecord,
-  type LogQueryForm
+  type PolicyParamsLog,
+  type PolicyParamsVideo
 } from '@/api/list'
 import type { Pagination } from '@/types/global'
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface'
 import type { TableColumnData } from '@arco-design/web-vue/es/table/interface'
 import cloneDeep from 'lodash/cloneDeep'
-import Sortable from 'sortablejs'
-import { prefix_url } from '@/api'
-import {
-  deleteVideoById,
-  editVideoById,
-  type EditVideoForm,
-  getVideoActionUsersByVideoId,
-  getVideoInfoById,
-  pullVideo
-} from '@/utils/video'
-import { reject } from 'lodash-es'
 import { Message } from '@arco-design/web-vue'
-import { useUserStore } from '@/store'
-import { getAllTags, tagSuffixes } from '@/utils/tag'
 import { isTimeInRange } from '@/utils/tools'
-import { useMainStore } from '@/store/main'
-import _ from 'lodash'
-import { areas } from '@/views/user/profile/mock'
-import { deleteAllLogs, getDbLog, parseRecordValue } from '@/utils/database'
+import { deleteAllLogs, getDbLog } from '@/utils/database'
 
 type SizeProps = 'mini' | 'small' | 'medium' | 'large'
 type Column = TableColumnData & { checked?: true }
@@ -337,8 +315,8 @@ const targetOptions = computed<SelectOptionData[]>(() => [
     value: '用户'
   },
   {
-    label: '视频',
-    value: '视频'
+    label: '行程',
+    value: '行程'
   },
   {
     label: '评论',
@@ -349,20 +327,20 @@ const targetOptions = computed<SelectOptionData[]>(() => [
     value: '标签'
   },
   {
-    label: '视频标签关系',
-    value: '视频标签关系'
+    label: '行程标签关系',
+    value: '行程标签关系'
   },
   {
-    label: '视频播放记录',
-    value: '视频播放记录'
+    label: '行程播放记录',
+    value: '行程播放记录'
   },
   {
-    label: '视频点赞记录',
-    value: '视频点赞记录'
+    label: '行程点赞记录',
+    value: '行程点赞记录'
   },
   {
-    label: '视频收藏记录',
-    value: '视频收藏记录'
+    label: '行程收藏记录',
+    value: '行程收藏记录'
   },
   {
     label: '评论点赞记录',
@@ -459,11 +437,12 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .container {
   padding: 0 20px 20px 20px;
   overflow-y: scroll;
 }
+
 :deep(.arco-table-th) {
   &:last-child {
     .arco-table-th-item-title {
@@ -471,18 +450,22 @@ export default {
     }
   }
 }
+
 .action-icon {
   margin-left: 12px;
   cursor: pointer;
 }
+
 .active {
   color: #0960bd;
   background-color: #e3f4fc;
 }
+
 .setting {
   display: flex;
   align-items: center;
   width: 200px;
+
   .title {
     margin-left: 12px;
     cursor: pointer;

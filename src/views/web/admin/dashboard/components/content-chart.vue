@@ -1,34 +1,32 @@
 <template>
   <a-spin :loading="loading" style="width: 100%">
     <a-card
-      class="general-card"
-      :header-style="{ paddingBottom: 0 }"
       :body-style="{
         paddingTop: '20px'
       }"
+      :header-style="{ paddingBottom: 0 }"
       :title="$t('workplace.contentData')"
+      class="general-card"
     >
       <template #extra>
         <span>最近七天</span>
       </template>
-      <Chart height="289px" :option="chartOption" />
+      <Chart :option="chartOption" height="289px" />
     </a-card>
   </a-spin>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { graphic } from 'echarts'
 import useLoading from '@/hooks/loading'
-import { queryContentData } from '@/api/dashboard'
-import type { ContentDataRecord } from '@/api/dashboard'
+import type { ContentDataRecord } from '../types'
 import useChartOption from '@/hooks/chart-option'
 import type { ToolTipFormatterParams } from '@/types/echarts'
 import type { AnyObject } from '@/types/global'
-import dayjs from 'dayjs'
-import { prefix_url } from '@/api'
 import { Message } from '@arco-design/web-vue'
-import { simplifyNumber } from '@/utils/tools'
+import { simplifyNumber } from '@/utils'
+import { getToursWeeklyData } from '@/apis/tour'
 
 function graphicFactory(side: AnyObject) {
   return {
@@ -43,6 +41,7 @@ function graphicFactory(side: AnyObject) {
     }
   }
 }
+
 const { loading, setLoading } = useLoading(true)
 const xAxis = ref<string[]>([])
 const chartsData = ref<number[]>([])
@@ -118,8 +117,8 @@ const { chartOption } = useChartOption(() => {
       formatter(params) {
         const [firstElement] = params as ToolTipFormatterParams[]
         return `<div>
-            <p class="tooltip-title">${firstElement.axisValueLabel}</p>
-            <div class="content-panel"><span>日增流量</span><span class="tooltip-value">${Number(
+            <p class='tooltip-title'>${firstElement.axisValueLabel}</p>
+            <div class='content-panel'><span>日增流量</span><span class='tooltip-value'>${Number(
               firstElement.value
             ).toLocaleString()}</span></div>
           </div>`
@@ -180,27 +179,27 @@ const { chartOption } = useChartOption(() => {
 
 const fetchData = async () => {
   setLoading(true)
-  fetch(prefix_url.concat('video/get/weekly'))
-    .then((res) => {
-      if (res.ok) {
-        res.json().then((chartData: ContentDataRecord[]) => {
-          chartData.forEach((el: ContentDataRecord, idx: number) => {
-            xAxis.value.push(el.x)
-            chartsData.value.push(el.y)
-            if (idx === 0) {
-              graphicElements.value[0].style.text = el.x
-            }
-            if (idx === chartData.length - 1) {
-              graphicElements.value[1].style.text = el.x
-            }
-          })
+  getToursWeeklyData()
+    .then((apiRes) => {
+      if (apiRes.success) {
+        const chartData = apiRes.data!
+        console.log(chartData)
+        chartData.forEach((el: ContentDataRecord, idx: number) => {
+          xAxis.value.push(el.date)
+          chartsData.value.push(el.number)
+          if (idx === 0) {
+            graphicElements.value[0].style.text = el.date
+          }
+          if (idx === chartData.length - 1) {
+            graphicElements.value[1].style.text = el.number
+          }
         })
       } else {
-        Message.error(res.statusText)
+        throw apiRes.message
       }
     })
     .catch((e) => {
-      Message.error(e.message)
+      Message.error(e)
     })
     .finally(() => {
       setLoading(false)
@@ -209,4 +208,4 @@ const fetchData = async () => {
 fetchData()
 </script>
 
-<style scoped lang="less"></style>
+<style lang="less" scoped></style>

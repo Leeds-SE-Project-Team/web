@@ -4,17 +4,17 @@ export default {
   'searchTable.user.form.authorId.placeholder': '请输入作者编号',
   'searchTable.user.form.authorName': '作者名称',
   'searchTable.user.form.authorName.placeholder': '请输入作者名称',
-  'searchTable.user.form.videoTitle': '视频标题',
-  'searchTable.user.form.videoTitle.placeholder': '请输入视频标题',
-  'searchTable.user.form.videoId': '视频编号',
-  'searchTable.user.form.videoId.placeholder': '请输入视频编号',
+  'searchTable.user.form.videoTitle': '行程标题',
+  'searchTable.user.form.videoTitle.placeholder': '请输入行程标题',
+  'searchTable.user.form.videoId': '行程编号',
+  'searchTable.user.form.videoId.placeholder': '请输入行程编号',
   'searchTable.user.form.contentType': '内容体裁',
   'searchTable.user.form.contentType.img': '图文',
-  'searchTable.user.form.contentType.horizontalVideo': '横版短视频',
-  'searchTable.user.form.contentType.verticalVideo': '竖版小视频',
+  'searchTable.user.form.contentType.horizontalVideo': '横版短行程',
+  'searchTable.user.form.contentType.verticalVideo': '竖版小行程',
 
-  'searchTable.user.form.videoTags': '视频标签',
-  'searchTable.user.form.videoTags.placeholder': '请选择视频标签',
+  'searchTable.user.form.videoTags': '行程标签',
+  'searchTable.user.form.videoTags.placeholder': '请选择行程标签',
 
   'searchTable.user.form.number.placeholder': '请输入集合编号',
   'searchTable.user.form.name': '集合名称',
@@ -35,12 +35,12 @@ export default {
   'searchTable.user.operation.download': '下载',
 
   'searchTable.user.edit.authorId.placeholder': '请输入作者编号',
-  'searchTable.user.edit.videoTitle.placeholder': '请输入视频标题',
+  'searchTable.user.edit.videoTitle.placeholder': '请输入行程标题',
 
   // columns
   'searchTable.user.columns.index': '#',
-  'searchTable.user.columns.videoTitle': '视频标题',
-  'searchTable.user.columns.videoTags': '视频标签',
+  'searchTable.user.columns.videoTitle': '行程标题',
+  'searchTable.user.columns.videoTags': '行程标签',
   'searchTable.user.columns.authorName': '作者名称',
   'searchTable.user.columns.contentType': '内容体裁',
   'searchTable.user.columns.filterType': '筛选方式',
@@ -59,8 +59,7 @@ export default {
   'searchTable.user.size.mini': '最小',
   'searchTable.user.size.small': '缩小',
   'searchTable.user.size.medium': '普通',
-  'searchTable.user.size.large': '放大',
-  // actions
+  'searchTable.user.size.large': '放大', // actions
   'searchTable.user.actions.refresh': '刷新',
   'searchTable.user.actions.density': '缩放',
   'searchTable.user.actions.columnSetting': '列设置'
