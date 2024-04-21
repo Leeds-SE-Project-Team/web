@@ -149,7 +149,7 @@
 </template>
 
 <script lang="ts" setup>
-import logoTransparent from '/public/logo/green-transparent.png'
+import logoTransparent from '/logo/green-transparent.png'
 
 import { computed, ref } from 'vue'
 import { useDark, useFullscreen, useToggle } from '@vueuse/core'

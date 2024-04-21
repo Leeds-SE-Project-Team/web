@@ -88,10 +88,10 @@
 </template>
 
 <script lang="ts" setup>
-import dataPanelPic1 from '/public/admin/dashboard/1.png'
-import dataPanelPic2 from '/public/admin/dashboard/2.png'
-import dataPanelPic3 from '/public/admin/dashboard/3.png'
-import dataPanelPic4 from '/public/admin/dashboard/4.png'
+import dataPanelPic1 from '/admin/dashboard/1.png'
+import dataPanelPic2 from '/admin/dashboard/2.png'
+import dataPanelPic3 from '/admin/dashboard/3.png'
+import dataPanelPic4 from '/admin/dashboard/4.png'
 
 import { computed, onMounted, ref } from 'vue'
 import { simplifyNumber } from '@/utils'
