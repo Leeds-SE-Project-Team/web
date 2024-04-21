@@ -2,20 +2,15 @@
   <div id="b-header">
     <div class="left-side">
       <a-space>
-        <a-image
-          alt="logo"
-          :src="theme === 'light' ? '/logo/green-transparent.png' : '/logo/green-transparent.png'"
-          height="40"
-          :fit="'cover'"
-        />
+        <a-image :fit="'cover'" :src="logoTransparent" alt="logo" height="40" />
         <a-typography-title
+          :heading="5"
           :style="{
             margin: '3px 0 3px 3px',
             fontSize: '18px',
             fontWeight: 'bold',
             textWrap: 'noWrap'
           }"
-          :heading="5"
         >
           {{ authStore.isAdmin ? '后台管理平台' : '未登录' }}
         </a-typography-title>
@@ -50,7 +45,7 @@
               : $t('settings.navbar.theme.toLight')
           "
         >
-          <a-button class="nav-btn" type="outline" :shape="'circle'" @click="handleToggleTheme">
+          <a-button :shape="'circle'" class="nav-btn" type="outline" @click="handleToggleTheme">
             <template #icon>
               <icon-moon-fill v-if="theme === 'dark'" />
               <icon-sun-fill v-else />
@@ -92,7 +87,7 @@
             isFullscreen ? $t('settings.navbar.screen.toExit') : $t('settings.navbar.screen.toFull')
           "
         >
-          <a-button class="nav-btn" type="outline" :shape="'circle'" @click="toggleFullScreen">
+          <a-button :shape="'circle'" class="nav-btn" type="outline" @click="toggleFullScreen">
             <template #icon>
               <icon-fullscreen-exit v-if="isFullscreen" />
               <icon-fullscreen v-else />
@@ -103,7 +98,7 @@
       <li>
         <a-dropdown :trigger="['hover']">
           <a-avatar :size="32" :style="{ marginRight: '8px', cursor: 'pointer' }">
-            <img alt="avatar" :src="userStore.getUserAvatar" />
+            <img :src="userStore.getUserAvatar" alt="avatar" />
           </a-avatar>
           <template #content>
             <!--            <a-doption>-->
@@ -153,13 +148,14 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
+import logoTransparent from '/public/logo/green-transparent.png'
+
 import { computed, ref } from 'vue'
-import { useDark, useToggle, useFullscreen } from '@vueuse/core'
+import { useDark, useFullscreen, useToggle } from '@vueuse/core'
 import { useAppStore, useAuthStore, useUserStore } from '@/stores'
 import useLocale from '@/hooks/locale'
 import { LOCALE_OPTIONS } from '@/locale'
-import MessageBox from '../message-box/index.vue'
 
 const appStore = useAppStore()
 const userStore = useUserStore()
@@ -210,7 +206,7 @@ const handleLogout = () => {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 #b-header {
   display: flex;
   justify-content: space-between;

@@ -3,12 +3,7 @@
     <a-grid-item :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }" class="panel-col">
       <a-space>
         <a-avatar :size="54" class="col-avatar">
-          <a-image
-            :preview-visible="false"
-            :src="'/admin/dashboard/1.png'"
-            alt="avatar"
-            show-loader
-          />
+          <a-image :preview-visible="false" :src="dataPanelPic1" alt="avatar" show-loader />
         </a-avatar>
         <a-statistic
           :title="$t('workplace.onlineContent')"
@@ -26,12 +21,7 @@
     <a-grid-item :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }" class="panel-col">
       <a-space>
         <a-avatar :size="54" class="col-avatar">
-          <a-image
-            :preview-visible="false"
-            :src="'/admin/dashboard/2.png'"
-            alt="avatar"
-            show-loader
-          />
+          <a-image :preview-visible="false" :src="dataPanelPic2" alt="avatar" show-loader />
         </a-avatar>
         <a-statistic
           :title="$t('workplace.putIn')"
@@ -49,12 +39,7 @@
     <a-grid-item :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }" class="panel-col">
       <a-space>
         <a-avatar :size="54" class="col-avatar">
-          <a-image
-            :preview-visible="false"
-            :src="'/admin/dashboard/3.png'"
-            alt="avatar"
-            show-loader
-          />
+          <a-image :preview-visible="false" :src="dataPanelPic3" alt="avatar" show-loader />
         </a-avatar>
         <a-statistic
           :title="$t('workplace.newDay')"
@@ -76,12 +61,7 @@
     >
       <a-space>
         <a-avatar :size="54" class="col-avatar">
-          <a-image
-            :preview-visible="false"
-            :src="'/admin/dashboard/4.png'"
-            alt="avatar"
-            show-loader
-          />
+          <a-image :preview-visible="false" :src="dataPanelPic4" alt="avatar" show-loader />
         </a-avatar>
         <a-statistic
           :precision="1"
@@ -108,22 +88,31 @@
 </template>
 
 <script lang="ts" setup>
+import dataPanelPic1 from '/public/admin/dashboard/1.png'
+import dataPanelPic2 from '/public/admin/dashboard/2.png'
+import dataPanelPic3 from '/public/admin/dashboard/3.png'
+import dataPanelPic4 from '/public/admin/dashboard/4.png'
+
 import { computed, onMounted, ref } from 'vue'
 import { simplifyNumber } from '@/utils'
-import { getTours, type TourRecord } from '@/apis/tour'
+import { getTours, type TourRecord, TourStatus, TourStatusMap } from '@/apis/tour'
 import type { ContentDataRecord } from '../types'
 
 const tourList = ref<TourRecord[]>([])
 const allContentNum = computed(() => simplifyNumber(tourList.value.length, 0, 'EN'))
 const onlineContentNum = computed(() =>
-  simplifyNumber(tourList.value.filter((tour) => tour.status === 'online').length, 0, 'EN')
+  simplifyNumber(
+    tourList.value.filter((tour) => TourStatusMap[tour.status as TourStatus] === 'online').length,
+    0,
+    'EN'
+  )
 )
 
 const weeklyPlayNumList = ref<ContentDataRecord[]>([])
 const newPlayNum = computed(() => {
   if (weeklyPlayNumList.value.length > 0) {
     let list = weeklyPlayNumList.value
-    return list[list.length - 1].y
+    return list[list.length - 1].number
   }
   return 0
 })
@@ -131,7 +120,7 @@ const newPlayNum = computed(() => {
 const newplayNumRate = computed(() => {
   if (weeklyPlayNumList.value.length > 0) {
     let list = weeklyPlayNumList.value
-    let yesterdayNewPlayNum = list[list.length - 2].y
+    let yesterdayNewPlayNum = list[list.length - 2].number
     if (yesterdayNewPlayNum === 0) {
       return NaN
     }
