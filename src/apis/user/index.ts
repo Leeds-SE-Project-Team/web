@@ -9,17 +9,18 @@ export interface UserRecord {
   // TODO: Time format: '%Y-%m-%d %H:%M:%S'
   registerTime: string
   latestLoginTime: string
+  type: number
 }
 
-export const exampleUserRecord: UserRecord = {
-  // avatar: getStaticRes('user/default/avatar/avatar.jpg'),
-  avatar: '',
-  email: 'sc21m2w@leeds.ac.uk',
-  id: 1,
-  latestLoginTime: '2024-03-03 15:35:23',
-  nickname: 'Walcraft User',
-  registerTime: '2024-03-03 15:35:23'
-}
+// export const exampleUserRecord: UserRecord = {
+//   // avatar: getStaticRes('user/default/avatar/avatar.jpg'),
+//   avatar: '',
+//   email: 'sc21m2w@leeds.ac.uk',
+//   id: 1,
+//   latestLoginTime: '2024-03-03 15:35:23',
+//   nickname: 'Walcraft User',
+//   registerTime: '2024-03-03 15:35:23'
+// }
 // API for query single user
 // export const getUserById = (userId: number): Promise<UserRecord> =>
 //   axiosRequest({
@@ -70,9 +71,18 @@ export const updateUser = (form:{
   nickname: string
   email: string
   avatar:string
+  oldPassword: string | null
+  newPassword: string | null
 }):Promise<ApiResponse<string>> =>
   axiosRequest({
     method: 'PUT',
-    url: 'users/',
+    url: 'users',
+    data: form
+  })
+
+export const upgradeUser = (form:any):Promise<ApiResponse<string>> => 
+  axiosRequest({
+    method: 'PUT',
+    url: 'users/type',
     data: form
   })

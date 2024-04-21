@@ -1,6 +1,6 @@
 import type { UserRecord } from '@/apis/user'
-import { exampleUserRecord } from '@/apis/user'
 import { type ApiResponse, axiosRequest } from '@/apis'
+import type { TourRecord } from '../tour'
 
 export interface TourCollection {
   id: number
@@ -10,7 +10,7 @@ export interface TourCollection {
   description: string
   createTime: string
   name: string
-  // tours: TourRecord
+  tours: TourRecord[]
 }
 
 export const getTourCollectionsByCurUser: Promise<ApiResponse<TourCollection[]>> = axiosRequest({
@@ -24,30 +24,14 @@ export const getTourCollection: () => Promise<ApiResponse<TourCollection[]>> = (
     url: 'tour_collection/all'
   })
 
-export const exampleTourCollection: TourCollection = {
-  coverUrl: 'https://file.wmzspace.space/tour/example/1.png',
-  createTime: '2024-3-1 00:00:00',
-  description:
-    'For those who love cycling, adventure and, more generally, the outdoors, the idea of conquering epic mountains is certainly a strong driving force.',
-  id: 1,
-  title: 'Hike a hidden gem in Southwest Germany – Palatinate High Route',
-  user: exampleUserRecord,
-  name: 'Hiking Collection'
-}
-
-export const exampleTourCollection2: TourCollection = {
-  coverUrl: 'https://file.wmzspace.space/tour/example/2.png',
-  createTime: '2024-3-3 00:00:00',
-  description:
-    'For those who love cycling, adventure and, more generally, the outdoors, the idea of conquering epic mountains is certainly a strong driving force.',
-  id: 1,
-  title: 'A land of contrasts – Lake Zurich',
-  user: exampleUserRecord,
-  name: 'Hiking Collection'
-}
-
 export const getCollectionByUser = ():Promise<ApiResponse<TourCollection[]>> => 
   axiosRequest({
     method: "GET",
     url: 'tour_collection/user',
+  })
+
+export const getCollectionById = (id: string):Promise<ApiResponse<TourCollection>> => 
+  axiosRequest({
+    method: 'GET',
+    url: `tour_collection?id=${id}`,
   })

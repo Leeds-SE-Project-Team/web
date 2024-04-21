@@ -110,3 +110,14 @@ export const getTourByUser = ():Promise<ApiResponse<TourRecord[]>> =>
     method: 'GET',
     url: 'tours/user'
   })
+
+export const updateTour = (form:any):Promise<ApiResponse<string>> =>
+  axiosRequest({
+    method:'PUT',
+    url:'tours',
+    data: form
+  })
+
+// updateTour({highlight:[]}).then(res=>{
+//   console.log(res);
+// })

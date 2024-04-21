@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import IndexView from '@/views/both/home/index.vue'
 import HomeView from '@/views/both/home/HomeView.vue'
 import LoginView from '@/views/both/login/index.vue'
@@ -21,6 +21,41 @@ import PersonMain from '@/views/mobile/personal/PersonMain.vue'
 import DetailInfo from '@/views/mobile/personal/DetailInfo.vue'
 import { useUserStore } from '@/stores/user'
 import CollDetail from '@/views/mobile/personal/CollDetail.vue'
+import GroupList from '@/views/mobile/personal/GroupList.vue'
+import GroupIndex from '@/views/mobile/group/index.vue'
+
+const personalMobileChildren:RouteRecordRaw[] = [
+  {
+    path: '',
+    name: 'personal',
+    meta: {title: 'Personal'},
+    component: PersonMain
+  },
+  {
+    path: 'tour',
+    name: 'personal-tour',
+    meta: {title: 'Tour'},
+    component: TourDetail
+  },
+  {
+    path: 'detail',
+    name: 'personal-detail',
+    meta: {title: 'Detail'},
+    component: DetailInfo
+  },
+  {
+    path: 'collection',
+    name: 'personal-collection',
+    meta: {title: 'Collection'},
+    component: CollDetail,
+  },
+  {
+    path: 'group',
+    name: 'personal-group',
+    meta: {title: 'Group'},
+    component: GroupList,
+  }
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -146,32 +181,15 @@ const router = createRouter({
         auth: ['admin', 'user']
       },
       component: personalIndex,
-      children: [
-        {
-          path: '',
-          name: 'personal',
-          meta: {title: 'Personal'},
-          component: PersonMain
-        },
-        {
-          path: 'tour',
-          name: 'personal-tour',
-          meta: {title: 'Tour'},
-          component: TourDetail
-        },
-        {
-          path: 'detail',
-          name: 'personal-detail',
-          meta: {title: 'Detail'},
-          component: DetailInfo
-        },
-        {
-          path: 'collection',
-          name: 'personal-collection',
-          meta: {title: 'Collection'},
-          component: CollDetail,
-        }
-      ]
+      children: personalMobileChildren
+    },
+    {
+      path: '/group',
+      name: 'group',
+      meta: {
+        auth: ['admin','user']
+      },
+      component: GroupIndex,
     }
   ]
 })

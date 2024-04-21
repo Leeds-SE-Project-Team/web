@@ -5,9 +5,10 @@
                 <van-field
                     label="头像"
                     class="avatar"
+                    @click="console.log(file)"
                 >
                     <template #input>
-                        <van-uploader v-model="file"/>
+                        <van-uploader v-model="file" />
                     </template>
                 </van-field>
                 <van-field
@@ -57,9 +58,12 @@ import { useUserStore } from '@/stores/user';
 import { Message } from '@arco-design/web-vue';
 import { reactive, ref, onMounted } from 'vue';
 import { updateUser } from '@/apis/user/index';
+import { uploadFileFromURL } from '@/utils/file'
+import type { UploaderFileListItem } from 'vant';
+import router from '@/router';
 
 const user = ref<UserRecord | undefined>();
-const file = ref();
+const file = ref<UploaderFileListItem[]>([]);
 const theForm = ref();
 const statusArray = ref<boolean[]>([false,false]);
 const pwdStruct = reactive({
@@ -86,7 +90,36 @@ const formSubmit = ()=>{
         const form = {
             nickname: user.value.nickname,
             avatar: user.value.avatar,
-            email: user.value.email
+            email: user.value.email,
+            oldPassword: pwdStruct.old===''?null:pwdStruct.old,
+            newPassword: pwdStruct.new===''?null:pwdStruct.new,
+        }
+        if(file.value.length==1){
+            uploadFileFromURL(
+                file.value[0].objectUrl as string,
+                `/user/${user.value.id}/avatar`,
+            ).then(res=>{
+                if(res.success){
+                    return res.data as string;
+                }else{
+                    Message.info(res.message)
+                    return 'no'
+                }
+            }).then(res=>{
+                if(res==='no'){return;}
+                form.avatar = import.meta.env.APP_STATIC_URL+res;
+                console.log(res)
+                updateUser(form).then(res=>{
+                    if(res.success){
+                        Message.info(res.message);
+                        router.replace({path:'/personal',query:{status: 'refresh'}})
+                    }else{
+                        Message.info(res.message);
+                    }
+                })
+            }).catch(e=>{
+                Message.error(e)
+            })
         }
         updateUser(form).then(res=>{
             if(res.success){
@@ -94,6 +127,8 @@ const formSubmit = ()=>{
             }else{
                 Message.info(res.message);
             }
+        }).catch(e=>{
+            Message.error(e)
         })
     }).catch((e:any)=>{
         console.log(e);

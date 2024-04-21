@@ -102,14 +102,10 @@
 <script setup lang="ts">
 import { type TourCollection } from '@/apis/collection/index'
 import DHover from './DHover.vue'
-import { computed } from 'vue';
 
 const props = defineProps<{
   info: TourCollection
 }>()
 
 console.log(props.info.coverUrl)
-const bgUrl = computed(()=>{
-  return {backgroundImage: props.info.coverUrl}
-})
 </script>
