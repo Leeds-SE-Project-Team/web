@@ -1,10 +1,11 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { type FieldRule, Message } from '@arco-design/web-vue'
 import { checkEmail } from '@/utils'
 import useLoading from '@/hooks/loading'
 import { checkUserExist } from '@/apis/user'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores'
 
 type Status = 'default' | 'signup' | 'login'
 // type-based
@@ -58,33 +59,35 @@ const handleClickContinue = () => {
 }
 
 const router = useRouter()
+const authStore = useAuthStore()
 const handleClickAdmin = () => {
   Message.success('Welcome: Admin')
-  router.push({ name: 'discover' })
+  authStore.refreshAccessToken('root')
+  router.push({ name: 'dashboard' })
 }
 </script>
 
 <template>
-  <a-space direction="vertical" :size="25" class="main-content-inner-container">
+  <a-space :size="25" class="main-content-inner-container" direction="vertical">
     <a-row><h4 class="account-title">Sign up or log in to continue</h4></a-row>
     <a-row
       ><p class="account-subtitle">Create a new account or log in to an existing one.</p></a-row
     >
     <a-row>
       <a-form
+        ref="formRef"
         :model="form"
         layout="vertical"
-        ref="formRef"
         scroll-to-first-error
         @submit="handleClickContinue"
       >
-        <a-form-item field="email" label="Enter your email address:" :rules="emailRules">
+        <a-form-item :rules="emailRules" field="email" label="Enter your email address:">
           <a-input v-model="form.email" placeholder="e.g you@example.com" />
         </a-form-item>
         <a-form-item>
-          <a-button class="account-main-btn" html-type="submit" :loading="loading">
+          <a-button :loading="loading" class="account-main-btn" html-type="submit">
             <span class="btn-icon">
-              <img src="@/assets/email.svg" alt="email" />
+              <img alt="email" src="@/assets/email.svg" />
             </span>
             <span class="btn-text">Continue with email</span>
           </a-button>

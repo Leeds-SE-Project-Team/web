@@ -3,17 +3,18 @@ import { defineStore } from 'pinia'
 import { getUserByToken } from '@/apis/user'
 import { useUserStore } from '@/stores/user'
 import { Message } from '@arco-design/web-vue'
+import { useRoute, useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string | null>('root')
   // const accessToken = ref<string | null>(null)
   const refreshAccessToken = (newToken: string | null) => {
-    accessToken.value = newToken
     if (newToken) {
       localStorage.setItem('accessToken', newToken)
     } else {
       localStorage.removeItem('accessToken')
     }
+    accessToken.value = newToken
   }
 
   const isTokenValid = ref(false)
@@ -24,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
     (value) => {
       if (value === 'root') {
         isTokenValid.value = true
-        refreshAccessToken(value)
+        return
       }
 
       getUserByToken(value!)
@@ -38,12 +39,19 @@ export const useAuthStore = defineStore('auth', () => {
           }
         })
         .catch((e) => {
-          Message.error({
-            content: e,
-            id: 'tokenValidation'
-          })
+          // Message.error({
+          //   content: e,
+          //   id: 'tokenValidation'
+          // })
           isTokenValid.value = false
           refreshAccessToken(null)
+          // if (location.pathname !== '/') {
+          //   Message.error({
+          //     content: e,
+          //     id: 'tokenValidation'
+          //   })
+          //   location.replace('/')
+          // }
         })
       // validateToken(value).then((valid) => {
       //   if (valid) {

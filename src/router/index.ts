@@ -173,21 +173,31 @@ router.beforeEach((to, from, next) => {
   if (to.meta.auth && (to.meta.auth as string[]).length > 0) {
     const authStore = useAuthStore()
     const userStore = useUserStore()
-
     if (authStore.isTokenValid) {
       next()
     } else {
       const accessToken = localStorage.getItem('accessToken')
+
       if (accessToken) {
-        getUserByToken(accessToken).then((apiRes) => {
-          if (apiRes.success) {
-            userStore.curUser = apiRes.data!
-            next()
-          } else {
-            next('/')
-          }
-        })
+        if (accessToken === 'root') {
+          next()
+        }
+        getUserByToken(accessToken)
+          .then((apiRes) => {
+            if (apiRes.success) {
+              userStore.curUser = apiRes.data!
+              authStore.refreshAccessToken(accessToken)
+              next()
+            } else {
+              authStore.refreshAccessToken(null)
+              next('/')
+            }
+          })
+          .catch(() => {
+            authStore.refreshAccessToken(null)
+          })
       } else {
+        authStore.refreshAccessToken(null)
         next('/')
       }
     }

@@ -52,7 +52,7 @@
 
     <a-menu-item @click="$router.push({ name: 'discover' })">
       <IconRedo />
-      返回点映
+      返回Walcraft
     </a-menu-item>
   </a-menu>
 </template>
