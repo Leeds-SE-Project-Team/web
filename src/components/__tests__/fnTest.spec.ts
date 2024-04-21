@@ -5,11 +5,14 @@ import { getTourHighlights } from "@/apis/tour/highlight";
 import { getTourSpots } from "@/apis/tour/spot";
 import { checkUserExist, getUserByEmail, type QueryUserForm } from "@/apis/user";
 import { createPinia, setActivePinia } from "pinia";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { createApp } from "vue";
 
-beforeAll(()=>{
-    setActivePinia(createPinia())
-    
+beforeEach(()=>{
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const app = createApp({});
+    app.use(pinia)
 })
 
 describe('Data Function Test', ()=>{

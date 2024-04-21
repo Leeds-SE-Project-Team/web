@@ -37,7 +37,7 @@
                 :style="{ width: props.tourData.tourHighlightList.length >= 2 ? '60%' : '100%' }">
                   <a-image
                     :height="'100%'"
-                    :src="props.tourData.tourHighlightList[0].tourImages[0].imageUrl"
+                    :src="props.tourData.tourHighlightList[0]?.tourImages[0].imageUrl"
                     :width="'100%'"
                     fit="cover"
                   />
@@ -280,7 +280,7 @@ const props = defineProps<{
   tourData: TourRecord
   mode?: 'minimal' | 'tour'
 }>()
-
+console.log(props.tourData)
 const emits = defineEmits(["jump"])
 
 // const commentArea = ref<HTMLDivElement | undefined>()
@@ -334,7 +334,7 @@ const switchClick = () => {
       if (mapWrapper.value) {
         mapWrapper.value.classList.remove('hide')
       }
-      smallImg.value = props.tourData.tourHighlightList[0].tourImages[0].imageUrl
+      smallImg.value = props.tourData.tourHighlightList[0]?.tourImages[0].imageUrl
       break
 
     case 'pic':

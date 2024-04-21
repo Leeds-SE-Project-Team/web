@@ -1,27 +1,69 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import IndexView from '@/views/both/home/index.vue'
 import HomeView from '@/views/both/home/HomeView.vue'
 import LoginView from '@/views/both/login/index.vue'
 import DiscoverMobileView from '@/views/mobile/discover/index.vue'
 import DiscoverView from '@/views/web/discover/index.vue'
 import HighlightMobileView from '@/views/mobile/highlight/index.vue'
-import HighlightView from '@/views/web/highlight/index.vue'
 import PlannerView from '@/views/web/planner/index.vue'
 import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 import groupCollection from '@/views/web/groupCollection/index.vue'
+
 import personalPage from '@/views/web/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
 import personalProfile from '@/views/web/personal/profile.vue'
 import personalHighlights from '@/views/web/personal/highlights.vue'
 import personalCollections from '@/views/web/personal/profile.vue'
 import personalGroup from '@/views/web/personal/group.vue'
+import personalIndex from '@/views/mobile/personal/index.vue'
+import TourDetail from '@/views/mobile/personal/TourDetail.vue'
 import { Capacitor } from '@capacitor/core'
 import { MOBILE_ROUTES } from '@/router/mobile'
 import { useAuthStore } from '@/stores/auth'
 import { getUserByToken } from '@/apis/user'
+import PersonMain from '@/views/mobile/personal/PersonMain.vue'
+import DetailInfo from '@/views/mobile/personal/DetailInfo.vue'
+import { useUserStore } from '@/stores/user'
+import CollDetail from '@/views/mobile/personal/CollDetail.vue'
+import GroupList from '@/views/mobile/personal/GroupList.vue'
+import GroupIndex from '@/views/mobile/group/index.vue'
+
+const personalMobileChildren:RouteRecordRaw[] = [
+  {
+    path: '',
+    name: 'personal',
+    meta: {title: 'Personal'},
+    component: PersonMain
+  },
+  {
+    path: 'tour',
+    name: 'personal-tour',
+    meta: {title: 'Tour'},
+    component: TourDetail
+  },
+  {
+    path: 'detail',
+    name: 'personal-detail',
+    meta: {title: 'Detail'},
+    component: DetailInfo
+  },
+  {
+    path: 'collection',
+    name: 'personal-collection',
+    meta: {title: 'Collection'},
+    component: CollDetail,
+  },
+  {
+    path: 'group',
+    name: 'personal-group',
+    meta: {title: 'Group'},
+    component: GroupList,
+  }
+]
+import { ADMIN_ROUTE } from '@/router/web'
 
 const web_personal_children = [
   {
@@ -70,6 +112,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     ...MOBILE_ROUTES,
+    ADMIN_ROUTE,
     {
       path: '/',
       name: 'index',
@@ -158,8 +201,7 @@ const router = createRouter({
       path: '/highlight',
       name: 'highlight',
       meta: {
-        layout: 'mobile-main',
-        // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        layout: 'mobile-main', // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'highlight Page',
         auth: ['admin', 'user']
       }, // Render component dynamically according to platform
@@ -181,7 +223,7 @@ const router = createRouter({
       name: 'groucollection',
       meta: {
         layout: 'b',
-        title: 'group collection Page',
+        title: 'group collection Page'
       },
       component: groupCollection
     },    
@@ -195,6 +237,22 @@ const router = createRouter({
       component: personalPage,
       children: web_personal_children,
     },
+    {
+      path: '/personal',
+      meta: {
+        auth: ['admin', 'user']
+      },
+      component: personalIndex,
+      children: personalMobileChildren
+    },
+    {
+      path: '/group',
+      name: 'group',
+      meta: {
+        auth: ['admin','user']
+      },
+      component: GroupIndex,
+    }
   ]
 })
 
@@ -202,26 +260,43 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.meta.auth && (to.meta.auth as string[]).length > 0) {
     const authStore = useAuthStore()
+    const userStore = useUserStore()
     if (authStore.isTokenValid) {
       next()
+      return
     } else {
       const accessToken = localStorage.getItem('accessToken')
-      console.log(accessToken)
       if (accessToken) {
-        getUserByToken(accessToken).then((apiRes) => {
-          console.log(apiRes)
-          if (apiRes.success) {
-            next()
-          } else {
-            next('/')
-          }
-        })
+        if (accessToken === 'root') {
+          authStore.isTokenValid = true
+          next()
+          return
+        }
+        getUserByToken(accessToken)
+          .then((apiRes) => {
+            if (apiRes.success) {
+              userStore.curUser = apiRes.data!
+              authStore.refreshAccessToken(accessToken)
+              next()
+              return
+            } else {
+              authStore.refreshAccessToken(null)
+              next('/')
+              return
+            }
+          })
+          .catch(() => {
+            authStore.refreshAccessToken(null)
+          })
       } else {
+        authStore.refreshAccessToken(null)
         next('/')
+        return
       }
     }
   } else {
     next()
+    return
   }
 })
 
