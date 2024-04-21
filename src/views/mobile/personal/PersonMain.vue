@@ -1,16 +1,20 @@
 <template>
   <section class="user-info flex-r">
     <div class="user-avatar">
-      <van-image :src="user?.avatar" height="100" round width="100" />
+      <van-image :src="user?.avatar" height="100" round width="100" fit="cover" />
     </div>
     <div class="user-text flex-c">
-      <div class="username">
-        {{ user?.nickname }}
+      <div class="username flex-r">
+        <span style="margin-right: 0.5rem">{{ user?.nickname }}</span>
+        <div v-if="user?.type==1" class="flex-c flex-justify-c" >
+          <van-icon :size="20" name="/account/vip.svg" />
+        </div>
       </div>
       <div class="email">
         {{ user?.email }}
       </div>
     </div>
+    
   </section>
   <section class="options">
     <van-list class="options-list">
@@ -36,7 +40,7 @@
           <van-icon :size="24" name="arrow" />
         </template>
       </van-cell>
-      <van-cell>
+      <van-cell @click="toCollection">
         <template #icon>
           <van-icon :size="24" name="description-o" />
         </template>
@@ -48,6 +52,18 @@
         </template>
       </van-cell>
       <van-cell>
+        <template #icon>
+          <van-icon :size="24" name="friends-o" />
+        </template>
+        <div class="flex-r list-text">
+          <span>My Group</span>
+        </div>
+        <template #right-icon>
+          <van-icon @click="toGroup" v-if="user?.type==1" :size="24" name="arrow" />
+          <van-icon v-else :size="24" name="credit-pay" />
+        </template>
+      </van-cell>
+      <van-cell v-if="user?.type==0" @click="clickVIP" >
         <template #icon>
           <van-icon :size="24" name="/account/vip.svg" />
         </template>
@@ -66,12 +82,13 @@
 </template>
 
 <script lang="ts" setup>
-import type { UserRecord } from '@/apis/user'
+import { upgradeUser, type UserRecord } from '@/apis/user'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { Message } from '@arco-design/web-vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { showSuccessToast } from 'vant'
 
 const userStore = useUserStore()
 const user = ref<UserRecord | null>(null)
@@ -84,15 +101,35 @@ const toDetail = () => {
 const toTour = () => {
   router.push('/personal/tour')
 }
+const toCollection = ()=>{
+  router.push('/personal/collection')
+}
+const toGroup = ()=>{
+  router.push('/personal/group')
+}
+const clickVIP = ()=>{
+  const form = user.value!
+  form.type = 1
+  upgradeUser(form).then(res=>{
+    if(res.success){
+      showSuccessToast("VIP!")
+    }else{
+      Message.info(res.message)
+    }
+  })
+}
+
+userStore
+  .getUserRecord()
+  .then((res) => {
+    console.log(res)
+    user.value = res;
+  })
+  .catch((e) => {
+    Message.info(e)
+  })
 onMounted(() => {
-  userStore
-    .getUserRecord()
-    .then((res) => {
-      console.log(res)
-    })
-    .catch((e) => {
-      Message.info(e)
-    })
+  
 })
 </script>
 

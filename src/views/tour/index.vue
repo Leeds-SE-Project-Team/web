@@ -7,7 +7,7 @@
         <div class="main-bg">
           <img
             alt=""
-            :src="tourRecord.tourHighlightList[0].tourImages[0].imageUrl"
+            :src="coverImg"
           />
         </div>
         <!-- <div class="sub">
@@ -187,6 +187,7 @@ import { onMounted, ref } from 'vue'
 import { type TourRecord, getTourById } from '@/apis/tour'
 import { useRoute, useRouter } from 'vue-router'
 import DHighlight from '@/views/mobile/discover/DHighlight.vue'
+import { computed } from 'vue'
 
 const url = import.meta.env.APP_STATIC_URL.concat('/tour')
 const exam_pic =
@@ -199,6 +200,14 @@ const tourRecord = ref<TourRecord>()
 const toTour = ()=>{
   router.push({name:'anotherHighlight'})
 }
+const coverImg = computed(()=>{
+  if(!tourRecord.value){
+    return '';
+  }else if(!tourRecord.value.tourHighlightList[0]){
+    return tourRecord.value.mapUrl;
+  }
+  return tourRecord.value.tourHighlightList[0].tourImages[0].imageUrl;
+})
 
 // const commentArea = ref<HTMLDivElement | undefined>()
 // const mapWrapper = ref<HTMLDivElement | undefined>()

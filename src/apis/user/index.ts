@@ -1,5 +1,5 @@
 // Basic interface for user record
-import { type ApiResponse, axiosRequest, getStaticRes } from '@/apis'
+import { type ApiResponse, axiosRequest } from '@/apis'
 
 export interface UserRecord {
   id: number
@@ -9,9 +9,7 @@ export interface UserRecord {
   // TODO: Time format: '%Y-%m-%d %H:%M:%S'
   registerTime: string
   latestLoginTime: string
-
   type: UserType
-  // tourNum: number
 }
 
 export enum UserType {
@@ -36,6 +34,7 @@ export const exampleUserRecord: UserRecord = {
   registerTime: '2024-03-03 15:35:23',
   type: UserType.COMMON
 }
+
 // API for query single user
 // export const getUserById = (userId: number): Promise<UserRecord> =>
 //   axiosRequest({
@@ -85,6 +84,26 @@ export const createUser = (form: {
   axiosRequest({
     method: 'POST',
     url: 'users/signup',
+    data: form
+  })
+
+export const updateUser = (form:{
+  nickname: string
+  email: string
+  avatar:string
+  oldPassword: string | null
+  newPassword: string | null
+}):Promise<ApiResponse<string>> =>
+  axiosRequest({
+    method: 'PUT',
+    url: 'users',
+    data: form
+  })
+
+export const upgradeUser = (form:any):Promise<ApiResponse<string>> => 
+  axiosRequest({
+    method: 'PUT',
+    url: 'users/type',
     data: form
   })
 

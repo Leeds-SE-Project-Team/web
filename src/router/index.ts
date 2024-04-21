@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import IndexView from '@/views/both/home/index.vue'
 import HomeView from '@/views/both/home/HomeView.vue'
 import LoginView from '@/views/both/login/index.vue'
@@ -20,6 +20,42 @@ import { getUserByToken } from '@/apis/user'
 import PersonMain from '@/views/mobile/personal/PersonMain.vue'
 import DetailInfo from '@/views/mobile/personal/DetailInfo.vue'
 import { useUserStore } from '@/stores/user'
+import CollDetail from '@/views/mobile/personal/CollDetail.vue'
+import GroupList from '@/views/mobile/personal/GroupList.vue'
+import GroupIndex from '@/views/mobile/group/index.vue'
+
+const personalMobileChildren:RouteRecordRaw[] = [
+  {
+    path: '',
+    name: 'personal',
+    meta: {title: 'Personal'},
+    component: PersonMain
+  },
+  {
+    path: 'tour',
+    name: 'personal-tour',
+    meta: {title: 'Tour'},
+    component: TourDetail
+  },
+  {
+    path: 'detail',
+    name: 'personal-detail',
+    meta: {title: 'Detail'},
+    component: DetailInfo
+  },
+  {
+    path: 'collection',
+    name: 'personal-collection',
+    meta: {title: 'Collection'},
+    component: CollDetail,
+  },
+  {
+    path: 'group',
+    name: 'personal-group',
+    meta: {title: 'Group'},
+    component: GroupList,
+  }
+]
 import { ADMIN_ROUTE } from '@/router/web'
 
 const router = createRouter({
@@ -67,25 +103,25 @@ const router = createRouter({
       component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
     },
 
-    // {
-    //   path: '/plan',
-    //   name: 'planner',
-    //   meta: {
-    //     title: 'Planner Page',
-    //     layout: 'mobile-default'
-    //   },
-    //   component: PlannerMobileView
-    // },
     {
       path: '/plan',
       name: 'planner',
       meta: {
         title: 'Planner Page',
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default',
-        auth: ['user']
+        layout: 'mobile-default'
       },
-      component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
+      component: PlannerMobileView
     },
+    // {
+    //   path: '/plan',
+    //   name: 'planner',
+    //   meta: {
+    //     title: 'Planner Page',
+    //     layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default',
+    //     auth: ['user']
+    //   },
+    //   component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
+    // },
     {
       path: '/tour',
       name: 'tour',
@@ -144,27 +180,18 @@ const router = createRouter({
     {
       path: '/personal',
       meta: {
-        title: 'personal',
         auth: ['admin', 'user']
       },
       component: personalIndex,
-      children: [
-        {
-          path: '',
-          name: 'personal',
-          component: PersonMain
-        },
-        {
-          path: 'tour',
-          name: 'personal-tour',
-          component: TourDetail
-        },
-        {
-          path: 'detail',
-          name: 'personal-detail',
-          component: DetailInfo
-        }
-      ]
+      children: personalMobileChildren
+    },
+    {
+      path: '/group',
+      name: 'group',
+      meta: {
+        auth: ['admin','user']
+      },
+      component: GroupIndex,
     }
   ]
 })

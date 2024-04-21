@@ -2,13 +2,13 @@
   <div id="page-collection-detail">
     <div
       class="head-background"
-      style="background: url('https://file.wmzspace.space//collection/6/cover.png')"
+      :style="`background: url(${thisCollection?thisCollection.coverUrl:''})`"
     ></div>
     <!-- 可能的面包屑 -->
     <div></div>
     <div class="header-cover">
       <div class="img-wrapper">
-        <img alt="" src="https://file.wmzspace.space//collection/6/cover.jpg" />
+        <img alt="" :src="thisCollection?thisCollection.coverUrl:''" />
       </div>
     </div>
     <div class="content">
@@ -17,11 +17,13 @@
         <div class="info-wrapper flex-c">
           <div class="avatar-wrapper flex-r flex-justify-c">
             <a-avatar>
-              <img alt="" src="//fp1.fghrsh.net/2023/05/16/b082833e5c59a309880eca3d525e7cae.gif" />
+              <img alt="" :src="thisCollection?thisCollection.user.avatar:''" />
             </a-avatar>
           </div>
           <div class="specify flex-r flex-justify-c">
-            <span><a href="#">Test</a></span>
+            <span><a href="#">
+              {{ thisCollection?thisCollection.user.nickname:'' }}
+            </a></span>
           </div>
         </div>
       </div>
@@ -80,24 +82,24 @@
         </div>
       </div>
       <div class="main-content flex-r flex-justify-c">
-        <p>家人们谁懂啊，成都这里真好玩！</p>
+        <p>{{ thisCollection?thisCollection.title:'' }}</p>
       </div>
     </div>
     <div class="divider w-full">
       <span></span>
     </div>
     <h2 class="text-center">On the Map</h2>
-    <div class="map-area w-full" style="display: flex; justify-content: center;margin-top: 0;">
+    <div class="map-area w-full flex-r" style="margin-top: 0;">
       <!--      <RouteMap></RouteMap>-->
-      <!-- <el-amap :scroll-wheel="false" style="width: 100%; height: 100%">
+      <el-amap :scroll-wheel="false">
         <el-amap-control-geolocation
           :circleOptions="{
             fillOpacity: 0,
             strokeOpacity: 0
           }"
         />
-      </el-amap> -->
-      <img  src="https://file.wmzspace.space//collection/6/map.jpg" alt="" width="80%" style="object-fit: contain; margin: 0 auto"/>
+      </el-amap>
+      <!-- <img  src="https://file.wmzspace.space//collection/6/map.jpg" alt="" width="80%" style="object-fit: contain; margin: 0 auto"/> -->
     </div>
     <div class="divider">
       <span></span>
@@ -105,16 +107,20 @@
     <h2 class="text-center">Tours</h2>
     <div ref="scrollContainer" class="tour-scroll-container">
       <div ref="imgCollection" class="img-collection">
-        <div v-for="(_, i) in testCardInfo" :key="i" class="img-wrapper">
-          <img v-if="flag" :src="testCardInfo[i].tourHighlightList[0].tourImages[0].imageUrl" alt="" />
+        <div v-for="(_, i) in cardInfos" :key="i" class="img-wrapper">
+          <img v-if="flag" :src="
+            cardInfos[i].tourHighlightList[0] ?
+            cardInfos[i].tourHighlightList[0].tourImages[0].imageUrl :
+            cardInfos[i].mapUrl
+          " alt="" />
         </div>
       </div>
       <div class="tianchong"></div>
       <div ref="tourScroll" class="tour-card-wrapper w-full">
-        <div v-for="(tc, i) in testCardInfo" :key="i" class="tour-card flex-c flex-justify-c">
+        <div v-for="(tc, i) in cardInfos" :key="i" class="tour-card flex-c flex-justify-c">
           <DCard
             v-if="flag"
-            :tour-data="testCardInfo[i]" mode="minimal"
+            :tour-data="cardInfos[i]" mode="minimal"
             style="overflow: hidden"
             @jump="toTour(tc.id)"
           ></DCard>
@@ -150,17 +156,22 @@
 import { onMounted, ref } from 'vue'
 // import MapContainer from '@/components/map/MapContainer.vue';
 import DCard from '@/views/web/discover/components/DCard.vue'
-import { type TourRecord, TourType, getTourById } from '@/apis/tour'
-import { useRouter } from 'vue-router';
+import { type TourRecord } from '@/apis/tour'
+import { useRoute, useRouter } from 'vue-router';
+import { getCollectionById, type TourCollection } from '@/apis/collection';
+import { Message } from '@arco-design/web-vue';
 
 const tourScroll = ref<HTMLDivElement | null>(null)
 const scrollContainer = ref<HTMLDivElement | null>(null)
 const imgCollection = ref<HTMLDivElement | null>(null)
 var ticking = false
 
-const router = useRouter()
+const router = useRouter();
+const route = useRoute();
 
-const testCardInfo = ref<TourRecord[]>([])
+const cardInfos = ref<TourRecord[]>([])
+const mapRoutes = ref<any[]>([])
+const thisCollection = ref<TourCollection>()
 
 function switching(
   imgs: HTMLCollectionOf<HTMLDivElement>,
@@ -214,34 +225,8 @@ function switching(
 }
 
 const flag = ref(false)
-getTourById(18).then((res)=>{
-  if(res.success){
-    testCardInfo.value.push(res.data!)
-  }
-  return getTourById(20)
-}).then((res)=>{
-  if(res.success){
-    testCardInfo.value.push(res.data!)
-  }
-  return getTourById(21)
-}).then((res)=>{
-  if(res.success){
-    testCardInfo.value.push(res.data!)
-  }
-  return getTourById(22)
-}).then((res)=>{
-  if(res.success){
-    testCardInfo.value.push(res.data!)
-    flag.value = true
-  }
-  console.log(testCardInfo.value)
-})
 
-const toTour = (id:string|number)=>{
-  router.push({name:'tour', query:{id: id}})
-}
-
-onMounted(() => {
+const handleCardMoving = ()=>{
   if (tourScroll.value && scrollContainer.value) {
     const imgs = scrollContainer.value.getElementsByClassName(
       'img-wrapper'
@@ -262,10 +247,38 @@ onMounted(() => {
       }
     })
   }
+}
+
+const toTour = (id:string|number)=>{
+  router.push({name:'tour', query:{id: id}})
+}
+
+onMounted(() => {
+  getCollectionById(route.query.id as string).then(res=>{
+    console.log(res);
+    thisCollection.value = res.data
+    if(res.success){
+      res.data?.tours.forEach(item=>{
+        cardInfos.value.push(item);
+        fetch(item.dataUrl).then(data=>{
+          return data.json()
+        }).then(dj=>{
+          mapRoutes.value.push(dj)
+        })
+      })
+      flag.value = true
+      handleCardMoving()
+    }else{
+      Message.info(res.message)
+    }
+  })
 })
 </script>
 <style scoped>
 :deep(.arco-btn-size-medium svg){
   vertical-align: -6px;
+}
+.el-vue-amap-container{
+  flex: 1;
 }
 </style>

@@ -129,6 +129,12 @@ export const getTours = (): Promise<ApiResponse<TourRecord[]>> =>
     url: 'tours/all'
   })
 
+export const getTourByUser = ():Promise<ApiResponse<TourRecord[]>> => 
+  axiosRequest({
+    method: 'GET',
+    url: 'tours/user'
+  })
+
 export const getToursWeeklyData = (): Promise<ApiResponse<ContentDataRecord[]>> =>
   axiosRequest({
     method: 'GET',
@@ -141,3 +147,4 @@ export const updateTour = (form: UpdateTourForm): Promise<ApiResponse<TourRecord
     url: 'tours',
     data: form
   })
+
