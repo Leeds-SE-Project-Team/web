@@ -45,7 +45,7 @@ const fetchTourCollections = () => {
   //   .getUserRecord()
   //   .then((user) => {
   collectionLoadingObj.setLoading(true)
-  getTourCollectionsByCurUser
+  getTourCollectionsByCurUser()
     .then((apiRes) => {
       if (apiRes.success) {
         userCollections.value = apiRes.data!

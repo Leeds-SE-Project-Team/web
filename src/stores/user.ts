@@ -1,9 +1,29 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { UserRecord } from '@/apis/user'
+import { useAuthStore } from '@/stores/auth'
+import { getStaticRes } from '@/apis'
+import { adminUser, guestUser } from '@/apis/user'
 
 export const useUserStore = defineStore('user', () => {
   const curUser = ref<UserRecord | undefined>()
+
+  const getUserAvatar = computed(() =>
+    curUser.value !== undefined
+      ? curUser.value.avatar
+      : useAuthStore().isAdmin
+        ? adminUser.avatar
+        : guestUser.avatar
+  )
+
+  const getUserNickname = computed(() =>
+    curUser.value !== undefined
+      ? curUser.value.nickname
+      : useAuthStore().isAdmin
+        ? adminUser.nickname
+        : guestUser.nickname
+  )
+
   const getUserRecord = (): Promise<UserRecord> =>
     new Promise((resolve, reject) => {
       if (curUser.value !== undefined) {
@@ -13,5 +33,5 @@ export const useUserStore = defineStore('user', () => {
       }
     })
 
-  return { getUserRecord, curUser }
+  return { getUserRecord, curUser, getUserAvatar, getUserNickname }
 })

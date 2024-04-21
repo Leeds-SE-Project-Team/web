@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import { range } from 'lodash-es'
 import { useGeolocation } from '@vuemap/vue-amap'
 
@@ -109,7 +109,7 @@ export const getTimeDiffUntilNow = (datetimeString: string) => {
 }
 
 // 禁止选择当时之后的时刻
-export const disabledDateTime = (dates: Dayjs) => {
+export const disabledDateTime = (dates: dayjs.Dayjs) => {
   const hours = dayjs().hour()
   const minutes = dayjs().minute()
   const seconds = dayjs().second()
@@ -140,10 +140,9 @@ export const disabledDateTime = (dates: Dayjs) => {
 // 检查时间是否在范围中
 export const isTimeInRange = (range: string[], time: string) => {
   // const startDate = new Date(range[0])
-  const startDate = new Dayjs(range[0])
-  const endDate = new Dayjs(range[1])
-  const checkTime = new Dayjs(time)
-
+  const startDate = dayjs(range[0])
+  const endDate = dayjs(range[1])
+  const checkTime = dayjs(time)
   return checkTime >= startDate && checkTime <= endDate
 }
 

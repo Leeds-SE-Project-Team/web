@@ -25,15 +25,17 @@ axiosInstance.interceptors.request.use(
     if (config.headers.byPass) {
       return config
     }
-
     // if (!authStore.isTokenValid && authStore.accessToken) {
     //   authStore.refreshAccessToken(null)
     // }
-
     const userStore = useUserStore()
     if (userStore.curUser) {
       config.headers.set('User-ID', userStore.curUser.id)
     } else if (authStore.accessToken) {
+      if (authStore.accessToken === 'root') {
+        return config
+      }
+      console.log('!')
       return new Promise((resolve) => {
         getUserByToken(authStore.accessToken!).then((apiRes) => {
           if (apiRes.success) {
