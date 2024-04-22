@@ -10,6 +10,7 @@ import likedSvgUrl from '/interaction/video_detail_liked.svg'
 import starSvgUrl from '/interaction/star.svg'
 import starredSvgUrl from '/interaction/starred.svg'
 import { shuffle } from 'lodash-es'
+import { gsap } from 'gsap'
 
 const currentPlayIndex = ref(0)
 
@@ -212,31 +213,54 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', resizeEventHandler)
 })
+
+const showCommentList = ref(false)
+const showCommentAnimComplete = ref(true)
+const handleClickComment = () => {
+  showCommentList.value = true
+  nextTick(() => {
+    showCommentAnimComplete.value &&
+      gsap.to('#discover-comment-overlay .comment-wrapper', {
+        duration: 0.3,
+        yPercent: -60,
+        ease: 'power3.out',
+        onStart: () => {
+          showCommentAnimComplete.value = false
+        },
+        onComplete: () => {
+          showCommentAnimComplete.value = true
+        }
+      })
+  })
+}
+
+const handleCloseCommentList = () => {
+  showCommentAnimComplete.value &&
+    gsap.to('#discover-comment-overlay .comment-wrapper', {
+      duration: 0.3,
+      yPercent: 0,
+      ease: 'power3.out',
+      onStart: () => {
+        showCommentAnimComplete.value = false
+      },
+      onComplete: () => {
+        showCommentList.value = false
+        showCommentAnimComplete.value = true
+      }
+    })
+}
+
+const recommendPlace = (item: DisPlayItem) =>
+  computed(() => {
+    return 1
+  })
+
+onMounted(() => {
+  // gsap.to('#discover-comment-overlay', { duration: 0.5, yPercent: 40 })
+})
 </script>
 
 <template>
-  <!--  <div id="recommend-out-switch-btn">-->
-  <!--    <div class="xgplayer-playswitch-tab">-->
-  <!--      <div class="xgplayer-playswitch-prev" @click="handlePlayPrev">-->
-  <!--        <a-image :preview-visible="false" src="/recommend/prev.svg"></a-image>-->
-  <!--      </div>-->
-  <!--      <div class="xgplayer-playswitch-next" @click="handlePlayNext">-->
-  <!--        <a-image :preview-visible="false" src="/recommend/next.svg"></a-image>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-  <van-floating-bubble
-    :offset="{
-      x: 315,
-      y: 70
-    }"
-    axis="xy"
-    magnetic="x"
-  >
-    <template #default>
-      <van-icon :size="23" name="guide-o" />
-    </template>
-  </van-floating-bubble>
   <div id="slide-list" @wheel.passive="handleWheel">
     <div class="outer-container">
       <div ref="slideList" class="slide-list-container">
@@ -247,7 +271,6 @@ onUnmounted(() => {
             height: `${parentHeight}px`
           }"
           class="page-recommend-container border-1"
-          @click="$router.push({ name: item.type, query: { id: item.item.id } })"
           @touchmove="handleTouchMove"
           @touchstart="handleTouchStart"
         >
@@ -397,33 +420,38 @@ onUnmounted(() => {
                           </a-tooltip>
                         </div>
                         <div class="video-action-item">
-                          <a-tooltip :position="'left'">
-                            <div class="video-action-others">
-                              <div class="video-action-icon">
-                                <img
-                                  :height="45"
-                                  :width="45"
-                                  alt="comment"
-                                  src="/interaction/comment.svg"
-                                />
-                              </div>
-                              <div class="video-action-statistic">
-                                {{ 1 }}
-                              </div>
+                          <!--                          <a-tooltip :position="'left'">-->
+                          <div class="video-action-others" @click.stop="handleClickComment">
+                            <div class="video-action-icon">
+                              <img
+                                :height="45"
+                                :width="45"
+                                alt="comment"
+                                src="/interaction/comment.svg"
+                              />
                             </div>
-                            <template #content>
-                              评论
-                              <a-tag
-                                :size="'small'"
-                                style="margin: 5px; padding: 5px; border-radius: 5px"
-                                >C
-                              </a-tag>
-                            </template>
-                          </a-tooltip>
+                            <div class="video-action-statistic">
+                              {{ 1 }}
+                            </div>
+                          </div>
+                          <!--                            <template #content>-->
+                          <!--                              评论-->
+                          <!--                              <a-tag-->
+                          <!--                                :size="'small'"-->
+                          <!--                                style="margin: 5px; padding: 5px; border-radius: 5px"-->
+                          <!--                                >C-->
+                          <!--                              </a-tag>-->
+                          <!--                            </template>-->
+                          <!--                          </a-tooltip>-->
                         </div>
                         <div class="video-action-item">
                           <a-tooltip :position="'left'">
-                            <div class="video-action-others">
+                            <div
+                              class="video-action-others"
+                              @click="
+                                $router.push({ name: item.type, query: { id: item.item.id } })
+                              "
+                            >
                               <div class="video-action-icon">
                                 <img
                                   :height="45"
@@ -469,6 +497,40 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
+
+          <van-overlay
+            id="discover-comment-overlay"
+            :duration="0"
+            :show="showCommentList"
+            @click="handleCloseCommentList"
+          >
+            <div class="comment-wrapper">
+              <div class="usually-search">
+                大家都在搜：<a class="usually-search-topic"
+                  ><span
+                    :style="{
+                      cursor: recommendPlace(item) ? 'pointer' : 'default'
+                    }"
+                    class="usually-search-topic-text"
+                    @click="
+                      () => {
+                        if (recommendPlace(item)) {
+                          // handleSearch(recommendPlace)
+                        }
+                      }
+                    "
+                    >{{ recommendPlace(item) ? recommendPlace(item) : '暂无推荐' }}</span
+                  >
+                  <img
+                    v-if="recommendPlace(item)"
+                    alt="usually-search"
+                    class="usually-search-icon"
+                    src="/interaction/usually_search.svg"
+                  />
+                </a>
+              </div>
+            </div>
+          </van-overlay>
         </div>
 
         <a-spin
@@ -481,6 +543,29 @@ onUnmounted(() => {
       </div>
     </div>
   </div>
+
+  <!--  <div id="recommend-out-switch-btn">-->
+  <!--    <div class="xgplayer-playswitch-tab">-->
+  <!--      <div class="xgplayer-playswitch-prev" @click="handlePlayPrev">-->
+  <!--        <a-image :preview-visible="false" src="/recommend/prev.svg"></a-image>-->
+  <!--      </div>-->
+  <!--      <div class="xgplayer-playswitch-next" @click="handlePlayNext">-->
+  <!--        <a-image :preview-visible="false" src="/recommend/next.svg"></a-image>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
+  <!--  <van-floating-bubble-->
+  <!--    :offset="{-->
+  <!--      x: 315,-->
+  <!--      y: 70-->
+  <!--    }"-->
+  <!--    axis="xy"-->
+  <!--    magnetic="x"-->
+  <!--  >-->
+  <!--    <template #default>-->
+  <!--      <van-icon :size="23" name="guide-o" />-->
+  <!--    </template>-->
+  <!--  </van-floating-bubble>-->
 </template>
 
 <script lang="ts">

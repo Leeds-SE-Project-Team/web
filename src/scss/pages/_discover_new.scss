@@ -79,6 +79,7 @@
     //padding-right: 68px;
     //padding: 0 30px;
     min-height: 400px;
+    //z-index: $mobile-footer-nav-z-index + 1 !important;
 
     .slide-list-container {
       width: 100%;
@@ -131,16 +132,16 @@
               bottom: 0;
               overflow: hidden;
 
-              .blurImageContainer{
+              .blurImageContainer {
                 //background: red;
                 background-size: cover;
                 background-repeat: no-repeat;
                 //background-position-y: 20px;
                 //border: thick solid white;
-                height:100%;
+                height: 100%;
                 width: 100%;
                 position: absolute;
-                top:0;
+                top: 0;
                 z-index: -1;
                 filter: blur(10px);
                 //display: none;
@@ -475,3 +476,21 @@
   }
 }
 
+#discover-comment-overlay {
+  --van-overlay-background: transparent;
+  height: 100%;
+  width: 100%;
+  z-index: $mobile-footer-nav-z-index + 1 !important;
+  position: absolute;
+
+  .comment-wrapper {
+    z-index: $mobile-footer-nav-z-index + 1 !important;
+    transform: translateY(100%);
+    position: fixed;
+    background-color: #fdfdfd;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 8px 8px 0 0;
+  }
+}
