@@ -1,5 +1,5 @@
 // Basic interface for user record
-import { type ApiResponse, axiosRequest } from '@/apis'
+import { type ApiResponse, axiosRequest, getStaticRes } from '@/apis'
 
 export interface UserRecord {
   id: number
@@ -87,20 +87,20 @@ export const createUser = (form: {
     data: form
   })
 
-export const updateUser = (form:{
+export const updateUser = (form: {
   nickname: string
   email: string
-  avatar:string
+  avatar: string
   oldPassword: string | null
   newPassword: string | null
-}):Promise<ApiResponse<string>> =>
+}): Promise<ApiResponse<string>> =>
   axiosRequest({
     method: 'PUT',
     url: 'users',
     data: form
   })
 
-export const upgradeUser = (form:any):Promise<ApiResponse<string>> => 
+export const upgradeUser = (form: any): Promise<ApiResponse<string>> =>
   axiosRequest({
     method: 'PUT',
     url: 'users/type',
