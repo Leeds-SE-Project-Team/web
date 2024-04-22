@@ -8,7 +8,7 @@ import {
   getTourHighlights,
   type TourHighlight
 } from '@/apis/tour/highlight'
-import { showNotify } from 'vant'
+import { showNotify, showToast } from 'vant'
 import {
   fetchTourDataJson,
   getTourById,
@@ -106,17 +106,28 @@ const getCurrentLocation = (toCenter?: boolean) => {
       }
       ;(mapRef.value.$$getInstance() as AMap.Map).remove(layers)
       locationTrackList.value.push(info.position)
-      layers = mapStore.drawRoute(
-        mapRef.value.$$getInstance(),
-        locationTrackList.value,
-        tourData.value!.type,
-        {
-          startMarker: false,
-          endMarker: false,
-          reCenter: false
-        },
-        true
-      )
+      const len = locationTrackList.value.length
+      if (len >= 2) {
+        showToast({
+          className: 'test_record',
+          duration: 0,
+          message: `Record num: ${len}\nPosition: ${locationTrackList.value[len - 1].toString()}\nDifference: ${locationTrackList.value[len - 1].lng - locationTrackList.value[len - 2].lng},${locationTrackList.value[len - 1].lat - locationTrackList.value[len - 2].lat}\n\n${JSON.stringify(info, null, 2)}`
+        })
+      }
+
+      setTimeout(() => {
+        layers = mapStore.drawRoute(
+          mapRef.value.$$getInstance(),
+          locationTrackList.value,
+          tourData.value!.type,
+          {
+            startMarker: false,
+            endMarker: false,
+            reCenter: false
+          },
+          true
+        )
+      }, 500)
     }
   })
 }
@@ -255,7 +266,7 @@ const handleClickLocation = () => {
 }
 
 onMounted(() => {
-  window.setInterval(getCurrentLocation, 3000)
+  window.setInterval(getCurrentLocation, 5000)
   fetchHighlightList()
 })
 
