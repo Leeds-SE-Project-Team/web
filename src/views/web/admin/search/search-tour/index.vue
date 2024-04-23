@@ -258,7 +258,7 @@
         <template #type="{ record }">
           <a-space>
             <a-avatar :size="16" shape="square">
-              <img alt="avatar" :src="getTourTypeImg(record.type)" />
+              <img :src="getTourTypeImg(record.type)" alt="avatar" />
             </a-avatar>
             {{ $t(`searchTable.form.contentType.${getTourTypeText(record.type)}`) }}
           </a-space>
@@ -314,6 +314,7 @@ import type { TableColumnData } from '@arco-design/web-vue/es/table/interface'
 import { Message } from '@arco-design/web-vue'
 import type { PolicyParamsTour, SearchTourForm, TourListRes, TourRecordCanEdit } from '@/apis/list'
 import {
+  deleteTour,
   getTours,
   getTourTypeImg,
   getTourTypeText,
@@ -378,23 +379,27 @@ const handleDeleteTour = (record: TourRecordCanEdit, rowIndex: number) => {
     location.reload()
   }
 
-  // deleteTourById(record.tourId)
-  //   .then((msg) => {
-  //     Message.success({
-  //       id: 'tourEdit',
-  //       content: msg
-  //     })
-  //     search()
-  //   })
-  //   .catch((e) => {
-  //     Message.success({
-  //       id: 'tourEdit',
-  //       content: e
-  //     })
-  //   })
-  //   .finally(() => {
-  //     setEditLoading(false)
-  //   })
+  deleteTour(record.id)
+    .then((apiRes) => {
+      if (apiRes.success) {
+        Message.success({
+          id: 'tourEdit',
+          content: apiRes.message
+        })
+        search()
+      } else {
+        throw apiRes.message
+      }
+    })
+    .catch((e) => {
+      Message.error({
+        id: 'tourEdit',
+        content: e
+      })
+    })
+    .finally(() => {
+      setEditLoading(false)
+    })
 }
 
 const generateFormModel = () => {

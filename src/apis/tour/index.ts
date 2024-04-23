@@ -129,7 +129,7 @@ export const getTours = (): Promise<ApiResponse<TourRecord[]>> =>
     url: 'tours/all'
   })
 
-export const getTourByUser = ():Promise<ApiResponse<TourRecord[]>> => 
+export const getTourByUser = (): Promise<ApiResponse<TourRecord[]>> =>
   axiosRequest({
     method: 'GET',
     url: 'tours/user'
@@ -148,3 +148,8 @@ export const updateTour = (form: UpdateTourForm): Promise<ApiResponse<TourRecord
     data: form
   })
 
+export const deleteTour = (tourId: number): Promise<ApiResponse<void>> =>
+  axiosRequest({
+    method: 'DELETE',
+    url: `tours?id=${tourId}`
+  })
