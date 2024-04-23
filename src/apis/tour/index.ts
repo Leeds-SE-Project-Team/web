@@ -129,7 +129,7 @@ export const getTours = (): Promise<ApiResponse<TourRecord[]>> =>
     url: 'tours/all'
   })
 
-export const getTourByUser = ():Promise<ApiResponse<TourRecord[]>> => 
+export const getTourByUser = (): Promise<ApiResponse<TourRecord[]>> =>
   axiosRequest({
     method: 'GET',
     url: 'tours/user'
@@ -148,3 +148,32 @@ export const updateTour = (form: UpdateTourForm): Promise<ApiResponse<TourRecord
     data: form
   })
 
+export interface SaveTourForm {
+  isComplete?: boolean
+  tourId: number
+  recordData: RecordData
+  trackList: RecordDataInstant[]
+}
+
+export interface RecordData {
+  totalDistance: number // km
+  avgSpeed: number // km/h
+  timeInMotion: number // s
+  timeTaken: number // s
+  calorie: number // kj
+}
+
+export interface RecordDataInstant {
+  speed: number // km/h
+  altitude: number // m
+  location: AMap.LngLat
+  time: string
+}
+
+export const saveTour = (form: SaveTourForm): Promise<ApiResponse<TourRecord>> => {
+  return axiosRequest({
+    method: 'POST',
+    url: 'tours/complete',
+    data: form
+  })
+}
