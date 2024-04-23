@@ -1,5 +1,5 @@
 // Basic interface for user record
-import { type ApiResponse, axiosRequest } from '@/apis'
+import { type ApiResponse, axiosRequest, getStaticRes } from '@/apis'
 
 export interface UserRecord {
   id: number
