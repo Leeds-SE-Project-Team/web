@@ -21,23 +21,37 @@ const takePicture = async () => {
   // }
 }
 
-const emits = defineEmits(['createHighlight'])
+const emits = defineEmits(['createHighlight', 'saveTour'])
 </script>
 
 <template>
-  <van-action-bar style="padding: 0 20px 0 20px">
-    <van-action-bar-icon @click="$router.push({ name: 'discover' })">
+  <a-button-group class="footer-btn-group" type="primary">
+    <a-button class="footer-btn" @click="emits('saveTour')">STOP</a-button>
+    <a-button class="footer-btn" type="text">
       <template #icon>
-        <van-icon name="stop-circle" size="30" style="margin-top: 6px" />
+        <icon-thumb-up-fill class="footer-icon" />
       </template>
-    </van-action-bar-icon>
-    <van-action-bar-button
-      style="margin: 0 10px 0 10px"
-      text="Add Highlight"
-      type="primary"
-      @click="takePicture"
-    />
-  </van-action-bar>
+    </a-button>
+    <a-button class="footer-btn" type="text">
+      <icon-camera class="footer-icon" />
+    </a-button>
+    <a-button class="footer-btn" type="text">
+      <icon-double-up class="footer-icon" />
+    </a-button>
+  </a-button-group>
+  <!--  <van-action-bar style="padding: 0 20px 0 20px">-->
+  <!--    <van-action-bar-icon @click="$router.push({ name: 'discover' })">-->
+  <!--      <template #icon>-->
+  <!--        <van-icon name="stop-circle" size="30" style="margin-top: 6px" />-->
+  <!--      </template>-->
+  <!--    </van-action-bar-icon>-->
+  <!--    <van-action-bar-button-->
+  <!--      style="margin: 0 10px 0 10px"-->
+  <!--      text="Add Highlight"-->
+  <!--      type="primary"-->
+  <!--      @click="takePicture"-->
+  <!--    />-->
+  <!--  </van-action-bar>-->
 </template>
 
 <style scoped>

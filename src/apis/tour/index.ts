@@ -153,3 +153,33 @@ export const deleteTour = (tourId: number): Promise<ApiResponse<void>> =>
     method: 'DELETE',
     url: `tours?id=${tourId}`
   })
+
+export interface SaveTourForm {
+  isComplete?: boolean
+  tourId: number
+  recordData: RecordData
+  trackList: RecordDataInstant[]
+}
+
+export interface RecordData {
+  totalDistance: number // km
+  avgSpeed: number // km/h
+  timeInMotion: number // s
+  timeTaken: number // s
+  calorie: number // kj
+}
+
+export interface RecordDataInstant {
+  speed: number // km/h
+  altitude: number // m
+  location: AMap.LngLat
+  time: string
+}
+
+export const saveTour = (form: SaveTourForm): Promise<ApiResponse<TourRecord>> => {
+  return axiosRequest({
+    method: 'POST',
+    url: 'tours/complete',
+    data: form
+  })
+}

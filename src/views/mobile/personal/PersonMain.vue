@@ -63,7 +63,7 @@
           <van-icon v-else :size="24" name="credit-pay" />
         </template>
       </van-cell>
-      <van-cell v-if="user?.type==0" @click="clickVIP" >
+      <van-cell v-if="user?.type==0" @click="payVIP = true" >
         <template #icon>
           <van-icon :size="24" name="/account/vip.svg" />
         </template>
@@ -78,6 +78,39 @@
         <van-button hairline type="primary" @click="authStore.handleLogout">Logout</van-button>
       </div>
     </van-list>
+    <van-dialog v-model:show="payVIP" :show-confirm-button="false">
+      <template #title>
+        <div class="flex-r" style="justify-content: end;padding: 0.5rem;"  >
+          <van-icon @click="payVIP=false" :size="23" name="cross" />
+        </div>
+        <div>
+          Pay for VIP
+        </div>
+      </template>
+      <van-grid>
+        <van-grid-item>
+          <div class="price flex-c flex-justify-c">
+            <div class="time">1 Month</div>
+            <div class="money">$6</div>
+          </div>
+        </van-grid-item>
+        <van-grid-item>
+          <div class="price flex-c flex-justify-c">
+            <div class="time">3 Month</div>
+            <div class="money">$16</div>
+          </div>
+        </van-grid-item>
+        <van-grid-item>
+          <div class="price flex-c flex-justify-c">
+            <div class="time">1 year</div>
+            <div class="money">$60</div>
+          </div>
+        </van-grid-item>
+      </van-grid>
+      <div class="pay flex-r flex-justify-c" style="position: relative;height: 50px"  >
+        <grace-button :callback="clickVIP" ></grace-button>
+      </div>
+    </van-dialog>
   </section>
 </template>
 
@@ -89,11 +122,13 @@ import { Message } from '@arco-design/web-vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showSuccessToast } from 'vant'
+import GraceButton from '@/components/graceButton/GraceButton.vue'
 
 const userStore = useUserStore()
 const user = ref<UserRecord | null>(null)
 const router = useRouter()
 const authStore = useAuthStore()
+const payVIP = ref(false)
 
 const toDetail = () => {
   router.push('/personal/detail')
@@ -107,17 +142,20 @@ const toCollection = ()=>{
 const toGroup = ()=>{
   router.push('/personal/group')
 }
-const clickVIP = ()=>{
-  const form = user.value!
-  form.type = 1
-  upgradeUser(form).then(res=>{
-    if(res.success){
-      showSuccessToast("VIP!")
-    }else{
-      Message.info(res.message)
-    }
+const clickVIP = ():Promise<void> =>
+  new Promise((resolve)=>{
+    const form = user.value!
+    form.type = 1
+    resolve()
   })
-}
+  
+  // upgradeUser(form).then(res=>{
+  //   if(res.success){
+  //     showSuccessToast("VIP!")
+  //   }else{
+  //     Message.info(res.message)
+  //   }
+  // })
 
 userStore
   .getUserRecord()
@@ -140,5 +178,8 @@ onMounted(() => {
 
 :deep(.van-cell) {
   margin: 0.5rem 0;
+}
+:deep(.van-dialog__header){
+  padding:0;
 }
 </style>
