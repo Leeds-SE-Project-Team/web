@@ -2,8 +2,8 @@ import axios from 'axios'
 import qs from 'query-string'
 import type { DescData } from '@arco-design/web-vue/es/descriptions/interface'
 import type { TourRecord } from '@/apis/tour'
+import { TourState, TourStatus, TourType } from '@/apis/tour'
 import type { UserRecord } from '@/apis/user'
-import { TourType } from '@/apis/tour'
 import { UserType } from '@/apis/user'
 
 export interface TourRecordCanEdit extends TourRecord {
@@ -15,6 +15,8 @@ export interface SearchTourForm {
   authorName?: string
   type?: TourType
   publishTime?: string[]
+  status?: TourStatus
+  state?: TourState
 }
 
 export interface SearchUserForm {
@@ -64,6 +66,7 @@ export interface ServiceRecord {
   enable?: boolean
   expires?: boolean
 }
+
 export function queryInspectionList() {
   return axios.get('/api/list/quality-inspection')
 }

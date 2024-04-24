@@ -78,6 +78,7 @@ export interface TourRecord {
   tourSpotList: TourSpot[]
   tourHighlightList: TourHighlight[]
   comments: CommentRecord[]
+  state: TourState
   status: TourStatus
   title: string
 }
@@ -88,10 +89,21 @@ export enum TourStatus {
   AWAIT_APPROVAL
 }
 
+export enum TourState {
+  UNFINISHED,
+  ONGOING,
+  FINISHED
+}
+
 export const TourStatusMap = {
   0: 'online',
   1: 'offline',
   2: 'awaitApproval'
+}
+export const TourStateMap = {
+  0: 'unfinished',
+  1: 'ongoing',
+  2: 'finished'
 }
 
 export interface CreateTourForm {
@@ -104,8 +116,10 @@ export interface CreateTourForm {
   title: string
 }
 
-export interface UpdateTourForm {
-  title: string
+export interface UpdateTourForm extends Partial<CreateTourForm> {
+  id: number
+  status: TourStatus
+  state: TourState
 }
 
 export const parseLocation = (location: string): string[] => {
