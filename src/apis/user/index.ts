@@ -1,5 +1,6 @@
 // Basic interface for user record
 import { type ApiResponse, axiosRequest, getStaticRes } from '@/apis'
+import type { TourRecord } from '../tour'
 
 export interface UserRecord {
   id: number
@@ -10,6 +11,14 @@ export interface UserRecord {
   registerTime: string
   latestLoginTime: string
   type: UserType
+  toutLikes: TourRecord[]
+  tourStars: TourRecord[]
+  gender: string
+  age: number
+  height: number
+  weight: number
+  location: string
+  signature: string
 }
 
 export enum UserType {
@@ -24,16 +33,16 @@ export const UserTypeMap = {
   2: 'admin'
 }
 
-export const exampleUserRecord: UserRecord = {
-  // avatar: getStaticRes('user/default/avatar/avatar.jpg'),
-  avatar: '',
-  email: 'sc21m2w@leeds.ac.uk',
-  id: 1,
-  latestLoginTime: '2024-03-03 15:35:23',
-  nickname: 'Walcraft User',
-  registerTime: '2024-03-03 15:35:23',
-  type: UserType.COMMON
-}
+// export const exampleUserRecord: UserRecord = {
+//   // avatar: getStaticRes('user/default/avatar/avatar.jpg'),
+//   avatar: '',
+//   email: 'sc21m2w@leeds.ac.uk',
+//   id: 1,
+//   latestLoginTime: '2024-03-03 15:35:23',
+//   nickname: 'Walcraft User',
+//   registerTime: '2024-03-03 15:35:23',
+//   type: UserType.COMMON
+// }
 
 // API for query single user
 // export const getUserById = (userId: number): Promise<UserRecord> =>
