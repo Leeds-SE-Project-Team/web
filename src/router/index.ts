@@ -178,7 +178,7 @@ const router = createRouter({
       meta: {
         layout: 'b',
         title: 'Tour Page',
-        auth: ['admin', 'user']
+        // auth: ['admin', 'user']
       },
       component: TourView
     },
@@ -236,14 +236,6 @@ const router = createRouter({
       },
       component: personalPage,
       children: web_personal_children,
-    },
-    {
-      path: '/personal',
-      meta: {
-        auth: ['admin', 'user']
-      },
-      component: personalIndex,
-      children: personalMobileChildren
     },
     {
       path: '/group',

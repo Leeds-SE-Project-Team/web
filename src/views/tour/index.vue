@@ -10,7 +10,7 @@
             :src="coverImg"
           />
         </div>
-        <!-- <div class="sub">
+        <div class="sub">
           <div class="sub-bg">
             <img
               alt=""
@@ -23,7 +23,7 @@
               src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40"
             />
           </div>
-        </div> -->
+        </div>
       </div>
 
       <!-- the title part -->
@@ -61,25 +61,17 @@
         <a-timeline-item class="pic-map" lineType="dashed">
           <h4>Start</h4>
         </a-timeline-item>
-        <a-timeline-item v-if="fakeSpots.length">
-          <div class="tour-pic">
-            <div class="pic-container flex-r">
-              <div v-for="(spots,i) in fakeSpots" :key="i" class="pic">
-                <img alt=""
-                  :src="spots" />
-              </div>
-            </div>
-          </div>
-        </a-timeline-item>
+        
         <a-timeline-item
           v-for="(highlight, idx) in tourRecord?.tourHighlightList"
           :key="idx"
-          :label="`Tour Highlight ${idx + 1}`"
+          :label="`Tour Highlight ${idx + 1}: ${highlight.title ? highlight.title : idx+1 + 'th highlight'}`"
           class="pic-map"
           lineType="dashed"
         >
           <DHighlight @jump="toTour" :data="highlight"></DHighlight>
         </a-timeline-item>
+        
         <a-timeline-item class="pic-map" lineType="dashed">
           <h4>End</h4>
         </a-timeline-item>
@@ -99,38 +91,49 @@
       <div class="subtitle">
         PROFIEL
       </div>
-    </section> -->
+    </section>
 
-    <!-- <section class="weather">
+    <section class="weather">
       <div class="subtitle">
         WEATHER
       </div>
     </section> -->
   </div>
 
-  <div v-if="false" class="comments">
+  <div v-if="true" class="comments">
     <a-space size="large">
       <a-avatar
         :size="50"
-        imageUrl="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp"
+        :imageUrl="tourRecord?.user.avatar"
       >
       </a-avatar>
       <div class="rigion">
-        <h3>Thüringer Wald planned a hike.</h3>
-        <p>September 13, 2017</p>
+        <h3>{{tourRecord?.user.nickname}}</h3>
+        <p>{{tourRecord?.user.latestLoginTime}}</p>
       </div>
     </a-space>
 
     <div class="like">
-      <a-button class="button-icon">
-        <template #icon>
-          <div class="icon">
-            <icon-heart class="button" />
-            <span>66</span>
-          </div>
-        </template>
-      </a-button>
-
+      <div>
+        <a-button class="button-icon">
+          <template #icon>
+            <div class="icon" @click="like_btn()">
+              <icon-heart class="button" />
+              <span>{{tourRecord?.likedBy.length}}</span>
+            </div>
+          </template>
+        </a-button>
+      
+        <a-button class="button-icon">
+          <template #icon>
+            <div class="icon" @click="star_btn()">
+              <icon-star-fill class="button" />
+              <span>{{tourRecord?.likedBy.length}}</span>
+            </div>
+          </template>
+        </a-button>
+      </div>
+      
       <div class="follower">
         <a-space :size="32">
           <a-avatar-group :max-count="5">
@@ -188,6 +191,10 @@ import { type TourRecord, getTourById } from '@/apis/tour'
 import { useRoute, useRouter } from 'vue-router'
 import DHighlight from '@/views/mobile/discover/DHighlight.vue'
 import { computed } from 'vue'
+import { getUserById } from '@/apis/user'
+import { postLike, postStar, deleteLike, deleteStar } from '@/apis/tour'
+import { useUserStore } from '@/stores'
+import { number } from 'echarts'
 
 const url = import.meta.env.APP_STATIC_URL.concat('/tour')
 const exam_pic =
@@ -200,42 +207,85 @@ const tourRecord = ref<TourRecord>()
 const toTour = ()=>{
   router.push({name:'anotherHighlight'})
 }
+
 const coverImg = computed(()=>{
   if(!tourRecord.value){
     return '';
   }else if(!tourRecord.value.tourHighlightList[0]){
     return tourRecord.value.mapUrl;
   }
-  return tourRecord.value.tourHighlightList[0].tourImages[0].imageUrl;
+  // tourRecord.value.tourHighlightList[0].tourImages[0]?.imageUrl;
+  return ""
 })
 
-// const commentArea = ref<HTMLDivElement | undefined>()
-// const mapWrapper = ref<HTMLDivElement | undefined>()
-// const picWrapper = ref<HTMLDivElement | undefined>()
-// const textA = ref('')
 
-// 这里是假数据
-const fakeSpots = ref<string[]>([])
-if(route.query.id === '20'){
-  fakeSpots.value.push('https://api.wmzspace.space/tour/20/spots/p1.jpg')
-  fakeSpots.value.push('https://api.wmzspace.space/tour/20/spots/p2.jpg')
-  fakeSpots.value.push('https://api.wmzspace.space/tour/20/spots/p3.jpg')
-  fakeSpots.value.push('https://api.wmzspace.space/tour/20/spots/p4.jpg')
-}else if(route.query.id === '21'){
-  fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/baby.jpeg')
-  fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/huahua.jpg')
-  fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/panda.jpg')
-  fakeSpots.value.push('https://api.wmzspace.space/tour/21/spots/pandas.jpg')
-}
+const userStore = useUserStore()
+const userId = userStore.curUser?.id
+const is_like = ref(false)
+const is_star = ref(false)
+
+const tourId = "1"
 
 onMounted(() => {
+  getTour()
+})
+
+const getTour = () => {
   getTourById(route.query.id as string).then((res) => {
     if (res.success) {
       tourRecord.value = res.data
       console.log(tourRecord.value)
+      if(tourRecord.value?.likedBy.includes(userId as number)) {
+        is_like.value = true
+      } else {
+        is_like.value = false
+      }
+      if(tourRecord.value?.starredBy.includes(userId as number)) {
+        is_star.value = true
+      } else {
+        is_star.value = false
+      }
+      console.log("yes", is_like, is_star)
     }
   })
-})
+}
+
+const like_btn = () => {
+  if(is_like.value) {
+    delLike(userId, tourId)
+  } else {
+    like(userId, tourId)
+  }
+}
+
+const star_btn = () => {
+  if(is_star.value) {
+    delStar(userId, tourId)
+  } else {
+    star(userId, tourId)
+  }
+}
+
+const like = (userId: string, tourId: string) =>  {
+  postLike(userId, tourId)
+  getTour()
+}
+
+const delLike = (userId: string, tourId: string) => {
+  deleteLike(userId, tourId)
+  getTour()
+}
+
+const star = (userId: string, tourId: string) =>  {
+  postStar(userId, tourId)
+  getTour()
+}
+
+const delStar = (userId: string, tourId: string) => {
+  deleteStar(userId, tourId)
+  getTour()
+}
+
 </script>
 
 <style></style>
