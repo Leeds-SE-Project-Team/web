@@ -45,11 +45,15 @@ export const UserTypeMap = {
 // }
 
 // API for query single user
-// export const getUserById = (userId: number): Promise<UserRecord> =>
-//   axiosRequest({
-//     method: 'GET',
-//     url: `users/${userId}`
-//   })
+export const getUserById = (userId: number): Promise<UserRecord> =>
+  axiosRequest({
+    method: 'GET',
+    url: `users`,
+    data: {
+      id: userId
+    }
+  })
+
 export const getUserByEmail = (userEmail: string): Promise<ApiResponse<UserRecord>> =>
   axiosRequest({
     method: 'GET',

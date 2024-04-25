@@ -81,6 +81,7 @@ export interface TourRecord {
   state: TourState
   status: TourStatus
   title: string
+
   likedBy: number[]
   starredBy: number[]
 }
@@ -164,6 +165,45 @@ export const updateTour = (form: UpdateTourForm): Promise<ApiResponse<TourRecord
     data: form
   })
 
+
+// export const postLike = (userId: string, tourId: string): Promise<ApiResponse<void>> =>
+//   axiosRequest({
+//     method: 'POST',
+//     url: `tours/like?id=${tourId}`,
+//     data: {
+//       id: userId
+//     }
+//   })
+
+// export const postStar = (userId: string, tourId: string): Promise<ApiResponse<void>> =>
+//   axiosRequest({
+//     method: 'POST',
+//     url: `tours/star?id=${tourId}`,
+//     data: {
+//       id: userId
+//     }
+//   })
+
+// export const deleteLike = (userId: string, tourId: string): Promise<ApiResponse<void>> =>
+//   axiosRequest({
+//     method: 'DELETE',
+//     url: `/tours/like?id=${tourId}`,
+//     data: {
+//       id: userId
+//     }
+//   })
+  
+
+// export const deleteStar= (userId: string, tourId: string): Promise<ApiResponse<void>> =>
+//   axiosRequest({
+//     method: 'DELETE',
+//     url: `/tours/star?id=${tourId}`,
+//     data: {
+//       id: userId
+//     }
+//   })
+    
+ 
 export const deleteTour = (tourId: number): Promise<ApiResponse<void>> =>
   axiosRequest({
     method: 'DELETE',
@@ -198,3 +238,4 @@ export const saveTour = (form: SaveTourForm): Promise<ApiResponse<TourRecord>> =
     url: 'tours/complete',
     data: form
   })
+
