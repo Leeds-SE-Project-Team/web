@@ -16,7 +16,6 @@ import personalProfile from '@/views/web/personal/profile.vue'
 import personalCollections from '@/views/web/personal/profile.vue'
 import personalHighlights from '@/views/web/personal/highlights.vue'
 import personalGroup from '@/views/web/personal/group.vue'
-import personalIndex from '@/views/mobile/personal/index.vue'
 import TourDetail from '@/views/mobile/personal/TourDetail.vue'
 import { MOBILE_ROUTES } from '@/router/mobile'
 import { useAuthStore } from '@/stores/auth'
@@ -173,7 +172,7 @@ const router = createRouter({
       name: 'tour',
       meta: {
         layout: 'b',
-        title: 'Tour Page',
+        title: 'Tour Page'
         // auth: ['admin', 'user']
       },
       component: TourView
@@ -228,7 +227,8 @@ const router = createRouter({
       name: 'personal',
       meta: {
         layout: 'b',
-        title: 'personal'
+        title: 'personal',
+        auth: ['admin', 'user']
       },
       component: personalPage,
       children: web_personal_children
