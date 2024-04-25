@@ -20,8 +20,7 @@ export default {
   'searchTable.form.selectDefault': 'All',
   'searchTable.operation.create': 'Create',
   'searchTable.operation.import': 'Import',
-  'searchTable.operation.download': 'Download',
-  // columns
+  'searchTable.operation.download': 'Download', // columns
   'searchTable.columns.index': '#',
   'searchTable.columns.number': 'Set Number',
   'searchTable.columns.name': 'Set Name',
@@ -30,15 +29,14 @@ export default {
   'searchTable.columns.count': 'Count',
   'searchTable.columns.createdTime': 'CreatedTime',
   'searchTable.columns.status': 'Status',
+  'searchTable.columns.state': 'State',
   'searchTable.columns.operations': 'Operations',
-  'searchTable.columns.operations.view': 'View',
-  // size
+  'searchTable.columns.operations.view': 'View', // size
   'searchTable.size.mini': 'mini',
   'searchTable.size.small': 'small',
   'searchTable.size.medium': 'middle',
-  'searchTable.size.large': 'large',
-  // actions
+  'searchTable.size.large': 'large', // actions
   'searchTable.actions.refresh': 'refresh',
   'searchTable.actions.density': 'density',
-  'searchTable.actions.columnSetting': 'columnSetting',
-};
+  'searchTable.actions.columnSetting': 'columnSetting'
+}

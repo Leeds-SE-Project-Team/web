@@ -78,6 +78,7 @@ export interface TourRecord {
   tourSpotList: TourSpot[]
   tourHighlightList: TourHighlight[]
   comments: CommentRecord[]
+  state: TourState
   status: TourStatus
   title: string
 }
@@ -88,10 +89,21 @@ export enum TourStatus {
   AWAIT_APPROVAL
 }
 
+export enum TourState {
+  UNFINISHED,
+  ONGOING,
+  FINISHED
+}
+
 export const TourStatusMap = {
   0: 'online',
   1: 'offline',
   2: 'awaitApproval'
+}
+export const TourStateMap = {
+  0: 'unfinished',
+  1: 'ongoing',
+  2: 'finished'
 }
 
 export interface CreateTourForm {
@@ -104,8 +116,10 @@ export interface CreateTourForm {
   title: string
 }
 
-export interface UpdateTourForm {
-  title: string
+export interface UpdateTourForm extends Partial<CreateTourForm> {
+  id: number
+  status: TourStatus
+  state: TourState
 }
 
 export const parseLocation = (location: string): string[] => {
@@ -129,7 +143,7 @@ export const getTours = (): Promise<ApiResponse<TourRecord[]>> =>
     url: 'tours/all'
   })
 
-export const getTourByUser = ():Promise<ApiResponse<TourRecord[]>> => 
+export const getTourByUser = (): Promise<ApiResponse<TourRecord[]>> =>
   axiosRequest({
     method: 'GET',
     url: 'tours/user'
@@ -148,3 +162,38 @@ export const updateTour = (form: UpdateTourForm): Promise<ApiResponse<TourRecord
     data: form
   })
 
+export const deleteTour = (tourId: number): Promise<ApiResponse<void>> =>
+  axiosRequest({
+    method: 'DELETE',
+    url: `tours?id=${tourId}`
+  })
+
+export interface SaveTourForm {
+  isComplete?: boolean
+  tourId: number
+  recordData: RecordData
+  trackList: RecordDataInstant[]
+}
+
+export interface RecordData {
+  totalDistance: number // km
+  avgSpeed: number // km/h
+  timeInMotion: number // s
+  timeTaken: number // s
+  calorie: number // kj
+}
+
+export interface RecordDataInstant {
+  speed: number // km/h
+  altitude: number // m
+  location: AMap.LngLat
+  time: string
+}
+
+export const saveTour = (form: SaveTourForm): Promise<ApiResponse<TourRecord>> => {
+  return axiosRequest({
+    method: 'POST',
+    url: 'tours/complete',
+    data: form
+  })
+}

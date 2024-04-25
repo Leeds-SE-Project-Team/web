@@ -144,8 +144,6 @@ export const useMapStore = defineStore('map', () => {
     mapInstance: AMap.Map
   ): Promise<any> =>
     new Promise((resolve) => {
-      // mapInstance.clearMap()
-
       const navigateOption = {
         map: mapInstance,
         hideMarkers: false,
@@ -155,39 +153,24 @@ export const useMapStore = defineStore('map', () => {
       }
       let navigate: any
       const searchArgs = [startLocation, endLocation] as any[]
-      // const waypoints = [new AMap.LngLat(103.973617, 30.829483)]
 
       switch (tourType) {
-        case TourType.WALK:
+        case TourType.WALK: // 徒步
           navigate = new (AMap as any).Walking(navigateOption)
           break
-        case TourType.CYCLING:
+        case TourType.CYCLING: // 自行车
           navigate = new (AMap as any).Riding(navigateOption)
           break
-        case TourType.CAR:
+        case TourType.CAR: // 驾车
           navigate = new (AMap as any).Driving(navigateOption)
-          searchArgs.push({ waypoints: pons })
+          searchArgs.push({ waypoints: pons }) // 添加必经点
           break
-        case TourType.PUBLIC:
+        case TourType.PUBLIC: // 公交
           navigate = new (AMap as any).Transfer(navigateOption)
           break
       }
 
-      // navigate.search(startLocation, endLocation, function (status: any, result: any) {
-      //   // result即是对应的路线数据信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_RidingResult
-      //   if (status === 'complete') {
-      //     // navigate.clear()
-      //     // mapInstance.remove(mapInstance.getLayersDangerous())
-      //     resolve({
-      //       result,
-      //       navigate
-      //     })
-      //   } else {
-      //     Message.error('路线数据查询失败' + result)
-      //   }
-      // })
-
-      // 设置途径点
+      // 规划路径并返回结果
       navigate.search(...searchArgs, function (status: any, result: any) {
         if (status === 'complete') {
           resolve({ result, navigate })
