@@ -43,6 +43,11 @@
               <!--                </a-form-item>-->
               <!--              </a-col>-->
               <a-col :span="8">
+                <a-form-item :label="$t('searchTable.form.publishTime')" field="publishTime">
+                  <a-range-picker v-model="formModel.publishTime" style="width: 100%" />
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
                 <a-form-item :label="$t('searchTable.form.contentType')" field="contentType">
                   <a-select
                     v-model="formModel.type"
@@ -52,26 +57,37 @@
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item :label="$t('searchTable.form.publishTime')" field="publishTime">
-                  <a-range-picker v-model="formModel.publishTime" style="width: 100%" />
+                <a-form-item :label="$t('searchTable.form.state')" field="state">
+                  <a-select
+                    v-model="formModel.state"
+                    :options="stateOptions"
+                    :placeholder="$t('searchTable.form.selectDefault')"
+                  />
                 </a-form-item>
               </a-col>
-              <!--              <a-col :span="8">-->
-              <!--                <a-form-item field="status" :label="$t('searchTable.form.status')">-->
-              <!--                  <a-select-->
-              <!--                    v-model="formModel.status"-->
-              <!--                    :options="statusOptions"-->
-              <!--                    :placeholder="$t('searchTable.form.selectDefault')"-->
-              <!--                  />-->
-              <!--                </a-form-item>-->
-              <!--              </a-col>-->
+              <a-col :span="8">
+                <a-form-item :label="$t('searchTable.form.status')" field="status">
+                  <a-select
+                    v-model="formModel.status"
+                    :options="statusOptions"
+                    :placeholder="$t('searchTable.form.selectDefault')"
+                  />
+                </a-form-item>
+              </a-col>
             </a-row>
           </a-form>
         </a-col>
         <a-divider direction="vertical" style="height: 84px" />
         <a-col :flex="'86px'" style="text-align: right">
           <a-space :size="18" direction="vertical">
-            <a-button type="primary" @click="search">
+            <a-button
+              type="primary"
+              @click="
+                () => {
+                  search()
+                }
+              "
+            >
               <template #icon>
                 <icon-search />
               </template>
@@ -98,7 +114,13 @@
             </a-button>
             <a-tooltip :content="$t('searchTable.actions.refresh')">
               <!--            <div class="action-icon" @click="search"><icon-refresh size="18" /></div>-->
-              <a-button @click="search">
+              <a-button
+                @click="
+                  () => {
+                    search()
+                  }
+                "
+              >
                 <template #icon>
                   <icon-refresh />
                 </template>
@@ -213,6 +235,32 @@
             >{{ $t(`searchTable.form.status.${TourStatusMap[record.status as TourStatus]}`) }}</span
           >
         </template>
+        <template #state="{ record, rowIndex }">
+          <!--          <span v-if="record.status === 'offline'" class="circle"></span>-->
+          <!--          <span v-else class="circle pass"></span>-->
+          <a-select
+            v-if="editingData[getRecordIndex(rowIndex)].isEditing"
+            v-model="editingData[getRecordIndex(rowIndex)].status"
+            :options="stateOptions"
+            :placeholder="$t('searchTable.form.selectDefault')"
+          />
+          <span
+            v-else
+            :style="{
+              color: (() => {
+                switch (record.state) {
+                  case TourState.FINISHED:
+                    return '#52C41A'
+                  case TourState.ONGOING:
+                    return '#B37FEB'
+                  case TourState.UNFINISHED:
+                    return '#F5222D'
+                }
+              })()
+            }"
+            >{{ $t(`searchTable.form.state.${TourStateMap[record.state as TourState]}`) }}</span
+          >
+        </template>
         <template #title="{ record, rowIndex }">
           <a-input
             v-if="editingData[getRecordIndex(rowIndex)].isEditing"
@@ -258,7 +306,7 @@
         <template #type="{ record }">
           <a-space>
             <a-avatar :size="16" shape="square">
-              <img alt="avatar" :src="getTourTypeImg(record.type)" />
+              <img :src="getTourTypeImg(record.type)" alt="avatar" />
             </a-avatar>
             {{ $t(`searchTable.form.contentType.${getTourTypeText(record.type)}`) }}
           </a-space>
@@ -314,11 +362,15 @@ import type { TableColumnData } from '@arco-design/web-vue/es/table/interface'
 import { Message } from '@arco-design/web-vue'
 import type { PolicyParamsTour, SearchTourForm, TourListRes, TourRecordCanEdit } from '@/apis/list'
 import {
+  deleteTour,
   getTours,
   getTourTypeImg,
   getTourTypeText,
+  TourState,
+  TourStateMap,
   TourStatus,
   TourStatusMap,
+  TourType,
   updateTour,
   type UpdateTourForm
 } from '@/apis/tour'
@@ -355,13 +407,18 @@ const handleSaveEdit = (record: TourRecordCanEdit, rowIndex: number) => {
     location.reload()
   }
   const rowEditData = editingData.value[getRecordIndex(rowIndex)]
-  const editForm: UpdateTourForm = {
-    title: rowEditData.title
-  }
+  const editForm: UpdateTourForm = cloneDeep(rowEditData)
 
   updateTour(editForm)
-    .then(() => {
-      search()
+    .then((apiRes) => {
+      if (apiRes.success) {
+        search(apiRes.message)
+      } else {
+        throw apiRes.message
+      }
+    })
+    .catch((e) => {
+      Message.error(e)
     })
     .finally(() => {
       setEditLoading(false)
@@ -378,23 +435,23 @@ const handleDeleteTour = (record: TourRecordCanEdit, rowIndex: number) => {
     location.reload()
   }
 
-  // deleteTourById(record.tourId)
-  //   .then((msg) => {
-  //     Message.success({
-  //       id: 'tourEdit',
-  //       content: msg
-  //     })
-  //     search()
-  //   })
-  //   .catch((e) => {
-  //     Message.success({
-  //       id: 'tourEdit',
-  //       content: e
-  //     })
-  //   })
-  //   .finally(() => {
-  //     setEditLoading(false)
-  //   })
+  deleteTour(record.id)
+    .then((apiRes) => {
+      if (apiRes.success) {
+        search(apiRes.message)
+      } else {
+        throw apiRes.message
+      }
+    })
+    .catch((e) => {
+      Message.error({
+        id: 'tourEdit',
+        content: e
+      })
+    })
+    .finally(() => {
+      setEditLoading(false)
+    })
 }
 
 const generateFormModel = () => {
@@ -402,7 +459,9 @@ const generateFormModel = () => {
     authorName: '',
     publishTime: undefined,
     title: '',
-    type: undefined
+    type: undefined,
+    status: undefined,
+    state: undefined
   }
   return record
 }
@@ -474,7 +533,7 @@ const columns = computed<TableColumnData[]>(() => [
     title: t('searchTable.columns.status'),
     dataIndex: 'status',
     slotName: 'status',
-    width: isEditingTable.value ? 140 : 85,
+    width: isEditingTable.value ? 140 : 105,
     sortable: {
       sortDirections: ['ascend', 'descend']
     }
@@ -485,12 +544,6 @@ const columns = computed<TableColumnData[]>(() => [
     slotName: 'title',
     width: 200
   },
-  // {
-  //   title: t('searchTable.columns.tourTags'),
-  //   dataIndex: 'tags',
-  //   slotName: 'tourTags',
-  //   width: 150
-  // },
   {
     title: isEditingTable.value ? '作者编号/名称' : '作者名称',
     dataIndex: 'authorName',
@@ -500,6 +553,22 @@ const columns = computed<TableColumnData[]>(() => [
       sortDirections: ['ascend', 'descend']
     }
   },
+  {
+    title: t('searchTable.columns.state'),
+    dataIndex: 'state',
+    slotName: 'state',
+    width: isEditingTable.value ? 140 : 105,
+    sortable: {
+      sortDirections: ['ascend', 'descend']
+    }
+  },
+
+  // {
+  //   title: t('searchTable.columns.tourTags'),
+  //   dataIndex: 'tags',
+  //   slotName: 'tourTags',
+  //   width: 150
+  // },
 
   {
     title: t('searchTable.columns.contentType'),
@@ -564,12 +633,20 @@ const typeOptions = computed<SelectOptionData[]>(() => [
   //   value: 'img'
   // },
   {
-    label: t('searchTable.form.contentType.horizontalTour'),
-    value: 'horizontalTour'
+    label: t('searchTable.form.contentType.hiking'),
+    value: TourType.WALK
   },
   {
-    label: t('searchTable.form.contentType.verticalTour'),
-    value: 'verticalTour'
+    label: t('searchTable.form.contentType.cycling'),
+    value: TourType.CYCLING
+  },
+  {
+    label: t('searchTable.form.contentType.car'),
+    value: TourType.CAR
+  },
+  {
+    label: t('searchTable.form.contentType.public'),
+    value: TourType.PUBLIC
   }
 ])
 const filterTypeOptions = computed<SelectOptionData[]>(() => [
@@ -589,15 +666,29 @@ const statusOptions = computed<SelectOptionData[]>(() => [
   // },
   {
     label: t('searchTable.form.status.online'),
-    value: 'online'
+    value: TourStatus.ONLINE
   },
   {
     label: t('searchTable.form.status.offline'),
-    value: 'offline'
+    value: TourStatus.OFFLINE
   },
   {
     label: t('searchTable.form.status.awaitApproval'),
-    value: 'awaitApproval'
+    value: TourStatus.AWAIT_APPROVAL
+  }
+])
+const stateOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: t('searchTable.form.state.finished'),
+    value: TourState.FINISHED
+  },
+  {
+    label: t('searchTable.form.state.ongoing'),
+    value: TourState.ONGOING
+  },
+  {
+    label: t('searchTable.form.state.unfinished'),
+    value: TourState.UNFINISHED
   }
 ])
 
@@ -634,26 +725,14 @@ const handleInputValueChange = (value: string) => {
   inputValue.value = inputValue.value.trim()
 }
 
-const fetchData = async (params: PolicyParamsTour = { current: 1, pageSize: 20 }) => {
+const fetchData = async (
+  params: PolicyParamsTour = { current: 1, pageSize: 20 },
+  succeedMessage?: string
+) => {
   setLoading(true)
   getTours()
     .then((apiRes) => {
       if (apiRes.success) {
-        // const promises = apiRes.data!.map(
-        //   async (tour): Promise<TourRecord> =>
-        //     getTourInfoById(tour.id)
-        //       .then((record) => record)
-        //       .catch((e) => {
-        //         // 处理错误
-        //         Message.error({
-        //           id: 'tourList',
-        //           content: e.message
-        //         })
-        //         // 返回一个标记错误的值或者抛出一个新的错误，具体取决于你的需求
-        //         throw e.message
-        //       })
-        // )
-        // Promise.all(promises).then((records) => {
         let results = apiRes.data!
         if (params.authorName) {
           results = results.filter((record) =>
@@ -666,9 +745,12 @@ const fetchData = async (params: PolicyParamsTour = { current: 1, pageSize: 20 }
         if (params.type) {
           results = results.filter((record) => record.type === params.type)
         }
-        // if (params.status) {
-        //   results = results.filter((record) => record.status === params.status)
-        // }
+        if (params.status) {
+          results = results.filter((record) => record.status === params.status)
+        }
+        if (params.state) {
+          results = results.filter((record) => record.state === params.state)
+        }
         if (params.publishTime && params.publishTime.length === 2) {
           results = results.filter((record) =>
             isTimeInRange(params.publishTime as unknown as string[], record.createTime)
@@ -685,7 +767,9 @@ const fetchData = async (params: PolicyParamsTour = { current: 1, pageSize: 20 }
         editingData.value = cloneDeep(renderData.value)
         pagination.current = params.current
         pagination.total = data.total
-        // })
+        if (succeedMessage) {
+          Message.success(succeedMessage)
+        }
       }
     })
     .catch((e) => {
@@ -699,11 +783,14 @@ const fetchData = async (params: PolicyParamsTour = { current: 1, pageSize: 20 }
     })
 }
 
-const search = () => {
-  fetchData({
-    ...basePagination,
-    ...formModel.value
-  } as unknown as PolicyParamsTour)
+const search = (succeedMessage?: string) => {
+  fetchData(
+    {
+      ...basePagination,
+      ...formModel.value
+    } as unknown as PolicyParamsTour,
+    succeedMessage
+  )
 }
 const onPageChange = (current: number) => {
   fetchData({ ...basePagination, current })

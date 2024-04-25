@@ -1,6 +1,7 @@
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { range } from 'lodash-es'
 import { useGeolocation } from '@vuemap/vue-amap'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
 
 const THOUSAND = Math.pow(10, 3)
 const WAN = Math.pow(10, 4)
@@ -195,8 +196,6 @@ export const getCurrentLocation = (
     // })
   })
 
-import { Haptics, ImpactStyle } from '@capacitor/haptics'
-
 export const hapticsImpactMedium = async () => {
   await Haptics.impact({ style: ImpactStyle.Medium })
 }
@@ -219,4 +218,8 @@ export const hapticsSelectionChanged = async () => {
 
 export const hapticsSelectionEnd = async () => {
   await Haptics.selectionEnd()
+}
+
+export const parseTimeToString = (time: Dayjs) => {
+  return time.format('YYYY-MM-DD HH:mm:ss')
 }

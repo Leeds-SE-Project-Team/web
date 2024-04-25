@@ -23,6 +23,7 @@ import VueAMap, { initAMapApiLoader } from '@vuemap/vue-amap'
 import pinia from '@/stores'
 import globalComponents from '@/components'
 import i18n from '@/locale'
+import gsap from 'gsap'
 
 const app = createApp(App)
 
@@ -58,6 +59,7 @@ app.use(Vant)
 // app.use(Vant.Lazyload)
 app.use(ArcoVueIcon)
 app.use(globalComponents)
+app.use(gsap)
 // app.use(PullRefresh)
 app.use(VueAMap)
 app.use(i18n)
