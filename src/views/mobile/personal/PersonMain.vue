@@ -146,16 +146,15 @@ const clickVIP = ():Promise<void> =>
   new Promise((resolve)=>{
     const form = user.value!
     form.type = 1
-    resolve()
+    upgradeUser(form).then(res=>{
+      if(res.success){
+        showSuccessToast("VIP!")
+        resolve()
+      }else{
+        Message.info(res.message)
+      }
+    })
   })
-  
-  // upgradeUser(form).then(res=>{
-  //   if(res.success){
-  //     showSuccessToast("VIP!")
-  //   }else{
-  //     Message.info(res.message)
-  //   }
-  // })
 
 userStore
   .getUserRecord()

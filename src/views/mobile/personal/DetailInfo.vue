@@ -46,6 +46,42 @@
                     @click-right-icon="changeInput(1)"
                     :rules="[{required: true, message:'请输入邮箱'}]"
                 />
+                <van-field
+                    label="Age"
+                    placeholder="Enter Age"
+                    :readonly="!statusArray[2]"
+                    :right-icon="statusArray[2]?'sign':'edit'"
+                    @click-right-icon="changeInput(2)"
+                    v-model="user.age"
+                />
+                <van-field
+                    label="Gender"
+                    placeholder="Enter Gender"
+                >
+                    <template #input>
+                        <van-radio-group v-model="user.gender" direction="horizontal">
+                            <van-radio name="Male">Male</van-radio>
+                            <van-radio name="Famale">Famale</van-radio>
+                        </van-radio-group>
+                    </template>
+                    
+                </van-field>
+                <van-field
+                    label="Height"
+                    placeholder="Enter Height"
+                    :readonly="!statusArray[4]"
+                    :right-icon="statusArray[4]?'sign':'edit'"
+                    @click-right-icon="changeInput(4)"
+                    v-model="user.height"
+                />
+                <van-field
+                    label="Weight"
+                    placeholder="Enter Weight"
+                    :readonly="!statusArray[5]"
+                    :right-icon="statusArray[5]?'sign':'edit'"
+                    @click-right-icon="changeInput(5)"
+                    v-model="user.weight"
+                />
                 <van-button @click="formSubmit">submit</van-button>
             </van-cell-group>
         </van-form>
@@ -61,11 +97,12 @@ import { updateUser } from '@/apis/user/index';
 import { uploadFileFromURL } from '@/utils/file'
 import type { UploaderFileListItem } from 'vant';
 import router from '@/router';
+import { cloneDeep } from 'lodash-es';
 
 const user = ref<UserRecord | undefined>();
 const file = ref<UploaderFileListItem[]>([]);
 const theForm = ref();
-const statusArray = ref<boolean[]>([false,false]);
+const statusArray = ref<boolean[]>(new Array(10).fill(false));
 const pwdStruct = reactive({
     old: '',
     new: '',
@@ -88,12 +125,11 @@ const formSubmit = ()=>{
     theForm.value.validate().then(()=>{
         if(!user.value){ return; }
         const form = {
-            nickname: user.value.nickname,
-            avatar: user.value.avatar,
-            email: user.value.email,
+            ...user.value,
             oldPassword: pwdStruct.old===''?null:pwdStruct.old,
             newPassword: pwdStruct.new===''?null:pwdStruct.new,
         }
+        console.log(form)
         if(file.value.length==1){
             uploadFileFromURL(
                 file.value[0].objectUrl as string,

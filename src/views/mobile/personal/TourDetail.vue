@@ -23,6 +23,7 @@
                 </van-list>
             </van-tab>
             <van-tab title="Planned">内容 2</van-tab>
+            <van-tab title="Star">内容 2</van-tab>
         </van-tabs>
     </section>
 </template>
