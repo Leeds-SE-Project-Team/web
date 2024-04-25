@@ -74,13 +74,15 @@ export interface TourRecord {
   tourCollectionId: number
   mapUrl: string
   dataUrl: string
-
+  completeUrl: string
   tourSpotList: TourSpot[]
   tourHighlightList: TourHighlight[]
   comments: CommentRecord[]
   state: TourState
   status: TourStatus
   title: string
+  likedBy: number[]
+  starredBy: number[]
 }
 
 export enum TourStatus {
@@ -190,10 +192,9 @@ export interface RecordDataInstant {
   time: string
 }
 
-export const saveTour = (form: SaveTourForm): Promise<ApiResponse<TourRecord>> => {
-  return axiosRequest({
+export const saveTour = (form: SaveTourForm): Promise<ApiResponse<TourRecord>> =>
+  axiosRequest({
     method: 'POST',
     url: 'tours/complete',
     data: form
   })
-}
