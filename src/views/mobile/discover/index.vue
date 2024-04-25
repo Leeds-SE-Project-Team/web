@@ -11,6 +11,9 @@ import starSvgUrl from '/interaction/star.svg'
 import starredSvgUrl from '/interaction/starred.svg'
 import { shuffle } from 'lodash-es'
 import { gsap } from 'gsap'
+import { type ContentInteractForm, interactWithContent } from '@/apis/user'
+import { useUserStore } from '@/stores'
+import { showToast } from 'vant'
 
 const currentPlayIndex = ref(0)
 
@@ -250,6 +253,42 @@ const handleCloseCommentList = () => {
     })
 }
 
+const isLikeTour = (tour: TourRecord) =>
+  computed(() => currentUser.value?.tourLikes.includes(tour.id))
+const isStarTour = (tour: TourRecord) =>
+  computed(() => currentUser.value?.tourStars.includes(tour.id))
+
+const handleInteract = (tour: TourRecord, interaction: 'like' | 'star') => {
+  userStore.getUserRecord().then((user) => {
+    const form: ContentInteractForm = {
+      contentType: 'tours',
+      interaction: interaction,
+      value: interaction === 'like' ? !isLikeTour(tour).value : !isStarTour(tour).value,
+      contentId: tour.id
+    }
+    interactWithContent<TourRecord>(form).then((apiRes) => {
+      if (apiRes.success) {
+        Object.assign(tour, apiRes.data!)
+        console.log(tour)
+        if (interaction === 'like') {
+          user.tourLikes = form.value
+            ? [...user.tourLikes, tour.id]
+            : user.tourLikes.filter((tId) => tId !== tour.id)
+        } else if (interaction === 'star') {
+          user.tourStars = form.value
+            ? [...user.tourStars, tour.id]
+            : user.tourStars.filter((tId) => tId !== tour.id)
+        }
+      } else {
+        showToast({
+          type: 'fail',
+          message: apiRes.message
+        })
+      }
+    })
+  })
+}
+
 const recommendPlace = (item: DisPlayItem) =>
   computed(() => {
     return 1
@@ -258,6 +297,9 @@ const recommendPlace = (item: DisPlayItem) =>
 onMounted(() => {
   // gsap.to('#discover-comment-overlay', { duration: 0.5, yPercent: 40 })
 })
+
+const userStore = useUserStore()
+const currentUser = computed(() => userStore.curUser)
 </script>
 
 <template>
@@ -348,17 +390,13 @@ onMounted(() => {
                   </div>
                   <div class="video-action-holder">
                     <div class="video-action-outer-container">
-                      <div class="video-action-inner-container">
+                      <div v-if="item.type === 'tour'" class="video-action-inner-container">
                         <div class="video-action-item">
                           <a-tooltip :position="'left'">
                             <div class="video-action-avatar">
                               <a>
                                 <a-avatar
-                                  :image-url="
-                                    item.type === 'collection'
-                                      ? (item.item as unknown as TourCollection).user.avatar
-                                      : (item.item as unknown as TourRecord).user.avatar
-                                  "
+                                  :image-url="(item.item as unknown as TourRecord).user.avatar"
                                   :size="40"
                                 ></a-avatar>
                               </a>
@@ -374,50 +412,68 @@ onMounted(() => {
                           </a-tooltip>
                         </div>
                         <div class="video-action-item">
-                          <a-tooltip :position="'left'">
-                            <div class="video-action-others">
-                              <div class="video-action-icon">
-                                <img
-                                  :height="45"
-                                  :src="isLiked ? likedSvgUrl : likeSvgUrl"
-                                  :width="45"
-                                  alt="like"
-                                />
-                              </div>
-                              <div class="video-action-statistic">{{ itemLikeShowNum }}</div>
+                          <!--                          <a-tooltip :position="'left'">-->
+                          <div
+                            class="video-action-others"
+                            @click="handleInteract(item.item as TourRecord, 'like')"
+                          >
+                            <div class="video-action-icon">
+                              <img
+                                :height="45"
+                                :src="
+                                  isLikeTour(item.item as TourRecord).value
+                                    ? likedSvgUrl
+                                    : likeSvgUrl
+                                "
+                                :width="45"
+                                alt="like"
+                              />
                             </div>
-                            <template #content>
-                              {{ isLiked ? '取消点赞' : '点赞' }}
-                              <a-tag
-                                :size="'small'"
-                                style="margin: 5px; padding: 5px; border-radius: 5px"
-                                >Z
-                              </a-tag>
-                            </template>
-                          </a-tooltip>
+                            <div class="video-action-statistic">
+                              {{ (item.item as unknown as TourRecord).likedBy.length }}
+                            </div>
+                          </div>
+                          <!--                            <template #content>-->
+                          <!--                              {{ isLiked ? '取消点赞' : '点赞' }}-->
+                          <!--                              <a-tag-->
+                          <!--                                :size="'small'"-->
+                          <!--                                style="margin: 5px; padding: 5px; border-radius: 5px"-->
+                          <!--                                >Z-->
+                          <!--                              </a-tag>-->
+                          <!--                            </template>-->
+                          <!--                          </a-tooltip>-->
                         </div>
                         <div class="video-action-item">
-                          <a-tooltip :position="'left'">
-                            <div class="video-action-others">
-                              <div class="video-action-icon">
-                                <img
-                                  :height="45"
-                                  :src="isStarred ? starredSvgUrl : starSvgUrl"
-                                  :width="45"
-                                  alt="star"
-                                />
-                              </div>
-                              <div class="video-action-statistic">{{ itemStarShowNum }}</div>
+                          <!--                          <a-tooltip :position="'left'">-->
+                          <div
+                            class="video-action-others"
+                            @click="handleInteract(item.item as TourRecord, 'star')"
+                          >
+                            <div class="video-action-icon">
+                              <img
+                                :height="45"
+                                :src="
+                                  isStarTour(item.item as TourRecord).value
+                                    ? starredSvgUrl
+                                    : starSvgUrl
+                                "
+                                :width="45"
+                                alt="star"
+                              />
                             </div>
-                            <template #content>
-                              {{ isStarred ? '取消收藏' : '收藏' }}
-                              <a-tag
-                                :size="'small'"
-                                style="margin: 5px; padding: 5px; border-radius: 5px"
-                                >X
-                              </a-tag>
-                            </template>
-                          </a-tooltip>
+                            <div class="video-action-statistic">
+                              {{ (item.item as unknown as TourRecord).starredBy.length }}
+                            </div>
+                          </div>
+                          <!--                            <template #content>-->
+                          <!--                              {{ isStarred ? '取消收藏' : '收藏' }}-->
+                          <!--                              <a-tag-->
+                          <!--                                :size="'small'"-->
+                          <!--                                style="margin: 5px; padding: 5px; border-radius: 5px"-->
+                          <!--                                >X-->
+                          <!--                              </a-tag>-->
+                          <!--                            </template>-->
+                          <!--                          </a-tooltip>-->
                         </div>
                         <div class="video-action-item">
                           <!--                          <a-tooltip :position="'left'">-->

@@ -9,6 +9,7 @@ export interface CommentRecord {
   publishTime: string
   replies: CommentRecord[]
   parent?: number
+  likedBy: UserRecord[]
 }
 
 export const getCommentsByTourId = (tourId: number): Promise<ApiResponse<CommentRecord[]>> => {

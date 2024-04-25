@@ -11,8 +11,8 @@ export interface UserRecord {
   registerTime: string
   latestLoginTime: string
   type: UserType
-  toutLikes: TourRecord[]
-  tourStars: TourRecord[]
+  tourLikes: number[]
+  tourStars: number[]
   gender: string
   age: number
   height: number
@@ -125,3 +125,16 @@ export const adminUser = {
   avatar: getStaticRes('/user/default/avatar/admin-blue.png'),
   nickname: 'Admin'
 }
+
+export interface ContentInteractForm {
+  contentId: number
+  contentType: 'tours' | 'comments'
+  interaction: 'like' | 'star'
+  value: boolean
+}
+
+export const interactWithContent = <T>(form: ContentInteractForm): Promise<ApiResponse<T>> =>
+  axiosRequest({
+    method: form.value ? 'POST' : 'DELETE',
+    url: `${form.contentType}/${form.interaction}?id=${form.contentId}`
+  })
