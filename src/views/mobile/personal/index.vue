@@ -1,6 +1,6 @@
 <template>
     <div id="personal-page" class="flex-c">
-        <header class="header flex-r">
+        <header class="header flex-r" style="position: sticky; top: 0; z-index: 2; background-color: #f5f4ea;">
             <van-icon :size="32" name="arrow-left" @click="back"/>
             <div style="font-size: 1.5rem;">{{ $route.meta.title }}</div>
             <van-icon :size="32" name="envelop-o" />
