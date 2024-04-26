@@ -219,7 +219,7 @@ const router = createRouter({
       component: AnoHighlightView
     },
     {
-      path: '/groupcollection',
+      path: '/groupcollection/:id',
       name: 'groucollection',
       meta: {
         layout: 'b',
@@ -237,14 +237,14 @@ const router = createRouter({
       component: personalPage,
       children: web_personal_children,
     },
-    {
-      path: '/personal',
-      meta: {
-        auth: ['admin', 'user']
-      },
-      component: personalIndex,
-      children: personalMobileChildren
-    },
+    // {
+    //   path: '/personal',
+    //   meta: {
+    //     auth: ['admin', 'user']
+    //   },
+    //   component: personalIndex,
+    //   children: personalMobileChildren
+    // },
     {
       path: '/group',
       name: 'group',
