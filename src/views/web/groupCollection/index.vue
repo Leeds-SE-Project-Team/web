@@ -71,8 +71,10 @@ export default {
 </script>
 
 <script lang="ts" setup>
+import { getCollectionById } from '@/apis/collection';
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 // define all the varibles
 
 // big bg img at first and some des
@@ -96,11 +98,14 @@ const allImgNum = ref<any>({})
 // tour content
 const groupTour = ref<any>([])
 
-
-
 // onMounted is here
+
+const groupCollectionId = useRoute().params.id as string
+
+console.log(groupCollectionId)
+
 onMounted(async () => {
-    await axios.get("./src/views/web/groupCollection/tours.json")
+    await axios.get("../src/views/web/groupCollection/tours.json")
                .then((res)=>{
                 console.log(res.data.data)
                 allImgData.value = res.data.data
@@ -113,21 +118,18 @@ onMounted(async () => {
                 userData.value = res.data.everyOne
                 groupName.value = res.data.groupName
                })
+               .catch((error) => {
+                console.log(error)
+               })
 })
-
-// 自动播放
-// onMounted(()=>{
-//     setInterval(()=>{
-//         for(let i = 0; i < picNum.value.length; i++) {
-//             if (picNum.value[i]+1 === allImgNum.value[i]) {
-//                 picNum.value[i] = 0
-//             } else {
-//                 picNum.value[i]++
-//             }
-//             changeHeight(i, picNum.value[i])
-//         }
-//     }, 3000)
+// onMounted(async () => {
+//     await getCollectionById(groupCollectionId)
+//        .then((res) => {
+//         allImgData.value = res.data
+//         })
 // })
+
+
 
 function changeHeight(index1: any, index2: any) {
     picNum.value[index1] = index2
