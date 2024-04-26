@@ -64,3 +64,28 @@
     //}
   }
 }
+
+#record-layout-footer {
+  height: $mobile-footer-nav-height !important;
+
+  .arco-btn-group {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    height: 100%;
+
+    .footer-btn {
+      font-weight: bold;
+      font-size: 17px;
+      width: 100%;
+      height: 100%;
+
+      .footer-icon {
+        color: rgba(0, 0, 0, 0.6);
+        font-size: 20px;
+      }
+    }
+  }
+
+}

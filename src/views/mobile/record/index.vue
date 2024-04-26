@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { ElAmap } from '@vuemap/vue-amap'
 import {
   createTourHighlight,
@@ -14,6 +14,10 @@ import {
   getTourById,
   parseLocation,
   parseLocationNumber,
+  type RecordData,
+  type RecordDataInstant,
+  saveTour,
+  type SaveTourForm,
   type TourRecord,
   TourType
 } from '@/apis/tour'
@@ -22,35 +26,72 @@ import { useRoute } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
 import { useMapStore } from '@/stores/map'
 import useLoading from '@/hooks/loading'
+import { cloneDeep } from 'lodash-es'
+import { parseTimeToString } from '@/utils'
+import dayjs from 'dayjs'
 
 const route = useRoute()
 const tourId = parseInt(route.params.tourId as string)
 const tourData = ref<TourRecord>()
 
-interface RecordData {
-  totalDistance: number // km
-  avgSpeed: number // km/h
-  timeInMotion: number // s
-}
-
-interface RecordDataInstant {
-  speed: number // km/h
-  altitude: number // m
-  location: AMap.LngLat
-}
-
 const locationTrackList = ref<RecordDataInstant[]>([])
-const recordData = ref<RecordData>({ avgSpeed: 0, timeInMotion: 0, totalDistance: 0 })
+const recordData = ref<RecordData>({
+  avgSpeed: 0,
+  timeInMotion: 0,
+  totalDistance: 0,
+  timeTaken: 0,
+  calorie: 0
+})
+const saveTourForm = reactive<SaveTourForm>({
+  recordData: recordData.value,
+  tourId: tourId,
+  trackList: []
+})
+const saveTourLoadingObj = useLoading()
+const handleSaveTour = () => {
+  saveTourLoadingObj.setLoading(true)
+  saveTour({ ...saveTourForm, isComplete: true })
+    .then((apiRes) => {
+      if (apiRes.success) {
+        showToast(apiRes.message)
+      } else {
+        throw apiRes.message
+      }
+    })
+    .catch((e) => {
+      Message.error(e)
+    })
+    .finally(() => {
+      saveTourLoadingObj.setLoading(false)
+    })
+}
+
+const prevRecordData = ref<RecordData>({
+  avgSpeed: 0,
+  timeInMotion: 0,
+  totalDistance: 0,
+  timeTaken: 0,
+  calorie: 0
+})
+const updatePrevRecordData = () => {
+  prevRecordData.value = cloneDeep(recordData.value)
+}
+// watch(recordData.value, (value) => {
+//   prevRecordData.value = oldValue
+// })
+
 const maxSpeed = computed(() => Math.max(0, ...locationTrackList.value.map((track) => track.speed)))
+const prevRecordDataInstant = computed(() =>
+  locationTrackList.value.length > 1
+    ? locationTrackList.value[locationTrackList.value.length - 2]
+    : undefined
+)
 const currentRecordDataInstant = computed(() =>
   locationTrackList.value.length > 0
     ? locationTrackList.value[locationTrackList.value.length - 1]
     : undefined
 )
-const isInMotion = ref(false)
-const handleCountTime = () => {
-  isInMotion.value && recordData.value.timeInMotion++
-}
+
 const fetchTour = () => {
   if (tourId === -1) {
     showNotify({ type: 'primary', message: 'New adventure start!' })
@@ -119,9 +160,25 @@ const mapInit = () => {
   fetchTour()
 }
 
-const TIME_INTERVAL = 5
+const TIME_INTERVAL = 1
 
 let layers: AMap.Overlay[] = []
+const countNotInMotion = ref(Infinity)
+const isInMotion = computed(() => countNotInMotion.value < 10)
+
+const handleCountTime = () => {
+  recordData.value.timeTaken++
+  if (isInMotion.value) {
+    updatePrevRecordData()
+    recordData.value.timeInMotion++
+    recordData.value.avgSpeed =
+      recordData.value.timeInMotion > 0
+        ? parseFloat(
+            ((recordData.value.totalDistance / recordData.value.timeInMotion) * 3.6).toFixed(2)
+          )
+        : 0
+  }
+}
 const getCurrentLocation = (toCenter?: boolean) => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition(
     (status, info: any) => {
@@ -130,11 +187,11 @@ const getCurrentLocation = (toCenter?: boolean) => {
           center.value = info.position.toArray()
         }
         ;(mapRef.value.$$getInstance() as AMap.Map).remove(layers)
-        console.log(info)
         let recordDataInstant: RecordDataInstant = {
           altitude: info.altitude ?? 0,
           speed: 0,
-          location: info.position
+          location: info.position,
+          time: parseTimeToString(dayjs())
         }
         const len = locationTrackList.value.length
 
@@ -144,19 +201,19 @@ const getCurrentLocation = (toCenter?: boolean) => {
             recordDataInstant.location
           )
           if (distance > 0) {
+            updatePrevRecordData()
+            countNotInMotion.value = 0
             recordData.value.totalDistance += distance
-            isInMotion.value = true
-          } else {
-            isInMotion.value = false
-          }
-          recordData.value.avgSpeed =
-            recordData.value.timeInMotion > 0
-              ? parseFloat((distance / recordData.value.timeInMotion).toFixed(2))
-              : 0
-          recordDataInstant.speed = parseFloat((distance / TIME_INTERVAL).toFixed(2))
-        }
+            recordDataInstant.speed = parseFloat(((distance / TIME_INTERVAL) * 3.6).toFixed(2))
+            locationTrackList.value.push(recordDataInstant)
 
-        locationTrackList.value.push(recordDataInstant)
+            // isInMotion.value = true
+          } else {
+            countNotInMotion.value++
+          }
+        } else {
+          locationTrackList.value.push(recordDataInstant)
+        }
 
         if (info.accuracy < 10) {
           showToast('weak GPS')
@@ -222,7 +279,8 @@ const handleCreateHighlight = (form: CreateTourHighlightForm) => {
 }
 
 defineExpose({
-  handleCreateHighlight
+  handleCreateHighlight,
+  handleSaveTour
 })
 
 const getLocation = (e: any) => {
@@ -376,11 +434,12 @@ onUnmounted(() => {
               </div>
               <a-statistic
                 :precision="2"
-                :value="locationTrackList[locationTrackList.length - 1]?.speed ?? 0"
+                :value="isInMotion ? currentRecordDataInstant?.speed ?? 0 : 0"
+                :value-from="prevRecordDataInstant?.speed ?? 0"
                 animation
                 title="Current Speed"
               >
-                <template #suffix> km/h</template>
+                <template #suffix> Km/h</template>
               </a-statistic>
             </div>
           </a-grid-item>
@@ -392,19 +451,19 @@ onUnmounted(() => {
               <a-statistic
                 :precision="2"
                 :value="recordData.avgSpeed ?? 0"
+                :value-from="prevRecordData.avgSpeed ?? 0"
                 animation
                 title="Average Speed"
               >
-                <template #suffix> km/h</template>
+                <template #suffix> Km/h</template>
               </a-statistic>
             </div>
           </a-grid-item>
           <a-grid-item>
             <div class="swipe-grid-item">
               <div>
-                <icon-thunderbolt class="swipe-grid-item-icon" />
+                <icon-clock-circle class="swipe-grid-item-icon" />
               </div>
-              <!--                :value="Math.floor(recordData.timeInMotion / 60) ?? 0"-->
               <a-countdown
                 :now="new Date().getTime()"
                 :precision="0"
@@ -418,15 +477,16 @@ onUnmounted(() => {
           <a-grid-item>
             <div class="swipe-grid-item">
               <div>
-                <icon-thunderbolt class="swipe-grid-item-icon" />
+                <icon-double-right class="swipe-grid-item-icon" />
               </div>
               <a-statistic
                 :precision="2"
                 :value="recordData.totalDistance"
-                :value-from="recordData.totalDistance"
+                :value-from="prevRecordData?.totalDistance ?? 0"
+                animation
                 title="Traveled"
               >
-                <template #suffix> m</template>
+                <template #suffix> M</template>
               </a-statistic>
             </div>
           </a-grid-item>
@@ -439,58 +499,61 @@ onUnmounted(() => {
               <div>
                 <icon-thunderbolt class="swipe-grid-item-icon" />
               </div>
-              <a-statistic :precision="2" :value="maxSpeed" animation title="Max Speed">
-                <template #suffix> km/h</template>
+              <a-statistic :precision="2" :value="maxSpeed" title="Max Speed">
+                <template #suffix> Km/h</template>
               </a-statistic>
             </div>
           </a-grid-item>
           <a-grid-item>
             <div class="swipe-grid-item">
               <div>
-                <icon-thunderbolt class="swipe-grid-item-icon" />
+                <icon-bar-chart class="swipe-grid-item-icon" />
               </div>
               <a-statistic
                 :precision="0"
                 :value="currentRecordDataInstant?.altitude ?? 0"
+                :value-from="prevRecordDataInstant?.altitude ?? 0"
                 animation
                 title="Current Altitude"
               >
-                <template #suffix> m</template>
+                <template #suffix> M</template>
               </a-statistic>
             </div>
           </a-grid-item>
-          <!--          <a-grid-item>-->
-          <!--            <div class="swipe-grid-item">-->
-          <!--              <div>-->
-          <!--                <icon-thunderbolt class="swipe-grid-item-icon" />-->
-          <!--              </div>-->
-          <!--              <a-countdown-->
-          <!--                :precision="0"-->
-          <!--                :value="Math.floor(recordData.timeInMotion / 60) ?? 0"-->
-          <!--                title="In Motion"-->
-          <!--              >-->
-          <!--                <template #suffix>:{{ recordData.timeInMotion % 60 }}</template>-->
-          <!--              </a-countdown>-->
-          <!--            </div>-->
-          <!--          </a-grid-item>-->
-          <!--          <a-grid-item>-->
-          <!--            <div class="swipe-grid-item">-->
-          <!--              <div>-->
-          <!--                <icon-thunderbolt class="swipe-grid-item-icon" />-->
-          <!--              </div>-->
-          <!--              <a-statistic-->
-          <!--                :precision="2"-->
-          <!--                :value="recordData.totalDistance"-->
-          <!--                :value-from="recordData.totalDistance"-->
-          <!--                title="Traveled"-->
-          <!--              >-->
-          <!--                <template #suffix> m</template>-->
-          <!--              </a-statistic>-->
-          <!--            </div>-->
-          <!--          </a-grid-item>-->
+          <a-grid-item>
+            <div class="swipe-grid-item">
+              <div>
+                <icon-clock-circle class="swipe-grid-item-icon" />
+              </div>
+              <a-countdown
+                :now="new Date().getTime()"
+                :precision="0"
+                :start="false"
+                :value="new Date().getTime() + recordData.timeTaken * 1000"
+                title="Time Taken"
+              >
+              </a-countdown>
+            </div>
+          </a-grid-item>
+          <a-grid-item>
+            <div class="swipe-grid-item">
+              <div>
+                <icon-fire class="swipe-grid-item-icon" />
+              </div>
+              <a-statistic
+                :precision="2"
+                :value="recordData.calorie"
+                :value-from="recordData.calorie"
+                title="Calorie burnt"
+              >
+                <template #suffix> KJ</template>
+              </a-statistic>
+            </div>
+          </a-grid-item>
         </a-grid>
       </van-swipe-item>
     </van-swipe>
+
     <div id="map-container">
       <el-amap
         ref="mapRef"

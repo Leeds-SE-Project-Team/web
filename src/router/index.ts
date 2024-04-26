@@ -3,9 +3,7 @@ import IndexView from '@/views/both/home/index.vue'
 import HomeView from '@/views/both/home/HomeView.vue'
 import LoginView from '@/views/both/login/index.vue'
 import DiscoverMobileView from '@/views/mobile/discover/index.vue'
-import DiscoverView from '@/views/web/discover/index.vue'
 import HighlightMobileView from '@/views/mobile/highlight/index.vue'
-import PlannerView from '@/views/web/planner/index.vue'
 import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
@@ -15,12 +13,10 @@ import groupCollection from '@/views/web/groupCollection/index.vue'
 import personalPage from '@/views/web/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
 import personalProfile from '@/views/web/personal/profile.vue'
-import personalHighlights from '@/views/web/personal/highlights.vue'
 import personalCollections from '@/views/web/personal/profile.vue'
+import personalHighlights from '@/views/web/personal/highlights.vue'
 import personalGroup from '@/views/web/personal/group.vue'
-import personalIndex from '@/views/mobile/personal/index.vue'
 import TourDetail from '@/views/mobile/personal/TourDetail.vue'
-import { Capacitor } from '@capacitor/core'
 import { MOBILE_ROUTES } from '@/router/mobile'
 import { useAuthStore } from '@/stores/auth'
 import { getUserByToken } from '@/apis/user'
@@ -30,47 +26,47 @@ import { useUserStore } from '@/stores/user'
 import CollDetail from '@/views/mobile/personal/CollDetail.vue'
 import GroupList from '@/views/mobile/personal/GroupList.vue'
 import GroupIndex from '@/views/mobile/group/index.vue'
+import { ADMIN_ROUTE } from '@/router/web'
 
-const personalMobileChildren:RouteRecordRaw[] = [
+const personalMobileChildren: RouteRecordRaw[] = [
   {
     path: '',
     name: 'personal',
-    meta: {title: 'Personal'},
+    meta: { title: 'Personal' },
     component: PersonMain
   },
   {
     path: 'tour',
     name: 'personal-tour',
-    meta: {title: 'Tour'},
+    meta: { title: 'Tour' },
     component: TourDetail
   },
   {
     path: 'detail',
     name: 'personal-detail',
-    meta: {title: 'Detail'},
+    meta: { title: 'Detail' },
     component: DetailInfo
   },
   {
     path: 'collection',
     name: 'personal-collection',
-    meta: {title: 'Collection'},
-    component: CollDetail,
+    meta: { title: 'Collection' },
+    component: CollDetail
   },
   {
     path: 'group',
     name: 'personal-group',
-    meta: {title: 'Group'},
-    component: GroupList,
+    meta: { title: 'Group' },
+    component: GroupList
   }
 ]
-import { ADMIN_ROUTE } from '@/router/web'
 
 const web_personal_children = [
   {
     path: 'personalprofile',
     name: 'personalprofile',
     meta: {
-      title: 'personalprofile',
+      title: 'personalprofile'
     },
     component: personalProfile
   },
@@ -78,7 +74,7 @@ const web_personal_children = [
     path: 'personaltours',
     name: 'personaltours',
     meta: {
-      title: 'personaltours',
+      title: 'personaltours'
     },
     component: personalTours
   },
@@ -86,7 +82,7 @@ const web_personal_children = [
     path: 'personalhighlights',
     name: 'personalhighlights',
     meta: {
-      title: 'personalhighlights',
+      title: 'personalhighlights'
     },
     component: personalHighlights
   },
@@ -94,7 +90,7 @@ const web_personal_children = [
     path: 'personalcollections',
     name: 'personalcollections',
     meta: {
-      title: 'personalcollections',
+      title: 'personalcollections'
     },
     component: personalCollections
   },
@@ -102,7 +98,7 @@ const web_personal_children = [
     path: 'personalgroup',
     name: 'personalgroup',
     meta: {
-      title: 'personalgroup',
+      title: 'personalgroup'
     },
     component: personalGroup
   }
@@ -145,12 +141,12 @@ const router = createRouter({
       name: 'discover',
       meta: {
         // layout: 'mobile-main',
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        layout: 'mobile-main',
         title: 'Discover Page',
         auth: ['admin', 'user']
       }, // Render component dynamically according to platform
       // component: DiscoverMobileView
-      component: Capacitor.getPlatform() === 'web' ? DiscoverView : DiscoverMobileView
+      component: DiscoverMobileView
     },
 
     {
@@ -161,8 +157,7 @@ const router = createRouter({
         layout: 'mobile-default'
       },
       component: PlannerMobileView
-    },
-    // {
+    }, // {
     //   path: '/plan',
     //   name: 'planner',
     //   meta: {
@@ -177,8 +172,8 @@ const router = createRouter({
       name: 'tour',
       meta: {
         layout: 'b',
-        title: 'Tour Page',
-        auth: ['admin', 'user']
+        title: 'Tour Page'
+        // auth: ['admin', 'user']
       },
       component: TourView
     },
@@ -226,7 +221,7 @@ const router = createRouter({
         title: 'group collection Page'
       },
       component: groupCollection
-    },    
+    },
     {
       path: '/personal',
       name: 'personal',
@@ -249,13 +244,12 @@ const router = createRouter({
       path: '/group',
       name: 'group',
       meta: {
-        auth: ['admin','user']
+        auth: ['admin', 'user']
       },
-      component: GroupIndex,
+      component: GroupIndex
     }
   ]
 })
-
 
 router.beforeEach((to, from, next) => {
   if (to.meta.auth && (to.meta.auth as string[]).length > 0) {

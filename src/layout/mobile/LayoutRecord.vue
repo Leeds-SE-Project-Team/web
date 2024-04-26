@@ -11,6 +11,9 @@ const handleShowCreateHighlight = (url: string) => {
   createHighlightRef.value.show = true
   imageUrl.value = url
 }
+const handleSaveTour = () => {
+  recordMapRef.value.handleSaveTour()
+}
 const createHighlightRef = ref()
 const recordMapRef = ref()
 const handleConfirm = (tourHighlightForm: CreateTourHighlightForm) => {
@@ -33,8 +36,8 @@ provide('tourId', tourId)
         </RouterView>
       </a-layout-content>
     </a-layout>
-    <a-layout-footer>
-      <RecordFooter @create-highlight="handleShowCreateHighlight" />
+    <a-layout-footer id="record-layout-footer">
+      <RecordFooter @create-highlight="handleShowCreateHighlight" @save-tour="handleSaveTour" />
     </a-layout-footer>
     <!-- <a-layout-footer>Footer</a-layout-footer> -->
   </a-layout>

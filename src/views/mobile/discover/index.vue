@@ -10,6 +10,10 @@ import likedSvgUrl from '/interaction/video_detail_liked.svg'
 import starSvgUrl from '/interaction/star.svg'
 import starredSvgUrl from '/interaction/starred.svg'
 import { shuffle } from 'lodash-es'
+import { gsap } from 'gsap'
+import { type ContentInteractForm, interactWithContent } from '@/apis/user'
+import { useUserStore } from '@/stores'
+import { showToast } from 'vant'
 
 const currentPlayIndex = ref(0)
 
@@ -212,31 +216,93 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', resizeEventHandler)
 })
+
+const showCommentList = ref(false)
+const showCommentAnimComplete = ref(true)
+const handleClickComment = () => {
+  showCommentList.value = true
+  nextTick(() => {
+    showCommentAnimComplete.value &&
+      gsap.to('#discover-comment-overlay .comment-wrapper', {
+        duration: 0.3,
+        yPercent: -60,
+        ease: 'power3.out',
+        onStart: () => {
+          showCommentAnimComplete.value = false
+        },
+        onComplete: () => {
+          showCommentAnimComplete.value = true
+        }
+      })
+  })
+}
+
+const handleCloseCommentList = () => {
+  showCommentAnimComplete.value &&
+    gsap.to('#discover-comment-overlay .comment-wrapper', {
+      duration: 0.3,
+      yPercent: 0,
+      ease: 'power3.out',
+      onStart: () => {
+        showCommentAnimComplete.value = false
+      },
+      onComplete: () => {
+        showCommentList.value = false
+        showCommentAnimComplete.value = true
+      }
+    })
+}
+
+const isLikeTour = (tour: TourRecord) =>
+  computed(() => currentUser.value?.tourLikes.includes(tour.id))
+const isStarTour = (tour: TourRecord) =>
+  computed(() => currentUser.value?.tourStars.includes(tour.id))
+
+const handleInteract = (tour: TourRecord, interaction: 'like' | 'star') => {
+  userStore.getUserRecord().then((user) => {
+    const form: ContentInteractForm = {
+      contentType: 'tours',
+      interaction: interaction,
+      value: interaction === 'like' ? !isLikeTour(tour).value : !isStarTour(tour).value,
+      contentId: tour.id
+    }
+    interactWithContent<TourRecord>(form).then((apiRes) => {
+      if (apiRes.success) {
+        Object.assign(tour, apiRes.data!)
+        console.log(tour)
+        if (interaction === 'like') {
+          user.tourLikes = form.value
+            ? [...user.tourLikes, tour.id]
+            : user.tourLikes.filter((tId) => tId !== tour.id)
+        } else if (interaction === 'star') {
+          user.tourStars = form.value
+            ? [...user.tourStars, tour.id]
+            : user.tourStars.filter((tId) => tId !== tour.id)
+        }
+      } else {
+        showToast({
+          type: 'fail',
+          message: apiRes.message
+        })
+      }
+    })
+  })
+}
+
+const recommendPlace = (item: DisPlayItem) =>
+  computed(() => {
+    return 1
+  })
+
+onMounted(() => {
+  // gsap.to('#discover-comment-overlay', { duration: 0.5, yPercent: 40 })
+})
+
+const userStore = useUserStore()
+const currentUser = computed(() => userStore.curUser)
 </script>
 
 <template>
-  <!--  <div id="recommend-out-switch-btn">-->
-  <!--    <div class="xgplayer-playswitch-tab">-->
-  <!--      <div class="xgplayer-playswitch-prev" @click="handlePlayPrev">-->
-  <!--        <a-image :preview-visible="false" src="/recommend/prev.svg"></a-image>-->
-  <!--      </div>-->
-  <!--      <div class="xgplayer-playswitch-next" @click="handlePlayNext">-->
-  <!--        <a-image :preview-visible="false" src="/recommend/next.svg"></a-image>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-  <van-floating-bubble
-    :offset="{
-      x: 315,
-      y: 70
-    }"
-    axis="xy"
-    magnetic="x"
-  >
-    <template #default>
-      <van-icon :size="23" name="guide-o" />
-    </template>
-  </van-floating-bubble>
   <div id="slide-list" @wheel.passive="handleWheel">
     <div class="outer-container">
       <div ref="slideList" class="slide-list-container">
@@ -247,7 +313,6 @@ onUnmounted(() => {
             height: `${parentHeight}px`
           }"
           class="page-recommend-container border-1"
-          @click="$router.push({ name: item.type, query: { id: item.item.id } })"
           @touchmove="handleTouchMove"
           @touchstart="handleTouchStart"
         >
@@ -325,17 +390,13 @@ onUnmounted(() => {
                   </div>
                   <div class="video-action-holder">
                     <div class="video-action-outer-container">
-                      <div class="video-action-inner-container">
+                      <div v-if="item.type === 'tour'" class="video-action-inner-container">
                         <div class="video-action-item">
                           <a-tooltip :position="'left'">
                             <div class="video-action-avatar">
                               <a>
                                 <a-avatar
-                                  :image-url="
-                                    item.type === 'collection'
-                                      ? (item.item as unknown as TourCollection).user.avatar
-                                      : (item.item as unknown as TourRecord).user.avatar
-                                  "
+                                  :image-url="(item.item as unknown as TourRecord).user.avatar"
                                   :size="40"
                                 ></a-avatar>
                               </a>
@@ -351,79 +412,102 @@ onUnmounted(() => {
                           </a-tooltip>
                         </div>
                         <div class="video-action-item">
-                          <a-tooltip :position="'left'">
-                            <div class="video-action-others">
-                              <div class="video-action-icon">
-                                <img
-                                  :height="45"
-                                  :src="isLiked ? likedSvgUrl : likeSvgUrl"
-                                  :width="45"
-                                  alt="like"
-                                />
-                              </div>
-                              <div class="video-action-statistic">{{ itemLikeShowNum }}</div>
+                          <!--                          <a-tooltip :position="'left'">-->
+                          <div
+                            class="video-action-others"
+                            @click="handleInteract(item.item as TourRecord, 'like')"
+                          >
+                            <div class="video-action-icon">
+                              <img
+                                :height="45"
+                                :src="
+                                  isLikeTour(item.item as TourRecord).value
+                                    ? likedSvgUrl
+                                    : likeSvgUrl
+                                "
+                                :width="45"
+                                alt="like"
+                              />
                             </div>
-                            <template #content>
-                              {{ isLiked ? '取消点赞' : '点赞' }}
-                              <a-tag
-                                :size="'small'"
-                                style="margin: 5px; padding: 5px; border-radius: 5px"
-                                >Z
-                              </a-tag>
-                            </template>
-                          </a-tooltip>
+                            <div class="video-action-statistic">
+                              {{ (item.item as unknown as TourRecord).likedBy.length }}
+                            </div>
+                          </div>
+                          <!--                            <template #content>-->
+                          <!--                              {{ isLiked ? '取消点赞' : '点赞' }}-->
+                          <!--                              <a-tag-->
+                          <!--                                :size="'small'"-->
+                          <!--                                style="margin: 5px; padding: 5px; border-radius: 5px"-->
+                          <!--                                >Z-->
+                          <!--                              </a-tag>-->
+                          <!--                            </template>-->
+                          <!--                          </a-tooltip>-->
+                        </div>
+                        <div class="video-action-item">
+                          <!--                          <a-tooltip :position="'left'">-->
+                          <div
+                            class="video-action-others"
+                            @click="handleInteract(item.item as TourRecord, 'star')"
+                          >
+                            <div class="video-action-icon">
+                              <img
+                                :height="45"
+                                :src="
+                                  isStarTour(item.item as TourRecord).value
+                                    ? starredSvgUrl
+                                    : starSvgUrl
+                                "
+                                :width="45"
+                                alt="star"
+                              />
+                            </div>
+                            <div class="video-action-statistic">
+                              {{ (item.item as unknown as TourRecord).starredBy.length }}
+                            </div>
+                          </div>
+                          <!--                            <template #content>-->
+                          <!--                              {{ isStarred ? '取消收藏' : '收藏' }}-->
+                          <!--                              <a-tag-->
+                          <!--                                :size="'small'"-->
+                          <!--                                style="margin: 5px; padding: 5px; border-radius: 5px"-->
+                          <!--                                >X-->
+                          <!--                              </a-tag>-->
+                          <!--                            </template>-->
+                          <!--                          </a-tooltip>-->
+                        </div>
+                        <div class="video-action-item">
+                          <!--                          <a-tooltip :position="'left'">-->
+                          <div class="video-action-others" @click.stop="handleClickComment">
+                            <div class="video-action-icon">
+                              <img
+                                :height="45"
+                                :width="45"
+                                alt="comment"
+                                src="/interaction/comment.svg"
+                              />
+                            </div>
+                            <div class="video-action-statistic">
+                              {{ 1 }}
+                            </div>
+                          </div>
+                          <!--                            <template #content>-->
+                          <!--                              评论-->
+                          <!--                              <a-tag-->
+                          <!--                                :size="'small'"-->
+                          <!--                                style="margin: 5px; padding: 5px; border-radius: 5px"-->
+                          <!--                                >C-->
+                          <!--                              </a-tag>-->
+                          <!--                            </template>-->
+                          <!--                          </a-tooltip>-->
                         </div>
                         <div class="video-action-item">
                           <a-tooltip :position="'left'">
-                            <div class="video-action-others">
-                              <div class="video-action-icon">
-                                <img
-                                  :height="45"
-                                  :src="isStarred ? starredSvgUrl : starSvgUrl"
-                                  :width="45"
-                                  alt="star"
-                                />
-                              </div>
-                              <div class="video-action-statistic">{{ itemStarShowNum }}</div>
-                            </div>
-                            <template #content>
-                              {{ isStarred ? '取消收藏' : '收藏' }}
-                              <a-tag
-                                :size="'small'"
-                                style="margin: 5px; padding: 5px; border-radius: 5px"
-                                >X
-                              </a-tag>
-                            </template>
-                          </a-tooltip>
-                        </div>
-                        <div class="video-action-item">
-                          <a-tooltip :position="'left'">
-                            <div class="video-action-others">
-                              <div class="video-action-icon">
-                                <img
-                                  :height="45"
-                                  :width="45"
-                                  alt="comment"
-                                  src="/interaction/comment.svg"
-                                />
-                              </div>
-                              <div class="video-action-statistic">
-                                {{ 1 }}
-                              </div>
-                            </div>
-                            <template #content>
-                              评论
-                              <a-tag
-                                :size="'small'"
-                                style="margin: 5px; padding: 5px; border-radius: 5px"
-                                >C
-                              </a-tag>
-                            </template>
-                          </a-tooltip>
-                        </div>
-                        <div class="video-action-item">
-                          <a-tooltip :position="'left'">
-                            <div class="video-action-others">
+                            <div
+                              class="video-action-others"
+                              @click="
+                                $router.push({ name: item.type, query: { id: item.item.id } })
+                              "
+                            >
                               <div class="video-action-icon">
                                 <img
                                   :height="45"
@@ -469,6 +553,40 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
+
+          <van-overlay
+            id="discover-comment-overlay"
+            :duration="0"
+            :show="showCommentList"
+            @click="handleCloseCommentList"
+          >
+            <div class="comment-wrapper">
+              <div class="usually-search">
+                大家都在搜：<a class="usually-search-topic"
+                  ><span
+                    :style="{
+                      cursor: recommendPlace(item) ? 'pointer' : 'default'
+                    }"
+                    class="usually-search-topic-text"
+                    @click="
+                      () => {
+                        if (recommendPlace(item)) {
+                          // handleSearch(recommendPlace)
+                        }
+                      }
+                    "
+                    >{{ recommendPlace(item) ? recommendPlace(item) : '暂无推荐' }}</span
+                  >
+                  <img
+                    v-if="recommendPlace(item)"
+                    alt="usually-search"
+                    class="usually-search-icon"
+                    src="/interaction/usually_search.svg"
+                  />
+                </a>
+              </div>
+            </div>
+          </van-overlay>
         </div>
 
         <a-spin
@@ -481,6 +599,29 @@ onUnmounted(() => {
       </div>
     </div>
   </div>
+
+  <!--  <div id="recommend-out-switch-btn">-->
+  <!--    <div class="xgplayer-playswitch-tab">-->
+  <!--      <div class="xgplayer-playswitch-prev" @click="handlePlayPrev">-->
+  <!--        <a-image :preview-visible="false" src="/recommend/prev.svg"></a-image>-->
+  <!--      </div>-->
+  <!--      <div class="xgplayer-playswitch-next" @click="handlePlayNext">-->
+  <!--        <a-image :preview-visible="false" src="/recommend/next.svg"></a-image>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
+  <!--  <van-floating-bubble-->
+  <!--    :offset="{-->
+  <!--      x: 315,-->
+  <!--      y: 70-->
+  <!--    }"-->
+  <!--    axis="xy"-->
+  <!--    magnetic="x"-->
+  <!--  >-->
+  <!--    <template #default>-->
+  <!--      <van-icon :size="23" name="guide-o" />-->
+  <!--    </template>-->
+  <!--  </van-floating-bubble>-->
 </template>
 
 <script lang="ts">
