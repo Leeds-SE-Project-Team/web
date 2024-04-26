@@ -219,7 +219,24 @@ export interface RecordData {
   avgSpeed: number // km/h
   timeInMotion: number // s
   timeTaken: number // s
-  calorie: number // kj
+  calorie: number // kj =
+}
+
+export const calculateTourCalorie = (
+  tourType: TourType,
+  weight: number,
+  timeInSeconds: number,
+  speed: number
+) => {
+  switch (tourType) {
+    case TourType.CAR:
+    case TourType.PUBLIC:
+      return 0
+    case TourType.WALK:
+      return parseFloat(((weight * (timeInSeconds / 3600) * speed) / 5).toFixed(2))
+    case TourType.CYCLING:
+      return parseFloat(((weight * (timeInSeconds / 3600) * speed) / 15).toFixed(2))
+  }
 }
 
 export interface RecordDataInstant {

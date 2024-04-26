@@ -2,7 +2,7 @@
 import { Camera, CameraResultType } from '@capacitor/camera'
 
 // const imageUrl = ref('blob:http://localhost:5173/a0900c7d-6ee0-4b62-bd6c-f99f419f0d1e')
-const takePicture = async () => {
+const createHighlight = async () => {
   const image = await Camera.getPhoto({
     quality: 90,
     resultType: CameraResultType.DataUrl
@@ -27,15 +27,15 @@ const emits = defineEmits(['createHighlight', 'saveTour'])
 <template>
   <a-button-group class="footer-btn-group" type="primary">
     <a-button class="footer-btn" @click="emits('saveTour')">STOP</a-button>
-    <a-button class="footer-btn" type="text">
+    <a-button class="footer-btn" type="text" @click="createHighlight">
       <template #icon>
         <icon-thumb-up-fill class="footer-icon" />
       </template>
     </a-button>
-    <a-button class="footer-btn" type="text">
+    <a-button class="footer-btn" disabled type="text">
       <icon-camera class="footer-icon" />
     </a-button>
-    <a-button class="footer-btn" type="text">
+    <a-button class="footer-btn" disabled type="text">
       <icon-double-up class="footer-icon" />
     </a-button>
   </a-button-group>

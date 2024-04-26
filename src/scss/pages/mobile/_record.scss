@@ -49,6 +49,34 @@
 
   }
 
+  .weak-gps-hint {
+    color: #fff;
+    font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+
+    .hint-icon {
+      font-size: 30px;
+      margin-right: 13px;
+    }
+
+    .hint-text {
+      font-size: 25px;
+
+    }
+
+    height: 90px;
+    position: absolute;
+    top: $header-height;
+    z-index: $mobile-footer-nav-z-index;
+    width: 100%;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $theme-ui-colors-primary;
+
+
+  }
+
   #map-container {
     position: relative;
     left: 0;
