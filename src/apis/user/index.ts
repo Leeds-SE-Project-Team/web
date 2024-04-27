@@ -106,7 +106,7 @@ export const updateUser = (form: {
   avatar: string
   oldPassword: string | null
   newPassword: string | null
-}): Promise<ApiResponse<string>> =>
+}): Promise<ApiResponse<UserRecord>> =>
   axiosRequest({
     method: 'PUT',
     url: 'users',

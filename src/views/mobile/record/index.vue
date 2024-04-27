@@ -10,6 +10,7 @@ import {
 } from '@/apis/tour/highlight'
 import { showNotify, showToast } from 'vant'
 import {
+  calculateTourCalorie,
   fetchTourDataJson,
   getTourById,
   parseLocation,
@@ -29,6 +30,7 @@ import useLoading from '@/hooks/loading'
 import { cloneDeep } from 'lodash-es'
 import { parseTimeToString } from '@/utils'
 import dayjs from 'dayjs'
+import { useUserStore } from '@/stores'
 
 const route = useRoute()
 const tourId = parseInt(route.params.tourId as string)
@@ -179,10 +181,13 @@ const handleCountTime = () => {
         : 0
   }
 }
+const userStore = useUserStore()
 const getCurrentLocation = (toCenter?: boolean) => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition(
     (status, info: any) => {
       if (status === 'complete') {
+        weakGPS.value = info.accuracy > 30
+
         if (toCenter === true) {
           center.value = info.position.toArray()
         }
@@ -201,10 +206,19 @@ const getCurrentLocation = (toCenter?: boolean) => {
             recordDataInstant.location
           )
           if (distance > 0) {
+            // if (distance > 0 && !weakGPS) {
             updatePrevRecordData()
             countNotInMotion.value = 0
             recordData.value.totalDistance += distance
             recordDataInstant.speed = parseFloat(((distance / TIME_INTERVAL) * 3.6).toFixed(2))
+            if (tourData.value && userStore.curUser) {
+              recordData.value.calorie = calculateTourCalorie(
+                tourData.value.type,
+                userStore.curUser.weight,
+                recordData.value.timeTaken,
+                recordData.value.avgSpeed
+              )
+            }
             locationTrackList.value.push(recordDataInstant)
 
             // isInMotion.value = true
@@ -215,9 +229,9 @@ const getCurrentLocation = (toCenter?: boolean) => {
           locationTrackList.value.push(recordDataInstant)
         }
 
-        if (info.accuracy < 10) {
-          showToast('weak GPS')
-        }
+        // if (info.accuracy < 10) {
+        //   showToast('weak GPS')
+        // }
 
         // if (len >= 2) {
         //   showToast({
@@ -240,6 +254,11 @@ const getCurrentLocation = (toCenter?: boolean) => {
             true
           )
         }
+      } else if (status === 'error') {
+        showToast({
+          type: 'fail',
+          message: info.originMessage
+        })
       }
     }
   )
@@ -375,6 +394,8 @@ const showHighlightSheet = ref(false)
 
 let getLocationInterval = 0
 let countTimeInterval = 0
+
+const weakGPS = ref(false)
 onMounted(() => {
   fetchHighlightList()
   getLocationInterval = setInterval(getCurrentLocation, TIME_INTERVAL * 1000)
@@ -424,7 +445,7 @@ onUnmounted(() => {
 
 <template>
   <div id="page-record">
-    <van-swipe class="record-swipe" indicator-color="white">
+    <van-swipe v-if="!weakGPS" class="record-swipe" indicator-color="white">
       <van-swipe-item>
         <a-grid :cols="2" class="swipe-grid">
           <a-grid-item>
@@ -553,6 +574,10 @@ onUnmounted(() => {
         </a-grid>
       </van-swipe-item>
     </van-swipe>
+    <div v-else class="weak-gps-hint">
+      <icon-loading class="hint-icon" />
+      <span class="hint-text">Establishing Location</span>
+    </div>
 
     <div id="map-container">
       <el-amap

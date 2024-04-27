@@ -240,6 +240,11 @@
         width: 100%;
         height: 100%;
       }
+
+      .controler{
+        z-index: 2;
+        padding: 0.5rem;
+      }
     }
 
     @media screen and (max-width: 500px) {

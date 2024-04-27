@@ -4,7 +4,7 @@
             <van-tab title="Completed">
                 <van-list>
                     <div
-                        v-for="item in tours"
+                        v-for="item in completeTours"
                         :key="item.id"
                         class="completed-tour flex-r"
                         @click="toTour(item.id)"
@@ -20,34 +20,95 @@
                             </div>
                         </div>
                     </div>
+                    <van-empty v-if="completeTours.length===0" description="Empty" />
                 </van-list>
             </van-tab>
-            <van-tab title="Planned">内容 2</van-tab>
-            <van-tab title="Star">内容 2</van-tab>
+            <van-tab title="Planned">
+                <div
+                    v-for="item in plannedTours"
+                    :key="item.id"
+                    class="completed-tour flex-r"
+                    @click="toTour(item.id)"
+                >
+                    <van-image width="100" height="100" :src="item.mapUrl"/>
+                    <div class="tour-info flex-c flex-justify-c">
+                        <div class="info-title">
+                            {{ item.title }}
+                        </div>
+                        <div class="info-time flex-r">
+                            <van-icon name="completed-o" />
+                            <span style="margin-left: 0.25rem;">{{ item.createTime }}</span>
+                        </div>
+                    </div>
+                </div>
+                <van-empty v-if="plannedTours.length===0" description="Empty" />
+            </van-tab>
+            <van-tab title="Star">
+                <div
+                    v-for="item in starTours"
+                    :key="item.id"
+                    class="completed-tour flex-r"
+                    @click="toTour(item.id)"
+                >
+                    <van-image width="100" height="100" :src="item.mapUrl"/>
+                    <div class="tour-info flex-c flex-justify-c">
+                        <div class="info-title">
+                            {{ item.title }}
+                        </div>
+                        <div class="info-time flex-r">
+                            <van-icon name="completed-o" />
+                            <span style="margin-left: 0.25rem;">{{ item.createTime }}</span>
+                        </div>
+                    </div>
+                </div>
+                <van-empty v-if="starTours.length===0" description="Empty" />
+            </van-tab>
         </van-tabs>
     </section>
 </template>
 
 <script setup lang="ts">
-import { getTourByUser, type TourRecord } from '@/apis/tour';
+import { getTourById, getTourByUser, type TourRecord } from '@/apis/tour';
+import { useUserStore } from '@/stores';
 import { Message } from '@arco-design/web-vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const tours = ref<TourRecord[]>([])
+const completeTours = ref<TourRecord[]>([]);
+const plannedTours = ref<TourRecord[]>([]);
+const starTours = ref<TourRecord[]>([]);
 const router = useRouter();
+const userStore = useUserStore();
 
 const toTour = (id: number)=>{
-    router.push({path: '/tour', query:{id}})
+    router.push({path: '/tour', query:{id}});
 }
 
 getTourByUser().then(res=>{
     if(res.success){
-        console.log(res);
-        tours.value = res.data!
+        // console.log(res);
+        res.data!.forEach(item=>{
+            if(item.state==2){
+                completeTours.value.push(item);
+            }else{
+                plannedTours.value.push(item);
+            }
+        })
     }else{
         Message.error(res.message)
     }
+})
+
+userStore.curUser?.tourStars.forEach(id=>{
+    getTourById(id).then(res=>{
+        if(res.success){
+            console.log(id,res)
+            starTours.value.push(res.data!)
+        }
+        else{
+            Message.error(res.message)
+        }
+    })
 })
 </script>
 
