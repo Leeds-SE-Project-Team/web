@@ -2,7 +2,6 @@
 import { getTourHighlightById, type TourHighlight } from '@/apis/tour/highlight';
 import { computed, onMounted, ref } from 'vue';
 
-
 const highlightData = ref<TourHighlight>();
 
 // this is the len of img

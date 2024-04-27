@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import type { UserRecord } from '@/apis/user';
+import { getAllUsers, type UserRecord } from '@/apis/user';
 import { useAuthStore } from '@/stores/auth';
-import { ref } from 'vue';
+import message from '@arco-design/web-vue/es/message';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps<{
   info: string
@@ -22,8 +23,14 @@ const handleClick = () => {
 };
 
 const handleOk = () => {
+  if(!choosedId.value) {
+    message.warning('Add failed, you did not choose group member')
+    return 
+  }
+
   visible.value = false;
 };
+
 
 const handleCancel = () => {
   visible.value = false;
@@ -31,12 +38,31 @@ const handleCancel = () => {
 
 
 // inputName
-const token = useAuthStore().accessToken
-
-const users = ref<UserRecord[]>()
+// const token = useAuthStore().accessToken
 const inputName = ref("")
 
-// const
+// users
+const users = ref<UserRecord[]>()
+onMounted(async()=>{
+  await getAllUsers()
+    .then((res) => {
+      users.value = res.data
+    })
+})
+
+const filteredUsers = computed(()=>{
+  if (!inputName.value) {
+    return users.value; // 如果输入字段为空，则返回完整的用户列表
+    // return ''
+  } else {
+    // 使用 filter 方法过滤用户列表
+    return users.value?.filter((user) => {
+      return user.nickname.includes(inputName.value);
+    });
+  }
+})
+
+const choosedId = ref<number>()
 
 </script>
 
@@ -75,6 +101,23 @@ const inputName = ref("")
             <a-input v-model="inputName" placeholder="please enter member name..." />
           </a-form-item>
           <a-divider solid />
+          <div class="content">
+            <div 
+              class="add-users" 
+              v-for="(item) in filteredUsers" 
+              :key="item.id" 
+              @click="() => {
+                console.log(item.id)
+                choosedId=item.id
+              }"
+              :style="{'background-color': item.id===choosedId ? '#e5e6eb':'#fff'}"
+              >
+              <div class="header">
+                <img :src="item.avatar" alt="">
+              </div>
+              <div class="name">{{item.nickname}}</div>
+            </div>
+          </div>
         </div>
       </a-modal>
 
@@ -163,7 +206,29 @@ export default {
 }
 
 #search {
-  height: 340px;
+  .content {
+    height: 340px;
+    overflow: auto;
+    .add-users {
+      display: flex;
+      padding: 10px 10px;
+      align-items: center;
+      border-radius: 10px;
+      transition: 0.3s;
+      cursor: pointer;
+      margin-bottom: 10px;
+      gap: 30px;
+      .header {
+        width: 50px;
+        height: 50px;
+        overflow: hidden;
+        border-radius: 10px;
+        img {
+          width: 100%;
+        }
+      }
+    }
+  }
 }
 
 </style>

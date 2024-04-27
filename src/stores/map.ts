@@ -18,6 +18,7 @@ export const useMapStore = defineStore('map', () => {
     return geocoder.value
   }
 
+
   const getDistance = (posA: AMap.LngLat, posB: AMap.LngLat) => {
     return posA.distance(posB)
   }
@@ -124,11 +125,11 @@ export const useMapStore = defineStore('map', () => {
     if (routeLine) {
       mapInstance.add(routeLine)
     }
-    const compArr: AMap.VectorLayer | AMap.Overlay[] = [
-      startMarker!,
-      endMarker!,
-      routeLine!
-    ].filter((e) => !!e)
+    const compArr: AMap.Overlay[] = [
+      (startMarker! as AMap.Overlay),
+      (endMarker! as AMap.Overlay),
+      (routeLine! as AMap.Overlay)
+    ]
     // 调整视野达到最佳显示区域
     if (options.reCenter !== false) {
       mapInstance.setFitView(compArr)

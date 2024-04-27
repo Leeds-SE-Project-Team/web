@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+// import type path from 'path';
 import { ref } from 'vue'
 
 const active = ref('discover')
@@ -31,7 +32,7 @@ const active = ref('discover')
       </template>
       <span class="tab-title">Record</span>
     </van-tabbar-item>
-    <van-tabbar-item name="profile">
+    <van-tabbar-item name="profile" :to="{path:'/personal'}">
       <template #icon>
         <van-icon :size="18" name="contact" />
       </template>
