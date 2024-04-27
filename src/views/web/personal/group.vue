@@ -8,9 +8,13 @@ const isCreate = ref(false)
 
 const form = reactive({
   name: '',
-  des: ''
+  description: '',
+  coverUrl: ''
 });
 
+const submitForm = () => {
+  
+}
 </script>
 
 
@@ -43,11 +47,11 @@ export default {
                     <a-input v-model="form.name" />
                   </a-form-item>
                   <a-form-item field="des" label="Description">
-                    <a-textarea v-model="form.des" placeholder="Please enter something" allow-clear/>
+                    <a-textarea v-model="form.description" placeholder="Please enter something" allow-clear/>
                   </a-form-item>
 
                   <a-form-item field="url" label="Background url" class="bg-item">
-                    <a-upload :limit="1" action="/">
+                    <a-upload :limit="1" action="">
                       <template #upload-button>
                         <div class="upload-box">
                           <div>
@@ -61,7 +65,7 @@ export default {
                 
                 <div class="btns">
                   <a-button size="large" @click="isCreate=false">cancle</a-button>
-                  <a-button size="large">submit</a-button>
+                  <a-button size="large" @click="submitForm()">submit</a-button>
                 </div>
             </div>
 

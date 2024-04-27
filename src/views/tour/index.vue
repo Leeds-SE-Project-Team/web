@@ -115,18 +115,18 @@
 
     <div class="like">
       <div>
-        <a-button class="button-icon">
+        <a-button class="button-icon" @click="like_btn()">
           <template #icon>
-            <div class="icon" @click="like_btn()">
+            <div class="icon">
               <icon-heart class="button" />
               <span>{{tourRecord?.likedBy.length}}</span>
             </div>
           </template>
         </a-button>
       
-        <a-button class="button-icon">
+        <a-button class="button-icon" @click="star_btn()">
           <template #icon>
-            <div class="icon" @click="star_btn()">
+            <div class="icon">
               <icon-star-fill class="button" />
               <span>{{tourRecord?.likedBy.length}}</span>
             </div>
@@ -220,70 +220,90 @@ const coverImg = computed(()=>{
 
 
 const userStore = useUserStore()
-const userId = userStore.curUser?.id
+const curUser = computed(()=>userStore.curUser)
 const is_like = ref(false)
 const is_star = ref(false)
 
-const tourId = "1"
+const tourId = route.query.id as string
 
 onMounted(() => {
   getTour()
 })
 
-const getTour = () => {
-  getTourById(route.query.id as string).then((res) => {
+const getTour = async() => {
+  await getTourById(route.query.id as string)
+  .then((res) => {
     if (res.success) {
       tourRecord.value = res.data
       console.log(tourRecord.value)
-      if(tourRecord.value?.likedBy.includes(userId as number)) {
+      if(tourRecord.value?.likedBy.includes(curUser.value?.id as number)) {
         is_like.value = true
       } else {
         is_like.value = false
       }
-      if(tourRecord.value?.starredBy.includes(userId as number)) {
+      if(tourRecord.value?.starredBy.includes(curUser.value?.id as number)) {
         is_star.value = true
       } else {
         is_star.value = false
       }
-      console.log("yes", is_like, is_star)
+      // console.log("user", curUser.value?.id)
+      // console.log("yes", is_like.value, is_star.value)
     }
   })
 }
 
 const like_btn = () => {
   if(is_like.value) {
-    delLike(userId, tourId)
+    delLike(tourId)
+    console.log("delete, like")
+    getTour()
   } else {
-    like(userId, tourId)
+    like(tourId)
+    getTour()
   }
 }
 
 const star_btn = () => {
   if(is_star.value) {
-    delStar(userId, tourId)
+    delStar(tourId)
+    console.log("delete, star")
+    getTour()
   } else {
-    star(userId, tourId)
+    star(tourId)
+    getTour()
   }
 }
 
-const like = (userId: string, tourId: string) =>  {
-  postLike(userId, tourId)
-  getTour()
+const like = (tourId: string) =>  {
+  postLike(tourId).then((res)=>{
+    if(!res.success){
+      console.log("error", res)
+    }
+  })
 }
 
-const delLike = (userId: string, tourId: string) => {
-  deleteLike(userId, tourId)
-  getTour()
+const delLike = (tourId: string) => {
+  deleteLike(tourId).then((res)=>{
+    if(!res.success){
+      console.log("error", res)
+    }
+  })
 }
 
-const star = (userId: string, tourId: string) =>  {
-  postStar(userId, tourId)
-  getTour()
+const star = (tourId: string) =>  {
+  postStar(tourId).then((res)=>{
+    if(!res.success){
+      console.log("error", res)
+    }
+  })
 }
 
-const delStar = (userId: string, tourId: string) => {
-  deleteStar(userId, tourId)
-  getTour()
+const delStar = (tourId: string) => {
+  deleteStar(tourId).then((res)=>{
+    if(!res.success){
+      console.log("error", res)
+    }
+  })
 }
 
 </script>

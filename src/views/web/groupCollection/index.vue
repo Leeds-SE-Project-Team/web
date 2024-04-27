@@ -107,7 +107,7 @@ console.log(groupCollectionId)
 onMounted(async () => {
     await axios.get("../src/views/web/groupCollection/tours.json")
                .then((res)=>{
-                console.log(res.data.data)
+                // console.log(res.data.data)
                 allImgData.value = res.data.data
                 allImgNum.value = res.data.data.map((x:any) => x.content.length)
                 collectionName.value = res.data.collectionName
@@ -122,12 +122,19 @@ onMounted(async () => {
                 console.log(error)
                })
 })
-// onMounted(async () => {
-//     await getCollectionById(groupCollectionId)
-//        .then((res) => {
-//         allImgData.value = res.data
-//         })
-// })
+
+
+onMounted(async () => {
+    await getCollectionById(groupCollectionId)
+       .then((res) => {
+        const allData = res.data
+        console.log(allData)
+        collectionName.value = allData?.title as string
+        bgImg.value = allData?.coverUrl as string
+        des.value = allData?.description as string
+        groupName.value = allData?.name as string
+        })
+})
 
 
 

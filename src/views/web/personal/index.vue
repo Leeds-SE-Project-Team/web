@@ -38,7 +38,7 @@ const navigateTo = (routeName: string) => {
         <a-layout-sider class="left-sider">
         
           <div class='pic-profile'>
-            <img src="https://ts1.cn.mm.bing.net/th?id=OIP-C.xkOtrf4z_dP8Z7S3jrpnDwHaEK&w=146&h=120&c=8&rs=1&qlt=90&o=6&dpr=1.5&pid=3.1&rm=2" alt="">
+            <img :src="userStore.curUser?.avatar" alt="">
           </div>
 
           <div class="name">

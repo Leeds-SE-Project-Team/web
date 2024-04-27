@@ -1,12 +1,20 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import tourCard from './cards/tourCard.vue';
 import { useUserStore } from '@/stores/user';
+import { getTourByUser } from '@/apis/tour';
 // import { onMounted } from 'vue';
 
 const userId = useUserStore().curUser?.id
 
 const cardInfo = ref("info to card")
+
+onMounted(async()=>{
+  await getTourByUser()
+    .then((res) => {
+      console.log(res.data)
+    })
+})
 </script>
 
 <template>

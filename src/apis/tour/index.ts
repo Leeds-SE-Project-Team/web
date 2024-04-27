@@ -165,40 +165,28 @@ export const updateTour = (form: UpdateTourForm): Promise<ApiResponse<TourRecord
     data: form
   })
 
-export const postLike = (userId: string, tourId: string): Promise<ApiResponse<void>> =>
+export const postLike = (tourId: string): Promise<ApiResponse<void>> =>
   axiosRequest({
     method: 'POST',
-    url: `tours/like?id=${tourId}`,
-    data: {
-      id: userId
-    }
+    url: `tours/like?id=${tourId}`
   })
 
-export const postStar = (userId: string, tourId: string): Promise<ApiResponse<void>> =>
+export const postStar = (tourId: string): Promise<ApiResponse<void>> =>
   axiosRequest({
     method: 'POST',
-    url: `tours/star?id=${tourId}`,
-    data: {
-      id: userId
-    }
+    url: `tours/star?id=${tourId}`
   })
 
-export const deleteLike = (userId: string, tourId: string): Promise<ApiResponse<void>> =>
+export const deleteLike = (tourId: string): Promise<ApiResponse<void>> =>
   axiosRequest({
     method: 'DELETE',
-    url: `/tours/like?id=${tourId}`,
-    data: {
-      id: userId
-    }
+    url: `/tours/like?id=${tourId}`
   })
 
-export const deleteStar = (userId: string, tourId: string): Promise<ApiResponse<void>> =>
+export const deleteStar = (tourId: string): Promise<ApiResponse<void>> =>
   axiosRequest({
     method: 'DELETE',
-    url: `/tours/star?id=${tourId}`,
-    data: {
-      id: userId
-    }
+    url: `/tours/star?id=${tourId}`
   })
 
 export const deleteTour = (tourId: number): Promise<ApiResponse<void>> =>

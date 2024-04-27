@@ -10,6 +10,7 @@ import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 import groupCollection from '@/views/web/groupCollection/index.vue'
 
+import HighlighView from '@/views/web/highlight/index.vue'
 import personalPage from '@/views/web/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
 import personalProfile from '@/views/web/personal/profile.vue'
@@ -201,6 +202,19 @@ const router = createRouter({
         auth: ['admin', 'user']
       }, // Render component dynamically according to platform
       component: HighlightMobileView
+      // component: HighlighView
+      // component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
+    },
+    {
+      path: '/highlight',
+      name: 'highlight',
+      meta: {
+        layout: 'b', // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        title: 'highlight Page',
+        auth: ['admin', 'user']
+      }, // Render component dynamically according to platform
+      // component: HighlightMobileView
+      component: HighlighView
       // component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
     },
     {
@@ -218,7 +232,8 @@ const router = createRouter({
       name: 'groucollection',
       meta: {
         layout: 'b',
-        title: 'group collection Page'
+        title: 'group collection Page',
+        auth: ['admin', 'user']
       },
       component: groupCollection
     },
@@ -228,6 +243,7 @@ const router = createRouter({
       meta: {
         layout: 'b',
         title: 'personal',
+        auth: ['admin', 'user']
       },
       component: personalPage,
       children: web_personal_children,
