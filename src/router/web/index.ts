@@ -9,7 +9,6 @@ export const ADMIN_ROUTE: RouteRecordRaw = {
   path: '/admin',
   meta: {
     layout: 'admin',
-    requiresAuth: true,
     auth: ['admin']
     // auth: ['user', 'admin']
   },
@@ -21,12 +20,10 @@ export const ADMIN_ROUTE: RouteRecordRaw = {
       meta: {
         layout: 'admin',
         key: 'dashboard',
-        requiresAuth: true,
         auth: ['admin']
       },
       component: DashboardView
-    },
-    // {
+    }, // {
     //   path: 'post-tour',
     //   name: 'postTour',
     //   meta: {
@@ -41,7 +38,6 @@ export const ADMIN_ROUTE: RouteRecordRaw = {
       path: 'search',
       meta: {
         layout: 'admin',
-        requiresAuth: true,
         auth: ['admin']
       },
       children: [
@@ -51,7 +47,6 @@ export const ADMIN_ROUTE: RouteRecordRaw = {
           meta: {
             layout: 'admin',
             key: 'searchTour',
-            requiresAuth: true,
             auth: ['admin']
           },
           component: SearchTableTour
@@ -62,7 +57,6 @@ export const ADMIN_ROUTE: RouteRecordRaw = {
           meta: {
             layout: 'admin',
             key: 'searchUser',
-            requiresAuth: true,
             auth: ['admin']
           },
           component: SearchTableUser

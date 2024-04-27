@@ -19,10 +19,8 @@ import personalGroup from '@/views/web/personal/group.vue'
 import TourDetail from '@/views/mobile/personal/TourDetail.vue'
 import { MOBILE_ROUTES } from '@/router/mobile'
 import { useAuthStore } from '@/stores/auth'
-import { getUserByToken } from '@/apis/user'
 import PersonMain from '@/views/mobile/personal/PersonMain.vue'
 import DetailInfo from '@/views/mobile/personal/DetailInfo.vue'
-import { useUserStore } from '@/stores/user'
 import CollDetail from '@/views/mobile/personal/CollDetail.vue'
 import GroupList from '@/views/mobile/personal/GroupList.vue'
 import GroupIndex from '@/views/mobile/group/index.vue'
@@ -227,12 +225,11 @@ const router = createRouter({
       name: 'personal',
       meta: {
         layout: 'b',
-        title: 'personal',
+        title: 'personal'
       },
       component: personalPage,
-      children: web_personal_children,
-    },
-    // {
+      children: web_personal_children
+    }, // {
     //   path: '/personal',
     //   meta: {
     //     auth: ['admin', 'user']
@@ -254,39 +251,54 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.meta.auth && (to.meta.auth as string[]).length > 0) {
     const authStore = useAuthStore()
-    const userStore = useUserStore()
     if (authStore.isTokenValid) {
       next()
       return
     } else {
       const accessToken = localStorage.getItem('accessToken')
-      if (accessToken) {
-        if (accessToken === 'root') {
-          authStore.isTokenValid = true
-          next()
-          return
-        }
-        getUserByToken(accessToken)
-          .then((apiRes) => {
-            if (apiRes.success) {
-              userStore.curUser = apiRes.data!
-              authStore.refreshAccessToken(accessToken)
-              next()
-              return
-            } else {
-              authStore.refreshAccessToken(null)
-              next('/')
-              return
-            }
-          })
-          .catch(() => {
-            authStore.refreshAccessToken(null)
-          })
-      } else {
-        authStore.refreshAccessToken(null)
-        next('/')
+      if (accessToken === 'root') {
+        next()
         return
       }
+      authStore
+        .refreshAccessToken(accessToken)
+        .then((user) => {
+          if (user) {
+            next()
+          } else {
+            next('/')
+          }
+        })
+        .catch((_e) => {
+          next('/')
+        })
+      // if (accessToken) {
+      //   if (accessToken === 'root') {
+      //     authStore.isTokenValid = true
+      //     next()
+      //     return
+      //   }
+      //   getUserByToken(accessToken)
+      //     .then((apiRes) => {
+      //       if (apiRes.success) {
+      //         userStore.curUser = apiRes.data!
+      //         authStore.refreshAccessToken(accessToken)
+      //         next()
+      //         return
+      //       } else {
+      //         authStore.refreshAccessToken(null)
+      //         next('/')
+      //         return
+      //       }
+      //     })
+      //     .catch(() => {
+      //       authStore.refreshAccessToken(null)
+      //     })
+      // } else {
+      //   authStore.refreshAccessToken(null)
+      //   next('/')
+      //   return
+      // }
     }
   } else {
     next()

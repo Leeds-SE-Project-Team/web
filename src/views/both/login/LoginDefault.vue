@@ -62,8 +62,9 @@ const router = useRouter()
 const authStore = useAuthStore()
 const handleClickAdmin = () => {
   Message.success('Welcome: Admin')
-  authStore.refreshAccessToken('root')
-  router.push({ name: 'dashboard' })
+  authStore.refreshAccessToken('root').finally(() => {
+    router.push({ name: 'dashboard' })
+  })
 }
 </script>
 
