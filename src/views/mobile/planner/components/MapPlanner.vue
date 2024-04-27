@@ -123,6 +123,7 @@ watch(props.tourData, (value) => {
         // layers = mapStore.drawRoute(mapInstance, result.routes[0], props.tourData.type, {
         //   lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
         // })
+        console.log(result)
         navigateInstance = navigate
         navigationResult.value = result
       })
