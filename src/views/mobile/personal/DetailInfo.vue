@@ -148,6 +148,7 @@ const formSubmit = ()=>{
                 updateUser(form).then(res=>{
                     if(res.success){
                         Message.info(res.message);
+                        userStore.curUser = res.data!
                         router.replace({path:'/personal',query:{status: 'refresh'}})
                     }else{
                         Message.info(res.message);

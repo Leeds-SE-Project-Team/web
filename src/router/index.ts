@@ -9,7 +9,7 @@ import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 import groupCollection from '@/views/web/groupCollection/index.vue'
-
+import personalIndex from '@/views/mobile/personal/index.vue'
 import personalPage from '@/views/web/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
 import personalProfile from '@/views/web/personal/profile.vue'
@@ -27,6 +27,7 @@ import CollDetail from '@/views/mobile/personal/CollDetail.vue'
 import GroupList from '@/views/mobile/personal/GroupList.vue'
 import GroupIndex from '@/views/mobile/group/index.vue'
 import { ADMIN_ROUTE } from '@/router/web'
+import { Capacitor } from '@capacitor/core'
 
 const personalMobileChildren: RouteRecordRaw[] = [
   {
@@ -226,19 +227,21 @@ const router = createRouter({
       path: '/personal',
       name: 'personal',
       meta: {
-        layout: 'b',
-        title: 'personal',
+        auth: ['admin', 'user'],
+        title: 'personal'
       },
-      component: personalPage,
-      children: web_personal_children,
+      component: personalIndex,
+      children: personalMobileChildren,
     },
     // {
     //   path: '/personal',
     //   meta: {
-    //     auth: ['admin', 'user']
+    //     auth: ['admin', 'user'],
+    //     layout: Capacitor.getPlatform()==='web' ? 'b':'',
+    //     title: 'personal'
     //   },
-    //   component: personalIndex,
-    //   children: personalMobileChildren
+    //   component: Capacitor.getPlatform()==='web'? personalPage : personalIndex,
+    //   children: Capacitor.getPlatform()==='web'? web_personal_children : personalMobileChildren
     // },
     {
       path: '/group',

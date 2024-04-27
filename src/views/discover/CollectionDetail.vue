@@ -12,7 +12,9 @@
       </div>
     </div>
     <div class="content">
-      <h1 class="content-title" style="font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;">3-DAY-Chengdu Tour</h1>
+      <h1 class="content-title" style="font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;">
+        {{ thisCollection ? thisCollection.title : '' }}
+      </h1>
       <div class="user flex-r flex-justify-c">
         <div class="info-wrapper flex-c">
           <div class="avatar-wrapper flex-r flex-justify-c">
@@ -28,24 +30,11 @@
         </div>
       </div>
       <div class="content-data flex-r w-full flex-justify-c">
-        <!-- <div class="data-item flex-r">
-          <div class="icon"></div>
-          <span>100</span>
-          <span>Tours</span>
-        </div>
         <div class="data-item flex-r">
           <div class="icon"></div>
-          <span>100</span>
-          <span>Tours</span>
-        </div>
-        <div class="data-item flex-r">
-          <div class="icon"></div>
-          <span>100</span>
-          <span>Tours</span>
-        </div> -->
-        <div class="data-item flex-r">
-          <div class="icon"></div>
-          <span>3</span>
+          <span>
+            {{ thisCollection ? thisCollection.tours.length : ''}}
+          </span>
           <span>Tours</span>
         </div>
       </div>
@@ -53,24 +42,9 @@
         <div class="operation-item">
           <a-button class="operation-button">
             <template #icon>
-              <icon-heart :size="28" />
-            </template>
-            1
-          </a-button>
-        </div>
-        <div class="operation-item">
-          <a-button class="operation-button">
-            <template #icon>
               <icon-message :size="28" />
             </template>
             0
-          </a-button>
-        </div>
-        <div class="operation-item">
-          <a-button class="operation-button">
-            <template #icon>
-              <icon-star :size="28" />
-            </template>
           </a-button>
         </div>
         <div class="operation-item">
@@ -89,9 +63,28 @@
       <span></span>
     </div>
     <h2 class="text-center">On the Map</h2>
-    <div class="map-area w-full flex-r" style="margin-top: 0;">
+    <div class="map-area w-full flex-r" style="margin-top: 0; position: relative;">
+      <div class="controler" style="position: absolute; width: 100%; height: 100%;">
+        <div class="buttons flex-r">
+          <a-button 
+            type="primary"
+            shape="circle"
+            @click="fixedToAll"
+          >ALL</a-button>
+          <a-button
+            v-for="(_,index) in mapRoutes"
+            :key="index"
+            type="primary"
+            shape="circle"
+            @click="fixedToTour(index)"
+          >
+            {{ index+1 }}
+          </a-button>
+        </div>
+        
+      </div>
       <!--      <RouteMap></RouteMap>-->
-      <el-amap :scroll-wheel="false">
+      <el-amap :scroll-wheel="false" ref="routeMap">
         <el-amap-control-geolocation
           :circleOptions="{
             fillOpacity: 0,
@@ -127,28 +120,6 @@
         </div>
       </div>
     </div>
-    <!-- <div>
-      <a-input
-              :max-length="400"
-              class="comment-input"
-              placeholder="留下你的精彩评论吧"
-            >
-              <template #suffix>
-                <a-tooltip>
-                  <template #content> 没有可以@的朋友</template>
-                  <img alt="at_friend" class="icon-at" src="/interaction/comment_at.svg" />
-                </a-tooltip>
-                <a-tooltip>
-                  <template #content>发布评论</template>
-                  <img
-                    alt="send_comment"
-                    class="icon-send"
-                    src="/interaction/send_comment.svg"
-                  />
-                </a-tooltip>
-              </template>
-            </a-input>
-    </div> -->
   </div>
 </template>
 
@@ -160,10 +131,12 @@ import { type TourRecord } from '@/apis/tour'
 import { useRoute, useRouter } from 'vue-router';
 import { getCollectionById, type TourCollection } from '@/apis/collection';
 import { Message } from '@arco-design/web-vue';
+import { useMapStore } from '@/stores';
 
 const tourScroll = ref<HTMLDivElement | null>(null)
 const scrollContainer = ref<HTMLDivElement | null>(null)
 const imgCollection = ref<HTMLDivElement | null>(null)
+const routeMap = ref<AMap.Map | null>(null)
 var ticking = false
 
 const router = useRouter();
@@ -253,6 +226,34 @@ const toTour = (id:string|number)=>{
   router.push({name:'tour', query:{id: id}})
 }
 
+const jsonToPath = (data:any):Array<[number,number]>=> {
+  const res: Array<[number,number]> = [];
+  res.push(data.origin);
+  console.log(data)
+  data.routes[0].steps.forEach((item:any)=>{
+    item.path.forEach((route:[number,number])=>{
+      res.push(route);
+    })
+  })
+  return res;
+}
+
+const fixedToTour = (index: number)=>{
+  if(routeMap.value){
+    (routeMap.value as any).$$getInstance().setFitView(mapRoutes.value[index]);
+  }
+}
+
+const fixedToAll = ()=>{
+  const overlays:any[] = [];
+  mapRoutes.value.forEach(item=>{
+    overlays.push(...item);
+  })
+  if(routeMap.value){
+    (routeMap.value as any).$$getInstance().setFitView(overlays);
+  }
+}
+
 onMounted(() => {
   getCollectionById(route.query.id as string).then(res=>{
     console.log(res);
@@ -263,7 +264,12 @@ onMounted(() => {
         fetch(item.dataUrl).then(data=>{
           return data.json()
         }).then(dj=>{
-          mapRoutes.value.push(dj)
+          const layers = useMapStore().drawRoute(
+            (routeMap.value as any).$$getInstance(),
+            jsonToPath(dj),
+            item.type,{},true
+          )
+          mapRoutes.value.push(layers)
         })
       })
       flag.value = true
