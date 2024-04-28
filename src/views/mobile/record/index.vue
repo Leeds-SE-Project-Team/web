@@ -398,6 +398,7 @@ let countTimeInterval = 0
 const weakGPS = ref(false)
 onMounted(() => {
   fetchHighlightList()
+  // speechSynthesis('开始导航')
   getLocationInterval = setInterval(getCurrentLocation, TIME_INTERVAL * 1000)
   countTimeInterval = setInterval(handleCountTime, 1000)
 })
