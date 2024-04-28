@@ -12,13 +12,16 @@ export const useAuthStore = defineStore('auth', () => {
         // update
         if (!newToken) {
           localStorage.removeItem('accessToken')
+          accessToken.value = null
           resolve()
           return
         }
 
+        localStorage.setItem('accessToken', newToken)
+
         if (newToken === 'root') {
           isTokenValid.value = true
-          localStorage.setItem('accessToken', newToken)
+          accessToken.value = newToken
           resolve()
           return
         }
@@ -29,7 +32,6 @@ export const useAuthStore = defineStore('auth', () => {
               isTokenValid.value = true
               userStore.curUser = apiRes.data!
               accessToken.value = newToken
-              localStorage.setItem('accessToken', newToken)
               resolve(userStore.curUser)
             } else {
               throw apiRes.message
@@ -42,7 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
             reject(e)
           })
       } else {
-        resolve()
+        resolve(userStore.curUser)
       }
     })
 
