@@ -9,6 +9,7 @@ import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 import groupCollection from '@/views/web/groupCollection/index.vue'
+import HighlightView from '@/views/web/highlight/index.vue'
 import personalIndex from '@/views/mobile/personal/index.vue'
 import personalPage from '@/views/web/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
@@ -214,7 +215,7 @@ const router = createRouter({
         auth: ['admin', 'user']
       }, // Render component dynamically according to platform
       // component: HighlightMobileView
-      component: HighlighView
+      component: HighlightView
       // component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
     },
     {
@@ -237,26 +238,26 @@ const router = createRouter({
       },
       component: groupCollection
     },
-    {
-      path: '/personal',
-      name: 'personal',
-      meta: {
-        auth: ['admin', 'user'],
-        title: 'personal'
-      },
-      component: personalIndex,
-      children: personalMobileChildren,
-    },
     // {
     //   path: '/personal',
+    //   name: 'personal',
     //   meta: {
     //     auth: ['admin', 'user'],
-    //     layout: Capacitor.getPlatform()==='web' ? 'b':'',
     //     title: 'personal'
     //   },
-    //   component: Capacitor.getPlatform()==='web'? personalPage : personalIndex,
-    //   children: Capacitor.getPlatform()==='web'? web_personal_children : personalMobileChildren
+    //   component: personalIndex,
+    //   children: personalMobileChildren,
     // },
+    {
+      path: '/personal',
+      meta: {
+        auth: ['admin', 'user'],
+        layout: Capacitor.getPlatform()==='web' ? 'b':'',
+        title: 'personal'
+      },
+      component: Capacitor.getPlatform()==='web'? personalPage : personalIndex,
+      children: Capacitor.getPlatform()==='web'? web_personal_children : personalMobileChildren
+    },
     {
       path: '/group',
       name: 'group',

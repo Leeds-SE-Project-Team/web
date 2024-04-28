@@ -48,10 +48,7 @@ export const UserTypeMap = {
 export const getUserById = (userId: number): Promise<UserRecord> =>
   axiosRequest({
     method: 'GET',
-    url: `users`,
-    data: {
-      id: userId
-    }
+    url: `users?id=${userId}`,
   })
 
 export const getUserByEmail = (userEmail: string): Promise<ApiResponse<UserRecord>> =>
@@ -141,4 +138,11 @@ export const interactWithContent = <T>(form: ContentInteractForm): Promise<ApiRe
   axiosRequest({
     method: form.value ? 'POST' : 'DELETE',
     url: `${form.contentType}/${form.interaction}?id=${form.contentId}`
+  })
+
+
+export const addUserToGroup = (inviteId: number, groupId: number): Promise<ApiResponse<void>> => 
+  axiosRequest({
+    method: 'POST',
+    url: `/users/addUserToGroup?inviteId=${inviteId}&groupId=${groupId}`,
   })

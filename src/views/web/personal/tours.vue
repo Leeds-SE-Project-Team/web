@@ -20,28 +20,30 @@ onMounted(async()=>{
 <template>
   <div id="personal-tours">
 
-      <!-- planned tours -->
-      <!-- <div class="planned-tours">
-        <h3>Planned Tours</h3>
+      <!-- ongoing tours -->
+      <div class="planned-tours">
+        <h3>Ongoing Tours</h3>
         <a-divider :size="4" />
 
         <div class="card">
           <tourCard :info="cardInfo"></tourCard>
         </div>
+      </div>
+
+      <!-- planned tours -->
+      <div class="planned-tours">
+        <h3>Planned Tours</h3>
+        <a-divider :size="4" />
         
         <div class="card">
           <tourCard :info="cardInfo"></tourCard>
         </div>
-      </div> -->
+      </div>
 
       <!-- completed tours -->
       <div class="completed-tours">
         <h3>Completed Tours</h3>
         <a-divider :size="4" />
-
-        <div class="card">
-          <tourCard :info="cardInfo"></tourCard>
-        </div>
         
         <div class="card">
           <tourCard :info="cardInfo"></tourCard>

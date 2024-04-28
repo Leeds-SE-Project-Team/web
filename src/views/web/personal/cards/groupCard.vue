@@ -1,33 +1,45 @@
-<script lang="ts" setup>
-import { getAllUsers, type UserRecord } from '@/apis/user';
-import { useAuthStore } from '@/stores/auth';
+leader<script lang="ts" setup>
+import type { GroupRecord } from '@/apis/group';
+import { addUserToGroup, getAllUsers, type UserRecord } from '@/apis/user';
+import Message from '@arco-design/web-vue/es/message';
 import message from '@arco-design/web-vue/es/message';
 import { computed, onMounted, ref } from 'vue';
 
+const emit = defineEmits(["reload"])
+
 const props = defineProps<{
-  info: string
+  info: GroupRecord
 }>()
 
-const profile1 = "https://ts1.cn.mm.bing.net/th/id/R-C.fd81516a06ce33c15b194494272fa6e9?rik=XAfnJ6A9NFvAyA&riu=http%3a%2f%2fimg.touxiangwu.com%2fuploads%2fallimg%2f2022053117%2fivhiashhpu1.jpg&ehk=Yi2aDhWvd0rnBKl1xloJy8F1RfGd8%2bcC75k4ff8dVXk%3d&risl=&pid=ImgRaw&r=0"
-const profile2 = "https://ts1.cn.mm.bing.net/th/id/R-C.79b0f0a50f0027cca441b67ed950e853?rik=kPgxfrXLzOAq2A&riu=http%3a%2f%2fimg.touxiangwu.com%2fuploads%2fallimg%2f2022053118%2ff1pe3chclkt.jpg&ehk=f8VCRu%2bXHjFSD%2biAxDALRgZR%2b7kBFqdthB5IjIXEXNE%3d&risl=&pid=ImgRaw&r=0"
-const profile3 = "https://tupian.qqw21.com/article/UploadPic/2020-3/20203231746425555.jpg"
-const imgUrl = "https://img95.699pic.com/photo/50018/0915.jpg_wh860.jpg"
+const leader = computed(() => props.info.members.find((user) => user.id === props.info.leaderId)) 
 
-console.log(props.info)
+const others = computed(() => props.info.members.filter((user) => user.id !== props.info.leaderId))
 
 // this is the logic of add group member form
 const visible = ref(false);
 
 const handleClick = () => {
+  console.log("leader and gourp_id", props.info.leaderId, props.info.id)
   visible.value = true;
 };
+
+const choosedId = ref<number>()
 
 const handleOk = () => {
   if(!choosedId.value) {
     message.warning('Add failed, you did not choose group member')
-    return 
+    return
   }
 
+  addUserToGroup(choosedId.value, props.info.id)
+    .then(res => {
+      if(res.success) {      
+        Message.info("Add group member successfully!")
+        emit('reload')
+      } else {
+        Message.warning(res.message)
+      }
+    })
   visible.value = false;
 };
 
@@ -52,17 +64,25 @@ onMounted(async()=>{
 
 const filteredUsers = computed(()=>{
   if (!inputName.value) {
-    return users.value; // 如果输入字段为空，则返回完整的用户列表
-    // return ''
-  } else {
-    // 使用 filter 方法过滤用户列表
     return users.value?.filter((user) => {
+      for(let i=0 ; i < props.info.members.length; i++) {
+        if (props.info.members[i].id === user.id) {
+          return false
+        }
+      }
+      return true
+    });
+  } else {
+    return users.value?.filter((user) => {
+      for(let i=0 ; i < props.info.members.length; i++) {
+        if (props.info.members[i].id === user.id) {
+          return false
+        }
+      }
       return user.nickname.includes(inputName.value);
     });
   }
 })
-
-const choosedId = ref<number>()
 
 </script>
 
@@ -71,19 +91,19 @@ const choosedId = ref<number>()
   <div id="group-card">
 
     <div class="img">
-      <img :src="imgUrl" alt="">
+      <img :src="$props.info.coverUrl" alt="">
     </div>
 
     <div class="cover"></div>
 
     <div class="profile-group">
       <a-avatar class="leader" trigger-type="mask" :size="44">
-        <img alt="avatar" :src="profile1"/>
+        <img alt="avatar" :src="leader?.avatar"/>
       </a-avatar>
       <a-space class="others" :size="34">
           <a-avatar-group>
-              <a-avatar :size="34" trigger-type="mask" v-for="user in Array(2)" :key="user">
-                <img alt="avatar" :src="profile2"/>
+              <a-avatar :size="34" trigger-type="mask" v-for="user in others" :key="user.id">
+                <img alt="avatar" :src="user.avatar"/>
               </a-avatar>
           </a-avatar-group>
       </a-space>
@@ -107,7 +127,6 @@ const choosedId = ref<number>()
               v-for="(item) in filteredUsers" 
               :key="item.id" 
               @click="() => {
-                console.log(item.id)
                 choosedId=item.id
               }"
               :style="{'background-color': item.id===choosedId ? '#e5e6eb':'#fff'}"
@@ -125,10 +144,10 @@ const choosedId = ref<number>()
 
     <div class="content">
       <div class="group-name">
-        We Are BTM Group
+        {{$props.info.name}}
       </div>
       <div class="des">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus eos alias culpa commodi fugiat repudiandae corporis explicabo neque magni molestias consequatur suscipit, obcaecati inventore, quod aspernatur debitis perspiciatis exercitationem provident?
+        {{$props.info.description}}  
       </div>
     </div>
   </div>
@@ -159,6 +178,7 @@ export default {
       position: absolute;
         width: 100%;
         margin: auto;
+        min-width: 100%;
     }
   }
 
@@ -225,6 +245,7 @@ export default {
         border-radius: 10px;
         img {
           width: 100%;
+          min-height: 100%;
         }
       }
     }
