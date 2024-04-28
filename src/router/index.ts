@@ -259,7 +259,7 @@ const router = createRouter({
         auth: ['admin', 'user']
       },
       component: GroupIndex
-    }
+    },
   ]
 })
 
