@@ -228,9 +228,9 @@ const toTour = (id:string|number)=>{
 
 const jsonToPath = (data:any):Array<[number,number]>=> {
   const res: Array<[number,number]> = [];
-  res.push(data.origin);
+  res.push(data.result.origin);
   console.log(data)
-  data.routes[0].steps.forEach((item:any)=>{
+  data.result.routes[0].steps.forEach((item:any)=>{
     item.path.forEach((route:[number,number])=>{
       res.push(route);
     })

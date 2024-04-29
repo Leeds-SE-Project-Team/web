@@ -19,7 +19,7 @@ export interface CreateGroupForm {
 }
 
 export interface PutGroupFrom {
-    id: number
+    groupId: number
     leaderId: number
     name: string
     coverUrl: string

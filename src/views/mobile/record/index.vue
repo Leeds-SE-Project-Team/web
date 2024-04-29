@@ -19,11 +19,12 @@ import {
   type RecordDataInstant,
   saveTour,
   type SaveTourForm,
+  type TourPlannedData,
   type TourRecord,
   TourType
 } from '@/apis/tour'
 import { uploadFileFromURL } from '@/utils/file'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
 import { useMapStore } from '@/stores/map'
 import useLoading from '@/hooks/loading'
@@ -31,6 +32,7 @@ import { cloneDeep } from 'lodash-es'
 import { parseTimeToString } from '@/utils'
 import dayjs from 'dayjs'
 import { useUserStore } from '@/stores'
+import { speechSynthesis } from '@/apis/others'
 
 const route = useRoute()
 const tourId = parseInt(route.params.tourId as string)
@@ -56,6 +58,7 @@ const handleSaveTour = () => {
     .then((apiRes) => {
       if (apiRes.success) {
         showToast(apiRes.message)
+        router.back()
       } else {
         throw apiRes.message
       }
@@ -94,6 +97,8 @@ const currentRecordDataInstant = computed(() =>
     : undefined
 )
 
+const tourPlannedData = ref<TourPlannedData>()
+
 const fetchTour = () => {
   if (tourId === -1) {
     showNotify({ type: 'primary', message: 'New adventure start!' })
@@ -104,7 +109,8 @@ const fetchTour = () => {
       if (apiRes.success) {
         tourData.value = apiRes.data!
         fetchTourDataJson(tourData.value).then((res) => {
-          const result = res.data
+          const result = res.data.result
+          tourPlannedData.value = res.data
           mapStore.drawRoute(
             mapRef.value.$$getInstance(),
             tourData.value!.type === TourType.PUBLIC ? result.plans[0] : result.routes[0],
@@ -131,12 +137,15 @@ const fetchTour = () => {
         //   })
       } else {
         Message.info(apiRes.message)
+        router.back()
       }
     })
     .catch((e) => {
       Message.error(e)
     })
 }
+
+const router = useRouter()
 const mapRef = ref()
 const mapStore = useMapStore()
 
@@ -145,7 +154,7 @@ const highlightList = ref<TourHighlight[]>([])
 const fetchHighlightList = () => {
   getTourHighlights().then((apiRes) => {
     if (apiRes.success) {
-      highlightList.value = apiRes.data!
+      highlightList.value = apiRes.data!.filter((h) => h.tourImages.length > 0)
     }
   })
 }
@@ -181,17 +190,42 @@ const handleCountTime = () => {
         : 0
   }
 }
+
+const currentLineIndex = ref(-1)
+const tourPlannedLines = computed(() => {
+  if (tourPlannedData.value) {
+    const result = tourPlannedData.value.result
+    let lines = []
+    switch (tourData.value!.type) {
+      case TourType.WALK:
+        lines = result.routes[0].steps
+        break
+      case TourType.CAR:
+        lines = result.routes[0].route
+        break
+      case TourType.CYCLING:
+        lines = result.routes[0].rides
+        break
+    }
+    return lines
+  } else {
+    return []
+  }
+})
 const userStore = useUserStore()
 const getCurrentLocation = (toCenter?: boolean) => {
   ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition(
     (status, info: any) => {
       if (status === 'complete') {
-        weakGPS.value = info.accuracy > 30
+        // weakGPS.value = info.accuracy > 30
+        weakGPS.value = info.accuracy > 50
 
         if (toCenter === true) {
           center.value = info.position.toArray()
         }
-        ;(mapRef.value.$$getInstance() as AMap.Map).remove(layers)
+        // if (layers.length > 0) {
+        //   ;(mapRef.value.$$getInstance() as AMap.Map).remove(layers)
+        // }
         let recordDataInstant: RecordDataInstant = {
           altitude: info.altitude ?? 0,
           speed: 0,
@@ -205,8 +239,9 @@ const getCurrentLocation = (toCenter?: boolean) => {
             currentRecordDataInstant.value!.location,
             recordDataInstant.location
           )
-          if (distance > 0) {
-            // if (distance > 0 && !weakGPS) {
+          // console.log(tourPlannedData.value.result)
+          // if (distance > 0) {
+          if (distance > 0 && !weakGPS.value) {
             updatePrevRecordData()
             countNotInMotion.value = 0
             recordData.value.totalDistance += distance
@@ -220,6 +255,26 @@ const getCurrentLocation = (toCenter?: boolean) => {
               )
             }
             locationTrackList.value.push(recordDataInstant)
+
+            for (let i = 0; i < tourPlannedLines.value.length; i++) {
+              const line = tourPlannedLines.value[i].path
+              // console.log(info.position, tourPlannedLines.value[i])
+              // console.log(AMap.GeometryUtil.distanceToLine(info.position, line))
+
+              if (AMap.GeometryUtil.isPointOnLine(info.position, line, 50)) {
+                if (currentLineIndex.value !== i) {
+                  currentLineIndex.value = i
+
+                  speechSynthesis(tourPlannedLines.value[i].instruction)
+
+                  showNotify({
+                    type: 'primary',
+                    message: tourPlannedLines.value[i].instruction
+                  })
+                }
+                break
+              }
+            }
 
             // isInMotion.value = true
           } else {
@@ -316,7 +371,6 @@ const highlightPanelAnchors = [
 const highlightPanelHeight = ref(highlightPanelAnchors[0])
 
 const handleClickHighlight = (highlight: TourHighlight) => {
-  console.log(highlight)
   selectedHighlight.value = highlight
   showHighlightSheet.value = true
   // const [x, y] = parseLocationNumber(highlight.location)
@@ -396,9 +450,14 @@ let getLocationInterval = 0
 let countTimeInterval = 0
 
 const weakGPS = ref(false)
+// watch(weakGPS, (value) => {
+//   if (value) {
+//     speechSynthesis('GPS 信号弱')
+//   }
+// })
 onMounted(() => {
   fetchHighlightList()
-  // speechSynthesis('开始导航')
+  speechSynthesis('开始导航')
   getLocationInterval = setInterval(getCurrentLocation, TIME_INTERVAL * 1000)
   countTimeInterval = setInterval(handleCountTime, 1000)
 })
@@ -573,6 +632,14 @@ onUnmounted(() => {
             </div>
           </a-grid-item>
         </a-grid>
+      </van-swipe-item>
+      <van-swipe-item>
+        <div class="swipe-card-item">
+          <div v-if="currentLineIndex !== -1" class="navigation-instruction">
+            {{ tourPlannedLines[currentLineIndex]?.instruction }}
+          </div>
+          <van-loading v-else />
+        </div>
       </van-swipe-item>
     </van-swipe>
     <div v-else class="weak-gps-hint">
