@@ -19,6 +19,7 @@ import {
   type RecordDataInstant,
   saveTour,
   type SaveTourForm,
+  type TourPlannedData,
   type TourRecord,
   TourType
 } from '@/apis/tour'
@@ -94,6 +95,8 @@ const currentRecordDataInstant = computed(() =>
     : undefined
 )
 
+const tourPlannedData = ref<TourPlannedData>()
+
 const fetchTour = () => {
   if (tourId === -1) {
     showNotify({ type: 'primary', message: 'New adventure start!' })
@@ -105,6 +108,7 @@ const fetchTour = () => {
         tourData.value = apiRes.data!
         fetchTourDataJson(tourData.value).then((res) => {
           const result = res.data
+          tourPlannedData.value = result
           mapStore.drawRoute(
             mapRef.value.$$getInstance(),
             tourData.value!.type === TourType.PUBLIC ? result.plans[0] : result.routes[0],
@@ -221,6 +225,9 @@ const getCurrentLocation = (toCenter?: boolean) => {
             }
             locationTrackList.value.push(recordDataInstant)
 
+            if (tourPlannedData.value) {
+              console.log(tourPlannedData.value.result)
+            }
             // isInMotion.value = true
           } else {
             countNotInMotion.value++
