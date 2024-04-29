@@ -32,7 +32,7 @@ axiosInstance.interceptors.request.use(
             return
           }
           if (user) {
-            console.log(authStore.accessToken, localStorage.getItem('accessToken'))
+            // console.log(authStore.accessToken, localStorage.getItem('accessToken'))
             config.headers.setAuthorization(authStore.accessToken)
             config.headers.set('User-ID', user.id)
             resolve(config)

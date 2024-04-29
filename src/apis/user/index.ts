@@ -1,6 +1,5 @@
 // Basic interface for user record
 import { type ApiResponse, axiosRequest, getStaticRes } from '@/apis'
-import type { TourRecord } from '../tour'
 
 export interface UserRecord {
   id: number
