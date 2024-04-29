@@ -81,7 +81,8 @@ export default {
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import ava from 'C:\\Users\\ltj16\\Desktop\\图\\100226644_p0.jpg'
+
+const ava = ''
 
 const activeName = ref([])
 </script>

@@ -18,7 +18,7 @@
                         class="list-group flex-r"
                         v-for="item in myGroup"
                         :key="item.id"
-                        style="padding: 0.5rem 0;"
+                        style="margin: 0.5rem 0;"
                     >
                         <van-image style="flex: 1; max-height: 100px;" :src="item.coverUrl" fit="cover"/>
                         <div class="group-info flex-c flex-justify-c" >
@@ -72,7 +72,7 @@
                     autosize
                     required
                     :rules="[{required: true, message: 'need description'}]"
-                    v-model="groupUpload.coverUrl"
+                    v-model="groupUpload.description"
                 />
             </van-form>
         </van-dialog>
@@ -125,39 +125,55 @@ getAllJoinedGroupsByUser().then(res=>{
 
 const beforeClose: Interceptor = async (action:string)=>{
     let flag = false;
-    console.log(action)
     if(action==='cancel'){
         groupForm.value.resetValidation()
         return true;
     }
     try {
         await groupForm.value.validate()
+        const groupDTO = await createGroup(groupUpload.value)
+        if(!groupDTO.success){Message.info(groupDTO.message); throw groupDTO.message;}
+        const upFileRes = await uploadFileFromURL(
+            fileList.value[0].objectUrl as string,
+            `/group/${groupDTO.data?.id}`
+        )
+        if(!upFileRes.success){Message.info(upFileRes.message); throw upFileRes.message;}
+        const thisGroup = groupDTO.data!
+        console.log(groupDTO.data)
+        const end = await updateGroup({
+            groupId: thisGroup.id,
+            name: thisGroup.name,
+            coverUrl: import.meta.env.APP_STATIC_URL+upFileRes.data!,
+            leaderId: thisGroup.leaderId,
+            description: thisGroup.description
+        })
+        if(!end.success){Message.info(end.message); throw end.message;}
+        Message.success("Create Success")
     } catch (error) {
         console.log(error)
         flag = true;
     }
     if(flag){return false;}
-    createGroup(groupUpload.value).then(res=>{
-        if(!res.success){
-            Message.info(res.message)
-        }
-        uploadFileFromURL(
-            fileList.value[0].objectUrl as string,
-            `/group/${res.data?.id}`
-        ).then(url=>{
-            res.data!.coverUrl = url.data!
-            updateGroup(res.data!).then(end=>{
-                if(!end.success){
-                    Message.info(end.message);
-                    flag = true
-                }
-                Message.success("Create Success")
-            })
-        }).catch(e=>{
-            Message.error(e);
-        })
-    })
-    if(flag){return false;}
+    // createGroup(groupUpload.value).then(res=>{
+    //     if(!res.success){
+    //         Message.info(res.message)
+    //     }
+    //     uploadFileFromURL(
+    //         fileList.value[0].objectUrl as string,
+    //         `/group/${res.data?.id}`
+    //     ).then(url=>{
+    //         res.data!.coverUrl = url.data!
+    //         updateGroup(res.data!).then(end=>{
+    //             if(!end.success){
+    //                 Message.info(end.message);
+    //                 flag = true
+    //             }
+    //             Message.success("Create Success")
+    //         })
+    //     }).catch(e=>{
+    //         Message.error(e);
+    //     })
+    // })
     console.log(fileList.value[0])
     console.log(groupUpload.value)
     return true;
