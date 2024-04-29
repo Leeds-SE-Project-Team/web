@@ -218,7 +218,7 @@ const getCurrentLocation = (toCenter?: boolean) => {
     (status, info: any) => {
       if (status === 'complete') {
         // weakGPS.value = info.accuracy > 30
-        weakGPS.value = info.accuracy > 300
+        weakGPS.value = info.accuracy > 20
 
         if (toCenter === true) {
           center.value = info.position.toArray()
@@ -239,28 +239,9 @@ const getCurrentLocation = (toCenter?: boolean) => {
             currentRecordDataInstant.value!.location,
             recordDataInstant.location
           )
-          for (let i = 0; i < tourPlannedLines.value.length; i++) {
-            const line = tourPlannedLines.value[i].path
-            // console.log(info.position, tourPlannedLines.value[i])
-            // console.log(AMap.GeometryUtil.distanceToLine(info.position, line))
-
-            if (AMap.GeometryUtil.isPointOnLine(info.position, line, 50)) {
-              if (currentLineIndex.value !== i) {
-                currentLineIndex.value = i
-
-                speechSynthesis(tourPlannedLines.value[i].instruction)
-
-                showNotify({
-                  type: 'primary',
-                  message: tourPlannedLines.value[i].instruction
-                })
-              }
-              break
-            }
-          }
           // console.log(tourPlannedData.value.result)
-          if (distance > 0) {
-            // if (distance > 0 && !weakGPS) {
+          // if (distance > 0) {
+          if (distance > 0 && !weakGPS.value) {
             updatePrevRecordData()
             countNotInMotion.value = 0
             recordData.value.totalDistance += distance
@@ -274,6 +255,26 @@ const getCurrentLocation = (toCenter?: boolean) => {
               )
             }
             locationTrackList.value.push(recordDataInstant)
+
+            for (let i = 0; i < tourPlannedLines.value.length; i++) {
+              const line = tourPlannedLines.value[i].path
+              // console.log(info.position, tourPlannedLines.value[i])
+              // console.log(AMap.GeometryUtil.distanceToLine(info.position, line))
+
+              if (AMap.GeometryUtil.isPointOnLine(info.position, line, 50)) {
+                if (currentLineIndex.value !== i) {
+                  currentLineIndex.value = i
+
+                  speechSynthesis(tourPlannedLines.value[i].instruction)
+
+                  showNotify({
+                    type: 'primary',
+                    message: tourPlannedLines.value[i].instruction
+                  })
+                }
+                break
+              }
+            }
 
             // isInMotion.value = true
           } else {
@@ -449,6 +450,11 @@ let getLocationInterval = 0
 let countTimeInterval = 0
 
 const weakGPS = ref(false)
+// watch(weakGPS, (value) => {
+//   if (value) {
+//     speechSynthesis('GPS 信号弱')
+//   }
+// })
 onMounted(() => {
   fetchHighlightList()
   speechSynthesis('开始导航')

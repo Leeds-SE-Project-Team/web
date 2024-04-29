@@ -14,6 +14,7 @@ import { gsap } from 'gsap'
 import { type ContentInteractForm, interactWithContent } from '@/apis/user'
 import { useUserStore } from '@/stores'
 import { showToast } from 'vant'
+import CommentCard from '@/views/web/discover/components/CommentCard.vue'
 
 const currentPlayIndex = ref(0)
 
@@ -258,34 +259,61 @@ const isLikeTour = (tour: TourRecord) =>
 const isStarTour = (tour: TourRecord) =>
   computed(() => currentUser.value?.tourStars.includes(tour.id))
 
+const interactLoadObj = useLoading()
 const handleInteract = (tour: TourRecord, interaction: 'like' | 'star') => {
+  if (interactLoadObj.loading.value) {
+    showToast('Too frequent operations')
+    return
+  }
+
   userStore.getUserRecord().then((user) => {
+    interactLoadObj.setLoading(true)
+
     const form: ContentInteractForm = {
       contentType: 'tours',
       interaction: interaction,
       value: interaction === 'like' ? !isLikeTour(tour).value : !isStarTour(tour).value,
       contentId: tour.id
     }
-    interactWithContent<TourRecord>(form).then((apiRes) => {
-      if (apiRes.success) {
-        Object.assign(tour, apiRes.data!)
-        console.log(tour)
-        if (interaction === 'like') {
-          user.tourLikes = form.value
-            ? [...user.tourLikes, tour.id]
-            : user.tourLikes.filter((tId) => tId !== tour.id)
-        } else if (interaction === 'star') {
-          user.tourStars = form.value
-            ? [...user.tourStars, tour.id]
-            : user.tourStars.filter((tId) => tId !== tour.id)
-        }
-      } else {
-        showToast({
-          type: 'fail',
-          message: apiRes.message
-        })
+
+    const refreshData = () => {
+      if (interaction === 'like') {
+        user.tourLikes = form.value
+          ? [...new Set([...user.tourLikes, tour.id])]
+          : user.tourLikes.filter((tId) => tId !== tour.id)
+        tour.likedBy = form.value
+          ? [...new Set([...tour.likedBy, user.id])]
+          : tour.likedBy.filter((uId) => uId !== user.id)
+      } else if (interaction === 'star') {
+        user.tourStars = form.value
+          ? [...new Set([...user.tourStars, tour.id])]
+          : user.tourStars.filter((tId) => tId !== tour.id)
+        tour.starredBy = form.value
+          ? [...new Set([...tour.starredBy, user.id])]
+          : tour.starredBy.filter((uId) => uId !== user.id)
       }
-    })
+    }
+
+    refreshData()
+    interactWithContent<TourRecord>(form)
+      .then((apiRes) => {
+        if (apiRes.success) {
+          refreshData()
+          Object.assign(tour, apiRes.data!)
+          showToast({
+            message: apiRes.message,
+            duration: 1000
+          })
+        } else {
+          showToast({
+            type: 'fail',
+            message: apiRes.message
+          })
+        }
+      })
+      .finally(() => {
+        interactLoadObj.setLoading(false)
+      })
   })
 }
 
@@ -585,6 +613,13 @@ const currentUser = computed(() => userStore.curUser)
                   />
                 </a>
               </div>
+
+              <CommentCard
+                v-for="(comment, idx) in tourList[currentPlayIndex].comments"
+                :key="idx"
+                :comment="comment"
+                :index="idx"
+              />
             </div>
           </van-overlay>
         </div>
