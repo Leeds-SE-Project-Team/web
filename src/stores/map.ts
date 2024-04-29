@@ -184,6 +184,35 @@ export const useMapStore = defineStore('map', () => {
   const screenMap = (mapRef: AMap.Map) => {
     if (mapRef) {
       const canvas = mapRef.canvas!
+      // const newCanvas = document.createElement('canvas')
+      // const ctx = newCanvas.getContext('2d') as CanvasRenderingContext2D
+      // console.log(ctx)
+      // const img = new Image(50,60)
+      // img.src = 'https://a.amap.com/jsapi/static/image/plugin/marker/end.png'
+      // const map = new Image()
+      // map.src = canvas.toDataURL('image/jpeg', 0.8)
+      // map.crossOrigin = 'anonymous'
+      // img.crossOrigin = 'anonymous'
+      // map.onload = ()=>{
+      //   ctx.drawImage(map,0,0,200,200);
+      // }
+      // console.log(1)
+      
+      // console.log(2)
+      // ctx.drawImage(img,10,10,50,60)
+      // console.log(3)
+      // document.body.append(newCanvas)
+      // try{
+      //   setTimeout(()=>{
+      //     console.log(newCanvas.toDataURL('image/jpeg', 0.8))
+      //   },1000)
+        
+      // }catch (err){
+      //   console.log(err)
+      // }
+      
+      // throw ''
+      
       return canvas.toDataURL('image/jpeg', 1.0)
     }
   }

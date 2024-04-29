@@ -56,7 +56,7 @@ const handleLogin = () => {
                   id: 'login',
                   content: apiRes.message
                 })
-                router.push({ name: 'index' })
+                router.push({ name: 'discover' })
               })
               .catch((e) => {
                 Message.error({
