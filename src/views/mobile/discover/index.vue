@@ -15,6 +15,9 @@ import { type ContentInteractForm, interactWithContent } from '@/apis/user'
 import { useUserStore } from '@/stores'
 import { showToast } from 'vant'
 import CommentCard from '@/views/web/discover/components/CommentCard.vue'
+import commentAtSvg from '/interaction/comment_at.svg'
+import sendCommentSvg from '/interaction/send_comment.svg'
+import { postComment } from '@/apis/comment'
 
 const currentPlayIndex = ref(0)
 
@@ -134,7 +137,7 @@ const fetchCollection = () => {
   getCollectionLoading.setLoading(true)
   getTourCollection()
     .then((apiRes) => {
-      collectionList.value = apiRes.data!
+      collectionList.value = apiRes.data!.filter((c) => c.tours.length > 0)
     })
     .catch((e) => {
       Message.error(e)
@@ -226,6 +229,7 @@ const handleClickComment = () => {
     showCommentAnimComplete.value &&
       gsap.to('#discover-comment-overlay .comment-wrapper', {
         duration: 0.3,
+        // height: 1000,
         yPercent: -60,
         ease: 'power3.out',
         onStart: () => {
@@ -242,7 +246,7 @@ const handleCloseCommentList = () => {
   showCommentAnimComplete.value &&
     gsap.to('#discover-comment-overlay .comment-wrapper', {
       duration: 0.3,
-      yPercent: 0,
+      yPercent: 60,
       ease: 'power3.out',
       onStart: () => {
         showCommentAnimComplete.value = false
@@ -328,6 +332,39 @@ onMounted(() => {
 
 const userStore = useUserStore()
 const currentUser = computed(() => userStore.curUser)
+
+const newCommentContent = ref('')
+const sendCommentLoadObj = useLoading()
+const onPostNewComment = () => {
+  userStore.getUserRecord().then((user) => {
+    if (newCommentContent.value.length <= 0) {
+      // Message.info('评论内容异常')
+      return
+    }
+    const tour = itemList.value[currentPlayIndex.value].item as TourRecord
+    sendCommentLoadObj.setLoading(true)
+    postComment({
+      content: newCommentContent.value,
+      tourId: tour.id,
+      parentId: undefined
+    })
+      .then((apiRes) => {
+        console.log(tour)
+        if (apiRes.success) {
+          tour.comments.push(apiRes.data!)
+          newCommentContent.value = ''
+          showToast(apiRes.message)
+        }
+      })
+      .finally(() => {
+        sendCommentLoadObj.setLoading(false)
+      })
+    // postComment(user.id, newCommentContent.value, video.value.videoId, undefined).then(() => {
+    //   newCommentContent.value = ''
+    //   refreshRootCommentList()
+    // })
+  })
+}
 </script>
 
 <template>
@@ -515,7 +552,7 @@ const currentUser = computed(() => userStore.curUser)
                               />
                             </div>
                             <div class="video-action-statistic">
-                              {{ 1 }}
+                              {{ (item.item as TourRecord).comments.length }}
                             </div>
                           </div>
                           <!--                            <template #content>-->
@@ -581,47 +618,6 @@ const currentUser = computed(() => userStore.curUser)
               </div>
             </div>
           </div>
-
-          <van-overlay
-            id="discover-comment-overlay"
-            :duration="0"
-            :show="showCommentList"
-            @click="handleCloseCommentList"
-          >
-            <div class="comment-wrapper">
-              <div class="usually-search">
-                大家都在搜：<a class="usually-search-topic"
-                  ><span
-                    :style="{
-                      cursor: recommendPlace(item) ? 'pointer' : 'default'
-                    }"
-                    class="usually-search-topic-text"
-                    @click="
-                      () => {
-                        if (recommendPlace(item)) {
-                          // handleSearch(recommendPlace)
-                        }
-                      }
-                    "
-                    >{{ recommendPlace(item) ? recommendPlace(item) : '暂无推荐' }}</span
-                  >
-                  <img
-                    v-if="recommendPlace(item)"
-                    alt="usually-search"
-                    class="usually-search-icon"
-                    src="/interaction/usually_search.svg"
-                  />
-                </a>
-              </div>
-
-              <CommentCard
-                v-for="(comment, idx) in tourList[currentPlayIndex].comments"
-                :key="idx"
-                :comment="comment"
-                :index="idx"
-              />
-            </div>
-          </van-overlay>
         </div>
 
         <a-spin
@@ -634,6 +630,89 @@ const currentUser = computed(() => userStore.curUser)
       </div>
     </div>
   </div>
+  <van-overlay
+    v-if="itemList[currentPlayIndex]?.type === 'tour'"
+    id="discover-comment-overlay"
+    :duration="0"
+    :show="showCommentList"
+    @click.self="handleCloseCommentList"
+  >
+    <div class="comment-wrapper">
+      <!--            <div class="usually-search">-->
+      <!--              大家都在搜：<a class="usually-search-topic"-->
+      <!--                ><span-->
+      <!--                  :style="{-->
+      <!--                    cursor: recommendPlace(item) ? 'pointer' : 'default'-->
+      <!--                  }"-->
+      <!--                  class="usually-search-topic-text"-->
+      <!--                  @click="-->
+      <!--                    () => {-->
+      <!--                      if (recommendPlace(item)) {-->
+      <!--                        // handleSearch(recommendPlace)-->
+      <!--                      }-->
+      <!--                    }-->
+      <!--                  "-->
+      <!--                  >{{ recommendPlace(item) ? recommendPlace(item) : '暂无推荐' }}</span-->
+      <!--                >-->
+      <!--                <img-->
+      <!--                  v-if="recommendPlace(item)"-->
+      <!--                  alt="usually-search"-->
+      <!--                  class="usually-search-icon"-->
+      <!--                  src="/interaction/usually_search.svg"-->
+      <!--                />-->
+      <!--              </a>-->
+      <!--            </div>-->
+      <div class="comment-header">
+        {{ (itemList[currentPlayIndex].item as TourRecord).comments.length }} comments in total
+      </div>
+      <CommentCard
+        v-for="(comment, idx) in (itemList[currentPlayIndex].item as TourRecord).comments"
+        :key="idx"
+        :comment="comment"
+        :index="idx"
+      />
+    </div>
+    <div class="input-wrapper-static">
+      <a-row :wrap="false">
+        <a-input
+          v-model:model-value.trim="newCommentContent"
+          :max-length="400"
+          class="input-wrapper-static-ele"
+          placeholder="Leave your own comment..."
+          @pressEnter="onPostNewComment"
+        >
+          <template #suffix>
+            <div v-if="!sendCommentLoadObj.loading.value">
+              <a-tooltip>
+                <template #content> 没有可以@的朋友</template>
+                <img :src="commentAtSvg" alt="at_friend" class="icon-at" />
+              </a-tooltip>
+              <a-tooltip>
+                <template #content>发布评论</template>
+                <img
+                  v-if="newCommentContent.length > 0"
+                  :src="sendCommentSvg"
+                  alt="send_comment"
+                  class="icon-send"
+                  @click="onPostNewComment"
+                />
+              </a-tooltip>
+            </div>
+            <van-loading v-else />
+          </template>
+        </a-input>
+      </a-row>
+    </div>
+
+    <!--    <div class="input-wrapper-static">-->
+    <!--      <a-input class="input-wrapper-static-ele" placeholder="Enter your comment..." allow-clear>-->
+    <!--        <template #suffix>-->
+    <!--          <span class="input-icon"><icon-camera /></span>-->
+    <!--          <span class="input-icon"><icon-at /></span>-->
+    <!--        </template>-->
+    <!--      </a-input>-->
+    <!--    </div>-->
+  </van-overlay>
 
   <!--  <div id="recommend-out-switch-btn">-->
   <!--    <div class="xgplayer-playswitch-tab">-->

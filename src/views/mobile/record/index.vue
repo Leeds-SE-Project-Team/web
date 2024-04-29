@@ -218,7 +218,7 @@ const getCurrentLocation = (toCenter?: boolean) => {
     (status, info: any) => {
       if (status === 'complete') {
         // weakGPS.value = info.accuracy > 30
-        weakGPS.value = info.accuracy > 20
+        weakGPS.value = info.accuracy > 50
 
         if (toCenter === true) {
           center.value = info.position.toArray()
@@ -635,9 +635,10 @@ onUnmounted(() => {
       </van-swipe-item>
       <van-swipe-item>
         <div class="swipe-card-item">
-          <div class="navigation-instruction">
+          <div v-if="currentLineIndex !== -1" class="navigation-instruction">
             {{ tourPlannedLines[currentLineIndex]?.instruction }}
           </div>
+          <van-loading v-else />
         </div>
       </van-swipe-item>
     </van-swipe>
