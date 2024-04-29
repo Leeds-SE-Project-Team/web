@@ -19,7 +19,7 @@ export interface CreateGroupForm {
 }
 
 export interface PutGroupFrom {
-    groupIdm: number
+    id: number
     leaderId: number
     name: string
     coverUrl: string
@@ -42,7 +42,7 @@ export const getAllCreatedGroupsByUser = () :Promise<ApiResponse<GroupRecord[]>>
     url: "/groups/createdByUser"
 })
 
-export const createGroup = (form: CreateGroupForm) :Promise<ApiResponse<void>> => axiosRequest({
+export const createGroup = (form: CreateGroupForm) :Promise<ApiResponse<GroupRecord>> => axiosRequest({
     method: "POST",
     url: "/groups/create",
     data: form
