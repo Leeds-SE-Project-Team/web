@@ -57,11 +57,30 @@
       }
     }
   }
-
-
 }
 
-
+.home-wrapper{
+  .back-container{
+    .Logo-wrapper{
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      width: 50%;
+      max-width: 400px;
+      min-width: 200px;
+      height: auto;
+      z-index: 2;
+      
+      button{
+        height: 40px;
+        background-color: transparent;
+        backdrop-filter: invert(1);
+        -webkit-backdrop-filter: invert(1);
+      }
+    }
+  }
+}
 
 
 

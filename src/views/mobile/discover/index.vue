@@ -88,11 +88,11 @@ const handleWheel = (event: WheelEvent) => {
 }
 
 // const currentItem = computed(() => itemList.value[currentPlayIndex.value])
-const isLiked = ref(false)
-const isStarred = ref(false)
+// const isLiked = ref(false)
+// const isStarred = ref(false)
 
-const itemLikeShowNum = ref(0)
-const itemStarShowNum = ref(0)
+// const itemLikeShowNum = ref(0)
+// const itemStarShowNum = ref(0)
 
 const slideList = ref()
 
@@ -133,7 +133,9 @@ const fetchCollection = () => {
   getCollectionLoading.setLoading(true)
   getTourCollection()
     .then((apiRes) => {
-      collectionList.value = apiRes.data!
+      collectionList.value = apiRes.data!.filter(
+        item=>item.name!=="Default Collection"
+      )
     })
     .catch((e) => {
       Message.error(e)
