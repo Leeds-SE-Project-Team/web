@@ -76,8 +76,9 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import ava from '/public/logo/green-transparent.png'
+import { ref } from 'vue';
+
+const ava = ''
 
 const activeName = ref([])
 </script>
