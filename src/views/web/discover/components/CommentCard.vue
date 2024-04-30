@@ -9,17 +9,20 @@ import { nextTick, onMounted, ref } from 'vue'
 //   postComment
 // } from '@/utils/comment'
 import { getTimeDiffUntilNow } from '@/utils'
-import { type CommentRecord } from '@/apis/comment'
+import { type CommentRecord, deleteComment, postComment } from '@/apis/comment'
 import useLoading from '@/hooks/loading'
 import { interactWithContent } from '@/apis/user'
 import { showToast } from 'vant'
-import { useUserStore } from '@/stores'
+import { useAuthStore, useUserStore } from '@/stores'
+import type { TourRecord } from '@/apis/tour'
 
 const emit = defineEmits(['refresh', 'change', 'delete'])
 
 const props = defineProps<{
   comment: CommentRecord
   index: any
+  depth: number
+  tour?: TourRecord
 }>()
 
 const openReply = () => {
@@ -77,42 +80,93 @@ const isLiked = ref(false)
 // const isLiked = computed(
 //   () => userStore.curUser && props.comment.likedBy.map((u) => u.id).includes(userStore.curUser?.id)
 // )
+
+const replyCommentLoadObj = useLoading()
+const handleReplyComment = () => {
+  if (!props.tour) {
+    return
+  }
+
+  if (replyCommentLoadObj.loading.value) {
+    showToast('Too frequent operations')
+    return
+  }
+  replyCommentLoadObj.setLoading(true)
+  postComment({
+    content: replyCommentContent.value,
+    tourId: props.tour.id,
+    parentId: props.comment.id
+  })
+    .then((apiRes) => {
+      if (apiRes.success) {
+        // tour.comments.push(apiRes.data!)
+        const newComment = apiRes.data!
+        const commentList = props.comment
+        const tour = props.tour!
+        commentList.replies.unshift(newComment)
+        tour.comments.unshift(newComment)
+        replyCommentContent.value = ''
+        isReplying.value = false
+        showToast(apiRes.message)
+      }
+    })
+    .finally(() => {
+      replyCommentLoadObj.setLoading(false)
+    })
+}
+
 const interactCommentLoadObj = useLoading()
 const handleInteractComment = () => {
-  userStore.getUserRecord().then((user) => {
-    if (interactCommentLoadObj.loading.value) {
-      showToast('Too frequent operations')
-      return
-    }
-    interactCommentLoadObj.setLoading(true)
+  if (interactCommentLoadObj.loading.value) {
+    showToast('Too frequent operations')
+    return
+  }
+  interactCommentLoadObj.setLoading(true)
 
-    isLiked.value = !isLiked.value
-    commentLikeShowNum.value += isLiked.value ? 1 : -1
-    // if (isLiked.value) {
-    // props.comment.likedBy = props.comment.likedBy.filter((c) => c.id !== user.id)
-    // }
+  isLiked.value = !isLiked.value
+  commentLikeShowNum.value += isLiked.value ? 1 : -1
+  // if (isLiked.value) {
+  // props.comment.likedBy = props.comment.likedBy.filter((c) => c.id !== user.id)
+  // }
 
-    interactWithContent({
-      interaction: 'like',
-      contentId: props.comment.id,
-      contentType: 'comments',
-      value: isLiked.value
+  interactWithContent({
+    interaction: 'like',
+    contentId: props.comment.id,
+    contentType: 'comments',
+    value: isLiked.value
+  })
+    .then((apiRes) => {
+      if (apiRes.success) {
+        showToast({
+          message: apiRes.message
+        })
+      } else {
+        showToast({
+          type: 'fail',
+          message: apiRes.message
+        })
+      }
     })
-      .then((apiRes) => {
-        if (apiRes.success) {
-          showToast({
-            message: apiRes.message
-          })
-        } else {
-          showToast({
-            type: 'fail',
-            message: apiRes.message
-          })
-        }
+    .finally(() => {
+      interactCommentLoadObj.setLoading(false)
+    })
+}
+
+const handleDeleteComment = (commentId: number) => {
+  deleteComment(commentId).then((apiRes) => {
+    if (apiRes.success) {
+      showToast({
+        message: apiRes.message
       })
-      .finally(() => {
-        interactCommentLoadObj.setLoading(false)
+      const commentList = props.comment
+      commentList.replies = commentList.replies.filter((r) => r.id !== commentId)
+      // currentTourComments.value = currentTourComments.value.filter((c) => c.id !== commentId)
+    } else {
+      showToast({
+        type: 'fail',
+        message: apiRes.message
       })
+    }
   })
 }
 </script>
@@ -126,7 +180,7 @@ const handleInteractComment = () => {
     style="margin-bottom: 0; padding-bottom: 0"
   >
     <template #author>
-      <span style="cursor: pointer">
+      <span style="cursor: pointer; font-weight: bold">
         {{ props.comment.author.nickname }}
       </span>
     </template>
@@ -144,7 +198,7 @@ const handleInteractComment = () => {
     <template #content>
       <div
         :class="{ 'show-all': commentContentShowAll }"
-        class="comment-content-text-container"
+        class="comment-content-text-container van-multi-ellipsis--l3"
         @click="commentContentShowAll = true"
       >
         {{ props.comment.content }}
@@ -155,7 +209,9 @@ const handleInteractComment = () => {
       <span v-if="!isReplying" class="action" @click="openReply"> <IconMessage /> 回复 </span>
       <span v-else class="action" @click="isReplying = false"> <IconMessage /> 回复中 </span>
       <span class="action" @click="handleInteractComment">
-        <span class="like-icon"><IconHeartFill v-if="isLiked" /><IconHeart v-else /></span>
+        <span :class="{ active: isLiked }" class="like-icon"
+          ><IconHeartFill v-if="isLiked" /><IconHeart v-else
+        /></span>
         <span>{{ commentLikeShowNum }}</span>
       </span>
       <!--        v-if="-->
@@ -164,7 +220,10 @@ const handleInteractComment = () => {
       <!--            (props.comment.author.id === userStore.getCurrentUser.id ||-->
       <!--              props.video?.authorId === userStore.getCurrentUser.id))-->
       <!--        "-->
-      <span class="action">
+      <span
+        v-if="useAuthStore().isAdmin || userStore.curUser?.id === props.comment.author.id"
+        class="action"
+      >
         <span v-if="!deleteCommentLoadObj.loading.value" @click="handleEmitDelete">
           <IconDelete /> 删除
         </span>
@@ -186,6 +245,7 @@ const handleInteractComment = () => {
           :max-length="400"
           :placeholder="`回复 @${props.comment.author.nickname}`"
           class="comment-input"
+          style="margin-bottom: 20px; border-radius: 10px; border: thin solid rgba(0, 0, 0, 0.3)"
           @focusin="isReplying = true"
           @focusout="isReplying = false"
         >
@@ -202,6 +262,7 @@ const handleInteractComment = () => {
                 alt="reply comment"
                 class="icon-send"
                 src="/interaction/send_comment.svg"
+                @click="handleReplyComment"
               />
             </a-tooltip>
           </template>
@@ -215,14 +276,17 @@ const handleInteractComment = () => {
     <CommentCard
       v-for="(comment, index) in props.comment.replies"
       v-else
-      :key="index"
+      :key="comment.id"
       :comment="comment"
+      :depth="props.depth + 1"
       :index="index"
+      :tour="props.tour"
       @change="
         () => {
           emit('change')
         }
       "
+      @delete="handleDeleteComment"
       @refresh="
         (refreshAll) => {
           if (refreshAll) {

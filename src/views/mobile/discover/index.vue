@@ -4,7 +4,7 @@ import { getTimeDiffUntilNow } from '@/utils'
 import useLoading from '@/hooks/loading'
 import { Message } from '@arco-design/web-vue'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
-import { getTours, type TourRecord } from '@/apis/tour'
+import { getTours, type TourRecord, TourStatus } from '@/apis/tour'
 import likeSvgUrl from '/interaction/video_detail_like.svg'
 import likedSvgUrl from '/interaction/video_detail_liked.svg'
 import starSvgUrl from '/interaction/star.svg'
@@ -17,7 +17,7 @@ import { showToast } from 'vant'
 import CommentCard from '@/views/web/discover/components/CommentCard.vue'
 import commentAtSvg from '/interaction/comment_at.svg'
 import sendCommentSvg from '/interaction/send_comment.svg'
-import { deleteComment, postComment } from '@/apis/comment'
+import { type CommentRecord, deleteComment, postComment } from '@/apis/comment'
 
 const currentPlayIndex = ref(0)
 
@@ -123,7 +123,7 @@ const fetchTourList = () => {
   getTourLoading.setLoading(true)
   getTours()
     .then((apiRes) => {
-      tourList.value = apiRes.data!
+      tourList.value = apiRes.data!.filter((t) => t.status === TourStatus.ONLINE)
     })
     .catch((e) => {
       Message.error(e)
@@ -225,8 +225,11 @@ onUnmounted(() => {
 
 const showCommentList = ref(false)
 const showCommentAnimComplete = ref(true)
+const showCommentInput = ref(false)
+
 const handleClickComment = () => {
   showCommentList.value = true
+  showCommentInput.value = true
   nextTick(() => {
     showCommentAnimComplete.value &&
       gsap.to('#discover-comment-overlay .comment-wrapper', {
@@ -251,6 +254,7 @@ const handleCloseCommentList = () => {
       yPercent: 60,
       ease: 'power3.out',
       onStart: () => {
+        showCommentInput.value = false
         showCommentAnimComplete.value = false
       },
       onComplete: () => {
@@ -346,35 +350,45 @@ const currentTourComments = computed({
 })
 const newCommentContent = ref('')
 const sendCommentLoadObj = useLoading()
-const onPostNewComment = () => {
-  userStore.getUserRecord().then((user) => {
-    if (newCommentContent.value.length <= 0) {
-      // Message.info('评论内容异常')
-      return
-    }
-    const tour = itemList.value[currentPlayIndex.value].item as TourRecord
-    sendCommentLoadObj.setLoading(true)
-    postComment({
-      content: newCommentContent.value,
-      tourId: tour.id,
-      parentId: undefined
+const tourCommentNum = computed(() => {
+  const countCommentsNum = (comments: CommentRecord[]) => {
+    let result = 0
+    comments.forEach((comment) => {
+      result += 1 + countCommentsNum(comment.replies)
     })
-      .then((apiRes) => {
-        console.log(tour)
-        if (apiRes.success) {
-          tour.comments.push(apiRes.data!)
-          newCommentContent.value = ''
-          showToast(apiRes.message)
-        }
-      })
-      .finally(() => {
-        sendCommentLoadObj.setLoading(false)
-      })
-    // postComment(user.id, newCommentContent.value, video.value.videoId, undefined).then(() => {
-    //   newCommentContent.value = ''
-    //   refreshRootCommentList()
-    // })
+
+    return result
+  }
+
+  return countCommentsNum(currentTourComments.value.filter((c) => c.parentId === null))
+})
+const onPostNewComment = () => {
+  if (newCommentContent.value.length <= 0) {
+    // Message.info('评论内容异常')
+    return
+  }
+  const tour = itemList.value[currentPlayIndex.value].item as TourRecord
+  sendCommentLoadObj.setLoading(true)
+  postComment({
+    content: newCommentContent.value,
+    tourId: tour.id,
+    parentId: undefined
   })
+    .then((apiRes) => {
+      console.log(tour)
+      if (apiRes.success) {
+        tour.comments.push(apiRes.data!)
+        newCommentContent.value = ''
+        showToast(apiRes.message)
+      }
+    })
+    .finally(() => {
+      sendCommentLoadObj.setLoading(false)
+    })
+  // postComment(user.id, newCommentContent.value, video.value.videoId, undefined).then(() => {
+  //   newCommentContent.value = ''
+  //   refreshRootCommentList()
+  // })
 }
 
 const handleDeleteComment = (commentId: number) => {
@@ -579,7 +593,7 @@ const handleDeleteComment = (commentId: number) => {
                               />
                             </div>
                             <div class="video-action-statistic">
-                              {{ (item.item as TourRecord).comments.length }}
+                              {{ tourCommentNum }}
                             </div>
                           </div>
                           <!--                            <template #content>-->
@@ -661,6 +675,7 @@ const handleDeleteComment = (commentId: number) => {
     v-if="itemList[currentPlayIndex]?.type === 'tour'"
     id="discover-comment-overlay"
     :duration="0"
+    :lock-scroll="false"
     :show="showCommentList"
     @click.self="handleCloseCommentList"
   >
@@ -689,16 +704,24 @@ const handleDeleteComment = (commentId: number) => {
       <!--                />-->
       <!--              </a>-->
       <!--            </div>-->
-      <div class="comment-header">{{ currentTourComments.length }} comments in total</div>
+      <div class="comment-header">{{ tourCommentNum }} comments in total</div>
       <CommentCard
         v-for="(comment, idx) in currentTourComments.filter((c) => c.parentId === null)"
-        :key="idx"
+        :key="comment.id"
         :comment="comment"
+        :depth="1"
         :index="idx"
+        :tour="itemList[currentPlayIndex].item as TourRecord"
         @delete="handleDeleteComment"
       />
+      <a-empty
+        v-if="tourCommentNum === 0"
+        style="height: 150px; display: flex; flex-direction: column; justify-content: center"
+      >
+        Leave a first comment
+      </a-empty>
     </div>
-    <div class="input-wrapper-static">
+    <div v-if="showCommentInput" class="input-wrapper-static">
       <a-row :wrap="false">
         <a-input
           v-model:model-value.trim="newCommentContent"
@@ -710,11 +733,11 @@ const handleDeleteComment = (commentId: number) => {
           <template #suffix>
             <div v-if="!sendCommentLoadObj.loading.value">
               <a-tooltip>
-                <template #content> 没有可以@的朋友</template>
+                <template #content> No friends</template>
                 <img :src="commentAtSvg" alt="at_friend" class="icon-at" />
               </a-tooltip>
               <a-tooltip>
-                <template #content>发布评论</template>
+                <template #content>Post comment</template>
                 <img
                   v-if="newCommentContent.length > 0"
                   :src="sendCommentSvg"

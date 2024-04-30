@@ -33,8 +33,10 @@
           <div class="picture-map">
             <div ref="picWrapper" class="picture-wrapper">
               <a-image-preview-group>
-                <div class="left" 
-                :style="{ width: props.tourData.tourHighlightList.length >= 2 ? '60%' : '100%' }">
+                <div
+                  class="left"
+                  :style="{ width: props.tourData.tourHighlightList.length >= 2 ? '60%' : '100%' }"
+                >
                   <a-image
                     :height="'100%'"
                     :src="props.tourData.tourHighlightList[0]?.tourImages[0].imageUrl"
@@ -119,7 +121,7 @@
         </a-list>
         <div v-if="!isMinimal" class="item-actions-right">
           <a-tag
-            v-if="props.tourData.status === 'awaitApproval'"
+            v-if="props.tourData.status === TourStatus.AWAIT_APPROVAL"
             :color="'arcoblue'"
             :size="'small'"
             bordered
@@ -128,7 +130,7 @@
             >审核中
           </a-tag>
           <a-tag
-            v-else-if="props.tourData.status === 'offline'"
+            v-else-if="props.tourData.status === TourStatus.OFFLINE"
             :color="'red'"
             :size="'small'"
             bordered
@@ -205,6 +207,8 @@
           <CommentCard
             v-for="(comment, index) in comments"
             :key="index"
+            :depth="1"
+            :tour="tourData"
             :comment="comment"
             :index="index"
           >
@@ -274,14 +278,15 @@ import CommentCard from '@/views/web/discover/components/CommentCard.vue'
 import useLoading from '@/hooks/loading'
 import { type CommentRecord, getCommentsByTourId } from '@/apis/comment'
 import { Message } from '@arco-design/web-vue'
-import type { TourRecord } from '@/apis/tour'
+import { type TourRecord, TourStatus } from '@/apis/tour'
+import tour from '@/views/tour/index.vue'
 
 const props = defineProps<{
   tourData: TourRecord
   mode?: 'minimal' | 'tour'
 }>()
 console.log(props.tourData)
-const emits = defineEmits(["jump"])
+const emits = defineEmits(['jump'])
 
 // const commentArea = ref<HTMLDivElement | undefined>()
 const mapWrapper = ref<HTMLDivElement | undefined>()
