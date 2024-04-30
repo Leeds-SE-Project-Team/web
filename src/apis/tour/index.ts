@@ -60,6 +60,15 @@ export interface TourImage {
   tourId: number
 }
 
+export interface tourRecordData {
+  id: number,
+  calorie: number,
+  avgSpeed: number,
+  timeInMotion: number,
+  totalDistance: number,
+  timeTaken: number 
+}
+
 export interface TourRecord {
   id: number
   startLocation: string
@@ -84,6 +93,8 @@ export interface TourRecord {
 
   likedBy: number[]
   starredBy: number[]
+
+  tourRecordData: tourRecordData
 }
 
 export enum TourStatus {

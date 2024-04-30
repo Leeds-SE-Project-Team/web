@@ -26,6 +26,10 @@ export interface PutGroupFrom {
     description: string
 }
 
+export const getGroupById = (id: string) :Promise<ApiResponse<GroupRecord>> => axiosRequest({
+    method: "GET",
+    url: `/group?id=${id}`
+})
 
 export const getAllGroups = () :Promise<ApiResponse<GroupRecord[]>> => axiosRequest({
     method: "GET",

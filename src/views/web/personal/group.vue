@@ -189,6 +189,7 @@ export default {
 
   .my-group,
   .join-group {
+    border-radius: 10px;
     margin: 40px 0;
     padding: 30px;
     background-color: #fff;
