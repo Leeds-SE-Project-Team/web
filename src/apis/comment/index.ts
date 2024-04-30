@@ -41,12 +41,3 @@ export const deleteComment = (commentId: number): Promise<ApiResponse<void>> =>
     method: 'DELETE',
     url: api_prefix + `?id=${commentId}`
   })
-// const exampleCommentRecord: CommentRecord = {
-//   author: exampleUserRecord,
-//   content: '',
-//   id: 0,
-//   parent: 0,
-//   publishTime: '',
-//   replies: [],
-//   tourId: 0
-// }

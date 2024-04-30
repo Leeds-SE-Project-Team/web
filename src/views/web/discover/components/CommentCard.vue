@@ -11,6 +11,9 @@ import { nextTick, onMounted, ref } from 'vue'
 import { getTimeDiffUntilNow } from '@/utils'
 import { type CommentRecord } from '@/apis/comment'
 import useLoading from '@/hooks/loading'
+import { interactWithContent } from '@/apis/user'
+import { showToast } from 'vant'
+import { useUserStore } from '@/stores'
 
 const emit = defineEmits(['refresh', 'change', 'delete'])
 
@@ -40,7 +43,6 @@ const isReplying = ref(false)
 //     })
 // }
 
-const isLiked = ref(false)
 const commentLikeShowNum = ref(0)
 
 const commentContentShowAll = ref(false)
@@ -70,6 +72,49 @@ const emitRefresh = (refreshAll: boolean) => {
 }
 
 const isDeleted = ref(false)
+const userStore = useUserStore()
+const isLiked = ref(false)
+// const isLiked = computed(
+//   () => userStore.curUser && props.comment.likedBy.map((u) => u.id).includes(userStore.curUser?.id)
+// )
+const interactCommentLoadObj = useLoading()
+const handleInteractComment = () => {
+  userStore.getUserRecord().then((user) => {
+    if (interactCommentLoadObj.loading.value) {
+      showToast('Too frequent operations')
+      return
+    }
+    interactCommentLoadObj.setLoading(true)
+
+    isLiked.value = !isLiked.value
+    commentLikeShowNum.value += isLiked.value ? 1 : -1
+    // if (isLiked.value) {
+    // props.comment.likedBy = props.comment.likedBy.filter((c) => c.id !== user.id)
+    // }
+
+    interactWithContent({
+      interaction: 'like',
+      contentId: props.comment.id,
+      contentType: 'comments',
+      value: isLiked.value
+    })
+      .then((apiRes) => {
+        if (apiRes.success) {
+          showToast({
+            message: apiRes.message
+          })
+        } else {
+          showToast({
+            type: 'fail',
+            message: apiRes.message
+          })
+        }
+      })
+      .finally(() => {
+        interactCommentLoadObj.setLoading(false)
+      })
+  })
+}
 </script>
 
 <template>
@@ -109,7 +154,7 @@ const isDeleted = ref(false)
     <template #actions>
       <span v-if="!isReplying" class="action" @click="openReply"> <IconMessage /> 回复 </span>
       <span v-else class="action" @click="isReplying = false"> <IconMessage /> 回复中 </span>
-      <span class="action">
+      <span class="action" @click="handleInteractComment">
         <span class="like-icon"><IconHeartFill v-if="isLiked" /><IconHeart v-else /></span>
         <span>{{ commentLikeShowNum }}</span>
       </span>
