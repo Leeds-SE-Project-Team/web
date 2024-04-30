@@ -52,7 +52,7 @@ const completedTours = computed(() => tours.value?.filter((tour) => tour.state =
       </div>
 
       <div v-if="!plannedTours?.length" class="no">
-        No exist ongoing tours
+        No exist planned tours
       </div>
     </div>
 
@@ -66,7 +66,7 @@ const completedTours = computed(() => tours.value?.filter((tour) => tour.state =
       </div>
 
       <div v-if="!completedTours?.length" class="no">
-        No exist ongoing tours
+        No exist completed tours
       </div>
     </div>
 

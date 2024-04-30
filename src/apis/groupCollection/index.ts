@@ -1,6 +1,17 @@
 import { type ApiResponse, axiosRequest } from '@/apis'
+import type { TourRecord } from '../tour'
+import type { UserRecord } from '../user'
 
-export interface GroupCollectionRecord {}
+export interface GroupCollectionRecord {
+  id: number
+  groupId: number
+  title: string
+  name: string
+  coverUrl: string
+  description: string
+  tours: TourRecord[]
+  members: UserRecord[]
+}
 
 export const getAllGroupCollection = (): Promise<ApiResponse<GroupCollectionRecord[]>> =>
   axiosRequest({

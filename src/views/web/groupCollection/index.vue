@@ -4,11 +4,11 @@
         <!-- the section of bg -->
         <section class="bg">
             <div class="bg-img">
-                <img :src="bgImg" alt="">
+                <img :src="allData?.coverUrl" alt="">
             </div>
             <div class="title">
                 <h3>SPOTLIGHT</h3>
-                <h2>{{ collectionName }}</h2>
+                <h2>{{ allData?.name }}, happy tour</h2>
             </div>
             <div class="bg-overlay"></div>
         </section>
@@ -17,45 +17,45 @@
         <section class="detail">
             <div class="profile">
                 <a-avatar class="leader" trigger-type="mask" :size="90">
-                    <img alt="avatar" :src="userData[0]?.header" />
+                    <img alt="avatar" :src="leader?.avatar" />
                 </a-avatar>
 
                 <div class="group-name">
-                    {{ groupName }}
+                    {{ allData?.name }}
                 </div>
 
                 <a-space class="others" :size="48">
-                    <a-avatar-group>
-                        <a-avatar :size="48" trigger-type="mask" v-for="user in userData.slice(1)" :key="user.userName">
-                            <img alt="avatar" :src="user.header" />
+                    <a-avatar-group :max-count="2">
+                        <a-avatar :size="48" trigger-type="mask" v-for="user in others" :key="user.id">
+                            <img alt="avatar" :src="user.avatar" />
                         </a-avatar>
                     </a-avatar-group>
                 </a-space>
             </div>
             <div class="des">
-                {{ des }}
+                {{ allData?.description }}
             </div>
         </section>
 
         <!-- the section of every tour -->
-        <section v-for="(tour, index1) in groupTour" :key="tour.name" class="every-tour">
+        <section v-for="(groupCollection, index1) in allData?.groupCollections" :key="groupCollection.id" class="every-tour">
             <div class="small-bar"></div>
-            <div class="every-tour-title">{{ tour.name }}</div>
+            <div class="every-tour-title">{{ groupCollection.name }}</div>
             <!-- the tour content -->
             <div class="tour-content">
                 <div class="content-img">
-                    <img :src="allImgData[index1].content[picNum[index1]].imgUrl" alt="">
+                    <img :src="groupCollection.tours[picNum[index1]]?.mapUrl" alt="">
                 </div>
                 <div class="content-side">
                     <div class="side-name">THE TOUR WE GET</div>
                     <div class="cover">
                         <div class="side-all" :style="{ marginTop: `${20 - 35 * picNum[index1]}%` }">
-                            <div v-for="(each, index2) in tour.content" :key="each.userName"
+                            <div v-for="(each, index2) in groupCollection.tours" :key="each.id"
                                 @click="changeHeight(index1, index2)" class="everyone">
                                 <div class="img-everyone">
-                                    <img :src="each.header" alt="">
+                                    <img :src="each.user.avatar" alt="">
                                 </div>
-                                <p>{{ each.userName }}</p>
+                                <p>{{ each.user.nickname }}</p>
                             </div>
                         </div>
                     </div>
@@ -73,68 +73,32 @@ export default {
 
 <script lang="ts" setup>
 import { getCollectionById } from '@/apis/collection';
-import { getGroupById } from '@/apis/group';
-import axios from 'axios';
-import { ref, onMounted } from 'vue';
+import { getAllGroups, getGroupById, type GroupRecord } from '@/apis/group';
+import type { UserRecord } from '@/apis/user';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 // define all the varibles
-
-// big bg img at first and some des
-const collectionName = ref<string>('')
-const bgImg = ref<string>('')
-const des = ref<string>('')
-const groupName = ref<string>('')
-
-// user data
-interface userInfo {
-    userName: string
-    header: string
-}
-const userData = ref<userInfo[]>([])
-
-// about BGIMAG of every tour
-const allImgData = ref<any>({})
-const picNum = ref<any>([])
-const allImgNum = ref<any>({})
-
-// tour content
-const groupTour = ref<any>([])
-
-// onMounted is here
+const allData = ref<GroupRecord>()
 
 const groupId = useRoute().params.id as string
 
-console.log(groupId)
-
-onMounted(async () => {
-    await axios.get("../src/views/web/groupCollection/tours.json")
-        .then((res) => {
-            // console.log(res.data.data)
-            allImgData.value = res.data.data
-            allImgNum.value = res.data.data.map((x: any) => x.content.length)
-            collectionName.value = res.data.collectionName
-            groupTour.value = res.data.data
-            des.value = res.data.des
-            bgImg.value = res.data.imgUrl
-            picNum.value = res.data.data.map(() => 0)
-            userData.value = res.data.everyOne
-            groupName.value = res.data.groupName
-        })
-        .catch((error) => {
-            console.log(error)
-        })
-})
-
+const picNum = ref<number[]>([0, 0, 0, 0])
+const allImgNum = ref<number[]>()
+const leader = ref<UserRecord>()
+const others = computed(() => allData.value?.members.filter((x) => x.id !== allData.value?.leaderId))
 
 onMounted(async () => {
     await getGroupById(groupId)
         .then((res) => {
             if (res.success) {
-                const allData = res.data
-                console.log(allData)
-                groupName.value = allData?.name as string
-                bgImg.value = allData?.coverUrl as string
-                des.value = allData?.description as string
+                allData.value = res.data
+                console.log(allData.value)
+                picNum.value = allData.value?.groupCollections.map(() => 0) as number[]
+                allImgNum.value = allData.value?.groupCollections.map((x: any) => x.tours.length)
+                leader.value = allData.value?.members.find((x) => x.id === allData.value?.leaderId)
+            }
+            else {
+                console.log(res.message)
             }
         })
 })
@@ -142,6 +106,8 @@ onMounted(async () => {
 
 
 function changeHeight(index1: any, index2: any) {
+    if (!picNum.value) return
+
     picNum.value[index1] = index2
 
     const imgs = document.querySelectorAll(".img-everyone")
@@ -149,6 +115,7 @@ function changeHeight(index1: any, index2: any) {
 
     let count = 0
     for (let i = 0; i < picNum.value.length; i++) {
+        if (!allImgNum.value) continue
         for (let j = 0; j < allImgNum.value[i]; j++) {
             if (i !== index1) {
                 count++
