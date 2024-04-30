@@ -9,7 +9,7 @@ import likeSvgUrl from '/interaction/video_detail_like.svg'
 import likedSvgUrl from '/interaction/video_detail_liked.svg'
 import starSvgUrl from '/interaction/star.svg'
 import starredSvgUrl from '/interaction/starred.svg'
-import { shuffle } from 'lodash-es'
+import { cloneDeep, sampleSize, shuffle } from 'lodash-es'
 import { gsap } from 'gsap'
 import { type ContentInteractForm, interactWithContent } from '@/apis/user'
 import { useUserStore } from '@/stores'
@@ -23,6 +23,7 @@ const currentPlayIndex = ref(0)
 
 const loadingObject = useLoading()
 const loadingItem = loadingObject.loading
+const showLoadingToast = ref(true)
 
 const handlePlayPrev = () => {
   if (!canHandleSwitch.value) {
@@ -55,11 +56,17 @@ const handlePlayNext = () => {
     // createPlay(itemList.value[currentPlayIndex.value])
     // refreshItemLikeAndStar()
   } else {
-    Message.loading({
-      id: 'loadMore',
-      content: '加载中...'
-    })
+    showLoadingToast.value = true
     nextAfterLoad.value = true
+    setTimeout(() => {
+      tourList.value.push(...cloneDeep(sampleSize(tourList.value, 3)))
+      if (nextAfterLoad.value) {
+        nextTick(() => {
+          handlePlayNext()
+        })
+      }
+      showLoadingToast.value = false
+    }, 1000)
     // getMoreItems(3, false).then(() => {
     //   Message.success({
     //     id: 'loadMore',
@@ -130,6 +137,7 @@ const fetchTourList = () => {
     })
     .finally(() => {
       getTourLoading.setLoading(false)
+      showLoadingToast.value = false
     })
 }
 const getCollectionLoading = useLoading()
@@ -146,6 +154,7 @@ const fetchCollection = () => {
     })
     .finally(() => {
       getCollectionLoading.setLoading(false)
+      showLoadingToast.value = false
     })
 }
 
@@ -409,6 +418,9 @@ const handleDeleteComment = (commentId: number) => {
 </script>
 
 <template>
+  <van-toast :show="itemList.length === 0 || showLoadingToast" style="padding: 0" type="loading">
+    <template #message> Loading...</template>
+  </van-toast>
   <div id="slide-list" @wheel.passive="handleWheel">
     <div class="outer-container">
       <div ref="slideList" class="slide-list-container">

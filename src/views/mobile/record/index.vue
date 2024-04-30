@@ -243,9 +243,11 @@ const getCurrentLocation = (toCenter?: boolean) => {
           // if (distance > 0) {
           if (distance > 0 && !weakGPS.value) {
             updatePrevRecordData()
-            countNotInMotion.value = 0
             recordData.value.totalDistance += distance
-            recordDataInstant.speed = parseFloat(((distance / TIME_INTERVAL) * 3.6).toFixed(2))
+            recordDataInstant.speed = parseFloat(
+              ((distance / (TIME_INTERVAL + countNotInMotion.value)) * 3.6).toFixed(2)
+            )
+            countNotInMotion.value = 0
             if (tourData.value && userStore.curUser) {
               recordData.value.calorie = calculateTourCalorie(
                 tourData.value.type,
