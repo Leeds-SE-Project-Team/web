@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 // import { useUserStore } from '@/store/user'
 import { nextTick, onMounted, ref } from 'vue'
 // import {
@@ -9,9 +9,10 @@ import { nextTick, onMounted, ref } from 'vue'
 //   postComment
 // } from '@/utils/comment'
 import { getTimeDiffUntilNow } from '@/utils'
-import type { CommentRecord } from '@/apis/comment'
+import { type CommentRecord } from '@/apis/comment'
+import useLoading from '@/hooks/loading'
 
-const emit = defineEmits(['refresh', 'change'])
+const emit = defineEmits(['refresh', 'change', 'delete'])
 
 const props = defineProps<{
   comment: CommentRecord
@@ -45,6 +46,12 @@ const commentLikeShowNum = ref(0)
 const commentContentShowAll = ref(false)
 const replyCommentContent = ref('')
 
+const deleteCommentLoadObj = useLoading()
+const handleEmitDelete = () => {
+  deleteCommentLoadObj.setLoading(true)
+  emit('delete', props.comment.id)
+}
+
 //  TODO: auto focus on comment after post
 // const focusCommentId = ref<number | undefined>(undefined)
 // watch(focusCommentId, (value) => {
@@ -68,9 +75,9 @@ const isDeleted = ref(false)
 <template>
   <a-comment
     v-show="!isDeleted"
-    class="comment-item"
-    align="left"
     :datetime="getTimeDiffUntilNow(props.comment.publishTime)"
+    align="left"
+    class="comment-item"
     style="margin-bottom: 0; padding-bottom: 0"
   >
     <template #author>
@@ -80,8 +87,8 @@ const isDeleted = ref(false)
     </template>
     <template #avatar>
       <a-avatar
-        :size="32"
         :image-url="props.comment.author.avatar"
+        :size="32"
         @load="
           () => {
             // isLoadingUser = false
@@ -91,8 +98,8 @@ const isDeleted = ref(false)
     </template>
     <template #content>
       <div
-        class="comment-content-text-container"
         :class="{ 'show-all': commentContentShowAll }"
+        class="comment-content-text-container"
         @click="commentContentShowAll = true"
       >
         {{ props.comment.content }}
@@ -100,8 +107,8 @@ const isDeleted = ref(false)
     </template>
 
     <template #actions>
-      <span class="action" @click="openReply" v-if="!isReplying"> <IconMessage /> 回复 </span>
-      <span class="action" @click="isReplying = false" v-else> <IconMessage /> 回复中 </span>
+      <span v-if="!isReplying" class="action" @click="openReply"> <IconMessage /> 回复 </span>
+      <span v-else class="action" @click="isReplying = false"> <IconMessage /> 回复中 </span>
       <span class="action">
         <span class="like-icon"><IconHeartFill v-if="isLiked" /><IconHeart v-else /></span>
         <span>{{ commentLikeShowNum }}</span>
@@ -112,39 +119,44 @@ const isDeleted = ref(false)
       <!--            (props.comment.author.id === userStore.getCurrentUser.id ||-->
       <!--              props.video?.authorId === userStore.getCurrentUser.id))-->
       <!--        "-->
-      <span class="action"> <IconDelete /> 删除 </span>
+      <span class="action">
+        <span v-if="!deleteCommentLoadObj.loading.value" @click="handleEmitDelete">
+          <IconDelete /> 删除
+        </span>
+        <span v-else> <IconLoading /> 删除中 </span>
+      </span>
     </template>
 
     <!--    New comment input-->
     <a-comment
+      v-if="isReplying"
       align="right"
       avatar="https://file.wmzspace.space/user/default/avatar/avatar.jpg"
       class="reply-comment"
-      v-if="isReplying"
     >
       <template #content>
         <a-input
-          :placeholder="`回复 @${props.comment.author.nickname}`"
-          class="comment-input"
           id="reply-comment-input"
           v-model.trim="replyCommentContent"
           :max-length="400"
+          :placeholder="`回复 @${props.comment.author.nickname}`"
+          class="comment-input"
           @focusin="isReplying = true"
           @focusout="isReplying = false"
         >
           <!--          @pressEnter="onPostReplyComment"-->
           <template #suffix>
             <a-tooltip>
-              <template #content> 没有可以@的朋友 </template>
-              <img class="icon-at" src="/interaction/comment_at.svg" alt="at friend" />
+              <template #content> 没有可以@的朋友</template>
+              <img alt="at friend" class="icon-at" src="/interaction/comment_at.svg" />
             </a-tooltip>
             <a-tooltip>
               <template #content>回复评论</template>
               <img
-                class="icon-send"
-                src="/interaction/send_comment.svg"
                 v-if="replyCommentContent.length > 0"
                 alt="reply comment"
+                class="icon-send"
+                src="/interaction/send_comment.svg"
               />
             </a-tooltip>
           </template>
@@ -156,11 +168,11 @@ const isDeleted = ref(false)
     <!--    Children Comment-->
     <!--    <a-spin class="load-more" dot v-if="isLoadingComment" :loading="isLoadingComment" />-->
     <CommentCard
-      v-else
       v-for="(comment, index) in props.comment.replies"
-      :index="index"
-      :comment="comment"
+      v-else
       :key="index"
+      :comment="comment"
+      :index="index"
       @change="
         () => {
           emit('change')

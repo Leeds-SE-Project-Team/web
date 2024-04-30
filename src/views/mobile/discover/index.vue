@@ -17,7 +17,7 @@ import { showToast } from 'vant'
 import CommentCard from '@/views/web/discover/components/CommentCard.vue'
 import commentAtSvg from '/interaction/comment_at.svg'
 import sendCommentSvg from '/interaction/send_comment.svg'
-import { postComment } from '@/apis/comment'
+import { deleteComment, postComment } from '@/apis/comment'
 
 const currentPlayIndex = ref(0)
 
@@ -137,7 +137,9 @@ const fetchCollection = () => {
   getCollectionLoading.setLoading(true)
   getTourCollection()
     .then((apiRes) => {
-      collectionList.value = apiRes.data!.filter((c) => c.tours.length > 0)
+      collectionList.value = apiRes.data!.filter(
+        (c) => c.tours.length > 0 && c.name !== 'Default Collection'
+      )
     })
     .catch((e) => {
       Message.error(e)
@@ -333,6 +335,15 @@ onMounted(() => {
 const userStore = useUserStore()
 const currentUser = computed(() => userStore.curUser)
 
+const currentTourComments = computed({
+  get: () => (itemList.value[currentPlayIndex.value].item as TourRecord).comments ?? [],
+  set: (value) => {
+    const curItem = itemList.value[currentPlayIndex.value]
+    if (curItem.type === 'tour') {
+      ;(curItem.item as TourRecord).comments = value
+    }
+  }
+})
 const newCommentContent = ref('')
 const sendCommentLoadObj = useLoading()
 const onPostNewComment = () => {
@@ -363,6 +374,22 @@ const onPostNewComment = () => {
     //   newCommentContent.value = ''
     //   refreshRootCommentList()
     // })
+  })
+}
+
+const handleDeleteComment = (commentId: number) => {
+  deleteComment(commentId).then((apiRes) => {
+    if (apiRes.success) {
+      showToast({
+        message: apiRes.message
+      })
+      currentTourComments.value = currentTourComments.value.filter((c) => c.id !== commentId)
+    } else {
+      showToast({
+        type: 'fail',
+        message: apiRes.message
+      })
+    }
   })
 }
 </script>
@@ -662,14 +689,13 @@ const onPostNewComment = () => {
       <!--                />-->
       <!--              </a>-->
       <!--            </div>-->
-      <div class="comment-header">
-        {{ (itemList[currentPlayIndex].item as TourRecord).comments.length }} comments in total
-      </div>
+      <div class="comment-header">{{ currentTourComments.length }} comments in total</div>
       <CommentCard
-        v-for="(comment, idx) in (itemList[currentPlayIndex].item as TourRecord).comments"
+        v-for="(comment, idx) in currentTourComments.filter((c) => c.parentId === null)"
         :key="idx"
         :comment="comment"
         :index="idx"
+        @delete="handleDeleteComment"
       />
     </div>
     <div class="input-wrapper-static">
