@@ -28,6 +28,7 @@ const props = defineProps<{
 const openReply = () => {
   isReplying.value = true
   nextTick(() => {
+    // document.getElementById('comment-input-arco')?.getElementsByTagName('input')[0]?.focus()
     document.getElementById('reply-comment-input')?.getElementsByTagName('input')[0]?.focus()
   })
 }
@@ -46,7 +47,7 @@ const isReplying = ref(false)
 //     })
 // }
 
-const commentLikeShowNum = ref(0)
+const commentLikeShowNum = ref(props.comment.likedBy.length)
 
 const commentContentShowAll = ref(false)
 const replyCommentContent = ref('')
@@ -76,7 +77,9 @@ const emitRefresh = (refreshAll: boolean) => {
 
 const isDeleted = ref(false)
 const userStore = useUserStore()
-const isLiked = ref(false)
+const isLiked = ref(
+  userStore.curUser && props.comment.likedBy.map((l) => l.id).includes(userStore.curUser.id)
+)
 // const isLiked = computed(
 //   () => userStore.curUser && props.comment.likedBy.map((u) => u.id).includes(userStore.curUser?.id)
 // )
@@ -206,20 +209,11 @@ const handleDeleteComment = (commentId: number) => {
     </template>
 
     <template #actions>
-      <span v-if="!isReplying" class="action" @click="openReply"> <IconMessage /> 回复 </span>
-      <span v-else class="action" @click="isReplying = false"> <IconMessage /> 回复中 </span>
-      <span class="action" @click="handleInteractComment">
-        <span :class="{ active: isLiked }" class="like-icon"
-          ><IconHeartFill v-if="isLiked" /><IconHeart v-else
-        /></span>
-        <span>{{ commentLikeShowNum }}</span>
+      <span v-show="props.depth < 3">
+        <span v-if="!isReplying" class="action" @click="openReply"> <IconMessage /> 回复 </span>
+        <span v-else class="action" @click="isReplying = false"> <IconMessage /> 回复中 </span>
       </span>
-      <!--        v-if="-->
-      <!--          userStore.isAdmin ||-->
-      <!--          (userStore.getCurrentUser &&-->
-      <!--            (props.comment.author.id === userStore.getCurrentUser.id ||-->
-      <!--              props.video?.authorId === userStore.getCurrentUser.id))-->
-      <!--        "-->
+
       <span
         v-if="useAuthStore().isAdmin || userStore.curUser?.id === props.comment.author.id"
         class="action"
@@ -228,6 +222,13 @@ const handleDeleteComment = (commentId: number) => {
           <IconDelete /> 删除
         </span>
         <span v-else> <IconLoading /> 删除中 </span>
+      </span>
+
+      <span class="action like-action" @click="handleInteractComment">
+        <span :class="{ active: isLiked }" class="like-icon"
+          ><IconHeartFill v-if="isLiked" /><IconHeart v-else
+        /></span>
+        <span>{{ commentLikeShowNum }}</span>
       </span>
     </template>
 

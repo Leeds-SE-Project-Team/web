@@ -223,3 +223,6 @@ export const hapticsSelectionEnd = async () => {
 export const parseTimeToString = (time: Dayjs) => {
   return time.format('YYYY-MM-DD HH:mm:ss')
 }
+
+export const parseToFirstUpperCase = (str: string) =>
+  str.slice(0, 1).toUpperCase().concat(str.slice(1).toLowerCase())

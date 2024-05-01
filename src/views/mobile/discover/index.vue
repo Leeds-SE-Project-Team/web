@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
-import { getTimeDiffUntilNow } from '@/utils'
+import { getTimeDiffUntilNow, parseToFirstUpperCase } from '@/utils'
 import useLoading from '@/hooks/loading'
 import { Message } from '@arco-design/web-vue'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
-import { getTours, type TourRecord, TourStatus } from '@/apis/tour'
+import { getTours, getTourTypeText, type TourRecord, TourStatus } from '@/apis/tour'
 import likeSvgUrl from '/interaction/video_detail_like.svg'
 import likedSvgUrl from '/interaction/video_detail_liked.svg'
 import starSvgUrl from '/interaction/star.svg'
@@ -464,7 +464,9 @@ const handleDeleteComment = (commentId: number) => {
                               >{{
                                 item.type === 'collection'
                                   ? (item.item as unknown as TourCollection).name
-                                  : (item.item as unknown as TourRecord).type + ' Tour'
+                                  : parseToFirstUpperCase(
+                                      getTourTypeText((item.item as unknown as TourRecord).type)
+                                    ) + ' Tour'
                               }}
                             </a-tag>
                           </a-row>
@@ -736,6 +738,7 @@ const handleDeleteComment = (commentId: number) => {
     <div v-if="showCommentInput" class="input-wrapper-static">
       <a-row :wrap="false">
         <a-input
+          id="comment-input-arco"
           v-model:model-value.trim="newCommentContent"
           :max-length="400"
           class="input-wrapper-static-ele"

@@ -505,12 +505,14 @@
         & > .action:nth-child(1) {
         }
 
-        & > .action:nth-child(2) {
-          order: 1;
+        & > .action.like-action {
+          //order: 1;
+
           justify-self: flex-end;
           font-size: 17px;
-          position: relative;
-          bottom: 3px;
+          position: absolute;
+          right: 10px;
+          //bottom: 3px;
           color: rgba(0, 0, 0, 0.5);
 
           .like-icon {
@@ -531,8 +533,8 @@
         }
 
         width: 100%;
-        display: grid;
-        grid-template-columns: 1.7fr 2fr 2fr;
+        //display: grid;
+        //grid-template-columns: 1.7fr 2fr 2fr;
       }
     }
 
