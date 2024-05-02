@@ -1,95 +1,104 @@
 <script lang="ts" setup>
-import { getTourById, type TourRecord } from '@/apis/tour';
+import { getTourById, type TourRecord, type tourRecordData } from '@/apis/tour';
 import { useUserStore } from '@/stores/user';
 import { computed, ref } from 'vue';
 import tourCard from './cards/tourCard.vue';
 
 const currUser = computed(()=> useUserStore().curUser)
-const likeTours = ref<TourRecord[]>()
-const starTours = ref<TourRecord[]>()
+const likeTours = ref<TourRecord[]>([])
+const starTours = ref<TourRecord[]>([])
 
-// if (currUser.value) {
-//     const likePromises = currUser.value.tourLikes.map(getTourById);
-//     const starPromises = currUser.value.tourStars.map(getTourById);
+const getTour = async (id: number, type: number) => {
+    await getTourById(id)
+        .then(res => {
+            if(res.success) {
+                if(type === 0) {
+                    likeTours.value.push(res.data as TourRecord)
+                } else {
+                    starTours.value.push(res.data as TourRecord)
+                }
+            }
+        })
+}
 
-//     await Promise.all(likePromises)
-//         .then((results) => {
-//             likeTours.value?.push(...results.filter(res => res.data !== undefined).map(res => res.data));
-//         });
-
-//     await Promise.all(starPromises)
-//         .then((results) => {
-//             starTours.value?.push(...results.filter(res => res.data !== undefined).map(res => res.data));
-//         });
-// }
+if (currUser.value) {
+    for(let i = 0; i < currUser.value.tourLikes.length; i++) {
+        getTour(currUser.value.tourLikes[i], 0)
+    }
+    for(let i = 0; i < currUser.value.tourStars.length; i++) {
+        getTour(currUser.value.tourStars[i], 1)
+    }
+}
 
 
 </script>
 
 <template>
     <div id="personal-profile">
-        <div class="profile-head">
-            <img src="https://file.wmzspace.space/user/default/avatar/avatar.jpg" alt="">
-        </div>
-        <div class="name">
-            {{currUser?.nickname}}
-        </div>
-        <div class="profile-des">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Maiores qui eaque deserunt totam eveniet labore.
-        </div>
-
-
-        <div class="profile-detail">
-            <a-divider />
-            <div class="detail">
-                <div>
-                    <icon-pen-fill />
-                    <div class="item">{{currUser?.gender ? currUser?.gender : "Not Given"}}</div>
-                </div>
-
-                <div>
-                    <icon-to-right />
-                    <div class="item">{{currUser?.weight ? currUser?.weight : "Not Given"}}</div>
-                </div>
-                <div>
-                    <icon-to-top />
-                    <div class="item">{{currUser?.height ? currUser?.height : "Not Given"}}</div>
-                </div>
-                <div>
-                    <icon-thumb-up />
-                    <div class="item">{{currUser?.tourLikes.length}}</div>
-                </div>
-                <div>
-                    <icon-star />
-                    <div class="item">{{currUser?.tourStars.length}}</div>
-                </div>
+        <div class="cover">
+            <div class="profile-head">
+                <img src="https://file.wmzspace.space/user/default/avatar/avatar.jpg" alt="">
             </div>
-            <a-divider />
-        </div>
-
-        <div class="tours">
-            <h3>Tours I like <icon-thumb-up /> {{}}</h3>
-            <a-divider :size="4" />
-
-            <div class="card" v-for="tour in likeTours" :key="tour.id">
-                <tourCard :info="tour"></tourCard>
+            <div class="name">
+                {{currUser?.nickname}}
+            </div>
+            <div class="profile-des">
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Maiores qui eaque deserunt totam eveniet labore.
             </div>
 
-            <div v-if="!likeTours?.length" class="no">
-                No exist tours you like
+
+            <div class="profile-detail">
+                <a-divider />
+                <div class="detail">
+                    <div>
+                        <icon-pen-fill />
+                        <div class="item">{{currUser?.gender ? currUser?.gender : "Not Given"}}</div>
+                    </div>
+
+                    <div>
+                        <icon-to-right />
+                        <div class="item">{{currUser?.weight ? currUser?.weight : "Not Given"}}</div>
+                    </div>
+                    <div>
+                        <icon-to-top />
+                        <div class="item">{{currUser?.height ? currUser?.height : "Not Given"}}</div>
+                    </div>
+                    <div>
+                        <icon-thumb-up />
+                        <div class="item">{{currUser?.tourLikes.length}}</div>
+                    </div>
+                    <div>
+                        <icon-star />
+                        <div class="item">{{currUser?.tourStars.length}}</div>
+                    </div>
+                </div>
+                <a-divider />
             </div>
-        </div>
 
-        <div class="tours">
-            <h3>Tours I star <icon-star /> {{}}</h3>
-            <a-divider :size="4" />
+            <div class="tours">
+                <h3>Tours I like <icon-thumb-up /> {{}}</h3>
+                <a-divider :size="4" />
 
-            <div class="card" v-for="tour in starTours" :key="tour.id">
-                <tourCard :info="tour"></tourCard>
+                <div class="card" v-for="tour in likeTours" :key="tour.id">
+                    <tourCard :info="tour"></tourCard>
+                </div>
+
+                <div v-if="!likeTours?.length" class="no">
+                    No exist tours you like
+                </div>
             </div>
 
-            <div v-if="!starTours?.length" class="no">
-                No exist tours you like
+            <div class="tours">
+                <h3>Tours I star <icon-star /> {{}}</h3>
+                <a-divider :size="4" />
+
+                <div class="card" v-for="tour in starTours" :key="tour.id">
+                    <tourCard :info="tour"></tourCard>
+                </div>
+
+                <div v-if="!starTours?.length" class="no">
+                    No exist tours you like
+                </div>
             </div>
         </div>
     </div>
@@ -105,12 +114,19 @@ export default {
 
 <style lang="scss">
 #personal-profile {
-    margin-top: 40px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    background-color: #fff;
+    
     position: relative;
-    border-radius: 10px;
+    overflow: scroll;
+    height: calc(100vh - 50px);
+    position: relative;
+
+    .cover {
+        background-color: #fff;
+        padding-bottom: 20px;
+        padding-top: 20px;
+        margin-top: 40px;
+        border-radius: 10px;
+    }
 
     .profile-head {
         width: 80px;
@@ -126,6 +142,7 @@ export default {
     }
 
     .name {
+        background-color: #fff;
         padding-top: 20px;
         width: 100%;
         text-align: center;

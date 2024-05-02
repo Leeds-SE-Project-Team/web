@@ -22,11 +22,10 @@ export const getTourHighlights = (): Promise<ApiResponse<TourHighlight[]>> =>
     url: 'tour_highlight/all'
   })
 
-export const getTourHighlightById = (id: number): Promise<ApiResponse<TourHighlight>> =>
+export const getTourHighlightById = (id: string): Promise<ApiResponse<TourHighlight>> =>
   axiosRequest({
     method: 'GET',
-    url: "/tour_highlight",
-    data: id
+    url: `/tour_highlight?id=${id}`
   });
 
 export const getTourHighlightExample = (num: number): TourHighlight => {

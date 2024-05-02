@@ -68,7 +68,7 @@ const navigateTo = (routeName: string) => {
               Highlights
             </a-menu-item>
             <a-menu-item key="personalcollections" @click="navigateTo('personalcollections')">
-              Collections
+              My Collections
             </a-menu-item>
             <a-menu-item key="personalgroup" @click="navigateTo('personalgroup')">
               Groups

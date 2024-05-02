@@ -14,7 +14,7 @@ import personalIndex from '@/views/mobile/personal/index.vue'
 import personalPage from '@/views/web/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
 import personalProfile from '@/views/web/personal/profile.vue'
-import personalCollections from '@/views/web/personal/profile.vue'
+import personalCollections from '@/views/web/personal/collections.vue'
 import personalHighlights from '@/views/web/personal/highlights.vue'
 import personalGroup from '@/views/web/personal/group.vue'
 import TourDetail from '@/views/mobile/personal/TourDetail.vue'
@@ -207,7 +207,7 @@ const router = createRouter({
 //       // component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
 //     },
     {
-      path: '/highlight',
+      path: '/highlight/:id',
       name: 'highlight',
       meta: {
         layout: 'b', // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
@@ -250,10 +250,11 @@ const router = createRouter({
     // },
     {
       path: '/personal',
+      redirect: '/personal/personalprofile', // web页面的重定向
       meta: {
         auth: ['admin', 'user'],
         layout: Capacitor.getPlatform()==='web' ? 'b':'',
-        title: 'personal'
+        title: 'personalprofile'
       },
       component: Capacitor.getPlatform()==='web'? personalPage : personalIndex,
       children: Capacitor.getPlatform()==='web'? web_personal_children : personalMobileChildren
