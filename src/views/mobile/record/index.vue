@@ -446,8 +446,8 @@ const showHighlightSheet = ref(false)
 //   draggable: false
 // }))
 
-let getLocationInterval = 0
-let countTimeInterval = 0
+let getLocationInterval:any = 0
+let countTimeInterval:any = 0
 
 const weakGPS = ref(false)
 // watch(weakGPS, (value) => {

@@ -2,9 +2,9 @@
 import { useAuthStore } from '@/stores/auth'
 import gsap from 'gsap';
 import { onMounted, ref } from 'vue';
-// import wlv from 'walcraft2.0.mp4'
+import wlv from 'C:\\Main\\walcraft2.0.mp4'
 const authStore = useAuthStore()
-const wlv = ''
+// const wlv = ''
 
 onMounted(()=>{
   gsap.to('#r123',{rotate:360, duration: 3})
@@ -54,9 +54,12 @@ onMounted(()=>{
         <!-- <img src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg" alt="" style="object-fit: cover; width: 100%; height: 100%;"> -->
         <video style="height: 100%; width: 100%; object-fit: cover;" :src="wlv" autoplay muted loop></video>
       </div>
-      <!-- <div style="height: 100vh; width: 100%" >
+      <div style="height: 100vh; width: 100%; position: relative;" >
+        <div class="walcraft-info" style="position: absolute" >
+          walcraft
+        </div>
         <img src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg" alt="" style="object-fit: cover; width: 100%; height: 100%;">
-      </div> -->
+      </div>
     </div>
     
   </div>

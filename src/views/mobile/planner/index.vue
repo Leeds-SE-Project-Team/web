@@ -149,7 +149,7 @@ const pointSheetHeight = ref(0)
 const floatSheetHeight = window.innerHeight * 0.4
 const floatSheetAnchors = [0, floatSheetHeight]
 
-let timer = 0
+let timer:any = 0
 watch(selectPoint, (value) => {
   if (value) {
     clearInterval(timer)

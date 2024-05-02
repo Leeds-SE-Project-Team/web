@@ -13,6 +13,9 @@
       <div class="email">
         {{ user?.email }}
       </div>
+      <div class="vip-time">
+        VIP expire at 2022/10/10
+      </div>
     </div>
     
   </section>
@@ -88,23 +91,37 @@
         </div>
       </template>
       <van-grid>
-        <van-grid-item>
-          <div class="price flex-c flex-justify-c">
-            <div class="time">1 Month</div>
-            <div class="money">$6</div>
-          </div>
+        <van-grid-item style="flex: 1;" >
+          <button ref="vipB1" class="vip-choice" @click="setChoose(0)" >
+            <div class="price flex-c flex-justify-c">
+              <div class="time">Monthly</div>
+              <div class="money">$6</div>
+            </div>
+          </button>
         </van-grid-item>
-        <van-grid-item>
-          <div class="price flex-c flex-justify-c">
-            <div class="time">3 Month</div>
-            <div class="money">$16</div>
-          </div>
+        <van-grid-item style="flex: 1;">
+          <button ref="vipB2" class="vip-choice" @click="setChoose(1)" >
+            <div class="price flex-c flex-justify-c">
+              <div class="time">3 Month</div>
+              <div class="money">$16</div>
+            </div>
+          </button>
         </van-grid-item>
-        <van-grid-item>
-          <div class="price flex-c flex-justify-c">
-            <div class="time">1 year</div>
-            <div class="money">$60</div>
-          </div>
+        <van-grid-item style="flex: 1;">
+          <button ref="vipB3" class="vip-choice" @click="setChoose(2)">
+            <div class="price flex-c flex-justify-c">
+              <div class="time">Yearly</div>
+              <div class="money">$60</div>
+            </div>
+          </button>
+        </van-grid-item>
+        <van-grid-item style="flex: 1;">
+          <button ref="vipB4" class="vip-choice" @click="setChoose(3)">
+            <div class="price flex-c flex-justify-c">
+              <div class="time">Forever</div>
+              <div class="money">$60</div>
+            </div>
+          </button>
         </van-grid-item>
       </van-grid>
       <div class="pay flex-r flex-justify-c" style="position: relative;height: 50px"  >
@@ -129,6 +146,10 @@ const user = ref<UserRecord | null>(null)
 const router = useRouter()
 const authStore = useAuthStore()
 const payVIP = ref(false)
+const vipB1 = ref()
+const vipB2 = ref()
+const vipB3 = ref()
+const vipB4 = ref()
 
 const toDetail = () => {
   router.push('/personal/detail')
@@ -155,6 +176,24 @@ const clickVIP = ():Promise<void> =>
       }
     })
   })
+const setChoose = (id:number)=>{
+  if(!(vipB1.value&&vipB2.value&&vipB3.value)){
+    return;
+  }
+  const buttons = [
+    vipB1.value as HTMLButtonElement,
+    vipB2.value as HTMLButtonElement,
+    vipB3.value as HTMLButtonElement,
+    vipB4.value as HTMLButtonElement
+  ]
+  buttons.forEach((item,index)=>{
+    if(index===id){
+      item.classList.add("chosen")
+    }else{
+      item.classList.remove('chosen');
+    }
+  })
+}
 
 userStore
   .getUserRecord()
@@ -180,5 +219,18 @@ onMounted(() => {
 }
 :deep(.van-dialog__header){
   padding:0;
+}
+
+.vip-choice{
+  background-color: white;
+  border: rgba(187, 187, 187,0.5) 0.5px solid;
+  width: 100%;
+  height: 80px;
+  border-radius: 10px;
+}
+
+.chosen{
+  border: 3px solid;
+  border-image: linear-gradient(purple,blue) 30;
 }
 </style>
