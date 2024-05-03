@@ -11,6 +11,7 @@
     z-index: $mobile-footer-nav-z-index;
 
     .van-swipe-item {
+      background-color: rgba(255, 255, 255, 0.4);
 
       &:has(.swipe-grid) {
         background-color: white;
@@ -18,7 +19,7 @@
 
       &:has(.swipe-card-item) {
         height: 100px;
-        background-color: rgba(255, 255, 255, 0.4);
+        //background-color: rgba(255, 255, 255, 0.4);
       }
 
 
@@ -62,8 +63,8 @@
       .swipe-card-item {
         .navigation-instruction {
           font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
-          font-size: 23px;
-          color: $theme-ui-colors-secondary;
+          font-size: 26px;
+          color: rgba(255, 255, 255);
           font-weight: bold;
         }
 
@@ -72,7 +73,9 @@
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
-        background-color: transparent;
+        background-color: rgba(79, 173, 13, 0.7);
+        padding: 20px;
+        //background-color: transparent;
 
       }
     }

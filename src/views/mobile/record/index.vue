@@ -213,112 +213,148 @@ const tourPlannedLines = computed(() => {
   }
 })
 const userStore = useUserStore()
+const getLocationLoadObj = useLoading()
+
 const getCurrentLocation = (toCenter?: boolean) => {
-  ;(geolocationRef.value.$$getInstance() as AMap.Geolocation).getCurrentPosition(
-    (status, info: any) => {
-      if (status === 'complete') {
-        // weakGPS.value = info.accuracy > 30
-        weakGPS.value = info.accuracy > 50
+  const geolocationInstance = geolocationRef.value.$$getInstance() as AMap.Geolocation
+  if (getLocationLoadObj.loading.value || !geolocationInstance) {
+    return
+  }
+  getLocationLoadObj.setLoading(true)
+  geolocationInstance.getCurrentPosition((status, info: any) => {
+    getLocationLoadObj.setLoading(false)
+    if (status === 'complete') {
+      // weakGPS.value = info.accuracy > 30
+      currentGPS.value = parseInt(info.accuracy)
 
-        if (toCenter === true) {
-          center.value = info.position.toArray()
-        }
-        // if (layers.length > 0) {
-        //   ;(mapRef.value.$$getInstance() as AMap.Map).remove(layers)
-        // }
-        let recordDataInstant: RecordDataInstant = {
-          altitude: info.altitude ?? 0,
-          speed: 0,
-          location: info.position,
-          time: parseTimeToString(dayjs())
-        }
-        const len = locationTrackList.value.length
-
-        if (len > 0) {
-          const distance = mapStore.getDistance(
-            currentRecordDataInstant.value!.location,
-            recordDataInstant.location
-          )
-          // console.log(tourPlannedData.value.result)
-          // if (distance > 0) {
-          if (distance > 0 && !weakGPS.value) {
-            updatePrevRecordData()
-            recordData.value.totalDistance += distance
-            recordDataInstant.speed = parseFloat(
-              ((distance / (TIME_INTERVAL + countNotInMotion.value)) * 3.6).toFixed(2)
-            )
-            countNotInMotion.value = 0
-            if (tourData.value && userStore.curUser) {
-              recordData.value.calorie = calculateTourCalorie(
-                tourData.value.type,
-                userStore.curUser.weight,
-                recordData.value.timeTaken,
-                recordData.value.avgSpeed
-              )
-            }
-            locationTrackList.value.push(recordDataInstant)
-
-            for (let i = 0; i < tourPlannedLines.value.length; i++) {
-              const line = tourPlannedLines.value[i].path
-              // console.log(info.position, tourPlannedLines.value[i])
-              // console.log(AMap.GeometryUtil.distanceToLine(info.position, line))
-
-              if (AMap.GeometryUtil.isPointOnLine(info.position, line, 50)) {
-                if (currentLineIndex.value !== i) {
-                  currentLineIndex.value = i
-
-                  speechSynthesis(tourPlannedLines.value[i].instruction)
-
-                  showNotify({
-                    type: 'primary',
-                    message: tourPlannedLines.value[i].instruction
-                  })
-                }
-                break
-              }
-            }
-
-            // isInMotion.value = true
-          } else {
-            countNotInMotion.value++
-          }
-        } else {
-          locationTrackList.value.push(recordDataInstant)
-        }
-
-        // if (info.accuracy < 10) {
-        //   showToast('weak GPS')
-        // }
-
-        // if (len >= 2) {
-        //   showToast({
-        //     className: 'test_record',
-        //     duration: 0,
-        //     message: `Record num: ${len}\nPosition: ${locationTrackList.value[len - 1].toString()}\nDifference: ${locationTrackList.value[len - 1].lng - locationTrackList.value[len - 2].lng},${locationTrackList.value[len - 1].lat - locationTrackList.value[len - 2].lat}\n\n${JSON.stringify(info, null, 2)}`
-        //   })
-        // }
-
-        if (tourData.value) {
-          layers = mapStore.drawRoute(
-            mapRef.value.$$getInstance(),
-            locationTrackList.value.map((track) => track.location),
-            tourData.value.type,
-            {
-              startMarker: false,
-              endMarker: false,
-              reCenter: false
-            },
-            true
-          )
-        }
-      } else if (status === 'error') {
-        showToast({
-          type: 'fail',
-          message: info.originMessage
-        })
+      if (toCenter === true) {
+        center.value = info.position.toArray()
       }
+      // if (layers.length > 0) {
+      //   ;(mapRef.value.$$getInstance() as AMap.Map).remove(layers)
+      // }
+      let recordDataInstant: RecordDataInstant = {
+        altitude: info.altitude ?? 0,
+        speed: 0,
+        location: info.position,
+        time: parseTimeToString(dayjs())
+      }
+      const len = locationTrackList.value.length
+
+      if (len > 0) {
+        const distance = mapStore.getDistance(
+          currentRecordDataInstant.value!.location,
+          recordDataInstant.location
+        )
+        // console.log(tourPlannedData.value.result)
+        // if (distance > 0) {
+        if (distance > 0 && !weakGPS.value) {
+          updatePrevRecordData()
+          recordData.value.totalDistance += distance
+          recordDataInstant.speed = parseFloat(
+            ((distance / (TIME_INTERVAL + countNotInMotion.value)) * 3.6).toFixed(2)
+          )
+          countNotInMotion.value = 0
+          if (tourData.value && userStore.curUser) {
+            recordData.value.calorie = calculateTourCalorie(
+              tourData.value.type,
+              userStore.curUser.weight,
+              recordData.value.timeTaken,
+              recordData.value.avgSpeed
+            )
+          }
+          locationTrackList.value.push(recordDataInstant)
+
+          // for (let i = 0; i < tourPlannedLines.value.length; i++) {
+          //   const line = tourPlannedLines.value[i].path
+          //   // console.log(info.position, tourPlannedLines.value[i])
+          //   // console.log(AMap.GeometryUtil.distanceToLine(info.position, line))
+          //
+          //   if (AMap.GeometryUtil.isPointOnLine(info.position, line, 100)) {
+          //     if (currentLineIndex.value !== i) {
+          //       currentLineIndex.value = i
+          //
+          //       speechSynthesis(tourPlannedLines.value[i].instruction)
+          //
+          //       showNotify({
+          //         type: 'primary',
+          //         message: tourPlannedLines.value[i].instruction
+          //       })
+          //     }
+          //     break
+          //   }
+          // }
+
+          // isInMotion.value = true
+        } else {
+          countNotInMotion.value++
+        }
+
+        const distances: number[] = tourPlannedLines.value.map((l: any) =>
+          AMap.GeometryUtil.distanceToLine(info.position, l.path)
+        )
+        const minDistance = Math.min(...distances)
+
+        if (minDistance === Infinity) {
+          // No tour
+        } else if (minDistance > 150) {
+          currentLineIndex.value = -1
+          showNotify({
+            type: 'danger',
+            message: '您已偏离路线'
+          })
+        } else {
+          const minIndex = distances.findIndex((d) => d === minDistance)
+          if (currentLineIndex.value !== minIndex) {
+            currentLineIndex.value = minIndex
+
+            speechSynthesis(tourPlannedLines.value[minIndex].instruction)
+
+            showNotify({
+              type: 'primary',
+              message: tourPlannedLines.value[minIndex].instruction
+            })
+          }
+        }
+      } else {
+        locationTrackList.value.push(recordDataInstant)
+      }
+
+      // if (info.accuracy < 10) {
+      //   showToast('weak GPS')
+      // }
+
+      // if (len >= 2) {
+      //   showToast({
+      //     className: 'test_record',
+      //     duration: 0,
+      //     message: `Record num: ${len}\nPosition: ${locationTrackList.value[len - 1].toString()}\nDifference: ${locationTrackList.value[len - 1].lng - locationTrackList.value[len - 2].lng},${locationTrackList.value[len - 1].lat - locationTrackList.value[len - 2].lat}\n\n${JSON.stringify(info, null, 2)}`
+      //   })
+      // }
+
+      if (tourData.value) {
+        layers = mapStore.drawRoute(
+          mapRef.value.$$getInstance(),
+          locationTrackList.value.map((track) => track.location),
+          tourData.value.type,
+          {
+            startMarker: false,
+            endMarker: false,
+            reCenter: false
+          },
+          true
+        )
+      }
+    } else if (status === 'error') {
+      // showToast({
+      //   type: 'fail',
+      //   message: info.originMessage
+      // })
     }
-  )
+    setTimeout(() => {
+      getCurrentLocation()
+    }, 2000)
+  })
 }
 
 const handleCreateHighlight = (form: CreateTourHighlightForm) => {
@@ -409,7 +445,6 @@ const moveToPosition = (position: number[]) => {
 const selectedHighlight = ref<TourHighlight | undefined>()
 watch(selectedHighlight, (value) => {
   if (value) {
-    console.log('selectedHighlight', value)
     const [x, y] = parseLocationNumber(value.location)
     moveToPosition([x, y])
     // moveToPosition([x, y - 0.002])
@@ -448,10 +483,11 @@ const showHighlightSheet = ref(false)
 //   draggable: false
 // }))
 
-let getLocationInterval:any = 0
-let countTimeInterval:any = 0
+let getLocationInterval = 0
+let countTimeInterval = 0
 
-const weakGPS = ref(false)
+const currentGPS = ref(Infinity)
+const weakGPS = computed(() => currentGPS.value > 50)
 // watch(weakGPS, (value) => {
 //   if (value) {
 //     speechSynthesis('GPS 信号弱')
@@ -460,7 +496,7 @@ const weakGPS = ref(false)
 onMounted(() => {
   fetchHighlightList()
   speechSynthesis('开始导航')
-  getLocationInterval = setInterval(getCurrentLocation, TIME_INTERVAL * 1000)
+  // getLocationInterval = setInterval(getCurrentLocation, TIME_INTERVAL * 1000)
   countTimeInterval = setInterval(handleCountTime, 1000)
 })
 
@@ -637,10 +673,19 @@ onUnmounted(() => {
       </van-swipe-item>
       <van-swipe-item>
         <div class="swipe-card-item">
-          <div v-if="currentLineIndex !== -1" class="navigation-instruction">
-            {{ tourPlannedLines[currentLineIndex]?.instruction }}
+          <div class="navigation-instruction">
+            {{
+              currentLineIndex === -1
+                ? '已偏离规划路线'
+                : tourPlannedLines[currentLineIndex]?.instruction
+            }}
           </div>
-          <van-loading v-else />
+          <!--          <div v-else>-->
+          <!--            <van-loading />-->
+          <!--          </div>-->
+          <div style="margin: 10px; font-weight: bold; color: rgba(255, 255, 255, 0.8)">
+            Accuracy: {{ currentGPS }}
+          </div>
         </div>
       </van-swipe-item>
     </van-swipe>
@@ -696,7 +741,9 @@ onUnmounted(() => {
             fillOpacity: 0,
             strokeOpacity: 0
           }"
+          :enable-high-accuracy="true"
           :pan-to-location="false"
+          :timeout="5000"
           :visible="false"
           :zoom-to-accuracy="false"
         />

@@ -1,19 +1,19 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useAuthStore } from '@/stores/auth'
-import gsap from 'gsap';
-import { onMounted, ref } from 'vue';
-import wlv from 'C:\\Main\\walcraft2.0.mp4'
+import gsap from 'gsap'
+import { onMounted } from 'vue'
+import { getStaticRes } from '@/apis'
+// import wlv from 'C:\\Main\\walcraft2.0.mp4'
 const authStore = useAuthStore()
 // const wlv = ''
 
-onMounted(()=>{
-  gsap.to('#r123',{rotate:360, duration: 3})
+onMounted(() => {
+  gsap.to('#r123', { rotate: 360, duration: 3 })
 })
-
 </script>
 
 <template>
-  <div class="home-wrapper" style="height: 100%; width: 100%; overflow: auto; position: relative;">
+  <div class="home-wrapper" style="height: 100%; width: 100%; overflow: auto; position: relative">
     <a-result v-if="authStore.isTokenValid" :status="'success'" title="Login succeed!">
       <template #icon>
         <IconFaceSmileFill />
@@ -39,11 +39,11 @@ onMounted(()=>{
         <a-button id="r123" type="primary" @click="$router.push({ name: 'login' })">Login</a-button>
       </template>
     </a-result> -->
-    <div v-else class="flex-c back-container" >
-      <div style="height: 100vh; width: 100%; position: relative;" >
-        <div class="flex-c flex-justify-c Logo-wrapper" >
+    <div v-else class="flex-c back-container">
+      <div style="height: 100vh; width: 100%; position: relative">
+        <div class="flex-c flex-justify-c Logo-wrapper">
           <button type="button" @click="$router.push({ name: 'login' })">
-            <div style="font-size: 1.5rem;" >Login</div>
+            <div style="font-size: 1.5rem">Login</div>
           </button>
           <!-- <a-button
           type="primary"
@@ -52,16 +52,23 @@ onMounted(()=>{
         >Login</a-button> -->
         </div>
         <!-- <img src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg" alt="" style="object-fit: cover; width: 100%; height: 100%;"> -->
-        <video style="height: 100%; width: 100%; object-fit: cover;" :src="wlv" autoplay muted loop></video>
+        <video
+          :src="getStaticRes('/resource/walcraft2.0.mp4')"
+          autoplay
+          loop
+          muted
+          style="height: 100%; width: 100%; object-fit: cover"
+        ></video>
       </div>
-      <div style="height: 100vh; width: 100%; position: relative;" >
-        <div class="walcraft-info" style="position: absolute" >
-          walcraft
-        </div>
-        <img src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg" alt="" style="object-fit: cover; width: 100%; height: 100%;">
+      <div style="height: 100vh; width: 100%; position: relative">
+        <div class="walcraft-info" style="position: absolute">walcraft</div>
+        <img
+          alt=""
+          src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+          style="object-fit: cover; width: 100%; height: 100%"
+        />
       </div>
     </div>
-    
   </div>
 </template>
 
