@@ -484,12 +484,58 @@
   position: absolute;
   overflow-y: hidden;
 
+  * {
+    overflow-x: hidden;
+  }
+
   .comment-wrapper {
     .comment-header {
-      padding-top: 10px;
+      padding: 10px 0;
       width: 100%;
       text-align: center;
-      color: rgba(0, 0, 0, 0.5);
+      color: $theme-ui-colors-primary;
+      //color: rgba(0, 0, 0, 0.5);
+    }
+
+    .comment-item {
+      // TODO: Comment style
+      margin-top: 0;
+
+      .arco-comment-actions {
+        & > .action:nth-child(1) {
+        }
+
+        & > .action.like-action {
+          //order: 1;
+
+          justify-self: flex-end;
+          font-size: 17px;
+          position: absolute;
+          right: 10px;
+          //bottom: 3px;
+          color: rgba(0, 0, 0, 0.5);
+
+          .like-icon {
+            margin-right: 3px;
+
+            &.active {
+              color: red;
+            }
+          }
+        }
+
+        & > .action:nth-child(3) {
+          //float: right;
+        }
+
+        * {
+          width: max-content;
+        }
+
+        width: 100%;
+        //display: grid;
+        //grid-template-columns: 1.7fr 2fr 2fr;
+      }
     }
 
     z-index: $mobile-footer-nav-z-index + 1;
@@ -501,7 +547,6 @@
     width: 100%;
     border-radius: 8px 8px 0 0;
     padding: 0 12px 50px 12px;
-    overflow-y: scroll !important;
   }
 
   .input-wrapper-static {
@@ -510,9 +555,11 @@
     width: 100%;
     //padding:0  !important;
     //margin: 0;
+    box-shadow: 0 10px 20px $theme-ui-colors-primary;
+    background-color: white;
     position: fixed;
     bottom: 0;
-    padding: 10px 5px;
+    padding: 5px 5px;
 
     .input-wrapper-static-ele {
       margin: 3px;
