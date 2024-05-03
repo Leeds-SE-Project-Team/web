@@ -145,9 +145,9 @@ const fetchCollection = () => {
   getCollectionLoading.setLoading(true)
   getTourCollection()
     .then((apiRes) => {
-      collectionList.value = apiRes.data!.filter(
-        (c) => c.tours.length > 0 && c.name !== 'Default Collection'
-      )
+      collectionList.value = apiRes.data!.filter((c) => {
+        return c.tours.length > 0 && c.name!=="Default Collection"
+      })
     })
     .catch((e) => {
       Message.error(e)

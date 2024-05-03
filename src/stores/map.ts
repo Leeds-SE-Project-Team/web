@@ -183,8 +183,12 @@ export const useMapStore = defineStore('map', () => {
 
   const screenMap = (mapRef: AMap.Map) => {
     if (mapRef) {
+      // let f1=true,f2=true;
       const canvas = mapRef.canvas!
       // const newCanvas = document.createElement('canvas')
+      // newCanvas.height = canvas.clientHeight
+      // newCanvas.width = canvas.clientWidth
+      // console.log(canvas.parentElement)
       // const ctx = newCanvas.getContext('2d') as CanvasRenderingContext2D
       // console.log(ctx)
       // const img = new Image(50,60)
@@ -194,22 +198,20 @@ export const useMapStore = defineStore('map', () => {
       // map.crossOrigin = 'anonymous'
       // img.crossOrigin = 'anonymous'
       // map.onload = ()=>{
-      //   ctx.drawImage(map,0,0,200,200);
+      //   ctx.drawImage(map,0,0,canvas.clientWidth,canvas.clientHeight);
+      //   f1 = false
+      // }
+      // img.onload = ()=>{
+      //   ctx.drawImage(img,150,150)
+      //   console.log('img')
       // }
       // console.log(1)
-      
+      // // while(f1||f2);
+      // console.log(newCanvas.toDataURL('image/jpeg', 0.8))
       // console.log(2)
       // ctx.drawImage(img,10,10,50,60)
       // console.log(3)
       // document.body.append(newCanvas)
-      // try{
-      //   setTimeout(()=>{
-      //     console.log(newCanvas.toDataURL('image/jpeg', 0.8))
-      //   },1000)
-        
-      // }catch (err){
-      //   console.log(err)
-      // }
       
       // throw ''
       
