@@ -182,10 +182,10 @@
     padding: 0px 2% 5px 2%;
     background-color: #fff;
 
-    .map-img{
+    .map-img {
       width: 100%;
 
-      img{
+      img {
         width: 100%;
         max-height: 300px;
         object-fit: contain;
@@ -294,6 +294,291 @@
   .title {
     padding: 15px
   }
+
+  .comment-container {
+    $leftContainerWidth: 73%;
+    $rightContainerWidth: 27%;
+    justify-content: center;
+    align-content: center;
+    //width: 100%;
+    padding: 0 10px;
+    align-items: center;
+    //overflow: auto;
+    @media (min-width: 0) {
+      //display: none;
+      order: 3;
+      //width: 100%;
+    }
+    //@media (min-width: 1032px) {
+    //  //display: block;
+    //  //width: 25%;
+    //  order: 2;
+    //  //display: inline-block;
+    //  width: $leftContainerWidth;
+    //
+    //  height: min-content;
+    //
+    //}
+
+    .comment-content-text-container {
+      overflow-wrap: anywhere;
+
+      &:not(.show-all) {
+        overflow: hidden; /*必须结合的属性,当内容溢出元素框时发生的事情*/
+        text-overflow: ellipsis; /*可以用来多行文本的情况下，用省略号“…”隐藏超出范围的文本 。*/
+        display: -webkit-box; /*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+        -webkit-line-clamp: 3; /*用来限制在一个块元素显示的文本的行数。*/
+        -webkit-box-orient: vertical;
+        cursor: pointer;
+      }
+
+    }
+
+    .detail-comment-divider {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+
+      .comment-title {
+        //color: $color-text-3;
+        line-height: 24px;
+        position: relative;
+        //background-color: $color-bg-b0;
+        display: inline-block;
+        font-size: 16px;
+        height: 100% !important;
+        padding: 0;
+        z-index: 2;
+        //vertical-align: center;
+        margin: auto 0;
+        width: 5rem;
+      }
+
+      .arco-divider-horizontal {
+        border: none;
+        //border:thin solid red;
+        background-color: $color-line-l3;
+        //background-color: red !important;
+        display: inline-block;
+        height: 1px;
+        min-height: 1px;
+        position: relative;
+        min-width: auto;
+        //width: 100%;
+        //margin: 20px 0;
+      }
+
+      background-color: transparent;
+    }
+
+    .comment-input {
+      &.arco-input-wrapper {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        min-height: 44px;
+        position: relative;
+        width: 100%;
+        background: hsla(0, 0%, 100%, .06);
+        border: 1px solid $color-bg-b3;
+        border-radius: 12px;
+
+        .arco-input {
+          caret-color: white;
+          //color: $color-text-0
+        }
+
+        .arco-input-suffix {
+          height: 100%;
+          //align-items: center;
+          //justify-content: center;
+          img.icon-at {
+            cursor: default;
+            margin-right: 3px;
+            //fill-opacity: 0.5;
+            //font-size: 35px;
+            opacity: 0.20;
+            vertical-align: center;
+
+            &:hover, &:focus {
+              opacity: 0.44;
+            }
+          }
+
+          img.icon-send {
+            cursor: pointer;
+            //fill: $color-primary !important;
+            //fill-opacity: 1;
+            //border:none;
+            //color: transparent;
+            //font-size: 35px;
+          }
+        }
+      }
+
+    }
+
+    .new-comment {
+      margin-top: 16px;
+      padding-bottom: 24.5px;
+
+      .arco-avatar {
+        cursor: pointer;
+        margin-right: 12px;
+        z-index: 1;
+      }
+    }
+
+    .usually-search {
+      margin-bottom: 7.5px;
+      padding-bottom: 2px;
+      -webkit-app-region: no-drag;
+      color: $color-text-t4;
+      display: flex;
+      flex: 1 1;
+      font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 22px;
+      margin-right: 20px;
+      overflow: hidden;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+
+      .usually-search-topic {
+        display: flex;
+        overflow: hidden;
+
+        .usually-search-topic-text {
+          flex: 1 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: $search-text-color;
+        }
+
+        .usually-search-icon {
+          fill: $search-text-color;
+          height: 9px;
+          margin: 0 2px;
+          position: relative;
+          top: 2px;
+          vertical-align: super;
+          width: 9px;
+          flex-shrink: 0;
+        }
+      }
+    }
+
+    .comments-list {
+      .arco-comment {
+        &.animated {
+          > .arco-comment-inner {
+            background: $input-linear !important;
+            //background: $color-bg-guide !important;
+          }
+        }
+
+        //background-color: transparent;
+        .arco-comment-inner {
+          // 评论内容
+          &:has(>.arco-comment-inner-comment>.reply-comment) {
+            //>.arco-comment-inner-content {
+            background: $input-linear;
+            //}
+          }
+
+          .arco-comment-inner-content {
+            .arco-comment-title {
+              .arco-comment-author {
+                //color: $color-text-2;
+              }
+
+              .arco-comment-datetime {
+                font-size: 14px;
+                font-weight: 400;
+                height: auto;
+                line-height: 20px;
+              }
+            }
+
+            .arco-comment-content {
+              //color: $color-text-0;
+            }
+
+            .arco-comment-actions {
+              .action {
+                cursor: pointer;
+
+
+                .like-icon {
+                  padding-right: 3px;
+                }
+              }
+
+              margin: 3px 0;
+              //color: $color-text-2;
+            }
+
+          }
+
+          // 嵌套评论
+          .arco-comment-inner-comment {
+            &:not(:has(.reply-comment,.arco-comment)) {
+              margin: 0;
+            }
+
+            .arco-comment.reply-comment {
+              //&:not(.on-reply) {
+              //  display: none !important;
+              //}
+
+              .arco-comment-inner {
+                .arco-comment-inner-content {
+                  .arco-comment-title {
+                    .arco-comment-author {
+
+                    }
+
+                    .arco-comment-datetime {
+
+                    }
+                  }
+
+                  .arco-comment-content {
+                    .arco-input-wrapper {
+                      @extend .comment-input
+                    }
+                  }
+
+                  .arco-comment-actions {
+                    margin: 3px 0;
+                    //color: $color-text-2;
+                  }
+                }
+              }
+
+
+            }
+          }
+
+        }
+      }
+
+      .comments-list-append {
+        //color: $color-text-t4;
+        font-size: 12px;
+        line-height: 20px;
+        margin: 40px 0;
+        text-align: center;
+        //margin-bottom: 24px;
+        //margin-top: 24px;
+      }
+    }
+  }
+
 
   // .picture-map {
   //     width: 55vw;

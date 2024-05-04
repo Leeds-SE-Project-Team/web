@@ -94,6 +94,7 @@ const handleReplyComment = () => {
     showToast('Too frequent operations')
     return
   }
+
   replyCommentLoadObj.setLoading(true)
   postComment({
     content: replyCommentContent.value,
