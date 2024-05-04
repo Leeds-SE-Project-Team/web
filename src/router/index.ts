@@ -26,7 +26,8 @@ import CollDetail from '@/views/mobile/personal/CollDetail.vue'
 import GroupList from '@/views/mobile/personal/GroupList.vue'
 import GroupIndex from '@/views/mobile/group/index.vue'
 import { ADMIN_ROUTE } from '@/router/web'
-import HighlightView from '@/views/web/highlight/index.vue'
+import { Capacitor } from '@capacitor/core'
+import personalPage from '@/views/web/personal/index.vue'
 
 const personalMobileChildren: RouteRecordRaw[] = [
   {
@@ -240,11 +241,11 @@ const router = createRouter({
       redirect: '/personal/personalprofile', // web页面的重定向
       meta: {
         auth: ['admin', 'user'],
-        layout: Capacitor.getPlatform()==='web' ? 'b':'',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : '',
         title: 'personalprofile'
       },
-      component: Capacitor.getPlatform()==='web'? personalPage : personalIndex,
-      children: Capacitor.getPlatform()==='web'? web_personal_children : personalMobileChildren
+      component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
+      children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
     },
     {
       path: '/group',
@@ -253,7 +254,7 @@ const router = createRouter({
         auth: ['admin', 'user']
       },
       component: GroupIndex
-    },
+    }
   ]
 })
 
