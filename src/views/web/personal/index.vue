@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 
-const userStore = useUserStore()
+const curr = computed(() => useUserStore().curUser)
 
 onMounted(()=> {
-  console.log(userStore.curUser)
-  console.log(userStore.curUser?.id)
+  console.log(curr)
+  console.log(curr.value?.id)
 })
 
 const router = useRouter();
@@ -19,30 +19,22 @@ const navigateTo = (routeName: string) => {
 
 
 <template>
-    <!-- 创建 group (leader)-->
-    <!-- leaderid name coverurl description... -->
-    <!-- 邀请到 group: search user, -->
-
-
-    <!-- 创建 group collection -->
-    <!-- coverurl description name title groupid-->
-    
-    <!-- tour 和 tour collection -->
-    <!-- get collection/tour by user -->
-
-    <!-- vip: update user -->
-    <!-- small icon -->
     <div id="personal-page">
       <a-layout class="profile-layout">
         <!-- left bar -->
         <a-layout-sider class="left-sider">
         
           <div class='pic-profile'>
-            <img :src="userStore.curUser?.avatar" alt="">
+            <img :src="curr?.avatar" alt="">
           </div>
 
           <div class="name">
-            {{userStore.curUser?.nickname}}
+            {{curr?.nickname}}
+            
+            <span v-if="curr?.type" class="vip-button">
+              <van-icon :size="20" name="/account/vip.svg" />
+            </span>
+
           </div>
 
           <div class="banner">

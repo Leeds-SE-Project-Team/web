@@ -30,17 +30,18 @@
       <div class="title">
         <h1 class="main-title">{{ tourRecord?.title }}</h1>
         <div class="main-info">
-          <span class="category">{{ tourRecord?.type }}</span>
+          <span class="category">{{ tourRecord?.type !== undefined ? TourType[tourRecord.type].toLowerCase() : "" }}</span>
           <span class="time">{{ tourRecord ? tourRecord.createTime : '' }}</span>
           <div style="margin: 10px 0">
-            <span class="distance" style="margin: 0">18.4</span>km
-            <span class="speed">2.6</span>km/h
+            <span class="distance">18.4 km</span>
+            <span class="speed">2.6 km/h</span>
+            <span class="calorie">2.6 calories</span>
           </div>
         </div>
-        <!--        <h3 class="des">-->
-        <!--          Expert Hiking Tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine-->
-        <!--          experience required.-->
-        <!--        </h3>-->
+        <h3 class="des">
+          Expert Hiking Tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine
+          experience required.
+        </h3>
       </div>
     </section>
 
@@ -118,7 +119,8 @@
         <a-button class="button-icon" @click="like_btn()">
           <template #icon>
             <div class="icon">
-              <icon-heart class="button" />
+              <icon-heart-fill v-show="is_like" class="button" />
+              <icon-heart v-show="!is_like" class="button" />
               <span>{{tourRecord?.likedBy.length}}</span>
             </div>
           </template>
@@ -127,8 +129,9 @@
         <a-button class="button-icon" @click="star_btn()">
           <template #icon>
             <div class="icon">
-              <icon-star-fill class="button" />
-              <span>{{tourRecord?.likedBy.length}}</span>
+              <icon-star-fill v-show="is_star" class="button" />
+              <icon-star v-show="!is_star" class="button" />
+              <span>{{tourRecord?.starredBy.length}}</span>
             </div>
           </template>
         </a-button>
@@ -191,10 +194,10 @@ import { type TourRecord, getTourById } from '@/apis/tour'
 import { useRoute, useRouter } from 'vue-router'
 import DHighlight from '@/views/mobile/discover/DHighlight.vue'
 import { computed } from 'vue'
-import { getUserById } from '@/apis/user'
 import { postLike, postStar, deleteLike, deleteStar } from '@/apis/tour'
 import { useUserStore } from '@/stores'
-import { number } from 'echarts'
+import { Message } from '@arco-design/web-vue'
+import { TourType } from '@/apis/tour'
 
 const url = import.meta.env.APP_STATIC_URL.concat('/tour')
 const exam_pic =
@@ -230,6 +233,59 @@ onMounted(() => {
   getTour()
 })
 
+// this logic to like and star
+const like_btn = () => {
+  console.log("click like")
+  if(is_like.value) {
+    delLike(tourId)
+  } else {
+    like(tourId)
+  }
+}
+const star_btn = () => {
+  console.log("click star")
+  if(is_star.value) {
+    delStar(tourId)
+  } else {
+    star(tourId)
+  }
+}
+const like = (tourId: string) =>  {
+  postLike(tourId).then((res)=>{
+    if(!res.success){
+      Message.warning(res.message)
+    }
+    getTour()
+  })
+}
+const delLike = (tourId: string) => {
+  deleteLike(tourId).then((res)=>{
+    if(!res.success){
+      Message.warning(res.message)
+    }
+    getTour()
+  })
+}
+const star = (tourId: string) =>  {
+  postStar(tourId).then((res)=>{
+    if(!res.success){
+      Message.warning(res.message)
+    }
+    getTour()
+  })
+}
+
+const delStar = (tourId: string) => {
+  deleteStar(tourId).then((res)=>{
+    if(!res.success){
+      Message.warning(res.message)
+    }
+    getTour()
+  })
+}
+
+
+// function to refresh data
 const getTour = async() => {
   await getTourById(route.query.id as string)
   .then((res) => {
@@ -246,62 +302,6 @@ const getTour = async() => {
       } else {
         is_star.value = false
       }
-      // console.log("user", curUser.value?.id)
-      // console.log("yes", is_like.value, is_star.value)
-    }
-  })
-}
-
-const like_btn = () => {
-  if(is_like.value) {
-    delLike(tourId)
-    console.log("delete, like")
-    getTour()
-  } else {
-    like(tourId)
-    getTour()
-  }
-}
-
-const star_btn = () => {
-  if(is_star.value) {
-    delStar(tourId)
-    console.log("delete, star")
-    getTour()
-  } else {
-    star(tourId)
-    getTour()
-  }
-}
-
-const like = (tourId: string) =>  {
-  postLike(tourId).then((res)=>{
-    if(!res.success){
-      console.log("error", res)
-    }
-  })
-}
-
-const delLike = (tourId: string) => {
-  deleteLike(tourId).then((res)=>{
-    if(!res.success){
-      console.log("error", res)
-    }
-  })
-}
-
-const star = (tourId: string) =>  {
-  postStar(tourId).then((res)=>{
-    if(!res.success){
-      console.log("error", res)
-    }
-  })
-}
-
-const delStar = (tourId: string) => {
-  deleteStar(tourId).then((res)=>{
-    if(!res.success){
-      console.log("error", res)
     }
   })
 }

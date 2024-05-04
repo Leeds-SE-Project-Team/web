@@ -17,6 +17,22 @@ export enum TourType {
   PUBLIC
 }
 
+// 根据 TourType 枚举值返回相应的 SVG 图标组件
+// export const TourIcon: React.FC<{ type: TourType }> = ({ type }) => {
+//   switch (type) {
+//     case TourType.WALK:
+//       return <WalkIcon />;
+//     case TourType.CYCLING:
+//       return <CyclingIcon />;
+//     case TourType.CAR:
+//       return <CarIcon />;
+//     case TourType.PUBLIC:
+//       return <PublicIcon />;
+//     default:
+//       return null;
+//   }
+// };
+
 export const tourTypeMap = [
   { text: 'hiking', value: TourType.WALK, img: walkSvgUrl },
   {
