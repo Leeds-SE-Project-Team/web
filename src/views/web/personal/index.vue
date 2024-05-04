@@ -64,11 +64,11 @@ const navigateTo = (routeName: string) => {
             <a-menu-item key="personaltours" @click="navigateTo('personaltours')">
               Tours
             </a-menu-item>
-            <a-menu-item key="personalhighlights" @click="navigateTo('personalhighlights')">
+            <!-- <a-menu-item key="personalhighlights" @click="navigateTo('personalhighlights')">
               Highlights
-            </a-menu-item>
+            </a-menu-item> -->
             <a-menu-item key="personalcollections" @click="navigateTo('personalcollections')">
-              Collections
+              My Collections
             </a-menu-item>
             <a-menu-item key="personalgroup" @click="navigateTo('personalgroup')">
               Groups
