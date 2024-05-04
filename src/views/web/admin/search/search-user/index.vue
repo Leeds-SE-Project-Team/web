@@ -67,7 +67,14 @@
         <a-divider direction="vertical" style="height: 84px" />
         <a-col :flex="'86px'" style="text-align: right">
           <a-space :size="18" direction="vertical">
-            <a-button type="primary" @click="search">
+            <a-button
+              type="primary"
+              @click="
+                () => {
+                  search()
+                }
+              "
+            >
               <template #icon>
                 <icon-search />
               </template>
@@ -93,7 +100,13 @@
               {{ $t('searchTable.user.operation.create') }}
             </a-button>
             <a-tooltip :content="$t('searchTable.actions.refresh')">
-              <a-button @click="search">
+              <a-button
+                @click="
+                  () => {
+                    search()
+                  }
+                "
+              >
                 <template #icon>
                   <icon-refresh />
                 </template>
@@ -183,6 +196,11 @@
             <template #content>{{ record.email }}</template>
           </a-tooltip>
         </template>
+        <template #tours="{ record }">
+          <a-tooltip>
+            <div class="one-line">{{ record.tours.length }}</div>
+          </a-tooltip>
+        </template>
         <template #type="{ record }">
           <a-tooltip>
             <div class="one-line">{{ UserTypeMap[record.type as UserType] }}</div>
@@ -207,15 +225,15 @@
 
         <template #operations="{ record, rowIndex }">
           <div style="display: flex; align-items: center; justify-content: center">
-            <a-button
-              :status="'normal'"
-              size="small"
-              style="padding: 6px"
-              type="text"
-              @click="$router.push({ name: 'userProfile', params: { user_id: record.id } })"
-            >
-              编辑
-            </a-button>
+            <!--            <a-button-->
+            <!--              :status="'normal'"-->
+            <!--              size="small"-->
+            <!--              style="padding: 6px"-->
+            <!--              type="text"-->
+            <!--              @click="$router.push({ name: 'userProfile', params: { user_id: record.id } })"-->
+            <!--            >-->
+            <!--              编辑-->
+            <!--            </a-button>-->
             <a-button
               :status="'danger'"
               size="small"
@@ -243,10 +261,10 @@ import type { TableColumnData } from '@arco-design/web-vue/es/table/interface'
 
 import { Message } from '@arco-design/web-vue'
 import { useUserStore } from '@/stores'
-import { getAllUsers, type UserRecord, UserType, UserTypeMap } from '@/apis/user'
+import { deleteUser, getAllUsers, type UserRecord, UserType, UserTypeMap } from '@/apis/user'
 import { cloneDeep } from 'lodash-es'
 import { isTimeInRange } from '@/utils'
-import type { PolicyParamsTour, PolicyParamsUser, SearchUserForm, UserListRes } from '@/apis/list'
+import type { PolicyParamsUser, SearchUserForm, UserListRes, UserRecordCanEdit } from '@/apis/list'
 
 type SizeProps = 'mini' | 'small' | 'medium' | 'large'
 type Column = TableColumnData & { checked?: true }
@@ -259,20 +277,35 @@ const getRecordIndex = (rowIndex: number) => {
   return pagination.pageSize * (pagination.current - 1) + rowIndex
 }
 
-const handleDeleteUser = (record: UserRecord, rowIndex: number) => {
+const editingData = ref<UserRecordCanEdit[]>([])
+const handleDeleteUser = (record: UserRecordCanEdit, rowIndex: number) => {
   setEditLoading(true)
-  if (record.id !== renderData.value[getRecordIndex(rowIndex)].id) {
-    Message.error({
-      id: 'tourEdit',
-      content: '删除失败：数据异常'
-    })
-    location.reload()
-  }
+  // if (record.id !== editingData.value[getRecordIndex(rowIndex)].id) {
+  //   Message.error({
+  //     id: 'userEdit',
+  //     content: '删除失败：数据异常'
+  //   })
+  //   location.reload()
+  // }
 
-  // userStore.deleteUser(record.id).finally(() => {
-  //   search()
-  //   setEditLoading(false)
-  // })
+  deleteUser(record.id)
+    .then((apiRes) => {
+      if (apiRes.success) {
+        search(apiRes.message)
+        console.log('!')
+      } else {
+        throw apiRes.message
+      }
+    })
+    .catch((e) => {
+      Message.error({
+        id: 'tourEdit',
+        content: e
+      })
+    })
+    .finally(() => {
+      setEditLoading(false)
+    })
 }
 
 const generateFormModel = () => {
@@ -378,9 +411,9 @@ const columns = computed<TableColumnData[]>(() => [
   // },
 
   {
-    title: t('searchTable.user.columns.tourNum'),
-    dataIndex: 'tourNum',
-    slotName: 'tourNum',
+    title: t('searchTable.user.columns.tours'),
+    dataIndex: 'tours',
+    slotName: 'tours',
     align: 'center',
     width: 100,
     sortable: {
@@ -456,7 +489,10 @@ onMounted(() => {
   // })
 })
 
-const fetchData = async (params: PolicyParamsUser = { current: 1, pageSize: 20 }) => {
+const fetchData = async (
+  params: PolicyParamsUser = { current: 1, pageSize: 20 },
+  succeedMessage?: string
+) => {
   setLoading(true)
   getAllUsers()
     .then((apiRes) => {
@@ -491,6 +527,9 @@ const fetchData = async (params: PolicyParamsUser = { current: 1, pageSize: 20 }
         renderData.value = data.list
         pagination.current = params.current
         pagination.total = data.total
+        if (succeedMessage) {
+          Message.success(succeedMessage)
+        }
       }
     })
     .catch((msg) => {
@@ -506,11 +545,14 @@ const fetchData = async (params: PolicyParamsUser = { current: 1, pageSize: 20 }
   return
 }
 
-const search = () => {
-  fetchData({
-    ...basePagination,
-    ...formModel.value
-  } as unknown as PolicyParamsUser)
+const search = (succeedMessage?: string) => {
+  fetchData(
+    {
+      ...basePagination,
+      ...formModel.value
+    } as unknown as PolicyParamsUser,
+    succeedMessage
+  )
 }
 const onPageChange = (current: number) => {
   fetchData({ ...basePagination, current })

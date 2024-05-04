@@ -10,6 +10,7 @@ export interface UserRecord {
   registerTime: string
   latestLoginTime: string
   type: UserType
+  tours: number[]
   tourLikes: number[]
   tourStars: number[]
   gender: string
@@ -110,6 +111,15 @@ export const updateUser = (form: {
     method: 'PUT',
     url: 'users',
     data: form
+  })
+
+export const deleteUser = (userId: number): Promise<ApiResponse<void>> =>
+  axiosRequest({
+    method: 'DELETE',
+    url: `users`,
+    headers: {
+      'User-ID': userId
+    }
   })
 
 export const upgradeUser = (form: any): Promise<ApiResponse<string>> =>

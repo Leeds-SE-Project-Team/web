@@ -34,7 +34,7 @@ export default {
   'searchTable.user.columns.area': '所在地',
   'searchTable.user.columns.signature': '简介',
   'searchTable.user.columns.registerTime': '注册时间',
-  'searchTable.user.columns.tourNum': '投稿数',
+  'searchTable.user.columns.tours': '投稿数',
   'searchTable.user.columns.likedNum': '获赞次数',
   'searchTable.user.columns.playedNum': '活跃度',
   'searchTable.user.columns.operations': '操作',

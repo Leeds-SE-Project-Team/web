@@ -303,6 +303,9 @@ const getCurrentLocation = (toCenter?: boolean) => {
             type: 'danger',
             message: '您已偏离路线'
           })
+          if (!speechOutOfRoute.value) {
+            speechSynthesis('您已偏航，请重新规划路线')
+          }
         } else {
           const minIndex = distances.findIndex((d) => d === minDistance)
           if (currentLineIndex.value !== minIndex) {
@@ -488,11 +491,15 @@ let countTimeInterval = 0
 
 const currentGPS = ref(Infinity)
 const weakGPS = computed(() => currentGPS.value > 50)
-// watch(weakGPS, (value) => {
-//   if (value) {
-//     speechSynthesis('GPS 信号弱')
-//   }
-// })
+const speechWeak = ref(false)
+const speechOutOfRoute = ref(false)
+
+watch(weakGPS, (value) => {
+  if (!speechWeak.value && value) {
+    speechSynthesis('GPS 信号弱')
+    speechWeak.value = true
+  }
+})
 onMounted(() => {
   fetchHighlightList()
   speechSynthesis('开始导航')
