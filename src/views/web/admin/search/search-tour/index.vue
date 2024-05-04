@@ -796,7 +796,6 @@ const onPageChange = (current: number) => {
   fetchData({ ...basePagination, current })
 }
 
-fetchData()
 const reset = () => {
   formModel.value = generateFormModel()
   search()
@@ -820,6 +819,7 @@ const exchangeArray = <T extends Array<any>>(
   return newArray
 }
 
+fetchData()
 watch(
   () => columns.value,
   (val) => {

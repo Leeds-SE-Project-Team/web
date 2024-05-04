@@ -1,24 +1,29 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
-import { getTimeDiffUntilNow } from '@/utils'
+import { getTimeDiffUntilNow, parseToFirstUpperCase } from '@/utils'
 import useLoading from '@/hooks/loading'
 import { Message } from '@arco-design/web-vue'
 import { getTourCollection, type TourCollection } from '@/apis/collection'
-import { getTours, type TourRecord } from '@/apis/tour'
+import { getTours, getTourTypeText, type TourRecord, TourStatus } from '@/apis/tour'
 import likeSvgUrl from '/interaction/video_detail_like.svg'
 import likedSvgUrl from '/interaction/video_detail_liked.svg'
 import starSvgUrl from '/interaction/star.svg'
 import starredSvgUrl from '/interaction/starred.svg'
-import { shuffle } from 'lodash-es'
+import { cloneDeep, sampleSize, shuffle } from 'lodash-es'
 import { gsap } from 'gsap'
 import { type ContentInteractForm, interactWithContent } from '@/apis/user'
 import { useUserStore } from '@/stores'
 import { showToast } from 'vant'
+import CommentCard from '@/views/web/discover/components/CommentCard.vue'
+import commentAtSvg from '/interaction/comment_at.svg'
+import sendCommentSvg from '/interaction/send_comment.svg'
+import { type CommentRecord, deleteComment, postComment } from '@/apis/comment'
 
 const currentPlayIndex = ref(0)
 
 const loadingObject = useLoading()
 const loadingItem = loadingObject.loading
+const showLoadingToast = ref(true)
 
 const handlePlayPrev = () => {
   if (!canHandleSwitch.value) {
@@ -51,11 +56,17 @@ const handlePlayNext = () => {
     // createPlay(itemList.value[currentPlayIndex.value])
     // refreshItemLikeAndStar()
   } else {
-    Message.loading({
-      id: 'loadMore',
-      content: '加载中...'
-    })
+    showLoadingToast.value = true
     nextAfterLoad.value = true
+    setTimeout(() => {
+      tourList.value.push(...cloneDeep(sampleSize(tourList.value, 3)))
+      if (nextAfterLoad.value) {
+        nextTick(() => {
+          handlePlayNext()
+        })
+      }
+      showLoadingToast.value = false
+    }, 1000)
     // getMoreItems(3, false).then(() => {
     //   Message.success({
     //     id: 'loadMore',
@@ -88,11 +99,11 @@ const handleWheel = (event: WheelEvent) => {
 }
 
 // const currentItem = computed(() => itemList.value[currentPlayIndex.value])
-const isLiked = ref(false)
-const isStarred = ref(false)
+// const isLiked = ref(false)
+// const isStarred = ref(false)
 
-const itemLikeShowNum = ref(0)
-const itemStarShowNum = ref(0)
+// const itemLikeShowNum = ref(0)
+// const itemStarShowNum = ref(0)
 
 const slideList = ref()
 
@@ -119,13 +130,14 @@ const fetchTourList = () => {
   getTourLoading.setLoading(true)
   getTours()
     .then((apiRes) => {
-      tourList.value = apiRes.data!
+      tourList.value = apiRes.data!.filter((t) => t.status === TourStatus.ONLINE)
     })
     .catch((e) => {
       Message.error(e)
     })
     .finally(() => {
       getTourLoading.setLoading(false)
+      showLoadingToast.value = false
     })
 }
 const getCollectionLoading = useLoading()
@@ -133,13 +145,16 @@ const fetchCollection = () => {
   getCollectionLoading.setLoading(true)
   getTourCollection()
     .then((apiRes) => {
-      collectionList.value = apiRes.data!
+      collectionList.value = apiRes.data!.filter((c) => {
+        return c.tours.length > 0 && c.name!=="Default Collection"
+      })
     })
     .catch((e) => {
       Message.error(e)
     })
     .finally(() => {
       getCollectionLoading.setLoading(false)
+      showLoadingToast.value = false
     })
 }
 
@@ -219,12 +234,16 @@ onUnmounted(() => {
 
 const showCommentList = ref(false)
 const showCommentAnimComplete = ref(true)
+const showCommentInput = ref(false)
+
 const handleClickComment = () => {
   showCommentList.value = true
+  showCommentInput.value = true
   nextTick(() => {
     showCommentAnimComplete.value &&
       gsap.to('#discover-comment-overlay .comment-wrapper', {
         duration: 0.3,
+        // height: 1000,
         yPercent: -60,
         ease: 'power3.out',
         onStart: () => {
@@ -241,9 +260,10 @@ const handleCloseCommentList = () => {
   showCommentAnimComplete.value &&
     gsap.to('#discover-comment-overlay .comment-wrapper', {
       duration: 0.3,
-      yPercent: 0,
+      yPercent: 60,
       ease: 'power3.out',
       onStart: () => {
+        showCommentInput.value = false
         showCommentAnimComplete.value = false
       },
       onComplete: () => {
@@ -258,34 +278,61 @@ const isLikeTour = (tour: TourRecord) =>
 const isStarTour = (tour: TourRecord) =>
   computed(() => currentUser.value?.tourStars.includes(tour.id))
 
+const interactLoadObj = useLoading()
 const handleInteract = (tour: TourRecord, interaction: 'like' | 'star') => {
+  if (interactLoadObj.loading.value) {
+    showToast('Too frequent operations')
+    return
+  }
+
   userStore.getUserRecord().then((user) => {
+    interactLoadObj.setLoading(true)
+
     const form: ContentInteractForm = {
       contentType: 'tours',
       interaction: interaction,
       value: interaction === 'like' ? !isLikeTour(tour).value : !isStarTour(tour).value,
       contentId: tour.id
     }
-    interactWithContent<TourRecord>(form).then((apiRes) => {
-      if (apiRes.success) {
-        Object.assign(tour, apiRes.data!)
-        console.log(tour)
-        if (interaction === 'like') {
-          user.tourLikes = form.value
-            ? [...user.tourLikes, tour.id]
-            : user.tourLikes.filter((tId) => tId !== tour.id)
-        } else if (interaction === 'star') {
-          user.tourStars = form.value
-            ? [...user.tourStars, tour.id]
-            : user.tourStars.filter((tId) => tId !== tour.id)
-        }
-      } else {
-        showToast({
-          type: 'fail',
-          message: apiRes.message
-        })
+
+    const refreshData = () => {
+      if (interaction === 'like') {
+        user.tourLikes = form.value
+          ? [...new Set([...user.tourLikes, tour.id])]
+          : user.tourLikes.filter((tId) => tId !== tour.id)
+        tour.likedBy = form.value
+          ? [...new Set([...tour.likedBy, user.id])]
+          : tour.likedBy.filter((uId) => uId !== user.id)
+      } else if (interaction === 'star') {
+        user.tourStars = form.value
+          ? [...new Set([...user.tourStars, tour.id])]
+          : user.tourStars.filter((tId) => tId !== tour.id)
+        tour.starredBy = form.value
+          ? [...new Set([...tour.starredBy, user.id])]
+          : tour.starredBy.filter((uId) => uId !== user.id)
       }
-    })
+    }
+
+    refreshData()
+    interactWithContent<TourRecord>(form)
+      .then((apiRes) => {
+        if (apiRes.success) {
+          refreshData()
+          Object.assign(tour, apiRes.data!)
+          showToast({
+            message: apiRes.message,
+            duration: 1000
+          })
+        } else {
+          showToast({
+            type: 'fail',
+            message: apiRes.message
+          })
+        }
+      })
+      .finally(() => {
+        interactLoadObj.setLoading(false)
+      })
   })
 }
 
@@ -300,9 +347,80 @@ onMounted(() => {
 
 const userStore = useUserStore()
 const currentUser = computed(() => userStore.curUser)
+
+const currentTourComments = computed({
+  get: () => (itemList.value[currentPlayIndex.value].item as TourRecord).comments ?? [],
+  set: (value) => {
+    const curItem = itemList.value[currentPlayIndex.value]
+    if (curItem.type === 'tour') {
+      ;(curItem.item as TourRecord).comments = value
+    }
+  }
+})
+const newCommentContent = ref('')
+const sendCommentLoadObj = useLoading()
+const tourCommentNum = computed(() => {
+  const countCommentsNum = (comments: CommentRecord[]) => {
+    let result = 0
+    comments.forEach((comment) => {
+      result += 1 + countCommentsNum(comment.replies)
+    })
+
+    return result
+  }
+
+  return countCommentsNum(currentTourComments.value.filter((c) => c.parentId === null))
+})
+const onPostNewComment = () => {
+  if (newCommentContent.value.length <= 0) {
+    // Message.info('评论内容异常')
+    return
+  }
+  const tour = itemList.value[currentPlayIndex.value].item as TourRecord
+  sendCommentLoadObj.setLoading(true)
+  postComment({
+    content: newCommentContent.value,
+    tourId: tour.id,
+    parentId: undefined
+  })
+    .then((apiRes) => {
+      console.log(tour)
+      if (apiRes.success) {
+        tour.comments.push(apiRes.data!)
+        newCommentContent.value = ''
+        showToast(apiRes.message)
+      }
+    })
+    .finally(() => {
+      sendCommentLoadObj.setLoading(false)
+    })
+  // postComment(user.id, newCommentContent.value, video.value.videoId, undefined).then(() => {
+  //   newCommentContent.value = ''
+  //   refreshRootCommentList()
+  // })
+}
+
+const handleDeleteComment = (commentId: number) => {
+  deleteComment(commentId).then((apiRes) => {
+    if (apiRes.success) {
+      showToast({
+        message: apiRes.message
+      })
+      currentTourComments.value = currentTourComments.value.filter((c) => c.id !== commentId)
+    } else {
+      showToast({
+        type: 'fail',
+        message: apiRes.message
+      })
+    }
+  })
+}
 </script>
 
 <template>
+  <van-toast :show="itemList.length === 0 || showLoadingToast" style="padding: 0" type="loading">
+    <template #message> Loading...</template>
+  </van-toast>
   <div id="slide-list" @wheel.passive="handleWheel">
     <div class="outer-container">
       <div ref="slideList" class="slide-list-container">
@@ -346,7 +464,9 @@ const currentUser = computed(() => userStore.curUser)
                               >{{
                                 item.type === 'collection'
                                   ? (item.item as unknown as TourCollection).name
-                                  : (item.item as unknown as TourRecord).type + ' Tour'
+                                  : parseToFirstUpperCase(
+                                      getTourTypeText((item.item as unknown as TourRecord).type)
+                                    ) + ' Tour'
                               }}
                             </a-tag>
                           </a-row>
@@ -487,7 +607,7 @@ const currentUser = computed(() => userStore.curUser)
                               />
                             </div>
                             <div class="video-action-statistic">
-                              {{ 1 }}
+                              {{ tourCommentNum }}
                             </div>
                           </div>
                           <!--                            <template #content>-->
@@ -553,40 +673,6 @@ const currentUser = computed(() => userStore.curUser)
               </div>
             </div>
           </div>
-
-          <van-overlay
-            id="discover-comment-overlay"
-            :duration="0"
-            :show="showCommentList"
-            @click="handleCloseCommentList"
-          >
-            <div class="comment-wrapper">
-              <div class="usually-search">
-                大家都在搜：<a class="usually-search-topic"
-                  ><span
-                    :style="{
-                      cursor: recommendPlace(item) ? 'pointer' : 'default'
-                    }"
-                    class="usually-search-topic-text"
-                    @click="
-                      () => {
-                        if (recommendPlace(item)) {
-                          // handleSearch(recommendPlace)
-                        }
-                      }
-                    "
-                    >{{ recommendPlace(item) ? recommendPlace(item) : '暂无推荐' }}</span
-                  >
-                  <img
-                    v-if="recommendPlace(item)"
-                    alt="usually-search"
-                    class="usually-search-icon"
-                    src="/interaction/usually_search.svg"
-                  />
-                </a>
-              </div>
-            </div>
-          </van-overlay>
         </div>
 
         <a-spin
@@ -599,6 +685,98 @@ const currentUser = computed(() => userStore.curUser)
       </div>
     </div>
   </div>
+  <van-overlay
+    v-if="itemList[currentPlayIndex]?.type === 'tour'"
+    id="discover-comment-overlay"
+    :duration="0"
+    :lock-scroll="false"
+    :show="showCommentList"
+    @click.self="handleCloseCommentList"
+  >
+    <div class="comment-wrapper">
+      <!--            <div class="usually-search">-->
+      <!--              大家都在搜：<a class="usually-search-topic"-->
+      <!--                ><span-->
+      <!--                  :style="{-->
+      <!--                    cursor: recommendPlace(item) ? 'pointer' : 'default'-->
+      <!--                  }"-->
+      <!--                  class="usually-search-topic-text"-->
+      <!--                  @click="-->
+      <!--                    () => {-->
+      <!--                      if (recommendPlace(item)) {-->
+      <!--                        // handleSearch(recommendPlace)-->
+      <!--                      }-->
+      <!--                    }-->
+      <!--                  "-->
+      <!--                  >{{ recommendPlace(item) ? recommendPlace(item) : '暂无推荐' }}</span-->
+      <!--                >-->
+      <!--                <img-->
+      <!--                  v-if="recommendPlace(item)"-->
+      <!--                  alt="usually-search"-->
+      <!--                  class="usually-search-icon"-->
+      <!--                  src="/interaction/usually_search.svg"-->
+      <!--                />-->
+      <!--              </a>-->
+      <!--            </div>-->
+      <div class="comment-header">{{ tourCommentNum }} comments in total</div>
+      <CommentCard
+        v-for="(comment, idx) in currentTourComments.filter((c) => c.parentId === null)"
+        :key="comment.id"
+        :comment="comment"
+        :depth="1"
+        :index="idx"
+        :tour="itemList[currentPlayIndex].item as TourRecord"
+        @delete="handleDeleteComment"
+      />
+      <a-empty
+        v-if="tourCommentNum === 0"
+        style="height: 150px; display: flex; flex-direction: column; justify-content: center"
+      >
+        Leave a first comment
+      </a-empty>
+    </div>
+    <div v-if="showCommentInput" class="input-wrapper-static">
+      <a-row :wrap="false">
+        <a-input
+          id="comment-input-arco"
+          v-model:model-value.trim="newCommentContent"
+          :max-length="400"
+          class="input-wrapper-static-ele"
+          placeholder="Leave your own comment..."
+          @pressEnter="onPostNewComment"
+        >
+          <template #suffix>
+            <div v-if="!sendCommentLoadObj.loading.value">
+              <a-tooltip>
+                <template #content> No friends</template>
+                <img :src="commentAtSvg" alt="at_friend" class="icon-at" />
+              </a-tooltip>
+              <a-tooltip>
+                <template #content>Post comment</template>
+                <img
+                  v-if="newCommentContent.length > 0"
+                  :src="sendCommentSvg"
+                  alt="send_comment"
+                  class="icon-send"
+                  @click="onPostNewComment"
+                />
+              </a-tooltip>
+            </div>
+            <van-loading v-else />
+          </template>
+        </a-input>
+      </a-row>
+    </div>
+
+    <!--    <div class="input-wrapper-static">-->
+    <!--      <a-input class="input-wrapper-static-ele" placeholder="Enter your comment..." allow-clear>-->
+    <!--        <template #suffix>-->
+    <!--          <span class="input-icon"><icon-camera /></span>-->
+    <!--          <span class="input-icon"><icon-at /></span>-->
+    <!--        </template>-->
+    <!--      </a-input>-->
+    <!--    </div>-->
+  </van-overlay>
 
   <!--  <div id="recommend-out-switch-btn">-->
   <!--    <div class="xgplayer-playswitch-tab">-->

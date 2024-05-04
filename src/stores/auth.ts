@@ -1,65 +1,80 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { getUserByToken } from '@/apis/user'
+import { getUserByToken, type UserRecord } from '@/apis/user'
 import { useUserStore } from '@/stores/user'
-import { Message } from '@arco-design/web-vue'
-import { useRoute, useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
-  const accessToken = ref<string | null>('root')
+  const accessToken = ref<string | null>(null)
   // const accessToken = ref<string | null>(null)
-  const refreshAccessToken = (newToken: string | null) => {
-    if (newToken) {
-      localStorage.setItem('accessToken', newToken)
-    } else {
-      localStorage.removeItem('accessToken')
-    }
-    accessToken.value = newToken
-  }
+  const refreshAccessToken = (newToken: string | null): Promise<UserRecord | void> =>
+    new Promise((resolve, reject) => {
+      if (accessToken.value !== newToken) {
+        // update
+        if (!newToken) {
+          localStorage.removeItem('accessToken')
+          accessToken.value = null
+          resolve()
+          return
+        }
+
+        localStorage.setItem('accessToken', newToken)
+
+        if (newToken === 'root') {
+          isTokenValid.value = true
+          accessToken.value = newToken
+          resolve()
+          return
+        }
+
+        getUserByToken(newToken)
+          .then((apiRes) => {
+            if (apiRes.success) {
+              isTokenValid.value = true
+              userStore.curUser = apiRes.data!
+              accessToken.value = newToken
+              resolve(userStore.curUser)
+            } else {
+              throw apiRes.message
+            }
+          })
+          .catch((e) => {
+            localStorage.removeItem('accessToken')
+            accessToken.value = null
+            isTokenValid.value = false
+            reject(e)
+          })
+      } else {
+        resolve(userStore.curUser)
+      }
+    })
 
   const isTokenValid = ref(false)
 
   const userStore = useUserStore()
-  watch(
-    () => accessToken.value,
-    (value) => {
-      if (value === 'root') {
-        isTokenValid.value = true
-        return
-      }
-
-      getUserByToken(value!)
-        .then((apiRes) => {
-          if (apiRes.success) {
-            isTokenValid.value = true
-            userStore.curUser = apiRes.data!
-            refreshAccessToken(value)
-          } else {
-            throw apiRes.message
-          }
-        })
-        .catch((e) => {
-          // Message.error({
-          //   content: e,
-          //   id: 'tokenValidation'
-          // })
-          isTokenValid.value = false
-          refreshAccessToken(null)
-          // if (location.pathname !== '/') {
-          //   Message.error({
-          //     content: e,
-          //     id: 'tokenValidation'
-          //   })
-          //   location.replace('/')
-          // }
-        })
-      // validateToken(value).then((valid) => {
-      //   if (valid) {
-      //
-      //   }
-      // })
-    }
-  )
+  // watch(
+  //   () => accessToken.value,
+  //   (value) => {
+  //     // if (value === 'root') {
+  //     //   isTokenValid.value = true
+  //     //   return
+  //     // }
+  //
+  //     getUserByToken(value!)
+  //       .then((apiRes) => {
+  //         if (apiRes.success) {
+  //           isTokenValid.value = true
+  //           userStore.curUser = apiRes.data!
+  //           refreshAccessToken(value)
+  //         } else {
+  //           throw apiRes.message
+  //         }
+  //       })
+  //       .catch((e) => {
+  //         isTokenValid.value = false
+  //         refreshAccessToken(null)
+  //       })
+  //   }
+  // )
 
   const isAdmin = computed(() => accessToken.value === 'root')
 

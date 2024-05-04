@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 // import { useUserStore } from '@/store/user'
 import { nextTick, onMounted, ref } from 'vue'
 // import {
@@ -9,18 +9,26 @@ import { nextTick, onMounted, ref } from 'vue'
 //   postComment
 // } from '@/utils/comment'
 import { getTimeDiffUntilNow } from '@/utils'
-import type { CommentRecord } from '@/apis/comment'
+import { type CommentRecord, deleteComment, postComment } from '@/apis/comment'
+import useLoading from '@/hooks/loading'
+import { interactWithContent } from '@/apis/user'
+import { showToast } from 'vant'
+import { useAuthStore, useUserStore } from '@/stores'
+import type { TourRecord } from '@/apis/tour'
 
-const emit = defineEmits(['refresh', 'change'])
+const emit = defineEmits(['refresh', 'change', 'delete'])
 
 const props = defineProps<{
   comment: CommentRecord
   index: any
+  depth: number
+  tour?: TourRecord
 }>()
 
 const openReply = () => {
   isReplying.value = true
   nextTick(() => {
+    // document.getElementById('comment-input-arco')?.getElementsByTagName('input')[0]?.focus()
     document.getElementById('reply-comment-input')?.getElementsByTagName('input')[0]?.focus()
   })
 }
@@ -39,11 +47,16 @@ const isReplying = ref(false)
 //     })
 // }
 
-const isLiked = ref(false)
-const commentLikeShowNum = ref(0)
+const commentLikeShowNum = ref(props.comment.likedBy.length)
 
 const commentContentShowAll = ref(false)
 const replyCommentContent = ref('')
+
+const deleteCommentLoadObj = useLoading()
+const handleEmitDelete = () => {
+  deleteCommentLoadObj.setLoading(true)
+  emit('delete', props.comment.id)
+}
 
 //  TODO: auto focus on comment after post
 // const focusCommentId = ref<number | undefined>(undefined)
@@ -63,25 +76,121 @@ const emitRefresh = (refreshAll: boolean) => {
 }
 
 const isDeleted = ref(false)
+const userStore = useUserStore()
+const isLiked = ref(
+  userStore.curUser && props.comment.likedBy.map((l) => l.id).includes(userStore.curUser.id)
+)
+// const isLiked = computed(
+//   () => userStore.curUser && props.comment.likedBy.map((u) => u.id).includes(userStore.curUser?.id)
+// )
+
+const replyCommentLoadObj = useLoading()
+const handleReplyComment = () => {
+  if (!props.tour) {
+    return
+  }
+
+  if (replyCommentLoadObj.loading.value) {
+    showToast('Too frequent operations')
+    return
+  }
+  replyCommentLoadObj.setLoading(true)
+  postComment({
+    content: replyCommentContent.value,
+    tourId: props.tour.id,
+    parentId: props.comment.id
+  })
+    .then((apiRes) => {
+      if (apiRes.success) {
+        // tour.comments.push(apiRes.data!)
+        const newComment = apiRes.data!
+        const commentList = props.comment
+        const tour = props.tour!
+        commentList.replies.unshift(newComment)
+        tour.comments.unshift(newComment)
+        replyCommentContent.value = ''
+        isReplying.value = false
+        showToast(apiRes.message)
+      }
+    })
+    .finally(() => {
+      replyCommentLoadObj.setLoading(false)
+    })
+}
+
+const interactCommentLoadObj = useLoading()
+const handleInteractComment = () => {
+  if (interactCommentLoadObj.loading.value) {
+    showToast('Too frequent operations')
+    return
+  }
+  interactCommentLoadObj.setLoading(true)
+
+  isLiked.value = !isLiked.value
+  commentLikeShowNum.value += isLiked.value ? 1 : -1
+  // if (isLiked.value) {
+  // props.comment.likedBy = props.comment.likedBy.filter((c) => c.id !== user.id)
+  // }
+
+  interactWithContent({
+    interaction: 'like',
+    contentId: props.comment.id,
+    contentType: 'comments',
+    value: isLiked.value
+  })
+    .then((apiRes) => {
+      if (apiRes.success) {
+        showToast({
+          message: apiRes.message
+        })
+      } else {
+        showToast({
+          type: 'fail',
+          message: apiRes.message
+        })
+      }
+    })
+    .finally(() => {
+      interactCommentLoadObj.setLoading(false)
+    })
+}
+
+const handleDeleteComment = (commentId: number) => {
+  deleteComment(commentId).then((apiRes) => {
+    if (apiRes.success) {
+      showToast({
+        message: apiRes.message
+      })
+      const commentList = props.comment
+      commentList.replies = commentList.replies.filter((r) => r.id !== commentId)
+      // currentTourComments.value = currentTourComments.value.filter((c) => c.id !== commentId)
+    } else {
+      showToast({
+        type: 'fail',
+        message: apiRes.message
+      })
+    }
+  })
+}
 </script>
 
 <template>
   <a-comment
     v-show="!isDeleted"
-    class="comment-item"
-    align="left"
     :datetime="getTimeDiffUntilNow(props.comment.publishTime)"
+    align="left"
+    class="comment-item"
     style="margin-bottom: 0; padding-bottom: 0"
   >
     <template #author>
-      <span style="cursor: pointer">
+      <span style="cursor: pointer; font-weight: bold">
         {{ props.comment.author.nickname }}
       </span>
     </template>
     <template #avatar>
       <a-avatar
-        :size="32"
         :image-url="props.comment.author.avatar"
+        :size="32"
         @load="
           () => {
             // isLoadingUser = false
@@ -91,8 +200,8 @@ const isDeleted = ref(false)
     </template>
     <template #content>
       <div
-        class="comment-content-text-container"
         :class="{ 'show-all': commentContentShowAll }"
+        class="comment-content-text-container van-multi-ellipsis--l3"
         @click="commentContentShowAll = true"
       >
         {{ props.comment.content }}
@@ -100,51 +209,61 @@ const isDeleted = ref(false)
     </template>
 
     <template #actions>
-      <span class="action" @click="openReply" v-if="!isReplying"> <IconMessage /> 回复 </span>
-      <span class="action" @click="isReplying = false" v-else> <IconMessage /> 回复中 </span>
-      <span class="action">
-        <span class="like-icon"><IconHeartFill v-if="isLiked" /><IconHeart v-else /></span>
+      <span v-show="props.depth < 3">
+        <span v-if="!isReplying" class="action" @click="openReply"> <IconMessage /> 回复 </span>
+        <span v-else class="action" @click="isReplying = false"> <IconMessage /> 回复中 </span>
+      </span>
+
+      <span
+        v-if="useAuthStore().isAdmin || userStore.curUser?.id === props.comment.author.id"
+        class="action"
+      >
+        <span v-if="!deleteCommentLoadObj.loading.value" @click="handleEmitDelete">
+          <IconDelete /> 删除
+        </span>
+        <span v-else> <IconLoading /> 删除中 </span>
+      </span>
+
+      <span class="action like-action" @click="handleInteractComment">
+        <span :class="{ active: isLiked }" class="like-icon"
+          ><IconHeartFill v-if="isLiked" /><IconHeart v-else
+        /></span>
         <span>{{ commentLikeShowNum }}</span>
       </span>
-      <!--        v-if="-->
-      <!--          userStore.isAdmin ||-->
-      <!--          (userStore.getCurrentUser &&-->
-      <!--            (props.comment.author.id === userStore.getCurrentUser.id ||-->
-      <!--              props.video?.authorId === userStore.getCurrentUser.id))-->
-      <!--        "-->
-      <span class="action"> <IconDelete /> 删除 </span>
     </template>
 
     <!--    New comment input-->
     <a-comment
+      v-if="isReplying"
       align="right"
       avatar="https://file.wmzspace.space/user/default/avatar/avatar.jpg"
       class="reply-comment"
-      v-if="isReplying"
     >
       <template #content>
         <a-input
-          :placeholder="`回复 @${props.comment.author.nickname}`"
-          class="comment-input"
           id="reply-comment-input"
           v-model.trim="replyCommentContent"
           :max-length="400"
+          :placeholder="`回复 @${props.comment.author.nickname}`"
+          class="comment-input"
+          style="margin-bottom: 20px; border-radius: 10px; border: thin solid rgba(0, 0, 0, 0.3)"
           @focusin="isReplying = true"
           @focusout="isReplying = false"
         >
           <!--          @pressEnter="onPostReplyComment"-->
           <template #suffix>
             <a-tooltip>
-              <template #content> 没有可以@的朋友 </template>
-              <img class="icon-at" src="/interaction/comment_at.svg" alt="at friend" />
+              <template #content> 没有可以@的朋友</template>
+              <img alt="at friend" class="icon-at" src="/interaction/comment_at.svg" />
             </a-tooltip>
             <a-tooltip>
               <template #content>回复评论</template>
               <img
-                class="icon-send"
-                src="/interaction/send_comment.svg"
                 v-if="replyCommentContent.length > 0"
                 alt="reply comment"
+                class="icon-send"
+                src="/interaction/send_comment.svg"
+                @click="handleReplyComment"
               />
             </a-tooltip>
           </template>
@@ -156,16 +275,19 @@ const isDeleted = ref(false)
     <!--    Children Comment-->
     <!--    <a-spin class="load-more" dot v-if="isLoadingComment" :loading="isLoadingComment" />-->
     <CommentCard
-      v-else
       v-for="(comment, index) in props.comment.replies"
-      :index="index"
+      v-else
+      :key="comment.id"
       :comment="comment"
-      :key="index"
+      :depth="props.depth + 1"
+      :index="index"
+      :tour="props.tour"
       @change="
         () => {
           emit('change')
         }
       "
+      @delete="handleDeleteComment"
       @refresh="
         (refreshAll) => {
           if (refreshAll) {

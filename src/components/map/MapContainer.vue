@@ -4,12 +4,11 @@ JS API Loader是我们提供的 API 加载器，其加载方式为异步加载 J
 因为需要特别处理，以保证在 AMap对象完整生成之后再调用 JS API 的相关接口，否则有可能报错。
 -->
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { nextTick, onMounted, onUnmounted, ref, type UnwrapRef } from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { Message } from '@arco-design/web-vue'
 import { type CreateTourForm, parseLocation, TourType } from '@/apis/tour'
-import { Screenshot } from '@amap/screenshot'
 import { useMapStore } from '@/stores/map'
 
 const map = ref<any>(null)
@@ -151,7 +150,7 @@ onMounted(() => {
       'AMap.Geolocation',
       'AMap.Walking',
       'AMap.Riding'
-    ],
+    ]
   })
     .then((AMap) => {
       /* ---------- 地图实例化 ----------*/
@@ -162,7 +161,7 @@ onMounted(() => {
         // 配置地图截图
         WebGLParams: {
           preserveDrawingBuffer: true,
-          willReadFrequently: true,
+          willReadFrequently: true
         }
       })
       /*---------- 地图实例化 ----------*/
@@ -340,12 +339,12 @@ onMounted(() => {
             if (status === 'complete') {
               Message.success('路线数据查询成功')
               drawRoute(result.routes[0])
-              const form = props.createTourForm;
-              form.result = result.routes[0];
+              const form = props.createTourForm
+              form.result = result.routes[0]
               emits('update-createTourForm', form)
             } else {
               Message.error('路线数据查询失败' + result)
-              console.log(result)
+              // console.log(result)
             }
           }
         )
@@ -419,6 +418,6 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="mapRef" id="map-container"></div>
+  <div id="map-container" ref="mapRef"></div>
   <div id="panel"></div>
 </template>

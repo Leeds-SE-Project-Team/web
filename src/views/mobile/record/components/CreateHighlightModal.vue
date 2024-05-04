@@ -24,6 +24,7 @@ const tourHighlight = computed<CreateTourHighlightForm>(() => ({
   imageUrl: props.imageUrl,
   tourId: tourId.value
 }))
+const description = ref('')
 
 const handleOpened = () => {
   locateLoading.setLoading(true)
@@ -51,20 +52,35 @@ defineExpose({ show })
     @confirm="emits('confirm', tourHighlight)"
     @opened="handleOpened"
   >
-    <van-cell-group inset>
-      <van-field
-        v-model="highlightTitle"
-        input-align="center"
-        maxlength="20"
-        placeholder="Enter a title"
-      />
-    </van-cell-group>
-    <van-image :src="props.imageUrl" alt="highlight highlight">
-      <template v-slot:loading>
-        <van-loading size="20" type="spinner" />
-      </template>
-    </van-image>
+    <div class="modal-body">
+      <van-cell-group inset class="" >
+        <van-field
+          v-model="highlightTitle"
+          input-align="center"
+          maxlength="20"
+          placeholder="Enter a title"
+        />
+        <van-field
+          v-model="description"
+          input-align="center"
+          type="textarea"
+          autosize
+          placeholder="Enter a description"
+        />
+      </van-cell-group>
+      <van-image :src="props.imageUrl" alt="highlight highlight">
+        <template v-slot:loading>
+          <van-loading size="20" type="spinner" />
+        </template>
+      </van-image>
+    </div>
+    
   </van-dialog>
 </template>
 
-<style scoped></style>
+<style scoped>
+.modal-body{
+  max-height: 70vh;
+  overflow: auto;
+}
+</style>

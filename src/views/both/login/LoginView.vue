@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { type FieldRule, Message } from '@arco-design/web-vue'
 import useLoading from '@/hooks/loading'
@@ -49,12 +49,21 @@ const handleLogin = () => {
         .then((apiRes) => {
           if (apiRes.success) {
             // 登录成功
-            authStore.refreshAccessToken(apiRes.data as string)
-            Message.success({
-              id: 'login',
-              content: apiRes.message
-            })
-            router.push({ name: 'index' })
+            authStore
+              .refreshAccessToken(apiRes.data as string)
+              .then(() => {
+                Message.success({
+                  id: 'login',
+                  content: apiRes.message
+                })
+                router.push({ name: 'discover' })
+              })
+              .catch((e) => {
+                Message.error({
+                  id: 'login',
+                  content: e
+                })
+              })
           } else {
             // 登录失败
             Message.info({
@@ -82,11 +91,11 @@ const router = useRouter()
 </script>
 
 <template>
-  <a-space direction="vertical" :size="25" class="main-content-inner-container">
+  <a-space :size="25" class="main-content-inner-container" direction="vertical">
     <a-row><h4 class="account-title">Welcome back</h4></a-row>
     <a-row><p class="account-subtitle">Log into your account</p></a-row>
     <a-row>
-      <a-tag closable size="large" @close="clearEmail" color="lime">
+      <a-tag closable color="lime" size="large" @close="clearEmail">
         <template #icon>
           <icon-email />
         </template>
@@ -95,21 +104,21 @@ const router = useRouter()
     </a-row>
     <a-row>
       <a-form
+        ref="formRef"
         :model="form"
         layout="vertical"
-        ref="formRef"
         scroll-to-first-error
         @submit="handleLogin"
       >
-        <a-form-item field="password" label="Password" :rules="passwordRules">
+        <a-form-item :rules="passwordRules" field="password" label="Password">
           <a-input-password
             v-model="form.password"
-            placeholder="please enter your password"
             autocomplete
+            placeholder="please enter your password"
           />
         </a-form-item>
         <a-form-item>
-          <a-button class="account-main-btn" html-type="submit" :loading="loading">
+          <a-button :loading="loading" class="account-main-btn" html-type="submit">
             <span class="btn-text">Log in</span>
           </a-button>
         </a-form-item>

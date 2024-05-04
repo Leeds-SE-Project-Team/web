@@ -119,7 +119,6 @@ export const TourStateMap = {
   1: 'ongoing',
   2: 'finished'
 }
-
 export interface CreateTourForm {
   startLocation: string
   endLocation: string
@@ -129,6 +128,7 @@ export interface CreateTourForm {
   result: any
   title: string
 }
+export interface TourPlannedData extends CreateTourForm {}
 
 export interface UpdateTourForm extends Partial<CreateTourForm> {
   id: number

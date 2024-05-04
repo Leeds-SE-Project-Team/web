@@ -3,7 +3,6 @@ import IndexView from '@/views/both/home/index.vue'
 import HomeView from '@/views/both/home/HomeView.vue'
 import LoginView from '@/views/both/login/index.vue'
 import DiscoverMobileView from '@/views/mobile/discover/index.vue'
-import HighlightMobileView from '@/views/mobile/highlight/index.vue'
 import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
@@ -12,7 +11,6 @@ import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 import groupCollection from '@/views/web/mobileGroup/index.vue'
 import HighlightView from '@/views/web/highlight/index.vue'
 import personalIndex from '@/views/mobile/personal/index.vue'
-import personalPage from '@/views/web/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
 import personalProfile from '@/views/web/personal/profile.vue'
 import personalCollections from '@/views/web/personal/collections.vue'
@@ -21,7 +19,6 @@ import personalGroup from '@/views/web/personal/group.vue'
 import TourDetail from '@/views/mobile/personal/TourDetail.vue'
 import { MOBILE_ROUTES } from '@/router/mobile'
 import { useAuthStore } from '@/stores/auth'
-import { getUserByToken } from '@/apis/user'
 import PersonMain from '@/views/mobile/personal/PersonMain.vue'
 import DetailInfo from '@/views/mobile/personal/DetailInfo.vue'
 import { useUserStore } from '@/stores/user'
@@ -29,7 +26,7 @@ import CollDetail from '@/views/mobile/personal/CollDetail.vue'
 import GroupList from '@/views/mobile/personal/GroupList.vue'
 import GroupIndex from '@/views/mobile/group/index.vue'
 import { ADMIN_ROUTE } from '@/router/web'
-import { Capacitor } from '@capacitor/core'
+import HighlightView from '@/views/web/highlight/index.vue'
 
 const personalMobileChildren: RouteRecordRaw[] = [
   {
@@ -194,19 +191,18 @@ const router = createRouter({
         }
       },
       component: CollectionDetail
-    },
-//     {
-//       path: '/highlight',
-//       name: 'highlight',
-//       meta: {
-//         layout: 'mobile-main', // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
-//         title: 'highlight Page',
-//         auth: ['admin', 'user']
-//       }, // Render component dynamically according to platform
-//       component: HighlightMobileView
-//       // component: HighlighView
-//       // component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
-//     },
+    }, //     {
+    //       path: '/highlight',
+    //       name: 'highlight',
+    //       meta: {
+    //         layout: 'mobile-main', // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+    //         title: 'highlight Page',
+    //         auth: ['admin', 'user']
+    //       }, // Render component dynamically according to platform
+    //       component: HighlightMobileView
+    //       // component: HighlighView
+    //       // component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
+    //     },
     {
       path: '/highlight/:id',
       name: 'highlight',
@@ -239,16 +235,6 @@ const router = createRouter({
       },
       component: groupCollection
     },
-    // {
-    //   path: '/personal',
-    //   name: 'personal',
-    //   meta: {
-    //     auth: ['admin', 'user'],
-    //     title: 'personal'
-    //   },
-    //   component: personalIndex,
-    //   children: personalMobileChildren,
-    // },
     {
       path: '/personal',
       redirect: '/personal/personalprofile', // web页面的重定向
@@ -267,7 +253,7 @@ const router = createRouter({
         auth: ['admin', 'user']
       },
       component: GroupIndex
-    }
+    },
   ]
 })
 
@@ -280,33 +266,49 @@ router.beforeEach((to, from, next) => {
       return
     } else {
       const accessToken = localStorage.getItem('accessToken')
-      if (accessToken) {
-        if (accessToken === 'root') {
-          authStore.isTokenValid = true
-          next()
-          return
-        }
-        getUserByToken(accessToken)
-          .then((apiRes) => {
-            if (apiRes.success) {
-              userStore.curUser = apiRes.data!
-              authStore.refreshAccessToken(accessToken)
-              next()
-              return
-            } else {
-              authStore.refreshAccessToken(null)
-              next('/')
-              return
-            }
-          })
-          .catch(() => {
-            authStore.refreshAccessToken(null)
-          })
-      } else {
-        authStore.refreshAccessToken(null)
-        next('/')
+      if (accessToken === 'root') {
+        next()
         return
       }
+      authStore
+        .refreshAccessToken(accessToken)
+        .then((user) => {
+          if (user) {
+            next()
+          } else {
+            next('/')
+          }
+        })
+        .catch((_e) => {
+          next('/')
+        })
+      // if (accessToken) {
+      //   if (accessToken === 'root') {
+      //     authStore.isTokenValid = true
+      //     next()
+      //     return
+      //   }
+      //   getUserByToken(accessToken)
+      //     .then((apiRes) => {
+      //       if (apiRes.success) {
+      //         userStore.curUser = apiRes.data!
+      //         authStore.refreshAccessToken(accessToken)
+      //         next()
+      //         return
+      //       } else {
+      //         authStore.refreshAccessToken(null)
+      //         next('/')
+      //         return
+      //       }
+      //     })
+      //     .catch(() => {
+      //       authStore.refreshAccessToken(null)
+      //     })
+      // } else {
+      //   authStore.refreshAccessToken(null)
+      //   next('/')
+      //   return
+      // }
     }
   } else {
     next()

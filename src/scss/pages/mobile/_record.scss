@@ -7,45 +7,79 @@
     top: $header-height;
     //height: $header-height * 2;
     width: 100%;
-    background-color: white;
+    background-color: transparent;
     z-index: $mobile-footer-nav-z-index;
 
-    .swipe-grid {
-      > :nth-child(1) {
-        background-color: rgba(0, 0, 0, 0);
+    .van-swipe-item {
+      background-color: rgba(255, 255, 255, 0.4);
+
+      &:has(.swipe-grid) {
+        background-color: white;
       }
 
-      > :nth-child(2) {
-        background-color: rgba(0, 0, 0, 0.03);
+      &:has(.swipe-card-item) {
+        height: 100px;
+        //background-color: rgba(255, 255, 255, 0.4);
       }
 
-      > :nth-child(3) {
-        background-color: rgba(0, 0, 0, 0.05);
+
+      .swipe-grid {
+        > :nth-child(1) {
+          background-color: rgba(0, 0, 0, 0);
+        }
+
+        > :nth-child(2) {
+          background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        > :nth-child(3) {
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        > :nth-child(4) {
+          background-color: rgba(0, 0, 0, 0.07);
+        }
+
+        .swipe-grid-item {
+          display: flex;
+          padding: 10px;
+
+          .swipe-grid-item-icon {
+            font-size: 18px;
+            opacity: 0.3;
+            margin: 2px 5px 5px 0;
+          }
+
+          .arco-statistic-title {
+            margin-bottom: 0;
+          }
+
+          .arco-statistic-extra {
+            margin-top: 0;
+          }
+        }
       }
 
-      > :nth-child(4) {
-        background-color: rgba(0, 0, 0, 0.07);
-      }
+      .swipe-card-item {
+        .navigation-instruction {
+          font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+          font-size: 26px;
+          color: rgba(255, 255, 255);
+          font-weight: bold;
+        }
 
-      .swipe-grid-item {
+        height: 100%;
         display: flex;
-        padding: 10px;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        background-color: rgba(79, 173, 13, 0.7);
+        padding: 20px;
+        //background-color: transparent;
 
-        .swipe-grid-item-icon {
-          font-size: 18px;
-          opacity: 0.3;
-          margin: 2px 5px 5px 0;
-        }
-
-        .arco-statistic-title {
-          margin-bottom: 0;
-        }
-
-        .arco-statistic-extra {
-          margin-top: 0;
-        }
       }
     }
+
 
   }
 

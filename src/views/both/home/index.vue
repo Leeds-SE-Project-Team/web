@@ -1,10 +1,80 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useAuthStore } from '@/stores/auth'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { onMounted } from 'vue'
+import { getStaticRes } from '@/apis'
+// import wlv from 'C:\\Main\\walcraft2.0.mp4'
 const authStore = useAuthStore()
+// const wlv = ''
+
+onMounted(() => {
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.from("#info-1 .image",{
+    scrollTrigger: {
+      trigger: "#info-1",
+      scroller: ".home-wrapper",
+      ontoggle: ()=>{
+        console.log('toggle')
+      },
+      onEnter: ()=>{
+        console.log("enter")
+      },
+    },
+    x:-100,
+    opacity:0,
+    duration: 2
+  })
+  gsap.from("#info-1 .text",{
+    scrollTrigger: {
+      trigger: "#info-1",
+      scroller: ".home-wrapper",
+      ontoggle: ()=>{
+        console.log('toggle')
+      },
+      onEnter: ()=>{
+        console.log("enter")
+      },
+    },
+    x:100,
+    opacity:0,
+    duration: 2
+  })
+  gsap.from("#info-2 .image",{
+    scrollTrigger: {
+      trigger: "#info-2",
+      scroller: ".home-wrapper",
+      ontoggle: ()=>{
+        console.log('toggle')
+      },
+      onEnter: ()=>{
+        console.log("enter")
+      },
+    },
+    x:-100,
+    opacity:0,
+    duration: 2
+  })
+  gsap.from("#info-2 .text",{
+    scrollTrigger: {
+      trigger: "#info-2",
+      scroller: ".home-wrapper",
+      ontoggle: ()=>{
+        console.log('toggle')
+      },
+      onEnter: ()=>{
+        console.log("enter")
+      },
+    },
+    x:100,
+    opacity:0,
+    duration: 2
+  })
+})
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; height: 100%">
+  <div class="home-wrapper" style="height: 100%; width: 100%; overflow: auto; position: relative">
     <a-result v-if="authStore.isTokenValid" :status="'success'" title="Login succeed!">
       <template #icon>
         <IconFaceSmileFill />
@@ -20,16 +90,76 @@ const authStore = useAuthStore()
       </a-typography>
     </a-result>
 
-    <a-result v-else :status="'info'" title="Welcome to walcraft">
+    <!-- <a-result v-else :status="'info'" title="Welcome to walcraft">
       <template #icon>
         <icon-info />
       </template>
       <template #subtitle>You haven't logged in an account</template>
-
+      <div class="test" style="width: 100px; height: 100px; background-color: brown;"></div>
       <template #extra>
-        <a-button type="primary" @click="$router.push({ name: 'login' })">Login</a-button>
+        <a-button id="r123" type="primary" @click="$router.push({ name: 'login' })">Login</a-button>
       </template>
-    </a-result>
+    </a-result> -->
+    <div v-else class="flex-c back-container">
+      <div style="height: 100vh; width: 100%; position: relative">
+        <div class="flex-c flex-justify-c Logo-wrapper">
+          <button type="button" @click="$router.push({ name: 'login' })">
+            <div style="font-size: 1.5rem">Login</div>
+          </button>
+          <!-- <a-button
+          type="primary"
+          status="success"
+          @click="$router.push({ name: 'login' })"
+        >Login</a-button> -->
+        </div>
+        <!-- <img src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg" alt="" style="object-fit: cover; width: 100%; height: 100%;"> -->
+        <video
+          :src="getStaticRes('/resource/walcraft2.0.mp4')"
+          autoplay
+          loop
+          muted
+          style="height: 100%; width: 100%; object-fit: cover"
+        ></video>
+      </div>
+      <div style="height: 100dvh; width: 100%; display: flex; position: relative">
+        <div id="info-1" class="walcraft-info">
+          <div class="image" style="max-height: 400px; max-width: 400px" >
+            <img
+              alt=""
+              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              style="object-fit: cover; width: 100%; height: 100%"
+            />
+          </div>
+          <div class="text flex-c">
+            <h2>随时随地规划行程</h2>
+          </div>
+        </div>
+        <!-- <img
+          alt=""
+          src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+          style="object-fit: cover; width: 100%; height: 100%"
+        /> -->
+      </div>
+      <div style="height: 100dvh; width: 100%; display: flex; position: relative">
+        <div id="info-2" class="walcraft-info">
+          <div class="image" style="max-height: 400px; max-width: 400px" >
+            <img
+              alt=""
+              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              style="object-fit: cover; width: 100%; height: 100%"
+            />
+          </div>
+          <div class="text flex-c">
+            <h2>随时随地规划行程</h2>
+          </div>
+        </div>
+        <!-- <img
+          alt=""
+          src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+          style="object-fit: cover; width: 100%; height: 100%"
+        /> -->
+      </div>
+    </div>
   </div>
 </template>
 

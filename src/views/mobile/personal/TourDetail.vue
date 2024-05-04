@@ -28,7 +28,7 @@
                     v-for="item in plannedTours"
                     :key="item.id"
                     class="completed-tour flex-r"
-                    @click="toTour(item.id)"
+                    @click="toRecord(item.id)"
                 >
                     <van-image width="100" height="100" :src="item.mapUrl"/>
                     <div class="tour-info flex-c flex-justify-c">
@@ -82,6 +82,9 @@ const userStore = useUserStore();
 
 const toTour = (id: number)=>{
     router.push({path: '/tour', query:{id}});
+}
+const toRecord = (id: number)=>{
+    router.push({name:'record', params:{'tourId':id}})
 }
 
 getTourByUser().then(res=>{
