@@ -98,7 +98,7 @@
     </section> -->
   </div>
 
-  <!-- <div v-if="true" class="comments">
+  <div v-if="true" class="comments">
     <a-space size="large">
       <a-avatar :imageUrl="tourRecord?.user.avatar" :size="50"></a-avatar>
       <div class="rigion">
@@ -211,7 +211,7 @@
         @delete="handleDeleteComment"
       />
     </div>
-  </div> -->
+  </div>
 </template>
 
 <script lang="ts">

@@ -21,6 +21,7 @@ import {
   type SaveTourForm,
   type TourPlannedData,
   type TourRecord,
+  TourState,
   TourType
 } from '@/apis/tour'
 import { uploadFileFromURL } from '@/utils/file'
@@ -114,14 +115,17 @@ const fetchTour = () => {
         fetchTourDataJson(tourData.value)
           .then((res) => {
             const result = res[0].data.result
-            saveTourForm.value = res[1].data
-            saveTourForm.value.trackList.forEach(
-              (t) =>
-                (t.location = new AMap.LngLat(
-                  (t.location as unknown as number[])[0],
-                  (t.location as unknown as number[])[1]
-                ))
-            )
+
+            if (tourData.value!.state !== TourState.UNFINISHED) {
+              saveTourForm.value = res[1].data
+              saveTourForm.value.trackList.forEach(
+                (t) =>
+                  (t.location = new AMap.LngLat(
+                    (t.location as unknown as number[])[0],
+                    (t.location as unknown as number[])[1]
+                  ))
+              )
+            }
 
             tourPlannedData.value = res[0].data
             mapStore.drawRoute(
@@ -343,8 +347,6 @@ const getCurrentLocation = (toCenter?: boolean) => {
           true
         )
       }
-
-      locationTrackList.value.push(recordDataInstant)
     } else if (status === 'error') {
       // showToast({
       //   type: 'fail',

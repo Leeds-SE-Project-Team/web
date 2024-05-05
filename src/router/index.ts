@@ -28,7 +28,6 @@ import { ADMIN_ROUTE } from '@/router/web'
 import HighlightView from '@/views/web/highlight/index.vue'
 import PlannerWebView from '@/views/web/planner/index.vue'
 import { Capacitor } from '@capacitor/core'
-import personalPage from '@/views/web/personal/index.vue'
 
 const personalMobileChildren: RouteRecordRaw[] = [
   {
@@ -150,24 +149,15 @@ const router = createRouter({
       // component: DiscoverMobileView
       component: DiscoverMobileView
     },
-    // {
-    //   path: '/plan',
-    //   name: 'planner',
-    //   meta: {
-    //     title: 'Planner Page',
-    //     layout: 'mobile-default'
-    //   },
-    //   component: PlannerMobileView
-    // },
     {
       path: '/plan',
       name: 'planner',
       meta: {
         title: 'Planner Page',
-        layout: 'b',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default',
         auth: ['user']
       },
-      component: PlannerWebView
+      component: Capacitor.getPlatform() === 'web' ? PlannerWebView : PlannerMobileView
     },
     {
       path: '/tour',
@@ -236,8 +226,7 @@ const router = createRouter({
         auth: ['admin', 'user']
       },
       component: groupCollection
-    },
-    // {
+    }, // {
     //   path: '/personal',
     //   redirect: '/personal/personalprofile', // web页面的重定向
     //   meta: {
@@ -249,8 +238,7 @@ const router = createRouter({
     //   children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
     // },
     {
-      path: '/personal',
-      // redirect: '/personal/personalprofile', // web页面的重定向
+      path: '/personal', // redirect: '/personal/personalprofile', // web页面的重定向
       meta: {
         auth: ['admin', 'user'],
         layout: '',
