@@ -8,6 +8,7 @@ import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 // import groupCollection from '@/views/web/groupCollection/index.vue'
+import personalPage from '@/views/web/personal/index.vue'
 import groupCollection from '@/views/web/mobileGroup/index.vue'
 import personalIndex from '@/views/mobile/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
@@ -226,27 +227,28 @@ const router = createRouter({
         auth: ['admin', 'user']
       },
       component: groupCollection
-    }, // {
-    //   path: '/personal',
-    //   redirect: '/personal/personalprofile', // web页面的重定向
-    //   meta: {
-    //     auth: ['admin', 'user'],
-    //     layout: Capacitor.getPlatform() === 'web' ? 'b' : '',
-    //     title: 'personalprofile'
-    //   },
-    //   component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
-    //   children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
-    // },
+    },
     {
-      path: '/personal', // redirect: '/personal/personalprofile', // web页面的重定向
+      path: '/personal',
+      redirect: '/personal/personalprofile', // web页面的重定向
       meta: {
         auth: ['admin', 'user'],
-        layout: '',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : '',
         title: 'personalprofile'
       },
-      component: personalIndex,
-      children: personalMobileChildren
+      component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
+      children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
     },
+    // {
+    //   path: '/personal', // redirect: '/personal/personalprofile', // web页面的重定向
+    //   meta: {
+    //     auth: ['admin', 'user'],
+    //     layout: '',
+    //     title: 'personalprofile'
+    //   },
+    //   component: personalIndex,
+    //   children: personalMobileChildren
+    // },
     {
       path: '/group',
       name: 'group',
