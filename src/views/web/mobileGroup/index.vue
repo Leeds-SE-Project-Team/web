@@ -45,7 +45,11 @@
             <!-- the tour content -->
             <div class="tour-content">
                 <div class="content-img">
-                    <img :src="groupCollection.tours[picNum[index1]]?.mapUrl" alt="">
+                    <img
+                        :src="groupCollection.tours[picNum[index1]]?.mapUrl"
+                        alt=""
+                        @click="redirectToRoute(groupCollection.tours[picNum[index1]]?.id)"
+                        >
                 </div>
                 <div class="content-side">
                     <div class="side-name">THE TOUR WE GET</div>
@@ -76,6 +80,7 @@ export default {
 import { getCollectionById } from '@/apis/collection';
 import { getAllGroups, getGroupById, type GroupRecord } from '@/apis/group';
 import type { UserRecord } from '@/apis/user';
+import router from '@/router';
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 // define all the varibles
@@ -87,6 +92,10 @@ const picNum = ref<number[]>([0, 0, 0, 0])
 const allImgNum = ref<number[]>()
 const leader = ref<UserRecord>()
 const others = computed(() => allData.value?.members.filter((x) => x.id !== allData.value?.leaderId))
+
+const redirectToRoute = (id: string|number) => {
+  router.push(`/tour?id=${id}`);
+}
 
 onMounted(async () => {
     await getGroupById(groupId)

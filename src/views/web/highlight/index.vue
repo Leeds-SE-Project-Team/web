@@ -81,7 +81,7 @@ const lenImg = computed(() => highlightData.value ? (highlightData.value.tourIma
 
         <!-- the title part -->
         <div class="title">
-          <h1 class="main-title">{{highlightData?.title}}</h1>
+          <h1 class="main-title">{{ highlightData?.title ? highlightData?.title : 'undefined' }}</h1>
           <h3 class="des">
             This is {{highlightData?.title}} tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine
             experience required.
@@ -133,7 +133,7 @@ const lenImg = computed(() => highlightData.value ? (highlightData.value.tourIma
 
       <div class="map">
         <a-divider/>
-
+        <h3 style="margin: 20px; color: #777;">Map</h3>
         <div class="map-content">
           <img :src="mapUrl" alt="">
         </div>
@@ -142,7 +142,7 @@ const lenImg = computed(() => highlightData.value ? (highlightData.value.tourIma
       </div>
     </div>
 
-    <div class="right-page">
+    <!-- <div class="right-page">
       <h3 class="right-title">Top Touring Cycling Routes to The Heron Farm Shop and Cafe</h3>
       <div class="tours highlights" v-for="i in Array(3)" :key="i">
         <a-divider />
@@ -183,7 +183,7 @@ const lenImg = computed(() => highlightData.value ? (highlightData.value.tourIma
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

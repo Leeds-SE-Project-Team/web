@@ -1,152 +1,188 @@
 <script lang="ts" setup>
+import { getTourById } from '@/apis/tour';
 import { getTourHighlightById, type TourHighlight } from '@/apis/tour/highlight';
 import { computed, onMounted, ref } from 'vue';
-
+import { useRoute } from 'vue-router';
 
 const highlightData = ref<TourHighlight>();
+const mapUrl = ref<string>()
 
 // this is the len of img
 
-onMounted(() => {
-  getTourHighlightById(1)
+const groupId = useRoute().params.id as string
+
+
+const getMapUrl = async() => {
+  await getTourById(highlightData.value?.toursId[0] as number)
+    .then((res) => {
+      mapUrl.value = res.data?.mapUrl
+    })
+}
+
+getTourHighlightById(groupId)
   .then(response => {
     const highlight: TourHighlight|undefined = response.data;
     highlightData.value = highlight;
+    getMapUrl()
   })
   .catch(error => {
     console.error('Error fetching highlight data:', error);
-  });
-})
+  })
 
+
+// 执行判断的逻辑 判断图片数量
+const lenImg = computed(() => highlightData.value ? (highlightData.value.tourImages).length : 0)
 </script>
 
 <template>
-  <div id="mobile-page-highlight">
-    <!-- Image section with click event to open preview -->
-    <!-- Image and title section -->
-    <div class="image-title-container">
-      <img
-        class="trail-image"
-        :src="highlightData?.tourImages[0]?.imageUrl"
-        alt="Trail Image"
-      />
-      <h1 class="trail-title">{{highlightData?.title}}</h1>
-      <p class="trail-description">{{highlightData?.title}} is a famous attraction!</p>
-    </div>
-    <!-- Top section with image and action buttons -->
-    <div class="highlight-top">
-      <div class="actions-container">
-        <div class="action-item"><i class="icon fas fa-bicycle"></i>See rides here</div>
-        <div class="action-item"><i class="icon fas fa-bookmark"></i>Bookmark</div>
-        <div class="action-item"><i class="icon fas fa-map-marker-alt"></i>Open in planner</div>
-      </div>
-    </div>
-
-    <!-- Information section -->
-    <div class="information-section">
-      <div class="info-alert">
-        <i class="icon fas fa-info-circle"></i>
-        <span>
-          {{highlightData?.title}} is a modern and high-grade teaching building, which won a lot of awards.
-        </span>
-      </div>
-      <div class="info-credits">
-        <div class="user-avatars">
-          <img src="https://file.wmzspace.space//resource/cover.jpg" alt="User 1" />
-          <img src="https://file.wmzspace.space//resource/cover.jpg" alt="User 2" />
+  <div id="page-highlight">
+    <div class="left-page">
+      <!-- the section of bg and title in tour page -->
+      <section class="highlight-title">
+        <!-- the bg part -->
+        <div v-if="lenImg === 1">
+          <div class="bg-1">
+            <img
+              :src="highlightData?.tourImages[0].imageUrl"
+              alt="">
+          </div>
         </div>
-        <div class="credits-text">
-          <span>Created by walcraft users</span>
-          <span>Recommended by 2 out of 2 mountain bikers</span>
+
+        <div v-else-if="lenImg === 2">
+          <div class="bg-2">
+            <img
+              :src="highlightData?.tourImages[0].imageUrl"
+              alt="">
+            <img
+              :src="highlightData?.tourImages[1].imageUrl"
+              alt="">
+          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Highlight location section -->
-    <div class="highlight-location-section">
-      <hr class="section-divider" />
-      <h2 class="section-title">HIGHLIGHT LOCATION</h2>
-      <div class="location-map-placeholder">
-        <img 
-          style="width: 100%;height: 100%; 
-          object-fit: cover" 
-          src="https://file.wmzspace.space//resource/highlight_map.png" 
-          alt="">
-      </div>
-      <div class="location-distance">7,424 mi away</div>
-    </div>
-
-    <!-- Rides here section -->
-    <div class="rides-here-section">
-      <div class="section-header">
-        <h2 class="section-title">Rides here</h2>
-        <button class="see-all-button">See all</button>
-      </div>
-      <div class="rides-container">
-        <!-- Add v-for here with actual data -->
-        <div class="ride-card">
-          <div class="ride-level">Expert</div>
-          <div class="ride-info">
-            <h3>Broad and Narrow Alley</h3>
-            <div class="ride-stats">
-              <span><i class="fas fa-clock"></i> 2 h 01</span>
-              <span><i class="fas fa-ruler-horizontal"></i> 12.2 mi</span>
-              <span><i class="fas fa-arrow-up"></i> 1,450 ft</span>
+        <div v-else class="bg-3">
+          <div class="main-bg">
+            <img
+              :src="highlightData?.tourImages[0].imageUrl"
+              alt="">
+          </div>
+          <div class="sub">
+            <div class="sub-bg">
+              <img 
+                :src="highlightData?.tourImages[1].imageUrl"
+                alt="">
             </div>
-            <div class="map-thumbnail">
-              <img style="width: 100%;height: 100%; object-fit: cover" src="https://file.wmzspace.space//tour/20/map_screenshot.jpg" alt="">
+            <div class="sub-bg">
+              <img 
+                :src="highlightData?.tourImages[2].imageUrl"
+                alt="">
             </div>
           </div>
         </div>
-        <!-- Add more ride-cards here -->
-        <div class="ride-card">
-          <div class="ride-level">Expert</div>
-          <div class="ride-info">
-            <h3>Chengdu Giant Panda Base</h3>
-            <div class="ride-stats">
-              <span><i class="fas fa-clock"></i> 2 h 01</span>
-              <span><i class="fas fa-ruler-horizontal"></i> 12.2 mi</span>
-              <span><i class="fas fa-arrow-up"></i> 1,450 ft</span>
-            </div>
-            <div class="map-thumbnail">
-              <div class="map-thumbnail">
-              <img style="width: 100%;height: 100%; object-fit: cover" src="https://file.wmzspace.space//tour/21/map_screenshot.jpg" alt="">
-            </div>
-            </div>
+
+        <!-- the title part -->
+        <div class="title">
+          <h1 class="main-title">{{highlightData?.title}}</h1>
+          <h3 class="des">
+            This is {{highlightData?.title}} tour. Very good fitness required. Sure-footedness, sturdy shoes and alpine
+            experience required.
+          </h3>
+        </div>
+
+        <!-- follow part -->
+        <!-- <div class="follow">
+          <a-divider />
+          <a-avatar-group :size="30" :max-count="3">
+            <a-avatar :style="{ backgroundColor: '#7BC616' }"
+              imageUrl="https://tse2-mm.cn.bing.net/th/id/OIP-C.o9tg5_XvkferD0XD5qtAYAHaFj?rs=1&pid=ImgDetMain">
+            </a-avatar>
+            <a-avatar :style="{ backgroundColor: '#14C9C9' }"
+              imageUrl="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp">
+              B
+            </a-avatar>
+            <a-avatar :style="{ backgroundColor: '#7BC616' }"
+              imageUrl="https://tse2-mm.cn.bing.net/th/id/OIP-C.o9tg5_XvkferD0XD5qtAYAHaFj?rs=1&pid=ImgDetMain">
+            </a-avatar>
+            <a-avatar :style="{ backgroundColor: '#FF7D00' }">Arco</a-avatar>
+            <a-avatar :style="{ backgroundColor: '#FFC72E' }">Design</a-avatar>
+          </a-avatar-group>
+          <div class="recommend">Recommended by 31 cyclists</div>
+        </div> -->
+      </section>
+
+      <!-- <div class="comments-content" v-for="i in Array(3)" :key="i">
+        <a-divider />
+        <div class="flex-content">
+          <div class="head-profile">
+            <a-space size="large">
+              <a-avatar :size="36"
+                imageUrl="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp">
+              </a-avatar>
+            </a-space>
+          </div>
+
+          <div class="content">
+            <h3 class="name">George</h3>
+            <p class="com-content">
+              The Rennstei Wes sostom, you should take a pebble, which you throw in the hall at the
+              end of your tour. The first stage leads you about 19 kilometers almost steadily uph=e
+            </p>
+            <p class="date">August 31, 2017</p>
           </div>
         </div>
-        <div class="ride-card">
-          <div class="ride-level">Expert</div>
-          <div class="ride-info">
-            <h3> Chengdu DISNEY</h3>
-            <div class="ride-stats">
-              <span><i class="fas fa-clock"></i> 2 h 01</span>
-              <span><i class="fas fa-ruler-horizontal"></i> 12.2 mi</span>
-              <span><i class="fas fa-arrow-up"></i> 1,450 ft</span>
-            </div>
-            <div class="map-thumbnail">
-              <div class="map-thumbnail">
-              <img style="width: 100%;height: 100%; object-fit: cover" src="https://file.wmzspace.space//tour/22/map_screenshot.jpg" alt="">
-            </div>
-            </div>
-          </div>
+      </div> -->
+
+      <div class="map">
+        <a-divider/>
+
+        <div class="map-content">
+          <img :src="mapUrl" alt="">
         </div>
+
+        <a-divider/>
       </div>
     </div>
 
-    <!-- Tips section -->
-    <!-- <div class="tips-section">
-      <div class="tip" v-for="tip in tips" :key="tip.id">
-        <div class="tip-header">
-          <img class="tip-avatar" :src="tip.userAvatar" alt="User avatar" />
-          <div class="tip-user-info">
-            <h3 class="tip-user-name">{{ tip.userName }}</h3>
-            <p class="tip-date">{{ tip.date }}</p>
+    <!-- <div class="right-page">
+      <h3 class="right-title">Top Touring Cycling Routes to The Heron Farm Shop and Cafe</h3>
+      <div class="tours highlights" v-for="i in Array(3)" :key="i">
+        <a-divider />
+        <div class="h-title">
+
+          <div class="left">
+            <span class="category">Expert</span>
+            <h1 class="main-title">Chengdu Giant Panda Base</h1>
+            <div>
+              <span class="time">07:10</span>
+              <span class="distance">18.4km</span>
+              <span class="speed">2.6km/h</span>
+            </div>
+          </div>
+
+          <div class="right">
+            <div class="icon">
+              <svg aria-hidden="true" role="presentation" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg" class="css-nqigl7">
+                <g clip-path="url(#tour-visitors_svg__clip0_5249_547)">
+                  <path
+                    d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"
+                    fill="currentColor"></path>
+                </g>
+                <defs>
+                  <clipPath id="tour-visitors_svg__clip0_5249_547">
+                    <path fill="#666666" d="M0 0h24v24H0z"></path>
+                  </clipPath>
+                </defs>
+              </svg>
+              <span>11</span>
+            </div>
+            <div class="pic">
+              <img
+                src="https://tourpic-vector.maps.komoot.net/r/small/ik~%60@xonAKj@FhAe@DAd@U@QvBFrDLz@hAeAHnDEvCBtCfAdFFbAPx@BnALjAd@dA%5EbB~@o@VGFFGGWF_An@_@cBe@eAMkACoAQy@GcAgAeFCuCDwCIoDiAdAM%7B@GsDPwBTA@e@d@EGiAJk@/?width=200&height=200&crop=true&q=40&quot"
+                alt="" />
+            </div>
           </div>
         </div>
-        <p class="tip-content">{{ tip.content }}</p>
       </div>
-      <button class="write-tip-button">WRITE A TIP</button>
     </div> -->
   </div>
 </template>
