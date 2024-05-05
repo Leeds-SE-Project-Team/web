@@ -8,6 +8,7 @@ import { uploadFileFromURL } from '@/utils/file';
 const createdGroups = ref<GroupRecord[]>()
 const jointGroups = ref<GroupRecord[]>()
 
+
 const getCreatedGroup = () => {
   getAllCreatedGroupsByUser()
     .then((res => {
@@ -103,6 +104,9 @@ const customRequest = (option: RequestOption) => {
   //     xhr.abort()
   //   }
   // }
+
+
+
 };
 </script>
 
@@ -159,10 +163,14 @@ export default {
       </div>
 
       <div class="card" v-for="group in createdGroups" :key="group.id">
-        <groupCard @reload="() => {
-          console.log('reload created')
-          getCreatedGroup()
-        }" :info="group"></groupCard>
+        <groupCard 
+          @reload="getCreatedGroup"
+          :info="group"
+          :isCreated="1"></groupCard>
+      </div>
+
+      <div v-if="!createdGroups?.length" class="no-group">
+        You haven't created a group
       </div>
     </div>
 
@@ -171,10 +179,14 @@ export default {
       <a-divider :size="4" />
 
       <div class="card" v-for="group in jointGroups" :key="group.id">
-        <groupCard @reload="() => {
-          console.log('reload joint')
-          getJointGroup()
-        }" :info="group"></groupCard>
+        <groupCard 
+          @reload="getCreatedGroup"
+          :info="group"
+          :isCreated="0"></groupCard>
+      </div>
+
+      <div v-if="!jointGroups?.length" class="no-group">
+        You haven't joined a group
       </div>
     </div>
 
@@ -260,6 +272,15 @@ export default {
     .card {
       padding: 24px 0;
       border-bottom: 1px solid #e5e5e5;
+    }
+
+    .no-group {
+      width: 100%;
+      text-align: center;
+      color:#878787;
+      font-size: 18px;
+      font-weight: 600;
+      padding:  14px;
     }
   }
 }

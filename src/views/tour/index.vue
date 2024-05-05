@@ -113,7 +113,7 @@
           <template #icon>
             <div class="icon">
               <img
-                :height="45"
+                :height="30"
                 :src="tourRecord && isLikeTour(tourRecord).value ? likedSvgUrl : likeSvgUrl"
                 :width="45"
                 alt="like"
@@ -127,7 +127,7 @@
           <template #icon>
             <div class="icon">
               <img
-                :height="45"
+                :height="30"
                 :src="tourRecord && isStarTour(tourRecord).value ? starredSvgUrl : starSvgUrl"
                 :width="45"
                 alt="like"
@@ -149,7 +149,7 @@
         </a-button>
       </div>
 
-      <div class="follower">
+      <!-- <div class="follower">
         <a-space :size="32">
           <a-avatar-group :max-count="5">
             <a-avatar :style="{ backgroundColor: '#7BC616' }">A</a-avatar>
@@ -161,7 +161,7 @@
             <a-avatar :style="{ backgroundColor: '#FF7D00' }">G</a-avatar>
           </a-avatar-group>
         </a-space>
-      </div>
+      </div> -->
     </div>
 
     <div class="subtitle comment-title">COMMENTS</div>

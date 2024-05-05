@@ -18,7 +18,7 @@
         <label>Group Leader</label>
       </div>
       <div class="leader-info flex-r flex-justify-c">
-        <div class="flex-c flex-justify-c">
+        <div class="flex-c flex-justify-c">   
           <div class="flex-r flex-justify-c">
             <van-image :height="50" :width="50" fit="cover" :src="ava" />
           </div>

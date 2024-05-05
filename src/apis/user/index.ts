@@ -134,6 +134,8 @@ export const upgradeUser = (form: any): Promise<ApiResponse<string>> =>
     data: form
   })
 
+// export const upgradeVip = ()
+
 export const guestUser = {
   avatar: getStaticRes('/user/default/avatar/default.jpeg'),
   nickname: '未登录'
