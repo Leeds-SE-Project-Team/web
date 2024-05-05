@@ -59,7 +59,7 @@ const handleSaveTour = () => {
     .then((apiRes) => {
       if (apiRes.success) {
         showToast(apiRes.message)
-        // router.back()
+        router.back()
       } else {
         throw apiRes.message
       }
@@ -115,6 +115,14 @@ const fetchTour = () => {
           .then((res) => {
             const result = res[0].data.result
             saveTourForm.value = res[1].data
+            saveTourForm.value.trackList.forEach(
+              (t) =>
+                (t.location = new AMap.LngLat(
+                  (t.location as unknown as number[])[0],
+                  (t.location as unknown as number[])[1]
+                ))
+            )
+
             tourPlannedData.value = res[0].data
             mapStore.drawRoute(
               mapRef.value.$$getInstance(),
@@ -186,6 +194,10 @@ const countNotInMotion = ref(Infinity)
 const isInMotion = computed(() => countNotInMotion.value < 10)
 
 const handleCountTime = () => {
+  if (!recordData.value) {
+    return
+  }
+
   recordData.value.timeTaken++
   if (isInMotion.value) {
     updatePrevRecordData()
@@ -224,6 +236,15 @@ const userStore = useUserStore()
 const getLocationLoadObj = useLoading()
 
 const getCurrentLocation = (toCenter?: boolean) => {
+  if (!tourData.value) {
+    if (!getLocationLoadObj.loading.value) {
+      setTimeout(() => {
+        getCurrentLocation(true)
+      }, 1000)
+    }
+    return
+  }
+
   const geolocationInstance = geolocationRef.value.$$getInstance() as AMap.Geolocation
   if (getLocationLoadObj.loading.value || !geolocationInstance) {
     return
@@ -254,7 +275,6 @@ const getCurrentLocation = (toCenter?: boolean) => {
           currentRecordDataInstant.value!.location,
           recordDataInstant.location
         )
-        // console.log(tourPlannedData.value.result)
         // if (distance > 0) {
         if (distance > 0 && !weakGPS.value) {
           updatePrevRecordData()
@@ -323,6 +343,8 @@ const getCurrentLocation = (toCenter?: boolean) => {
           true
         )
       }
+
+      locationTrackList.value.push(recordDataInstant)
     } else if (status === 'error') {
       // showToast({
       //   type: 'fail',
