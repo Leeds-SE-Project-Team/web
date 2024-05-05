@@ -14,12 +14,8 @@ onMounted(() => {
     scrollTrigger: {
       trigger: "#info-1",
       scroller: ".home-wrapper",
-      ontoggle: ()=>{
-        console.log('toggle')
-      },
-      onEnter: ()=>{
-        console.log("enter")
-      },
+      end: "bottom bottom",
+      scrub: 0.5,
     },
     x:-100,
     opacity:0,
@@ -29,12 +25,8 @@ onMounted(() => {
     scrollTrigger: {
       trigger: "#info-1",
       scroller: ".home-wrapper",
-      ontoggle: ()=>{
-        console.log('toggle')
-      },
-      onEnter: ()=>{
-        console.log("enter")
-      },
+      end: "bottom bottom",
+      scrub: 0.5,
     },
     x:100,
     opacity:0,
@@ -44,12 +36,8 @@ onMounted(() => {
     scrollTrigger: {
       trigger: "#info-2",
       scroller: ".home-wrapper",
-      ontoggle: ()=>{
-        console.log('toggle')
-      },
-      onEnter: ()=>{
-        console.log("enter")
-      },
+      end: "bottom bottom",
+      scrub: 0.5,
     },
     x:-100,
     opacity:0,
@@ -59,12 +47,30 @@ onMounted(() => {
     scrollTrigger: {
       trigger: "#info-2",
       scroller: ".home-wrapper",
-      ontoggle: ()=>{
-        console.log('toggle')
-      },
-      onEnter: ()=>{
-        console.log("enter")
-      },
+      end: "bottom bottom",
+      scrub: 0.5,
+    },
+    x:100,
+    opacity:0,
+    duration: 2
+  })
+  gsap.from("#info-3 .image",{
+    scrollTrigger: {
+      trigger: "#info-3",
+      scroller: ".home-wrapper",
+      end: "bottom bottom",
+      scrub: 0.5,
+    },
+    x:-100,
+    opacity:0,
+    duration: 2
+  })
+  gsap.from("#info-3 .text",{
+    scrollTrigger: {
+      trigger: "#info-3",
+      scroller: ".home-wrapper",
+      end: "bottom bottom",
+      scrub: 0.5,
     },
     x:100,
     opacity:0,
@@ -121,7 +127,7 @@ onMounted(() => {
           style="height: 100%; width: 100%; object-fit: cover"
         ></video>
       </div>
-      <div style="height: 100dvh; width: 100%; display: flex; position: relative">
+      <div style="min-height: 500px; width: 100%; display: flex; position: relative">
         <div id="info-1" class="walcraft-info">
           <div class="image" style="max-height: 400px; max-width: 400px" >
             <img
@@ -134,14 +140,23 @@ onMounted(() => {
             <h2>随时随地规划行程</h2>
           </div>
         </div>
-        <!-- <img
-          alt=""
-          src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
-          style="object-fit: cover; width: 100%; height: 100%"
-        /> -->
       </div>
-      <div style="height: 100dvh; width: 100%; display: flex; position: relative">
+      <div style="min-height: 500px; width: 100%; display: flex; position: relative">
         <div id="info-2" class="walcraft-info">
+          <div class="text flex-c">
+            <h2>为旅途记录多彩</h2>
+          </div>
+          <div class="image" style="max-height: 400px; max-width: 400px" >
+            <img
+              alt=""
+              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              style="object-fit: cover; width: 100%; height: 100%"
+            />
+          </div>
+        </div>
+      </div>
+      <div style="min-height: 500px; width: 100%; display: flex; position: relative">
+        <div id="info-3" class="walcraft-info">
           <div class="image" style="max-height: 400px; max-width: 400px" >
             <img
               alt=""
@@ -150,14 +165,9 @@ onMounted(() => {
             />
           </div>
           <div class="text flex-c">
-            <h2>随时随地规划行程</h2>
+            <h2>与好友群组共同分享</h2>
           </div>
         </div>
-        <!-- <img
-          alt=""
-          src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
-          style="object-fit: cover; width: 100%; height: 100%"
-        /> -->
       </div>
     </div>
   </div>

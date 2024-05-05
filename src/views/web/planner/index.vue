@@ -1,312 +1,779 @@
 <script lang="ts" setup>
-import MapContainer from '@/components/map/MapContainer.vue'
-import { reactive, ref, watch } from 'vue'
-import { createTour, type CreateTourForm, TourType } from '@/apis/tour'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import {
+  createTour,
+  type CreateTourForm,
+  getTourTypeImg,
+  getTourTypeText,
+  parseLocation,
+  type TourRecord,
+  TourType,
+  tourTypeMap
+} from '@/apis/tour'
+import type { PickerOption } from 'vant'
 import { Message } from '@arco-design/web-vue'
 import useLoading from '@/hooks/loading'
+import MapPlanner from '@/views/mobile/planner/components/MapPlanner.vue'
+import { hapticsImpactLight } from '@/utils'
+import { App } from '@capacitor/app'
+import { useMapStore } from '@/stores/map'
+import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection'
+import { useRoute, useRouter } from 'vue-router'
+import { uploadFileFromURL } from '@/utils/file'
+import SearchPlaceView from '@/views/mobile/planner/SearchPlaceView.vue'
 
-const customStyle = {
-  borderRadius: '6px',
-  marginBottom: '18px',
-  border: 'none',
-  overflow: 'hidden'
+const tourTypeText = computed<string>(() => getTourTypeText(createTourForm.value.type))
+const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.value.type))
+
+const showPicker = ref(false)
+const showCollectionPicker = ref(false)
+const onConfirm = ({ selectedOptions }: { selectedOptions: PickerOption[] }) => {
+  showPicker.value = false
+  createTourForm.value.type = selectedOptions[0].value as TourType
+}
+const onCollectionConfirm = ({ selectedOptions }: { selectedOptions: PickerOption[] }) => {
+  showCollectionPicker.value = false
+  selectedCollection.value = selectedOptions[0].value as number
 }
 
-const createTourForm = reactive<CreateTourForm>({
+const userCollections = ref<TourCollection[]>([])
+const selectedCollection = ref(-1)
+
+const collectionLoadingObj = useLoading()
+const fetchTourCollections = () => {
+  // userStore
+  //   .getUserRecord()
+  //   .then((user) => {
+  collectionLoadingObj.setLoading(true)
+  getTourCollectionsByCurUser()
+    .then((apiRes) => {
+      if (apiRes.success) {
+        userCollections.value = apiRes.data!
+        selectedCollection.value = userCollections.value[0].id
+      } else {
+        Message.error(apiRes.message)
+      }
+    })
+    .catch((reason: any) => {
+      Message.error(reason)
+    })
+    .finally(() => {
+      collectionLoadingObj.setLoading(false)
+    })
+  // })
+  // .catch((reason: any) => {
+  //   Message.error(reason)
+  // })
+}
+
+const tourTitleInput = ref('')
+const createTourForm = ref<CreateTourForm>({
   startLocation: '',
   endLocation: '',
   type: TourType.WALK,
   pons: [],
-  tourCollectionId: 1,
+  tourCollectionId: -1,
   result: undefined,
-  title: 'sample'
+  title: 'Untitled'
 })
 
-const mapContainer = ref()
-const infile = ref<HTMLInputElement | null>(null)
+const resetForm = () => {
+  createTourForm.value.startLocation = ''
+  createTourForm.value.endLocation = ''
+  createTourForm.value.result = undefined
+  createTourForm.value.title = 'untitled'
+  createTourForm.value.pons = []
+}
 
-const { loading, setLoading } = useLoading()
+const mapContainer = ref()
+const mapStore = useMapStore()
+
 const formRef = ref()
-const handleCreateTour = () => {
+const { loading, setLoading } = useLoading()
+
+const savedTour = ref<TourRecord>()
+
+const router = useRouter()
+
+const handleCreateTour = (navigate = false) => {
   formRef.value.validate().then((e: any) => {
     if (!e) {
       setLoading(true)
-      createTour(createTourForm)
+      // if (createTourForm.value.title === '') {
+      //   createTourForm.value.title = 'untitled'
+      // }
+      createTour({
+        ...createTourForm.value,
+        tourCollectionId: selectedCollection.value,
+        title: tourTitleInput.value.length > 0 ? tourTitleInput.value : 'Untitled',
+        result: mapContainer.value.navigationResult
+      })
         .then((res) => {
-          console.log(res)
           if (res.success) {
-            Message.success(res.message)
-            mapContainer.value.screenMap()
+            uploadFileFromURL(
+              mapStore.screenMap(mapContainer.value.mapRef.$$getInstance())!,
+              `/tour/${res.data!.id}`,
+              'map_screenshot.jpg'
+            )
+              .then((uploadRes) => {
+                if (uploadRes.success) {
+                  savedTour.value = res.data!
+                  Message.success(res.message)
+                  if (navigate) {
+                    router.push({ name: 'record', params: { tourId: savedTour.value.id } })
+                  }
+                } else {
+                  throw uploadRes.message
+                }
+              })
+              .finally(() => {
+                setLoading(false)
+              })
           } else {
-            Message.info(res.message)
+            throw res.message
           }
         })
         .catch((e) => {
           Message.error(e)
-        })
-        .finally(() => {
           setLoading(false)
         })
-      // console.log(createTourForm);
     }
   })
 }
-
-const handleGPX = () => {
-  const theFile = infile.value?.files?.item(0)
-  if (theFile) {
-    const reader = new FileReader()
-    reader.readAsText(theFile)
-    reader.onload = () => {
-      // 读取gpx文件为DOM
-      const paser = new DOMParser()
-      const res = paser.parseFromString(reader.result as string, 'text/xml')
-      console.log(res)
-      const tracks = res.getElementsByTagName('trkpt')
-      const pos = []
-      // 摘取经纬度
-      for (let i = 0; i < tracks.length; i++) {
-        if (tracks.item(i)) {
-          pos.push([tracks[i].getAttribute('lon'), tracks.item(i)?.getAttribute('lat')])
-        }
-      }
-      createTourForm.startLocation = pos[0].toString()
-      createTourForm.endLocation = pos[pos.length - 1].toString()
-      mapContainer.value.drawGPX(pos)
-    }
-  }
+const handleScrollPicker = () => {
+  hapticsImpactLight()
 }
 
-const validatePosition = (value: string, cb: any) => {
-  // const va = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
-  const [lat, lon] = value.split(',').map((e) => parseFloat(e))
-  if (lat?.toString().concat(lon?.toString()).length + 1 !== value.length) {
-    cb('postition value error')
-  }
-  if (lat > 0 && lat < 180 && lon >= -90 && lon <= 90) {
-    cb()
+const selectPoint = ref<number[]>()
+const pointSheetHeight = ref(0)
+const floatSheetHeight = window.innerHeight * 0.4
+const floatSheetAnchors = [0, floatSheetHeight]
+
+let timer:any = 0
+watch(selectPoint, (value) => {
+  if (value) {
+    clearInterval(timer)
+    pointSheetHeight.value = floatSheetHeight
+    // resultPanelHeight.value = resultPanelAnchors[0]
   } else {
-    cb('postition value error')
+    timer = setInterval(() => {
+      if (pointSheetHeight.value > 1) {
+        pointSheetHeight.value /= 1.2
+      } else {
+        pointSheetHeight.value = 0
+        clearInterval(timer)
+      }
+    }, 1)
+  }
+})
+
+watch(createTourForm, () => {
+  if (hasPlanned.value) {
+    alwaysShowTop.value = false
+  }
+})
+
+const sheetData = computed(() => mapContainer.value.sheetData)
+
+const handleSelectStart = () => {
+  if (selectPoint.value) {
+    createTourForm.value.startLocation = selectPoint.value.join(',')
+    selectPoint.value = undefined
+  }
+}
+const handleSelectEnd = () => {
+  if (selectPoint.value) {
+    createTourForm.value.endLocation = selectPoint.value.join(',')
+    selectPoint.value = undefined
   }
 }
 
-// 表单验证
-const rules = {
-  startLocation: [
-    {
-      required: true,
-      message: 'invalid address'
-    },
-    {
-      validator: validatePosition
-    }
-  ],
-  endLocation: [
-    {
-      required: true,
-      message: 'invalid address'
-    },
-    {
-      validator: validatePosition
-    }
-  ]
+const handleSelectWaypoint = () => {
+  if (selectPoint.value) {
+    createTourForm.value.pons.push({
+      name: sheetData.value.neighborhood,
+      location: selectPoint.value.join(','),
+      sequence: -1
+    })
+    createTourForm.value.pons.forEach((pon, idx) => {
+      pon.sequence = idx + 1
+    })
+    selectPoint.value = undefined
+  }
 }
+
+const selectedAll = computed({
+  get: () => createTourForm.value.startLocation && createTourForm.value.endLocation,
+  set: () => {
+    createTourForm.value.startLocation = ''
+    createTourForm.value.endLocation = ''
+  }
+})
+
+const setCenter = (center: number[] | string[]) => {
+  mapContainer.value.center.value = center
+  console.log(center)
+}
+
+const resultPanelAnchors = [
+  Math.round(0.2 * window.innerHeight),
+  Math.round(0.4 * window.innerHeight),
+  Math.round(0.6 * window.innerHeight)
+]
+const resultPanelHeight = ref(resultPanelAnchors[1])
+
+const hasPlanned = computed(() => {
+  const result = mapContainer.value && mapContainer.value.navigationResult
+  if (result) {
+    fetchTourCollections()
+  }
+  return result
+})
+
+const alwaysShowTop = ref(false)
+
+const plannedResult = computed(() => mapContainer.value.navigationResult)
+const plannedFirstRoute = computed(() =>
+  plannedResult.value
+    ? createTourForm.value.type === TourType.PUBLIC
+      ? (plannedResult.value as any).plans[0]
+      : (plannedResult.value as any).routes[0]
+    : undefined
+)
+
+const route = useRoute()
+const queryLocation = route.query.location
+const handleMapComplete = () => {
+  if (queryLocation) {
+    const location = parseLocation(queryLocation as string).map((i) => parseFloat(i))
+    mapContainer.value.handleSelectPlace(new AMap.LngLat(location[0], location[1]))
+  }
+}
+
+const showSelector = ref(false)
+
+onMounted(() => {
+  App.addListener('backButton', () => {
+    selectPoint.value = undefined
+    showPicker.value = false
+  })
+})
+
+onUnmounted(() => {
+  App.removeAllListeners()
+})
 </script>
 
 <template>
-  <!-- the section of route planner sider -->
-  <section class="sider">
-    <a-form
-      ref="formRef"
-      :rules="rules"
-      :model="createTourForm"
-      :style="{ width: '388px' }"
-      @submit="handleCreateTour"
-    >
-      <div class="top">
-        <!-- search bar input part -->
-        <div class="search">
-          <a-input allow-clear class="input" placeholder="Search For Place Or Address" />
-        </div>
-
-        <!-- tool part -->
-        <div class="tool">
-          <a-collapse accordion expand-icon-position="right">
-            <a-collapse-item key="1" :style="customStyle" header="Sports">
-              <div class="items">
-                <div
-                  class="item walk"
-                  @click="createTourForm.type = TourType.WALK"
-                  :class="[createTourForm.type === TourType.WALK ? 'svg-grew' : 'svg-white']"
-                >
-                  <svg
-                    t="1710074674268"
-                    class="icon"
-                    viewBox="0 0 1024 1024"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    p-id="2737"
-                  >
-                    <path
-                      d="M566.1 261.4c44.8 0 82-37.2 82-81.9s-37.3-81.9-82-81.9c-44.8 0-82.1 37.2-82.1 81.9 0.1 44.7 37.4 81.9 82.1 81.9z m179.1 208.4l-100.7-37.2-63.4-115.4c-3.7-3.7-7.5-7.4-7.5-11.2l-7.5-7.4c-26.1-26.1-63.4-29.8-97-14.9l-175.3 59.6c-14.9 3.7-26.1 18.6-29.8 33.5l-14.9 137.7c-3.7 22.3 14.9 44.7 37.3 48.4h3.7c22.4 0 41-14.9 41-37.2l11.2-107.9 67.1-22.3c-11.2 26.1-22.4 52.1-29.8 70.7-14.9 33.5-14.9 78.2 3.7 115.4l-115.6 268c-11.2 26.1 0.3 58.8 26.1 70.7 29.5 13.6 64.7-11.7 74.6-33.5l85.8-193.5c52.2 93.1 111.9 201 111.9 204.7 11.2 18.6 29.8 29.8 48.5 29.8 7.5 0 18.6-3.7 26.1-7.4 26.1-14.9 37.3-48.4 22.4-74.4-3.7-7.4-93.2-174.9-152.9-275.4l52.2-115.4 18.6 33.5c3.7 11.2 14.9 14.9 22.4 18.6L719 551.7c3.7 0 11.2 3.7 14.9 3.7 18.6 0 33.6-11.2 41-29.8 3.8-22.3-7.4-48.3-29.7-55.8z"
-                      p-id="2738"
-                      fill="#ffffff"
-                    ></path>
-                  </svg>
-                </div>
-
-                <div
-                  class="item"
-                  @click="createTourForm.type = TourType.CYCLING"
-                  :class="[createTourForm.type === TourType.CYCLING ? 'svg-grew' : 'svg-white']"
-                >
-                  <svg
-                    t="1710074828341"
-                    class="icon"
-                    viewBox="0 0 1024 1024"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    p-id="7408"
-                  >
-                    <path
-                      d="M214.343422 460.600539c29.25422 0 56.974128 5.728099 82.955149 16.979722 25.981021 11.353911 48.279692 26.287883 66.896014 44.904205C384.140645 541.203077 399.483768 563.501748 410.121666 589.482769 420.759564 615.46379 426.078514 643.797423 426.078514 674.38138c0 29.25422-5.318949 56.974128-15.956847 82.852862C399.483768 783.317551 384.140645 805.616222 364.194586 824.232544 345.475976 844.178604 323.177305 859.521726 297.196284 870.159624 271.317551 880.89981 243.597643 886.116472 214.343422 886.116472c-30.583958 0-58.917591-5.318949-84.898612-15.956847C103.46379 859.521726 81.165118 844.178604 62.446509 824.232544c-18.616322-18.616322-33.652582-40.914994-44.904205-66.896014S0.562581 703.737888 0.562581 674.38138c0-30.583958 5.625812-58.917591 16.979722-84.898612C28.896214 563.501748 43.830187 541.203077 62.446509 522.586755c18.616322-18.616322 40.914994-33.652582 66.896014-44.904205C155.425832 466.328638 183.657177 460.600539 214.343422 460.600539zM214.343422 822.186795c19.946059 0 38.971531-3.989212 56.974128-11.967636 18.002597-7.978424 33.652582-18.616322 46.949955-32.015982 13.297373-13.297373 23.935271-28.947358 32.015982-46.949955 7.978424-18.002597 11.967636-36.925782 11.967636-56.974128 0-21.275797-3.989212-40.914994-11.967636-58.917591C342.202777 597.461193 331.564879 581.811208 318.165218 568.513835c-13.297373-13.297373-28.947358-23.935271-46.949955-32.015982C253.314954 528.519429 234.289482 524.530217 214.343422 524.530217c-21.275797 0-40.914994 3.989212-58.917591 11.967636C137.423234 544.578564 121.773249 555.216462 108.475877 568.513835 95.076216 581.811208 84.438318 597.461193 76.459894 615.46379 68.48147 633.466387 64.492259 653.105584 64.492259 674.38138c0 19.946059 3.989212 38.971531 11.967636 56.974128C84.438318 749.358106 95.076216 765.008091 108.475877 778.305464c13.297373 13.297373 28.947358 23.935271 46.949955 32.015982C173.326141 818.197583 193.067626 822.186795 214.343422 822.186795zM557.92708 268.811507 460.037958 366.700629 553.937868 438.60873l0 277.710518L478.040555 716.319249l0-213.780841-145.861952-83.875737C326.859654 414.673459 322.256718 410.377385 318.165218 405.672161 314.176006 401.069224 310.902807 396.057137 308.243332 390.738188c-2.659475-5.318949-5.012087-11.251623-6.955549-18.002597C299.242034 366.086904 298.219159 360.051943 298.219159 354.732994c0-10.637898 2.04575-20.252922 6.034962-28.947358C308.243332 317.0912 313.562281 309.521926 320.210968 302.770952l157.829587-157.829587c6.648686-6.648686 14.320248-11.967636 23.014684-15.956847 8.694436-3.989212 18.30946-6.034962 28.947358-6.034962 6.648686 0 13.297373 1.022875 19.946059 2.966337 6.648686 2.04575 12.683648 4.296074 18.002597 6.955549 5.318949 2.659475 10.024173 6.341824 14.013385 10.944761 3.989212 4.705224 7.978424 9.717311 11.967636 14.933973L673.818799 298.78174 809.656578 298.78174l0 75.897313L631.880931 374.679053 557.92708 268.811507zM809.656578 460.600539c30.583958 0 58.917591 5.728099 84.898612 16.979722 25.981021 11.353911 48.279692 26.287883 66.896014 44.904205 18.616322 18.71861 33.652582 40.914994 44.904205 66.896014C1017.811607 615.46379 1023.437419 643.797423 1023.437419 674.38138c0 29.25422-5.625812 56.974128-16.979722 82.852862C995.103786 783.317551 980.169813 805.616222 961.451204 824.232544c-18.616322 19.946059-40.914994 35.289182-66.896014 45.92708C868.574168 880.89981 840.342823 886.116472 809.656578 886.116472c-29.25422 0-56.974128-5.318949-82.955149-15.956847C700.822695 859.521726 678.524024 844.178604 659.805414 824.232544 639.859355 805.616222 624.516232 783.317551 613.878334 757.33653S597.921486 703.737888 597.921486 674.38138c0-30.583958 5.318949-58.917591 15.956847-84.898612C624.516232 563.501748 639.859355 541.203077 659.805414 522.586755c18.616322-18.616322 40.914994-33.652582 66.896014-44.904205C752.682449 466.328638 780.402357 460.600539 809.656578 460.600539zM681.797223 152.919788c-10.637898 0-20.662072-2.04575-29.970233-6.034962C642.518829 142.997902 634.540406 137.678953 627.891719 131.030267 621.243033 124.279293 615.924084 116.300869 611.934872 106.992708 607.94566 97.684547 605.89991 87.762661 605.89991 77.022475c0-10.637898 1.943462-20.662072 6.034962-29.970233C615.924084 37.846369 621.243033 29.765658 627.891719 23.116971 634.540406 16.468285 642.518829 11.149336 651.82699 7.160124 661.135151 3.170912 671.159325 1.125162 681.797223 1.125162s20.662072 2.04575 29.970233 6.034962C721.075617 11.149336 729.770053 16.468285 737.748477 23.116971 744.397163 29.765658 749.716112 37.846369 753.705324 47.052243 757.694536 56.360404 759.740286 66.384577 759.740286 77.022475c0 10.637898-2.04575 20.662072-6.034962 29.970233C749.716112 116.300869 744.397163 124.279293 737.748477 131.030267 729.770053 137.678953 721.075617 142.997902 711.767456 146.987114 702.459295 150.976326 692.435121 152.919788 681.797223 152.919788zM809.656578 822.186795c21.275797 0 40.914994-3.989212 58.917591-11.967636 18.002597-7.978424 33.652582-18.616322 46.949955-32.015982 13.297373-13.297373 23.935271-28.947358 32.015982-46.949955 7.978424-18.002597 11.967636-36.925782 11.967636-56.974128 0-21.275797-3.989212-40.914994-11.967636-58.917591C939.561682 597.461193 928.821496 581.811208 915.524123 568.513835c-13.297373-13.297373-28.947358-23.935271-46.949955-32.015982C850.673859 528.519429 830.932374 524.530217 809.656578 524.530217c-19.946059 0-38.971531 3.989212-56.974128 11.967636C734.78214 544.578564 719.132155 555.216462 705.732494 568.513835 692.435121 581.811208 681.797223 597.461193 673.818799 615.46379 665.840376 633.466387 661.851164 653.105584 661.851164 674.38138c0 19.946059 3.989212 38.971531 11.967636 56.974128C681.797223 749.358106 692.435121 765.008091 705.732494 778.305464c13.297373 13.297373 28.947358 23.935271 46.949955 32.015982C770.685046 818.197583 789.710518 822.186795 809.656578 822.186795z"
-                      p-id="7409"
-                      fill="#ffffff"
-                    ></path>
-                  </svg>
-                </div>
-
-                <div
-                  class="item car"
-                  @click="createTourForm.type = TourType.CAR"
-                  :class="[createTourForm.type === TourType.CAR ? 'svg-grew' : 'svg-white']"
-                >
-                  <svg
-                    t="1710075402574"
-                    class="icon"
-                    viewBox="0 0 1024 1024"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    p-id="8606"
-                  >
-                    <path
-                      d="M848.3 384.9l-72-183.8c-13.5-35-42.9-64.9-98.3-64.9H346.6c-55.3 0-84.6 29.9-98.2 64.9l-72 183.8c-28.5 3.6-79.1 36.8-79.1 99.6v279.9h81v58.2c0 92 109.6 90.9 109.6 0v-58.2h449v58.2c0 90.9 109.6 92 109.6 0v-58.2h81V484.5c-0.1-62.8-50.7-96-79.2-99.6zM305.1 238.4c6.8-20.3 16.9-35 40.7-35.3H679c23.6 0.2 33.8 14.9 40.6 35.3l54.2 142.2H250.9l54.2-142.2z m-31.6 384.4c-34.3 0-62.1-28.3-62.1-63.3s27.8-63.4 62.1-63.4 62.1 28.3 62.1 63.4c0 35-27.8 63.3-62.1 63.3z m477.6 0c-34.3 0-62.1-28.3-62.1-63.3s27.8-63.4 62.1-63.4 62.1 28.3 62.1 63.4c0.1 35-27.7 63.3-62.1 63.3z"
-                      p-id="8607"
-                      fill="#ffffff"
-                    ></path>
-                  </svg>
-                </div>
-
-                <div
-                  class="item public"
-                  @click="createTourForm.type = TourType.PUBLIC"
-                  :class="[createTourForm.type === TourType.PUBLIC ? 'svg-grew' : 'svg-white']"
-                >
-                  <svg
-                    t="1710075911174"
-                    class="icon"
-                    viewBox="0 0 1024 1024"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    p-id="10030"
-                  >
-                    <path
-                      d="M875.8 53.4C825.8 17.8 765.4 0 695 0L329 0.1c-70.5 0-130.7 17.8-180.9 53.4C98 89.1 73 132.2 73 182.9v511.9c0 49.7 23.8 91.8 71.7 126.9 10.5 7.6 21.4 14.5 32.8 20.5 56.3 29.9 66.5 106.4 20.2 150.3-6 5.8-7.6 12.4-4.5 20 3.1 7.5 8.7 11.5 17.2 11.5h603.3c8.3 0 14.1-4 17.2-11.5 3.1-7.7 1.7-14.2-4.5-20-46.3-43.9-36.1-120.4 20.2-150.3 11.4-6.1 22.3-12.9 32.8-20.5 47.6-35 71.6-77.4 71.6-126.9v-512c0-50.7-25-93.8-75.2-129.4zM182.9 406.8V178.3c0-17.7 14.3-32 32-32H480v292.5H214.9c-17.7 0-32-14.3-32-32zM379.7 736c-21.4 21.3-47.2 32-77.7 32s-56.5-10.6-77.7-32c-21.4-21.3-32-47.2-32-77.7s10.6-56.3 32-77.7c21.4-21.3 47.2-32 77.7-32s56.3 10.8 77.7 32c21.2 21.4 32 47.2 32 77.7s-10.8 56.5-32 77.7z m420 0c-21.4 21.3-47.2 32-77.7 32s-56.5-10.6-77.7-32c-21.4-21.3-32-47.2-32-77.7s10.6-56.3 32-77.7c21.4-21.3 47.2-32 77.7-32s56.3 10.8 77.7 32c21.2 21.4 32 47.2 32 77.7s-10.8 56.5-32 77.7z m41.4-329.1c0 17.7-14.3 32-32 32H544V146.3h265.1c17.7 0 32 14.3 32 32v228.6z"
-                      p-id="10031"
-                      fill="#ffffff"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-            </a-collapse-item>
-            <a-collapse-item key="2" :style="customStyle" header="Fitness">
-              <div class="items">
-                <div class="item"></div>
-                <div class="item"></div>
-                <div class="item"></div>
-                <div class="item"></div>
-              </div>
-            </a-collapse-item>
-          </a-collapse>
-        </div>
-      </div>
-
-      <div class="middle">
-        <!-- place part -->
-        <div class="place">
-          <div>
-            <a-form-item field="startLocation" validate-trigger="blur">
-              <a-input
-                v-model.trim:model-value="createTourForm.startLocation"
-                allow-clear
-                class="place-input"
-                placeholder="Enter Starting Point"
-                @change="console.log(createTourForm.startLocation)"
-              >
-                <template #prefix><span class="white">A</span></template>
-                <!--            <template #append><icon-delete /></template>-->
-              </a-input>
-            </a-form-item>
-          </div>
-          <div>
-            <a-form-item field="endLocation" validate-trigger="blur">
-              <a-input
-                v-model.trim:model-value="createTourForm.endLocation"
-                allow-clear
-                class="place-input"
-                placeholder="Enter Destination"
-              >
-                <template #prefix><span class="white">B</span></template>
-              </a-input>
-            </a-form-item>
-          </div>
-        </div>
-
-        <!-- icon part -->
-        <div class="icons-part">
-          <div></div>
-          <div></div>
-          <div class="right-icon">
-            <svg
-              aria-hidden="true"
-              class="css-rjl6tn"
-              fill="none"
-              role="presentation"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+  <div id="mobile-planner" class="flex-r" >
+    <div class="left">
+      <div id="top-menu" style="height: 100%;" >
+        <div class="outer-container" style="height: 100%;" >
+          <div
+            :style="{ height: (hasPlanned || selectPoint) && !alwaysShowTop ? 0 : '44px' }"
+            class="menu-select"
+          >
+            <van-cell @click="showPicker = true">
+              <template #icon
+                ><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon"
+              /></template>
+              <template #title>
+                <span class="menu-title">{{ tourTypeText }}</span>
+              </template>
+              How to Tour
+            </van-cell>
+            <van-popup
+              v-model:show="showPicker"
+              class="popup"
+              position="top"
+              round
+              @open="selectPoint = undefined"
             >
-              <path
-                clip-rule="evenodd"
-                d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12zm8.25.25c0-.963.787-1.75 1.75-1.75s1.75.787 1.75 1.75S12.963 14 12 14s-1.75-.787-1.75-1.75zm7-1.75c-.962 0-1.75.787-1.75 1.75S16.288 14 17.25 14 19 13.213 19 12.25s-.788-1.75-1.75-1.75zM5 12.25c0-.963.787-1.75 1.75-1.75s1.75.787 1.75 1.75S7.713 14 6.75 14 5 13.213 5 12.25z"
-                fill="currentColor"
-                fill-rule="evenodd"
-              ></path>
-            </svg>
+              <van-picker
+                :columns="tourTypeMap"
+                @cancel="showPicker = false"
+                @confirm="onConfirm"
+                @scroll-into="handleScrollPicker"
+              />
+            </van-popup>
+          </div>
+          <div class="menu-locations flex-c" style="height: 100%;"  >
+            <!--          '78px'-->
+            <van-form
+              ref="formRef"
+              :style="{
+                height:
+                  (hasPlanned || selectPoint) && !alwaysShowTop
+                    ? 0
+                    : 80 +
+                      (createTourForm.type === TourType.CAR && createTourForm.pons.length > 0
+                        ? createTourForm.pons.length * 34 + 44
+                        : 0) +
+                      'px'
+              }"
+              @submit="handleCreateTour"
+            >
+              <van-cell-group inset>
+                <van-field
+                  v-model="createTourForm.startLocation"
+                  :border="false"
+                  clear-icon="delete"
+                  clear-trigger="always"
+                  clearable
+                  disabled
+                  label="A:"
+                  name="startLocation"
+                  placeholder="Current Location"
+                  @click-input="showSelector = true"
+                >
+                  <template #extra>
+                    <van-icon class="field-icon" color="white" name="wap-nav" size="20" />
+                  </template>
+                  <template #input>
+                    <span style="font-weight: bold; color: white">
+                      {{
+                        !createTourForm.startLocation ||
+                        createTourForm.startLocation === mapStore.currentLocation.join(',')
+                          ? 'Current location'
+                          : createTourForm.startLocation
+                      }}
+                    </span>
+                  </template>
+                </van-field>
+                <div v-if="createTourForm.type === TourType.CAR && createTourForm.pons.length > 0">
+                  <van-divider
+                    dashed
+                    style="
+                      color: rgba(255, 255, 255, 0.5);
+                      border-color: white;
+                      margin: 5px 0 0 0;
+                      height: 18px;
+                      padding: 0 24px;
+                    "
+                  >
+                    click to delete
+                  </van-divider>
+                  <van-field
+                    v-for="(pon, idx) in createTourForm.pons"
+                    :key="idx"
+                    :border="false"
+                    clear-icon="delete"
+                    clear-trigger="always"
+                    clearable
+                    disabled
+                    label=""
+                    name="waypoints"
+                    placeholder="Add Waypoints"
+                    @click-input="
+                      () => {
+                        createTourForm.pons.splice(idx, 1)
+                      }
+                    "
+                  >
+                    <template #label>
+                      <van-icon name="weapp-nav" />
+                    </template>
+                    <template #extra>
+                      <van-icon class="field-icon" color="white" name="wap-nav" size="20" />
+                    </template>
+                    <template #input>
+                      <span style="color: white">Waypoint {{ idx + 1 }}</span>
+                    </template>
+                  </van-field>
+                  <van-divider
+                    dashed
+                    style="
+                      color: rgba(255, 255, 255, 0.5);
+                      border-color: white;
+                      margin: 0 0 5px 0;
+                      height: 18px;
+                      padding: 0 24px;
+                    "
+                  >
+                    {{ createTourForm.pons.length }} way points
+                  </van-divider>
+                </div>
+
+                <van-field
+                  v-model="createTourForm.endLocation"
+                  :border="false"
+                  clear-icon="delete"
+                  clear-trigger="always"
+                  clearable
+                  disabled
+                  label="B:"
+                  name="endLocation"
+                  placeholder="Choose Destination"
+                  @click-input="showSelector = true"
+                >
+                  <template #extra>
+                    <van-icon class="field-icon" color="white" name="wap-nav" size="20" />
+                  </template>
+                  <template #input>
+                    <span v-if="createTourForm.endLocation" style="font-weight: bold; color: white">
+                      {{ createTourForm.endLocation }}
+                    </span>
+                    <span v-else style="color: white">Select Destination</span>
+                  </template>
+                </van-field>
+              </van-cell-group>
+            </van-form>
+            <div class="hint">
+              <span v-if="selectPoint" @click="alwaysShowTop = !alwaysShowTop">{{
+                selectPoint
+              }}</span>
+              <span
+                v-else-if="
+                  (mapContainer && mapContainer.resultLoading) ||
+                  (!hasPlanned && createTourForm.startLocation && createTourForm.endLocation)
+                "
+                ><van-loading :size="16"
+              /></span>
+              <span v-else-if="hasPlanned" @click="alwaysShowTop = !alwaysShowTop"
+                >Route planning succeed</span
+              >
+              <span v-else>Long press to select a point</span>
+            </div>
+            <div class="float-panne flex-c" style="flex:1;" >
+              <!-- <van-floating-panel
+                v-if="pointSheetHeight > 0"
+                id="bottom-menu"
+                v-model:height="pointSheetHeight"
+                :anchors="floatSheetAnchors"
+              > -->
+              <div id="choose-info" v-if="pointSheetHeight > 0">
+                <div class="pos-sheet-btn-container">
+                  <div v-if="!plannedResult" class="flex-r flex-justify-c" style="gap:1rem;">
+                    <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectStart">
+                      <span class="btn-text">Start here</span>
+                    </van-button>
+                    <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectEnd">
+                      <span class="btn-text">Set as end point</span>
+                    </van-button>
+                  </div>
+                  <div v-else>
+                    <van-button
+                      :disabled="createTourForm.type !== TourType.CAR"
+                      class="pos-sheet-btn primary-btn-dark"
+                      @click="handleSelectWaypoint"
+                    >
+                      <span class="btn-text">Add way point to route</span>
+                    </van-button>
+                  </div>
+                </div>
+                <div class="pos-sheet-text-container">
+                  <p class="name van-multi-ellipsis--l2">{{ sheetData.neighborhood || sheetData.street }}</p>
+                  <van-loading v-if="sheetData.loading" class="loading" color="#1989fa" />
+                  <div v-else>
+                    <van-tag
+                      v-for="(tag, idx) in sheetData.neighborhoodType
+                        .split(';')
+                        .filter((type: string) => type.length > 0)"
+                      :key="idx"
+                      class="search-result-area-label-tag"
+                      plain
+                      size="large"
+                      type="primary"
+                    >
+                      {{ tag }}
+                    </van-tag>
+                    <div class="pos-sheet-distance">
+                      <van-icon :size="23" class="icon" name="location" />
+                      <span class="text"
+                        ><span>{{ sheetData.distance }}</span> km away</span
+                      >
+                    </div>
+
+                    <div class="pos-sheet-location van-multi-ellipsis--l3">
+                      {{ sheetData.address }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- </van-floating-panel> -->
+              <div class="plan-info result-panel"
+                v-if="selectedAll && hasPlanned && !showCollectionPicker && !(pointSheetHeight > 0)"
+              >
+                <van-cell class="result-cell">
+                  <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>
+                  <template #title>
+                    <span class="menu-title">{{ tourTypeText.toUpperCase() }}</span>
+                  </template>
+                  <van-button
+                    :loading="mapContainer.resultLoading"
+                    :loading-text="' loading'"
+                    class="adjust-btn"
+                    hairline
+                    plain
+                    size="small"
+                    type="primary"
+                    @click="alwaysShowTop = !alwaysShowTop"
+                  >
+                    <span v-if="!alwaysShowTop">ADJUST ROUTE</span>
+                    <span v-else>HIDE ROUTE</span>
+                  </van-button>
+                </van-cell>
+
+                <van-grid :border="false" :gutter="10" class="result-detail">
+                  <van-grid-item class="detail-item" icon="clock-o" text="文字">
+                    <template #text>
+                      <span class="detail-content"> {{ Math.round(plannedFirstRoute?.time / 60) }} min </span>
+                    </template>
+                  </van-grid-item>
+                  <van-grid-item class="detail-item" icon="aim">
+                    <template #text>
+                      <span class="detail-content">
+                        {{ (plannedFirstRoute?.distance / 1000).toFixed(2) }} km
+                      </span></template
+                    >
+                  </van-grid-item>
+                  <van-grid-item class="detail-item action-item" icon="share-o">
+                    <template #text><span class="detail-content"> share </span></template>
+                  </van-grid-item>
+                  <van-grid-item class="detail-item action-item" icon="revoke" @click="resetForm">
+                    <template #text><span class="detail-content"> Reset </span></template>
+                  </van-grid-item>
+                </van-grid>
+                <van-cell>
+                  <van-field
+                    v-model="tourTitleInput"
+                    class="title-input"
+                    label="Tour title"
+                    placeholder="Untitled"
+                  />
+                </van-cell>
+
+                <van-cell class="collection-select" @click="showCollectionPicker = true">
+                  <!--        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>-->
+                  <template #title>
+                    <span class="menu-title">Select collection</span>
+                  </template>
+                  <van-loading v-if="selectedCollection === -1" />
+                  <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
+                </van-cell>
+                <div v-if="selectedAll" class="operation-container">
+                  <van-button
+                    :loading="loading"
+                    class="operation-btn primary-btn-dark"
+                    style="background: white; color: black; border: thin solid lightgray"
+                    @click="handleCreateTour"
+                  >
+                    <span class="btn-text">Save</span>
+                  </van-button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <div class="bottom">
-        <div class="route-img">
-          <img alt="route" src="/route/route.png" />
+    </div>
+    <div class="right" style="flex:1;">
+      <MapPlanner
+        ref="mapContainer"
+        v-model:selectPoint="selectPoint"
+        :tour-data="createTourForm"
+        @complete="handleMapComplete"
+        @update-tour-data="
+          (...args: [keyof CreateTourForm, never]) => {
+            createTourForm[args[0]] = args[1]
+          }
+        "
+      />
+    </div>
+    <!-- <div v-if="selectedAll" class="operation-container">
+      <van-button
+        :loading="loading"
+        class="operation-btn primary-btn-dark"
+        style="background: white; color: black; border: thin solid lightgray"
+        @click="handleCreateTour"
+      >
+        <span class="btn-text">Save</span>
+      </van-button>
+      <van-button class="operation-btn primary-btn-dark" @click="handleCreateTour(true)">
+        <van-icon :size="23" name="guide-o" style="display: flex"
+          ><span class="btn-text" style="font-size: 16px; align-self: center"
+            >Navigation</span
+          ></van-icon
+        >
+      </van-button>
+    </div> -->
+    <!-- <van-floating-panel
+      v-if="pointSheetHeight > 0"
+      id="bottom-menu"
+      v-model:height="pointSheetHeight"
+      :anchors="floatSheetAnchors"
+    >
+      <div class="pos-sheet-btn-container">
+        <div v-if="!plannedResult">
+          <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectStart">
+            <span class="btn-text">Start here</span>
+          </van-button>
+          <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectEnd">
+            <span class="btn-text">Set as end point</span>
+          </van-button>
         </div>
-        <div class="route-text">
-          <h3 class="header">Where do you want to go?</h3>
-          <!--<p class="text">Enter a destination or click on the map to add it.</p>-->
+        <div v-else>
+          <van-button
+            :disabled="createTourForm.type !== TourType.CAR"
+            class="pos-sheet-btn primary-btn-dark"
+            @click="handleSelectWaypoint"
+          >
+            <span class="btn-text">Add way point to route</span>
+          </van-button>
         </div>
-        <a-button :loading="loading" style="width: 100px" html-type="submit">create</a-button>
-        <!-- <input ref="infile" type="file" name="file" id="infile" @change="handleGPX"> -->
       </div>
-    </a-form>
-  </section>
+      <div class="pos-sheet-text-container">
+        <p class="name van-multi-ellipsis--l2">{{ sheetData.neighborhood || sheetData.street }}</p>
+        <van-loading v-if="sheetData.loading" class="loading" color="#1989fa" />
+        <div v-else>
+          <van-tag
+            v-for="(tag, idx) in sheetData.neighborhoodType
+              .split(';')
+              .filter((type: string) => type.length > 0)"
+            :key="idx"
+            class="search-result-area-label-tag"
+            plain
+            size="large"
+            type="primary"
+          >
+            {{ tag }}
+          </van-tag>
+          <div class="pos-sheet-distance">
+            <van-icon :size="23" class="icon" name="location" />
+            <span class="text"
+              ><span>{{ sheetData.distance }}</span> km away</span
+            >
+          </div>
 
-  <MapContainer ref="mapContainer" v-model:create-tour-form="createTourForm" />
+          <div class="pos-sheet-location van-multi-ellipsis--l3">
+            {{ sheetData.address }}
+          </div>
+        </div>
+      </div> -->
+      <!--      <div class="space"></div>-->
+    <!-- </van-floating-panel> -->
+    <!-- <van-floating-panel
+      v-if="selectedAll && hasPlanned && !showCollectionPicker && !(pointSheetHeight > 0)"
+      v-model:height="resultPanelHeight"
+      :anchors="resultPanelAnchors"
+      class="result-panel"
+    >
+      <van-cell class="result-cell">
+        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>
+        <template #title>
+          <span class="menu-title">{{ tourTypeText.toUpperCase() }}</span>
+        </template>
+        <van-button
+          :loading="mapContainer.resultLoading"
+          :loading-text="' loading'"
+          class="adjust-btn"
+          hairline
+          plain
+          size="small"
+          type="primary"
+          @click="alwaysShowTop = !alwaysShowTop"
+        >
+          <span v-if="!alwaysShowTop">ADJUST ROUTE</span>
+          <span v-else>HIDE ROUTE</span>
+        </van-button>
+      </van-cell>
+
+      <van-grid :border="false" :gutter="10" class="result-detail">
+        <van-grid-item class="detail-item" icon="clock-o" text="文字">
+          <template #text>
+            <span class="detail-content"> {{ Math.round(plannedFirstRoute?.time / 60) }} min </span>
+          </template>
+        </van-grid-item>
+        <van-grid-item class="detail-item" icon="aim">
+          <template #text>
+            <span class="detail-content">
+              {{ (plannedFirstRoute?.distance / 1000).toFixed(2) }} km
+            </span></template
+          >
+        </van-grid-item>
+        <van-grid-item class="detail-item action-item" icon="share-o">
+          <template #text><span class="detail-content"> share </span></template>
+        </van-grid-item>
+        <van-grid-item class="detail-item action-item" icon="revoke" @click="resetForm">
+          <template #text><span class="detail-content"> Reset </span></template>
+        </van-grid-item>
+      </van-grid>
+      <van-cell>
+        <van-field
+          v-model="tourTitleInput"
+          class="title-input"
+          label="Tour title"
+          placeholder="Untitled"
+        />
+      </van-cell>
+
+      <van-cell class="collection-select" @click="showCollectionPicker = true">
+        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>
+        <template #title>
+          <span class="menu-title">Select collection</span>
+        </template>
+        <van-loading v-if="selectedCollection === -1" />
+        <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
+      </van-cell>
+    </van-floating-panel> -->
+    <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>
+      <van-picker
+        :columns="
+          userCollections.map((collection) => ({
+            value: collection.id,
+            text: collection.name
+          }))
+        "
+        :loading="collectionLoadingObj.loading.value"
+        class="collection-picker"
+        @cancel="showCollectionPicker = false"
+        @confirm="onCollectionConfirm"
+        @scroll-into="handleScrollPicker"
+      />
+    </van-popup>
+  </div>
+  <van-overlay id="search-overlay" :lock-scroll="false" :show="showSelector">
+    <SearchPlaceView
+      @cancel="showSelector = false"
+      @reset="
+        () => {
+          resetForm()
+          showSelector = false
+        }
+      "
+      @select="
+        (lnglat) => {
+          mapContainer.handleSelectPlace(lnglat)
+          showSelector = false
+        }
+      "
+    />
+  </van-overlay>
 </template>
 
-<style scoped></style>
+<style scoped>
+#mobile-planner #map-container{
+  position: relative;
+  top:0;
+  left:0;
+  width:100%;
+  height: 100%;
+}
+#mobile-planner #top-menu .outer-container .menu-locations #choose-info{
+  background-color: rgba(255,255,255,0.7);
+  border-radius: 15px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+#mobile-planner #top-menu .outer-container .menu-locations .pos-sheet-btn{
+  background-color: green;
+}
+</style>
 
 <script lang="ts">
 export default {
-  name: 'PlannerView'
+  name: 'plannerWebView'
 }
 </script>

@@ -13,8 +13,8 @@
       <div class="email">
         {{ user?.email }}
       </div>
-      <div class="vip-time">
-        VIP expire at 2022/10/10
+      <div class="vip-time" v-if="user?.vipExpireTime">
+        VIP expire at {{ user.vipExpireTime }}
       </div>
     </div>
     
@@ -92,7 +92,7 @@
       </template>
       <van-grid>
         <van-grid-item style="flex: 1;" >
-          <button ref="vipB1" class="vip-choice" @click="setChoose(0)" >
+          <button ref="vipB1" class="vip-choice chosen" @click="setChoose(VIPType.MONTHLY)" >
             <div class="price flex-c flex-justify-c">
               <div class="time">Monthly</div>
               <div class="money">$6</div>
@@ -100,15 +100,15 @@
           </button>
         </van-grid-item>
         <van-grid-item style="flex: 1;">
-          <button ref="vipB2" class="vip-choice" @click="setChoose(1)" >
+          <button ref="vipB2" class="vip-choice" @click="setChoose(VIPType.QUARTERLY)" >
             <div class="price flex-c flex-justify-c">
-              <div class="time">3 Month</div>
+              <div class="time">Quaterly</div>
               <div class="money">$16</div>
             </div>
           </button>
         </van-grid-item>
         <van-grid-item style="flex: 1;">
-          <button ref="vipB3" class="vip-choice" @click="setChoose(2)">
+          <button ref="vipB3" class="vip-choice" @click="setChoose(VIPType.YEARLY)">
             <div class="price flex-c flex-justify-c">
               <div class="time">Yearly</div>
               <div class="money">$60</div>
@@ -116,10 +116,10 @@
           </button>
         </van-grid-item>
         <van-grid-item style="flex: 1;">
-          <button ref="vipB4" class="vip-choice" @click="setChoose(3)">
+          <button ref="vipB4" class="vip-choice" @click="setChoose(VIPType.FOREVER)">
             <div class="price flex-c flex-justify-c">
               <div class="time">Forever</div>
-              <div class="money">$60</div>
+              <div class="money">$160</div>
             </div>
           </button>
         </van-grid-item>
@@ -132,7 +132,7 @@
 </template>
 
 <script lang="ts" setup>
-import { upgradeUser, type UserRecord } from '@/apis/user'
+import { buy_vip, type UserRecord, VIPType } from '@/apis/user'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { Message } from '@arco-design/web-vue'
@@ -140,6 +140,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showSuccessToast } from 'vant'
 import GraceButton from '@/components/graceButton/GraceButton.vue'
+
 
 const userStore = useUserStore()
 const user = ref<UserRecord | null>(null)
@@ -150,6 +151,7 @@ const vipB1 = ref()
 const vipB2 = ref()
 const vipB3 = ref()
 const vipB4 = ref()
+const vipType = ref(0)
 
 const toDetail = () => {
   router.push('/personal/detail')
@@ -165,9 +167,7 @@ const toGroup = ()=>{
 }
 const clickVIP = ():Promise<void> =>
   new Promise((resolve)=>{
-    const form = user.value!
-    form.type = 1
-    upgradeUser(form).then(res=>{
+    buy_vip(vipType.value).then(res=>{
       if(res.success){
         showSuccessToast("VIP!")
         resolve()
@@ -193,6 +193,7 @@ const setChoose = (id:number)=>{
       item.classList.remove('chosen');
     }
   })
+  vipType.value = id
 }
 
 userStore
