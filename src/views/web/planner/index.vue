@@ -8,17 +8,16 @@ import {
   parseLocation,
   type TourRecord,
   TourType,
-  tourTypeMap
 } from '@/apis/tour'
-import type { PickerOption } from 'vant'
+// import type { PickerOption } from 'vant'
 import { Message } from '@arco-design/web-vue'
 import useLoading from '@/hooks/loading'
 import MapPlanner from '@/views/mobile/planner/components/MapPlanner.vue'
-import { hapticsImpactLight } from '@/utils'
+// import { hapticsImpactLight } from '@/utils'
 import { App } from '@capacitor/app'
 import { useMapStore } from '@/stores/map'
 import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { uploadFileFromURL } from '@/utils/file'
 import SearchPlaceView from '@/views/mobile/planner/SearchPlaceView.vue'
 
@@ -27,14 +26,14 @@ const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.value.t
 
 const showPicker = ref(false)
 const showCollectionPicker = ref(false)
-const onConfirm = ({ selectedOptions }: { selectedOptions: PickerOption[] }) => {
-  showPicker.value = false
-  createTourForm.value.type = selectedOptions[0].value as TourType
-}
-const onCollectionConfirm = ({ selectedOptions }: { selectedOptions: PickerOption[] }) => {
-  showCollectionPicker.value = false
-  selectedCollection.value = selectedOptions[0].value as number
-}
+// const onConfirm = ({ selectedOptions }: { selectedOptions: PickerOption[] }) => {
+//   showPicker.value = false
+//   createTourForm.value.type = selectedOptions[0].value as TourType
+// }
+// const onCollectionConfirm = ({ selectedOptions }: { selectedOptions: PickerOption[] }) => {
+//   showCollectionPicker.value = false
+//   selectedCollection.value = selectedOptions[0].value as number
+// }
 
 const userCollections = ref<TourCollection[]>([])
 const selectedCollection = ref(-1)
@@ -93,7 +92,7 @@ const { loading, setLoading } = useLoading()
 
 const savedTour = ref<TourRecord>()
 
-const router = useRouter()
+// const router = useRouter()
 
 const handleCreateTour = (navigate = false) => {
   formRef.value.validate().then((e: any) => {
@@ -119,9 +118,9 @@ const handleCreateTour = (navigate = false) => {
                 if (uploadRes.success) {
                   savedTour.value = res.data!
                   Message.success(res.message)
-                  if (navigate) {
-                    router.push({ name: 'record', params: { tourId: savedTour.value.id } })
-                  }
+                  // if (navigate) {
+                  //   router.push({ name: 'record', params: { tourId: savedTour.value.id } })
+                  // }
                 } else {
                   throw uploadRes.message
                 }
@@ -140,14 +139,14 @@ const handleCreateTour = (navigate = false) => {
     }
   })
 }
-const handleScrollPicker = () => {
-  hapticsImpactLight()
-}
+// const handleScrollPicker = () => {
+//   hapticsImpactLight()
+// }
 
 const selectPoint = ref<number[]>()
 const pointSheetHeight = ref(0)
 const floatSheetHeight = window.innerHeight * 0.4
-const floatSheetAnchors = [0, floatSheetHeight]
+// const floatSheetAnchors = [0, floatSheetHeight]
 
 let timer:any = 0
 watch(selectPoint, (value) => {
@@ -210,17 +209,17 @@ const selectedAll = computed({
   }
 })
 
-const setCenter = (center: number[] | string[]) => {
-  mapContainer.value.center.value = center
-  console.log(center)
-}
+// const setCenter = (center: number[] | string[]) => {
+//   mapContainer.value.center.value = center
+//   console.log(center)
+// }
 
-const resultPanelAnchors = [
-  Math.round(0.2 * window.innerHeight),
-  Math.round(0.4 * window.innerHeight),
-  Math.round(0.6 * window.innerHeight)
-]
-const resultPanelHeight = ref(resultPanelAnchors[1])
+// const resultPanelAnchors = [
+//   Math.round(0.2 * window.innerHeight),
+//   Math.round(0.4 * window.innerHeight),
+//   Math.round(0.6 * window.innerHeight)
+// ]
+// const resultPanelHeight = ref(resultPanelAnchors[1])
 
 const hasPlanned = computed(() => {
   const result = mapContainer.value && mapContainer.value.navigationResult
@@ -289,12 +288,24 @@ onUnmounted(() => {
               round
               @open="selectPoint = undefined"
             >
-              <van-picker
+              <!-- <van-picker
                 :columns="tourTypeMap"
                 @cancel="showPicker = false"
                 @confirm="onConfirm"
                 @scroll-into="handleScrollPicker"
-              />
+              /> -->
+              <div style="height: 100px; width: 100%" class="flex-r flex-justify-c">
+                <a-select :style="{maxWidth: '400px'}"
+                  placeholder="Please select ..."
+                  :bordered="false"
+                  v-model="createTourForm.type"
+                  @change="showPicker = false"
+                >
+                  <a-option :value="TourType.WALK">Hiking</a-option>
+                  <a-option :value="TourType.CYCLING">Cycling</a-option>
+                  <a-option :value="TourType.CAR">Car</a-option>
+                </a-select>
+              </div>
             </van-popup>
           </div>
           <div class="menu-locations flex-c" style="height: 100%;"  >
@@ -491,8 +502,8 @@ onUnmounted(() => {
                 </div>
               </div>
               <!-- </van-floating-panel> -->
-              <div class="plan-info result-panel"
-                v-if="selectedAll && hasPlanned && !showCollectionPicker && !(pointSheetHeight > 0)"
+              <div id="plan-info" class="result-panel"
+                v-if="selectedAll && hasPlanned && !(pointSheetHeight > 0)"
               >
                 <van-cell class="result-cell">
                   <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>
@@ -551,6 +562,22 @@ onUnmounted(() => {
                   <van-loading v-if="selectedCollection === -1" />
                   <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
                 </van-cell>
+                <van-popup id="thepop" v-model:show="showCollectionPicker" class="popup" position="top" round>
+                  <div style="height: 100px; width: 100%" class="flex-r flex-justify-c">
+                    <a-select :style="{maxWidth: '400px'}"
+                      placeholder="Please select ..."
+                      :bordered="false"
+                      v-model="selectedCollection"
+                      @change="showCollectionPicker = false"
+                      :options="
+                        userCollections.map((collection)=>({
+                          value: collection.id,
+                          label: collection.name
+                        }))
+                      "
+                    ></a-select>
+                  </div>
+                </van-popup>
                 <div v-if="selectedAll" class="operation-container">
                   <van-button
                     :loading="loading"
@@ -580,157 +607,6 @@ onUnmounted(() => {
         "
       />
     </div>
-    <!-- <div v-if="selectedAll" class="operation-container">
-      <van-button
-        :loading="loading"
-        class="operation-btn primary-btn-dark"
-        style="background: white; color: black; border: thin solid lightgray"
-        @click="handleCreateTour"
-      >
-        <span class="btn-text">Save</span>
-      </van-button>
-      <van-button class="operation-btn primary-btn-dark" @click="handleCreateTour(true)">
-        <van-icon :size="23" name="guide-o" style="display: flex"
-          ><span class="btn-text" style="font-size: 16px; align-self: center"
-            >Navigation</span
-          ></van-icon
-        >
-      </van-button>
-    </div> -->
-    <!-- <van-floating-panel
-      v-if="pointSheetHeight > 0"
-      id="bottom-menu"
-      v-model:height="pointSheetHeight"
-      :anchors="floatSheetAnchors"
-    >
-      <div class="pos-sheet-btn-container">
-        <div v-if="!plannedResult">
-          <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectStart">
-            <span class="btn-text">Start here</span>
-          </van-button>
-          <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectEnd">
-            <span class="btn-text">Set as end point</span>
-          </van-button>
-        </div>
-        <div v-else>
-          <van-button
-            :disabled="createTourForm.type !== TourType.CAR"
-            class="pos-sheet-btn primary-btn-dark"
-            @click="handleSelectWaypoint"
-          >
-            <span class="btn-text">Add way point to route</span>
-          </van-button>
-        </div>
-      </div>
-      <div class="pos-sheet-text-container">
-        <p class="name van-multi-ellipsis--l2">{{ sheetData.neighborhood || sheetData.street }}</p>
-        <van-loading v-if="sheetData.loading" class="loading" color="#1989fa" />
-        <div v-else>
-          <van-tag
-            v-for="(tag, idx) in sheetData.neighborhoodType
-              .split(';')
-              .filter((type: string) => type.length > 0)"
-            :key="idx"
-            class="search-result-area-label-tag"
-            plain
-            size="large"
-            type="primary"
-          >
-            {{ tag }}
-          </van-tag>
-          <div class="pos-sheet-distance">
-            <van-icon :size="23" class="icon" name="location" />
-            <span class="text"
-              ><span>{{ sheetData.distance }}</span> km away</span
-            >
-          </div>
-
-          <div class="pos-sheet-location van-multi-ellipsis--l3">
-            {{ sheetData.address }}
-          </div>
-        </div>
-      </div> -->
-      <!--      <div class="space"></div>-->
-    <!-- </van-floating-panel> -->
-    <!-- <van-floating-panel
-      v-if="selectedAll && hasPlanned && !showCollectionPicker && !(pointSheetHeight > 0)"
-      v-model:height="resultPanelHeight"
-      :anchors="resultPanelAnchors"
-      class="result-panel"
-    >
-      <van-cell class="result-cell">
-        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>
-        <template #title>
-          <span class="menu-title">{{ tourTypeText.toUpperCase() }}</span>
-        </template>
-        <van-button
-          :loading="mapContainer.resultLoading"
-          :loading-text="' loading'"
-          class="adjust-btn"
-          hairline
-          plain
-          size="small"
-          type="primary"
-          @click="alwaysShowTop = !alwaysShowTop"
-        >
-          <span v-if="!alwaysShowTop">ADJUST ROUTE</span>
-          <span v-else>HIDE ROUTE</span>
-        </van-button>
-      </van-cell>
-
-      <van-grid :border="false" :gutter="10" class="result-detail">
-        <van-grid-item class="detail-item" icon="clock-o" text="文字">
-          <template #text>
-            <span class="detail-content"> {{ Math.round(plannedFirstRoute?.time / 60) }} min </span>
-          </template>
-        </van-grid-item>
-        <van-grid-item class="detail-item" icon="aim">
-          <template #text>
-            <span class="detail-content">
-              {{ (plannedFirstRoute?.distance / 1000).toFixed(2) }} km
-            </span></template
-          >
-        </van-grid-item>
-        <van-grid-item class="detail-item action-item" icon="share-o">
-          <template #text><span class="detail-content"> share </span></template>
-        </van-grid-item>
-        <van-grid-item class="detail-item action-item" icon="revoke" @click="resetForm">
-          <template #text><span class="detail-content"> Reset </span></template>
-        </van-grid-item>
-      </van-grid>
-      <van-cell>
-        <van-field
-          v-model="tourTitleInput"
-          class="title-input"
-          label="Tour title"
-          placeholder="Untitled"
-        />
-      </van-cell>
-
-      <van-cell class="collection-select" @click="showCollectionPicker = true">
-        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>
-        <template #title>
-          <span class="menu-title">Select collection</span>
-        </template>
-        <van-loading v-if="selectedCollection === -1" />
-        <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
-      </van-cell>
-    </van-floating-panel> -->
-    <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>
-      <van-picker
-        :columns="
-          userCollections.map((collection) => ({
-            value: collection.id,
-            text: collection.name
-          }))
-        "
-        :loading="collectionLoadingObj.loading.value"
-        class="collection-picker"
-        @cancel="showCollectionPicker = false"
-        @confirm="onCollectionConfirm"
-        @scroll-into="handleScrollPicker"
-      />
-    </van-popup>
   </div>
   <van-overlay id="search-overlay" :lock-scroll="false" :show="showSelector">
     <SearchPlaceView
@@ -769,6 +645,17 @@ onUnmounted(() => {
 }
 #mobile-planner #top-menu .outer-container .menu-locations .pos-sheet-btn{
   background-color: green;
+}
+#mobile-planner #top-menu .outer-container .menu-locations #plan-info{
+  background-color: rgba(255,255,255,0.7);
+  border-radius: 15px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+#mobile-planner #top-menu .outer-container .menu-locations #thepop{
+  background-color: white;
 }
 </style>
 
