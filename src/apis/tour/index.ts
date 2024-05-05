@@ -58,9 +58,13 @@ export const getTourById: (tourId: number | string) => Promise<ApiResponse<TourR
   })
 
 export const fetchTourDataJson = (tour: TourRecord) =>
-  axios.get(tour.dataUrl, {
-    headers: { 'Content-Type': 'application/json' }
-  })
+  Promise.all(
+    [tour.dataUrl, tour.completeUrl].map((url) =>
+      axios.get(url, {
+        headers: { 'Content-Type': 'application/json' }
+      })
+    )
+  )
 
 export interface PON {
   name: string
@@ -77,12 +81,12 @@ export interface TourImage {
 }
 
 export interface tourRecordData {
-  id: number,
-  calorie: number,
-  avgSpeed: number,
-  timeInMotion: number,
-  totalDistance: number,
-  timeTaken: number 
+  id: number
+  calorie: number
+  avgSpeed: number
+  timeInMotion: number
+  totalDistance: number
+  timeTaken: number
 }
 
 export interface TourRecord {
@@ -135,6 +139,7 @@ export const TourStateMap = {
   1: 'ongoing',
   2: 'finished'
 }
+
 export interface CreateTourForm {
   startLocation: string
   endLocation: string
@@ -144,6 +149,7 @@ export interface CreateTourForm {
   result: any
   title: string
 }
+
 export interface TourPlannedData extends CreateTourForm {}
 
 export interface UpdateTourForm extends Partial<CreateTourForm> {

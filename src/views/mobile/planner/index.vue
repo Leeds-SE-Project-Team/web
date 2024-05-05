@@ -95,7 +95,7 @@ const savedTour = ref<TourRecord>()
 
 const router = useRouter()
 
-const handleCreateTour = (navigate = false) => {
+const handleCreateTour = (navigate?: boolean) => {
   formRef.value.validate().then((e: any) => {
     if (!e) {
       setLoading(true)
@@ -119,7 +119,7 @@ const handleCreateTour = (navigate = false) => {
                 if (uploadRes.success) {
                   savedTour.value = res.data!
                   Message.success(res.message)
-                  if (navigate) {
+                  if (navigate === true) {
                     router.push({ name: 'record', params: { tourId: savedTour.value.id } })
                   }
                 } else {
@@ -149,7 +149,7 @@ const pointSheetHeight = ref(0)
 const floatSheetHeight = window.innerHeight * 0.4
 const floatSheetAnchors = [0, floatSheetHeight]
 
-let timer:any = 0
+let timer: any = 0
 watch(selectPoint, (value) => {
   if (value) {
     clearInterval(timer)
@@ -438,6 +438,7 @@ onUnmounted(() => {
     </div>
     <div v-if="selectedAll" class="operation-container">
       <van-button
+        :disabled="selectedCollection === -1"
         :loading="loading"
         class="operation-btn primary-btn-dark"
         style="background: white; color: black; border: thin solid lightgray"
@@ -445,10 +446,14 @@ onUnmounted(() => {
       >
         <span class="btn-text">Save</span>
       </van-button>
-      <van-button class="operation-btn primary-btn-dark" @click="handleCreateTour(true)">
+      <van-button
+        :disabled="selectedCollection === -1"
+        class="operation-btn primary-btn-dark"
+        @click="handleCreateTour(true)"
+      >
         <van-icon :size="23" name="guide-o" style="display: flex"
           ><span class="btn-text" style="font-size: 16px; align-self: center"
-            >Navigation</span
+            >Navigate</span
           ></van-icon
         >
       </van-button>

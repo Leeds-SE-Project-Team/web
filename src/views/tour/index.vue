@@ -136,6 +136,17 @@
             </div>
           </template>
         </a-button>
+
+        <a-button
+          class="primary-btn-dark"
+          @click="router.push({ name: 'record', params: { tourId: tourId } })"
+        >
+          <van-icon :size="23" name="guide-o" style="display: flex"
+            ><span class="btn-text" style="font-size: 16px; align-self: center"
+              >Navigate</span
+            ></van-icon
+          >
+        </a-button>
       </div>
 
       <div class="follower">

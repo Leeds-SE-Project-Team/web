@@ -224,16 +224,17 @@
       margin-top: 20px;
       border-radius: 4px;
       background-color: #fff;
-      border: 2px solid #989898;
+      //border: 2px solid #989898;
       width: 66px;
       height: 36px;
-      padding: 4px;
+      //padding: 4px;
       font-size: 20px;
       font-weight: 600;
 
       .icon {
         display: flex;
         align-items: center;
+        justify-content: center;
       }
     }
 
