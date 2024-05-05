@@ -24,12 +24,14 @@
                         <div 
                             class="group-info flex-c flex-justify-c" 
                             style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;"
-                            @click="console.log(3)">
+                            @click="redirectToRoute(item.id)">
                             
                             <div class="info-title" >
                                 {{ item.name }}
                             </div>
-
+                            
+                            <dialogMember 
+                                :info="item"></dialogMember>
                         </div>
                     </div>
                 </van-list>
@@ -93,6 +95,12 @@ import { Message } from '@arco-design/web-vue';
 import { showConfirmDialog, type UploaderFileListItem } from 'vant';
 import type { Interceptor } from 'vant/lib/utils';
 import { computed, ref } from 'vue';
+import dialogMember from './button/dialogMember.vue';
+import router from '@/router';
+
+const redirectToRoute = (id: string|number) => {
+  router.push(`/groupcollection/${id}`);
+}
 
 const activeNames = ref([])
 const showSearch = ref(false);

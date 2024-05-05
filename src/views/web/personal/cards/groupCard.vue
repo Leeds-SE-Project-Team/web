@@ -1,4 +1,4 @@
-leader<script lang="ts" setup>
+<script lang="ts" setup>
 import type { GroupRecord } from '@/apis/group';
 import { addUserToGroup, getAllUsers, type UserRecord } from '@/apis/user';
 import router from '@/router';
