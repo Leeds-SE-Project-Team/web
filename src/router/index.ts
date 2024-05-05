@@ -236,16 +236,27 @@ const router = createRouter({
       },
       component: groupCollection
     },
+    // {
+    //   path: '/personal',
+    //   redirect: '/personal/personalprofile', // web页面的重定向
+    //   meta: {
+    //     auth: ['admin', 'user'],
+    //     layout: Capacitor.getPlatform() === 'web' ? 'b' : '',
+    //     title: 'personalprofile'
+    //   },
+    //   component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
+    //   children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
+    // },
     {
       path: '/personal',
-      redirect: '/personal/personalprofile', // web页面的重定向
+      // redirect: '/personal/personalprofile', // web页面的重定向
       meta: {
         auth: ['admin', 'user'],
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : '',
+        layout: '',
         title: 'personalprofile'
       },
-      component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
-      children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
+      component: personalIndex,
+      children: personalMobileChildren
     },
     {
       path: '/group',

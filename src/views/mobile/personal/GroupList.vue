@@ -21,10 +21,15 @@
                         style="margin: 0.5rem 0;"
                     >
                         <van-image style="flex: 1; max-height: 100px;" :src="item.coverUrl" fit="cover"/>
-                        <div class="group-info flex-c flex-justify-c" >
+                        <div 
+                            class="group-info flex-c flex-justify-c" 
+                            style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;"
+                            @click="console.log(3)">
+                            
                             <div class="info-title" >
                                 {{ item.name }}
                             </div>
+
                         </div>
                     </div>
                 </van-list>
@@ -85,9 +90,9 @@ import { getAllCreatedGroupsByUser, updateGroup, type GroupRecord, getAllJoinedG
 import { createGroup, type CreateGroupForm } from '@/apis/group';
 import { uploadFileFromURL } from '@/utils/file';
 import { Message } from '@arco-design/web-vue';
-import type { UploaderFileListItem } from 'vant';
+import { showConfirmDialog, type UploaderFileListItem } from 'vant';
 import type { Interceptor } from 'vant/lib/utils';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const activeNames = ref([])
 const showSearch = ref(false);
@@ -178,4 +183,6 @@ const beforeClose: Interceptor = async (action:string)=>{
     console.log(groupUpload.value)
     return true;
 }
+
+
 </script>
