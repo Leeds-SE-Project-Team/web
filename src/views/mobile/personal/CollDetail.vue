@@ -91,6 +91,7 @@ const beforeClose = (action: string):Promise<boolean>=>
         return;
     }
     theForm.value.validate().then((res:any)=>{
+        collectionForm.value.title = collectionForm.value.name
         createCollection(collectionForm.value).then(res=>{
             if(!res.success){
                 Message.info(res.message);

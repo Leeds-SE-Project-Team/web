@@ -49,6 +49,7 @@ const fetchTourCollections = () => {
       if (apiRes.success) {
         userCollections.value = apiRes.data!
         selectedCollection.value = userCollections.value[0].id
+        createGPXFrom.value.tourCollectionId = userCollections.value[0].id
       } else {
         Message.error(apiRes.message)
       }
@@ -75,6 +76,36 @@ const createTourForm = ref<CreateTourForm>({
   result: undefined,
   title: 'Untitled'
 })
+
+const route = useRoute()
+
+const createGPXFrom = ref<CreateTourForm>({
+  startLocation: '',
+  endLocation: '',
+  type: TourType.WALK,
+  pons: [],
+  tourCollectionId: -1,
+  result: undefined,
+  title: 'Untitled'
+})
+
+const isGPX = computed(()=>{
+  if(route.query.type && route.query.type==='gpx'){
+    return true;
+  }
+  return false;
+})
+const isGPS = computed(()=>{
+  if(route.query.type && route.query.gps==='true'){
+    return true;
+  }
+  return false;
+})
+
+if(isGPX.value){
+  createGPXFrom.value.result = useMapStore().FileGpxData
+  // fetchTourCollections()
+}
 
 const resetForm = () => {
   createTourForm.value.startLocation = ''
@@ -107,6 +138,48 @@ const handleCreateTour = (navigate = false) => {
         title: tourTitleInput.value.length > 0 ? tourTitleInput.value : 'Untitled',
         result: mapContainer.value.navigationResult
       })
+        .then((res) => {
+          if (res.success) {
+            uploadFileFromURL(
+              mapStore.screenMap(mapContainer.value.mapRef.$$getInstance())!,
+              `/tour/${res.data!.id}`,
+              'map_screenshot.jpg'
+            )
+              .then((uploadRes) => {
+                if (uploadRes.success) {
+                  savedTour.value = res.data!
+                  Message.success(res.message)
+                  // if (navigate) {
+                  //   router.push({ name: 'record', params: { tourId: savedTour.value.id } })
+                  // }
+                } else {
+                  throw uploadRes.message
+                }
+              })
+              .finally(() => {
+                setLoading(false)
+              })
+          } else {
+            throw res.message
+          }
+        })
+        .catch((e) => {
+          Message.error(e)
+          setLoading(false)
+        })
+    }
+  })
+}
+
+const handleGPXTour = (navigate = false) => {
+  formRef.value.validate().then((e: any) => {
+    if (!e) {
+      setLoading(true)
+      // if (createTourForm.value.title === '') {
+      //   createTourForm.value.title = 'untitled'
+      // }
+      console.log(createGPXFrom.value)
+      createTour(createGPXFrom.value)
         .then((res) => {
           if (res.success) {
             uploadFileFromURL(
@@ -223,10 +296,10 @@ const selectedAll = computed({
 
 const hasPlanned = computed(() => {
   const result = mapContainer.value && mapContainer.value.navigationResult
-  if (result) {
+  if (result || isGPX.value) {
     fetchTourCollections()
   }
-  return result
+  return result || isGPX.value
 })
 
 const alwaysShowTop = ref(false)
@@ -240,7 +313,6 @@ const plannedFirstRoute = computed(() =>
     : undefined
 )
 
-const route = useRoute()
 const queryLocation = route.query.location
 const handleMapComplete = () => {
   if (queryLocation) {
@@ -250,12 +322,59 @@ const handleMapComplete = () => {
 }
 
 const showSelector = ref(false)
+const GPXCollectionPicker = ref(false)
+
+watch(()=>mapContainer.value?.mapRef.$$getInstance(),()=>{
+  console.log(mapContainer.value.mapRef.$$getInstance())
+})
 
 onMounted(() => {
   App.addListener('backButton', () => {
     selectPoint.value = undefined
     showPicker.value = false
   })
+  // setInterval(()=>{
+  //   if(isGPX.value){
+  //     console.log(mapContainer.value?.mapRef.$$getInstance())
+  //   }
+  // },1000)
+  if(isGPX.value){
+    setTimeout(()=>{
+      const map = mapContainer.value.mapRef.$$getInstance()
+      console.log(map)
+      if(isGPS.value){
+        AMap.convertFrom(mapStore.parseRouteToPath(
+          createGPXFrom.value.result.routes,
+          0
+        ), "gps", function (status:any, result:any) {
+        //status：complete 表示查询成功，no_data 为查询无结果，error 代表查询错误
+        //查询成功时，result.locations 即为转换后的高德坐标系
+        if (status === "complete" && result.info === "ok") {
+            const path = result.locations; //转换后的高德坐标 Array.<LngLat>
+            createGPXFrom.value.result.routes = path;
+            createGPXFrom.value.startLocation = path[0].toString()
+            createGPXFrom.value.endLocation = path[path.length-1].toString()
+            useMapStore().drawRoute(
+              map,
+              createGPXFrom.value.result.routes,
+              0,
+              {startMarker: true,endMarker:true,reCenter:true},
+              false,true
+            )
+          }
+        })
+      }else{
+        useMapStore().drawRoute(
+          map,
+          createGPXFrom.value.result.routes,
+          0,
+          {startMarker: true,endMarker:true,reCenter:true},
+          isGPS.value
+        )
+      }
+      
+    },1000)
+  }
 })
 
 onUnmounted(() => {
@@ -288,13 +407,19 @@ onUnmounted(() => {
               round
               @open="selectPoint = undefined"
             >
-              <!-- <van-picker
-                :columns="tourTypeMap"
-                @cancel="showPicker = false"
-                @confirm="onConfirm"
-                @scroll-into="handleScrollPicker"
-              /> -->
-              <div style="height: 100px; width: 100%" class="flex-r flex-justify-c">
+              <div v-if="isGPX" style="height: 100px; width: 100%" class="flex-r flex-justify-c">
+                <a-select :style="{maxWidth: '400px'}"
+                  placeholder="Please select ..."
+                  :bordered="false"
+                  v-model="createGPXFrom.type"
+                  @change="showPicker = false"
+                >
+                  <a-option :value="TourType.WALK">Hiking</a-option>
+                  <a-option :value="TourType.CYCLING">Cycling</a-option>
+                  <a-option :value="TourType.CAR">Car</a-option>
+                </a-select>
+              </div>
+              <div v-else style="height: 100px; width: 100%" class="flex-r flex-justify-c">
                 <a-select :style="{maxWidth: '400px'}"
                   placeholder="Please select ..."
                   :bordered="false"
@@ -324,7 +449,7 @@ onUnmounted(() => {
               }"
               @submit="handleCreateTour"
             >
-              <van-cell-group inset>
+              <van-cell-group v-if="!isGPX" inset>
                 <van-field
                   v-model="createTourForm.startLocation"
                   :border="false"
@@ -535,8 +660,7 @@ onUnmounted(() => {
                     <template #text>
                       <span class="detail-content">
                         {{ (plannedFirstRoute?.distance / 1000).toFixed(2) }} km
-                      </span></template
-                    >
+                      </span></template>
                   </van-grid-item>
                   <van-grid-item class="detail-item action-item" icon="share-o">
                     <template #text><span class="detail-content"> share </span></template>
@@ -584,6 +708,91 @@ onUnmounted(() => {
                     class="operation-btn primary-btn-dark"
                     style="background: white; color: black; border: thin solid lightgray"
                     @click="handleCreateTour"
+                  >
+                    <span class="btn-text">Save</span>
+                  </van-button>
+                </div>
+              </div>
+              <div id="gpx-info" class="result-panel"
+                v-if="isGPX"
+              >
+                <van-cell class="result-cell">
+                  <template #icon>
+                    <img :alt="getTourTypeText(createGPXFrom.type)" :src="getTourTypeImg(createGPXFrom.type)" class="menu-icon" />
+                  </template>
+                  <template #title>
+                    <span class="menu-title">{{ getTourTypeText(createGPXFrom.type).toUpperCase() }}</span>
+                  </template>
+                  <van-button
+                    :loading="mapContainer?.resultLoading"
+                    :loading-text="' loading'"
+                    class="adjust-btn"
+                    hairline
+                    plain
+                    size="small"
+                    type="primary"
+                    @click="alwaysShowTop = !alwaysShowTop"
+                  >
+                    <span v-if="!alwaysShowTop">ADJUST TYPE</span>
+                    <span v-else>HIDE</span>
+                  </van-button>
+                </van-cell>
+
+                <van-grid :border="false" :gutter="10" class="result-detail">
+                  <van-grid-item class="detail-item" icon="clock-o" text="文字">
+                    <template #text>
+                      <span class="detail-content"> {{ Math.round(createGPXFrom.result.time / 60) }} min </span>
+                    </template>
+                  </van-grid-item>
+                  <van-grid-item class="detail-item" icon="aim">
+                    <template #text>
+                      <span class="detail-content">
+                        {{ (createGPXFrom.result.distance / 1000).toFixed(2) }} km
+                      </span></template>
+                  </van-grid-item>
+                  <van-grid-item class="detail-item action-item" icon="revoke" @click="resetForm">
+                    <template #text><span class="detail-content"> Return </span></template>
+                  </van-grid-item>
+                </van-grid>
+                <van-cell>
+                  <van-field
+                    v-model="createGPXFrom.title"
+                    class="title-input"
+                    label="Tour title"
+                    placeholder="Untitled"
+                  />
+                </van-cell>
+
+                <van-cell class="collection-select" @click="GPXCollectionPicker = true">
+                  <!--        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>-->
+                  <template #title>
+                    <span class="menu-title">Select collection</span>
+                  </template>
+                  <van-loading v-if="createGPXFrom.tourCollectionId === -1" />
+                  <span v-else>{{ userCollections.find((c) => c.id === createGPXFrom.tourCollectionId)?.name }}</span>
+                </van-cell>
+                <van-popup id="thepop" v-model:show="GPXCollectionPicker" class="popup" position="top" round>
+                  <div style="height: 100px; width: 100%" class="flex-r flex-justify-c">
+                    <a-select :style="{maxWidth: '400px'}"
+                      placeholder="Please select ..."
+                      :bordered="false"
+                      v-model="createGPXFrom.tourCollectionId"
+                      @change="GPXCollectionPicker = false"
+                      :options="
+                        userCollections.map((collection)=>({
+                          value: collection.id,
+                          label: collection.name
+                        }))
+                      "
+                    ></a-select>
+                  </div>
+                </van-popup>
+                <div class="operation-container">
+                  <van-button
+                    :loading="loading"
+                    class="operation-btn primary-btn-dark"
+                    style="background: white; color: black; border: thin solid lightgray"
+                    @click="handleGPXTour"
                   >
                     <span class="btn-text">Save</span>
                   </van-button>
@@ -646,7 +855,8 @@ onUnmounted(() => {
 #mobile-planner #top-menu .outer-container .menu-locations .pos-sheet-btn{
   background-color: green;
 }
-#mobile-planner #top-menu .outer-container .menu-locations #plan-info{
+#mobile-planner #top-menu .outer-container .menu-locations #plan-info,
+#mobile-planner #top-menu .outer-container .menu-locations #gpx-info{
   background-color: rgba(255,255,255,0.7);
   border-radius: 15px;
   padding: 0.5rem 1rem;
