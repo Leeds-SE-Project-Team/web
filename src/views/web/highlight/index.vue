@@ -1,21 +1,34 @@
 <script lang="ts" setup>
+import { getTourById } from '@/apis/tour';
 import { getTourHighlightById, type TourHighlight } from '@/apis/tour/highlight';
 import { computed, onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 const highlightData = ref<TourHighlight>();
+const mapUrl = ref<string>()
 
 // this is the len of img
 
-onMounted(() => {
-  getTourHighlightById(4)
+const groupId = useRoute().params.id as string
+
+
+const getMapUrl = async() => {
+  await getTourById(highlightData.value?.toursId[0] as number)
+    .then((res) => {
+      mapUrl.value = res.data?.mapUrl
+    })
+}
+
+getTourHighlightById(groupId)
   .then(response => {
     const highlight: TourHighlight|undefined = response.data;
     highlightData.value = highlight;
+    getMapUrl()
   })
   .catch(error => {
     console.error('Error fetching highlight data:', error);
   })
-})
+
 
 // 执行判断的逻辑 判断图片数量
 const lenImg = computed(() => highlightData.value ? (highlightData.value.tourImages).length : 0)
@@ -76,7 +89,7 @@ const lenImg = computed(() => highlightData.value ? (highlightData.value.tourIma
         </div>
 
         <!-- follow part -->
-        <div class="follow">
+        <!-- <div class="follow">
           <a-divider />
           <a-avatar-group :size="30" :max-count="3">
             <a-avatar :style="{ backgroundColor: '#7BC616' }"
@@ -93,10 +106,10 @@ const lenImg = computed(() => highlightData.value ? (highlightData.value.tourIma
             <a-avatar :style="{ backgroundColor: '#FFC72E' }">Design</a-avatar>
           </a-avatar-group>
           <div class="recommend">Recommended by 31 cyclists</div>
-        </div>
+        </div> -->
       </section>
 
-      <div class="comments-content" v-for="i in Array(3)" :key="i">
+      <!-- <div class="comments-content" v-for="i in Array(3)" :key="i">
         <a-divider />
         <div class="flex-content">
           <div class="head-profile">
@@ -116,6 +129,16 @@ const lenImg = computed(() => highlightData.value ? (highlightData.value.tourIma
             <p class="date">August 31, 2017</p>
           </div>
         </div>
+      </div> -->
+
+      <div class="map">
+        <a-divider/>
+
+        <div class="map-content">
+          <img :src="mapUrl" alt="">
+        </div>
+
+        <a-divider/>
       </div>
     </div>
 

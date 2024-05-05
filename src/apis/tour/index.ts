@@ -17,6 +17,22 @@ export enum TourType {
   PUBLIC
 }
 
+// 根据 TourType 枚举值返回相应的 SVG 图标组件
+// export const TourIcon: React.FC<{ type: TourType }> = ({ type }) => {
+//   switch (type) {
+//     case TourType.WALK:
+//       return <WalkIcon />;
+//     case TourType.CYCLING:
+//       return <CyclingIcon />;
+//     case TourType.CAR:
+//       return <CarIcon />;
+//     case TourType.PUBLIC:
+//       return <PublicIcon />;
+//     default:
+//       return null;
+//   }
+// };
+
 export const tourTypeMap = [
   { text: 'hiking', value: TourType.WALK, img: walkSvgUrl },
   {
@@ -42,9 +58,13 @@ export const getTourById: (tourId: number | string) => Promise<ApiResponse<TourR
   })
 
 export const fetchTourDataJson = (tour: TourRecord) =>
-  axios.get(tour.dataUrl, {
-    headers: { 'Content-Type': 'application/json' }
-  })
+  Promise.all(
+    [tour.dataUrl, tour.completeUrl].map((url) =>
+      axios.get(url, {
+        headers: { 'Content-Type': 'application/json' }
+      })
+    )
+  )
 
 export interface PON {
   name: string
@@ -58,6 +78,15 @@ export interface TourImage {
   tourHighlightId: number
   tourSpotId: number
   tourId: number
+}
+
+export interface tourRecordData {
+  id: number
+  calorie: number
+  avgSpeed: number
+  timeInMotion: number
+  totalDistance: number
+  timeTaken: number
 }
 
 export interface TourRecord {
@@ -84,6 +113,8 @@ export interface TourRecord {
 
   likedBy: number[]
   starredBy: number[]
+
+  tourRecordData: tourRecordData
 }
 
 export enum TourStatus {
@@ -108,6 +139,7 @@ export const TourStateMap = {
   1: 'ongoing',
   2: 'finished'
 }
+
 export interface CreateTourForm {
   startLocation: string
   endLocation: string
@@ -117,6 +149,7 @@ export interface CreateTourForm {
   result: any
   title: string
 }
+
 export interface TourPlannedData extends CreateTourForm {}
 
 export interface UpdateTourForm extends Partial<CreateTourForm> {

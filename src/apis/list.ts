@@ -10,6 +10,10 @@ export interface TourRecordCanEdit extends TourRecord {
   isEditing: boolean
 }
 
+export interface UserRecordCanEdit extends UserRecord {
+  isEditing: boolean
+}
+
 export interface SearchTourForm {
   title?: string
   authorName?: string

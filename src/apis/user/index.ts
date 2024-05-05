@@ -10,6 +10,7 @@ export interface UserRecord {
   registerTime: string
   latestLoginTime: string
   type: UserType
+  tours: number[]
   tourLikes: number[]
   tourStars: number[]
   gender: string
@@ -55,10 +56,7 @@ export enum VIPType {
 export const getUserById = (userId: number): Promise<UserRecord> =>
   axiosRequest({
     method: 'GET',
-    url: `users`,
-    data: {
-      id: userId
-    }
+    url: `users?id=${userId}`,
   })
 
 export const getUserByEmail = (userEmail: string): Promise<ApiResponse<UserRecord>> =>
@@ -120,6 +118,15 @@ export const updateUser = (form: {
     data: form
   })
 
+export const deleteUser = (userId: number): Promise<ApiResponse<void>> =>
+  axiosRequest({
+    method: 'DELETE',
+    url: `users`,
+    headers: {
+      'User-ID': userId
+    }
+  })
+
 export const upgradeUser = (form: any): Promise<ApiResponse<string>> =>
   axiosRequest({
     method: 'PUT',
@@ -150,8 +157,15 @@ export const interactWithContent = <T>(form: ContentInteractForm): Promise<ApiRe
     url: `${form.contentType}/${form.interaction}?id=${form.contentId}`
   })
 
+
 export const buy_vip = (type: VIPType): Promise<ApiResponse<UserRecord>> =>
   axiosRequest({
     method: "PUT",
     url: `/users/buy_vip?vipPackage=${type}`,
+  })
+
+export const addUserToGroup = (inviteId: number, groupId: number): Promise<ApiResponse<void>> => 
+  axiosRequest({
+    method: 'POST',
+    url: `/users/addUserToGroup?inviteId=${inviteId}&groupId=${groupId}`,
   })

@@ -1,6 +1,6 @@
 <template>
     <!-- this is the group collection page  -->
-    <div id="group-collection-page" class="group-page">
+    <div id="mobile-group-collection-page" class="group-page">
         <!-- the section of bg -->
         <section class="bg">
             <div class="bg-img">
@@ -16,7 +16,7 @@
         <!-- the section of profile and detail -->
         <section class="detail">
             <div class="profile">
-                <a-avatar class="leader" trigger-type="mask" :size="90">
+                <a-avatar class="leader" trigger-type="mask" :size="44">
                     <img alt="avatar" :src="leader?.avatar" />
                 </a-avatar>
 
@@ -24,14 +24,15 @@
                     {{ allData?.name }}
                 </div>
 
-                <a-space class="others" :size="48">
+                <a-space class="others" :size="38">
                     <a-avatar-group :max-count="2">
-                        <a-avatar :size="48" trigger-type="mask" v-for="user in others" :key="user.id">
+                        <a-avatar :size="38" trigger-type="mask" v-for="user in others" :key="user.id">
                             <img alt="avatar" :src="user.avatar" />
                         </a-avatar>
                     </a-avatar-group>
                 </a-space>
             </div>
+
             <div class="des">
                 {{ allData?.description }}
             </div>
@@ -102,8 +103,6 @@ onMounted(async () => {
             }
         })
 })
-
-
 
 function changeHeight(index1: any, index2: any) {
     if (!picNum.value) return

@@ -7,11 +7,13 @@ import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
-import groupCollection from '@/views/web/groupCollection/index.vue'
+// import groupCollection from '@/views/web/groupCollection/index.vue'
+import groupCollection from '@/views/web/mobileGroup/index.vue'
+import HighlightView from '@/views/web/highlight/index.vue'
 import personalIndex from '@/views/mobile/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
 import personalProfile from '@/views/web/personal/profile.vue'
-import personalCollections from '@/views/web/personal/profile.vue'
+import personalCollections from '@/views/web/personal/collections.vue'
 import personalHighlights from '@/views/web/personal/highlights.vue'
 import personalGroup from '@/views/web/personal/group.vue'
 import TourDetail from '@/views/mobile/personal/TourDetail.vue'
@@ -26,6 +28,9 @@ import GroupIndex from '@/views/mobile/group/index.vue'
 import { ADMIN_ROUTE } from '@/router/web'
 import HighlightView from '@/views/web/highlight/index.vue'
 import PlannerWebView from '@/views/web/planner/index.vue'
+import { Capacitor } from '@capacitor/core'
+import personalPage from '@/views/web/personal/index.vue'
+
 
 const personalMobileChildren: RouteRecordRaw[] = [
   {
@@ -203,7 +208,7 @@ const router = createRouter({
     //       // component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
     //     },
     {
-      path: '/highlight',
+      path: '/highlight/:id',
       name: 'highlight',
       meta: {
         layout: 'b', // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
@@ -236,23 +241,15 @@ const router = createRouter({
     },
     {
       path: '/personal',
-      name: 'personal',
+      redirect: '/personal/personalprofile', // web页面的重定向
       meta: {
         auth: ['admin', 'user'],
-        title: 'personal'
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : '',
+        title: 'personalprofile'
       },
-      component: personalIndex,
-      children: personalMobileChildren
-    }, // {
-    //   path: '/personal',
-    //   meta: {
-    //     auth: ['admin', 'user'],
-    //     layout: Capacitor.getPlatform()==='web' ? 'b':'',
-    //     title: 'personal'
-    //   },
-    //   component: Capacitor.getPlatform()==='web'? personalPage : personalIndex,
-    //   children: Capacitor.getPlatform()==='web'? web_personal_children : personalMobileChildren
-    // },
+      component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
+      children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
+    },
     {
       path: '/group',
       name: 'group',
@@ -260,7 +257,7 @@ const router = createRouter({
         auth: ['admin', 'user']
       },
       component: GroupIndex
-    },
+    }
   ]
 })
 
