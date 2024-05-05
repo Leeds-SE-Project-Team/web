@@ -37,7 +37,7 @@ const redirectToRoute = () => {
             </div>
         </div>
 
-        <div class="delete">Delete</div>
+        <!-- <div class="delete">Delete</div> -->
     </div>
 </template>
 

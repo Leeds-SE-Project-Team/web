@@ -1,14 +1,20 @@
 leader<script lang="ts" setup>
 import type { GroupRecord } from '@/apis/group';
 import { addUserToGroup, getAllUsers, type UserRecord } from '@/apis/user';
+import router from '@/router';
 import Message from '@arco-design/web-vue/es/message';
 import message from '@arco-design/web-vue/es/message';
 import { computed, onMounted, ref } from 'vue';
 
 const emit = defineEmits(["reload"])
+ 
+const redirectToRoute = (id: string|number) => {
+  router.push(`/groupcollection/${id}`);
+}
 
 const props = defineProps<{
-  info: GroupRecord
+  info: GroupRecord,
+  isCreated: number
 }>()
 
 const leader = computed(() => props.info.members.find((user) => user.id === props.info.leaderId)) 
@@ -18,7 +24,8 @@ const others = computed(() => props.info.members.filter((user) => user.id !== pr
 // this is the logic of add group member form
 const visible = ref(false);
 
-const handleClick = () => {
+const handleClick = (event: MouseEvent) => {
+  event.stopPropagation();
   console.log("leader and gourp_id", props.info.leaderId, props.info.id)
   visible.value = true;
 };
@@ -47,7 +54,6 @@ const handleOk = () => {
 const handleCancel = () => {
   visible.value = false;
 }
-
 
 // inputName
 // const token = useAuthStore().accessToken
@@ -88,7 +94,9 @@ const filteredUsers = computed(()=>{
 
 
 <template>
-  <div id="group-card">
+  <div
+    id="group-card" 
+    @click="redirectToRoute($props.info.id)">
 
     <div class="img">
       <img :src="$props.info.coverUrl" alt="">
@@ -109,7 +117,7 @@ const filteredUsers = computed(()=>{
       </a-space>
 
       <!-- add more group member -->
-      <a-avatar :size="34" @click="handleClick" class="add-group-member">+</a-avatar>
+      <a-avatar v-if="props.isCreated" :size="34" @click="handleClick" class="add-group-member">+</a-avatar>
 
       <a-modal v-model:visible="visible" @ok="handleOk" @cancel="handleCancel" okText="submit" cancelText="cancle">
         <template #title>
@@ -168,6 +176,8 @@ export default {
   position: relative;
   overflow: hidden;
   box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.2) !important;
+  cursor: pointer;
+  border-radius: 14px;
   .img {
     // position: absolute;
     width: 100%;

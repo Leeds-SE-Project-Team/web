@@ -16,7 +16,7 @@ getTourCollectionsByCurUser()
     <div id="personal-collections">
         
         <div class="my-collections" v-for="collection in myCollections" :key="collection.id">
-            <h3>{{collection.name}}</h3>
+            <h3 :id="collection.id.toString()">{{collection.name}}</h3>
             <a-divider :size="4" />
             
             <div class="card" v-for="tour in collection.tours" :key="tour.id">
@@ -27,8 +27,24 @@ getTourCollectionsByCurUser()
               No exist planned tours
             </div>
         </div>
-
     </div>
+    
+    <a-affix class="affix">
+      <a-anchor class="anchor" :style="{backgroundColor: 'var(--color-bg-1)'}" :line-less="true">
+        <a-anchor-link 
+          v-for="collection in myCollections"
+          :key="collection.id"
+          :href="'#' + collection.id.toString()"
+          class="item"
+          >
+          {{collection.name}}
+        </a-anchor-link>
+
+        <div class="create-btn">
+          <icon-plus-circle-fill />CREATE
+        </div>
+      </a-anchor>
+    </a-affix>
 </template>
 
 <script lang="ts">
@@ -39,12 +55,33 @@ export default {
 
 
 <style lang="scss">
+
+.affix {
+  position: absolute;
+  margin-top: calc(50vh);
+  right: 0;
+  top: 0;
+  .anchor {
+    border-radius: 10px;
+  }
+  .create-btn {
+      font-size: 16px;
+      padding: 8px;
+      margin-right: 10px;
+      color: #5c8429;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+    }
+}
+
 #personal-collections {
     
     position: relative;
     overflow: scroll;
     height: calc(100vh - 50px);
     position: relative;
+    margin-right: 100px;
 
     .my-collections {
         border-radius: 10px;
