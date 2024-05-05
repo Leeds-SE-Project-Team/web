@@ -7,3 +7,5 @@ export interface ContentDataRecord {
   date: string
   number: number
 }
+
+export type PredictDataRecord = Map<string, number>

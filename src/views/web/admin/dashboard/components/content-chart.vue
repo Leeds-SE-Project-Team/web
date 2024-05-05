@@ -20,13 +20,12 @@
 import { ref } from 'vue'
 import { graphic } from 'echarts'
 import useLoading from '@/hooks/loading'
-import type { ContentDataRecord } from '../types'
 import useChartOption from '@/hooks/chart-option'
 import type { ToolTipFormatterParams } from '@/types/echarts'
 import type { AnyObject } from '@/types/global'
 import { Message } from '@arco-design/web-vue'
 import { simplifyNumber } from '@/utils'
-import { getToursWeeklyData } from '@/apis/tour'
+import { getIncomeData } from '@/apis/user'
 
 function graphicFactory(side: AnyObject) {
   return {
@@ -45,11 +44,11 @@ function graphicFactory(side: AnyObject) {
 const { loading, setLoading } = useLoading(true)
 const xAxis = ref<string[]>([])
 const chartsData = ref<number[]>([])
-const graphicElements = ref([graphicFactory({ left: '2.6%' }), graphicFactory({ right: 0 })])
+const graphicElements = ref([graphicFactory({ left: '5.6%' }), graphicFactory({ right: 0 })])
 const { chartOption } = useChartOption(() => {
   return {
     grid: {
-      left: '2.6%',
+      left: '5.6%',
       right: '0',
       top: '10',
       bottom: '30'
@@ -118,7 +117,7 @@ const { chartOption } = useChartOption(() => {
         const [firstElement] = params as ToolTipFormatterParams[]
         return `<div>
             <p class='tooltip-title'>${firstElement.axisValueLabel}</p>
-            <div class='content-panel'><span>日增流量</span><span class='tooltip-value'>${Number(
+            <div class='content-panel'><span>Income </span><span class='tooltip-value'>${Number(
               firstElement.value
             ).toLocaleString()}</span></div>
           </div>`
@@ -179,27 +178,24 @@ const { chartOption } = useChartOption(() => {
 
 const fetchData = async () => {
   setLoading(true)
-  getToursWeeklyData()
+  getIncomeData()
     .then((apiRes) => {
       if (apiRes.success) {
         const chartData = apiRes.data!
-        console.log(chartData)
-        chartData.forEach((el: ContentDataRecord, idx: number) => {
-          xAxis.value.push(el.date)
-          chartsData.value.push(el.number)
-          if (idx === 0) {
-            graphicElements.value[0].style.text = el.date
+
+        for (let entry of chartData) {
+          for (let date in entry) {
+            xAxis.value.push(date)
+            chartsData.value.push((entry as any)[date])
           }
-          if (idx === chartData.length - 1) {
-            graphicElements.value[1].style.text = el.number
-          }
-        })
+        }
       } else {
         throw apiRes.message
       }
     })
     .catch((e) => {
       Message.error(e)
+      throw e
     })
     .finally(() => {
       setLoading(false)

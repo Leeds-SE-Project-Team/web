@@ -1,5 +1,6 @@
 // Basic interface for user record
 import { type ApiResponse, axiosRequest, getStaticRes } from '@/apis'
+import type { PredictDataRecord } from '@/views/web/admin/dashboard/types'
 
 export interface UserRecord {
   id: number
@@ -56,7 +57,7 @@ export enum VIPType {
 export const getUserById = (userId: number): Promise<UserRecord> =>
   axiosRequest({
     method: 'GET',
-    url: `users?id=${userId}`,
+    url: `users?id=${userId}`
   })
 
 export const getUserByEmail = (userEmail: string): Promise<ApiResponse<UserRecord>> =>
@@ -146,6 +147,12 @@ export const adminUser = {
   nickname: 'Admin'
 }
 
+export const getIncomeData = (): Promise<ApiResponse<PredictDataRecord[]>> =>
+  axiosRequest({
+    method: 'GET',
+    url: 'users/predict_weekly_revenue'
+  })
+
 export interface ContentInteractForm {
   contentId: number
   contentType: 'tours' | 'comments'
@@ -159,15 +166,14 @@ export const interactWithContent = <T>(form: ContentInteractForm): Promise<ApiRe
     url: `${form.contentType}/${form.interaction}?id=${form.contentId}`
   })
 
-
 export const buy_vip = (type: VIPType): Promise<ApiResponse<UserRecord>> =>
   axiosRequest({
-    method: "PUT",
-    url: `/users/buy_vip?vipPackage=${type}`,
+    method: 'PUT',
+    url: `/users/buy_vip?vipPackage=${type}`
   })
 
-export const addUserToGroup = (inviteId: number, groupId: number): Promise<ApiResponse<void>> => 
+export const addUserToGroup = (inviteId: number, groupId: number): Promise<ApiResponse<void>> =>
   axiosRequest({
     method: 'POST',
-    url: `/users/addUserToGroup?inviteId=${inviteId}&groupId=${groupId}`,
+    url: `/users/addUserToGroup?inviteId=${inviteId}&groupId=${groupId}`
   })
