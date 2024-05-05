@@ -118,7 +118,8 @@ const handleGPX = (theFile: File) => {
             }
         }
         useMapStore().FileGpxData = result
-        console.log(result)
+        console.log(useMapStore().FileGpxData)
+        router.push({name: 'planner', query:{type:'gpx'}})
       }else{
         const tracks = res.getElementsByTagName('trkpt')
         const times = res.getElementsByTagName('totalTime')
@@ -141,7 +142,8 @@ const handleGPX = (theFile: File) => {
             }
         }
         useMapStore().FileGpxData = result
-        console.log(result)
+        console.log(useMapStore().FileGpxData)
+        router.push({name: 'planner', query:{type:'gpx',gps:'true'}})
       }
     }
 }

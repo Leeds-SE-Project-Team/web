@@ -40,9 +40,10 @@ export const useMapStore = defineStore('map', () => {
    * 将路径数据转为经纬度数组
    * @param route 路径数据
    * @param tourType
+   * @param gps 是否为gps数据需要纠偏
    * @param other 是否跳过处理,用于对GPX的处理,默认为 false
    */
-  const parseRouteToPath = (route: any, tourType: TourType, other?: boolean) => {
+  const parseRouteToPath = (route: any, tourType: TourType, gps?:boolean, other?: boolean) => {
     if (other) {
       return route
     }
@@ -84,10 +85,11 @@ export const useMapStore = defineStore('map', () => {
       reCenter?: boolean
       lineOptions?: AMap.BezierCurveOptions
     },
+    gps?: boolean,
     other?: boolean
   ) => {
-    const path = parseRouteToPath(route, tourType, other)
-
+    const path = parseRouteToPath(route, tourType, gps, other)
+    
     let startMarker
     if (options.startMarker !== false) {
       startMarker = new AMap.Marker({

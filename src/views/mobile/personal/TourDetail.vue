@@ -24,23 +24,35 @@
                 </van-list>
             </van-tab>
             <van-tab title="Planned">
-                <div
+                <van-swipe-cell
                     v-for="item in plannedTours"
                     :key="item.id"
-                    class="completed-tour flex-r"
-                    @click="toRecord(item.id)"
                 >
-                    <van-image width="100" height="100" :src="item.mapUrl"/>
-                    <div class="tour-info flex-c flex-justify-c">
-                        <div class="info-title">
-                            {{ item.title }}
-                        </div>
-                        <div class="info-time flex-r">
-                            <van-icon name="completed-o" />
-                            <span style="margin-left: 0.25rem;">{{ item.createTime }}</span>
+                    <div
+                        class="completed-tour flex-r"
+                        @click="toRecord(item.id)"
+                    >
+                        <van-image width="100" height="100" :src="item.mapUrl"/>
+                        <div class="tour-info flex-c flex-justify-c">
+                            <div class="info-title">
+                                {{ item.title }}
+                            </div>
+                            <div class="info-time flex-r">
+                                <van-icon name="completed-o" />
+                                <span style="margin-left: 0.25rem;">{{ item.createTime }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <template #right>
+                        <van-button
+                            square text="Download"
+                            type="primary"
+                            style="height: 100%;"
+                            @click="downGPX(item.id)"
+                        />
+                    </template>
+                </van-swipe-cell>
+                
                 <van-empty v-if="plannedTours.length===0" description="Empty" />
             </van-tab>
             <van-tab title="Star">
@@ -113,6 +125,13 @@ userStore.curUser?.tourStars.forEach(id=>{
         }
     })
 })
+
+const downGPX = (id:number)=>{
+    const link = document.createElement('a')
+    link.href = `${import.meta.env.APP_STATIC_URL}/tour/${id}/map.gpx`
+    link.download = `${id}.gpx`
+    link.click()
+}
 </script>
 
 <style scoped>
