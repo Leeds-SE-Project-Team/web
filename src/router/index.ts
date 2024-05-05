@@ -9,7 +9,6 @@ import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 // import groupCollection from '@/views/web/groupCollection/index.vue'
 import groupCollection from '@/views/web/mobileGroup/index.vue'
-import HighlightView from '@/views/web/highlight/index.vue'
 import personalIndex from '@/views/mobile/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
 import personalProfile from '@/views/web/personal/profile.vue'
@@ -30,7 +29,6 @@ import HighlightView from '@/views/web/highlight/index.vue'
 import PlannerWebView from '@/views/web/planner/index.vue'
 import { Capacitor } from '@capacitor/core'
 import personalPage from '@/views/web/personal/index.vue'
-
 
 const personalMobileChildren: RouteRecordRaw[] = [
   {
@@ -160,7 +158,7 @@ const router = createRouter({
     //     layout: 'mobile-default'
     //   },
     //   component: PlannerMobileView
-    // }, 
+    // },
     {
       path: '/plan',
       name: 'planner',
