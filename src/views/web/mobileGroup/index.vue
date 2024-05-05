@@ -121,10 +121,10 @@ function changeHeight(index1: any, index2: any) {
                 continue
             }
             if (index1 === i && index2 === j) {
-                (imgs[count] as HTMLElement).style.padding = "10px";
+                (imgs[count] as HTMLElement).style.padding = "4px";
                 (everyimgs[count] as HTMLElement).style.opacity = "1";
             } else {
-                (imgs[count] as HTMLElement).style.padding = "20px";
+                (imgs[count] as HTMLElement).style.padding = "10px";
                 (everyimgs[count] as HTMLElement).style.opacity = "0.7";
             }
             count++
