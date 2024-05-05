@@ -25,6 +25,7 @@ import GroupList from '@/views/mobile/personal/GroupList.vue'
 import GroupIndex from '@/views/mobile/group/index.vue'
 import { ADMIN_ROUTE } from '@/router/web'
 import HighlightView from '@/views/web/highlight/index.vue'
+import PlannerWebView from '@/views/web/planner/index.vue'
 
 const personalMobileChildren: RouteRecordRaw[] = [
   {
@@ -146,25 +147,25 @@ const router = createRouter({
       // component: DiscoverMobileView
       component: DiscoverMobileView
     },
-
+    // {
+    //   path: '/plan',
+    //   name: 'planner',
+    //   meta: {
+    //     title: 'Planner Page',
+    //     layout: 'mobile-default'
+    //   },
+    //   component: PlannerMobileView
+    // }, 
     {
       path: '/plan',
       name: 'planner',
       meta: {
         title: 'Planner Page',
-        layout: 'mobile-default'
+        layout: 'b',
+        auth: ['user']
       },
-      component: PlannerMobileView
-    }, // {
-    //   path: '/plan',
-    //   name: 'planner',
-    //   meta: {
-    //     title: 'Planner Page',
-    //     layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-default',
-    //     auth: ['user']
-    //   },
-    //   component: Capacitor.getPlatform() === 'web' ? PlannerView : PlannerMobileView
-    // },
+      component: PlannerWebView
+    },
     {
       path: '/tour',
       name: 'tour',

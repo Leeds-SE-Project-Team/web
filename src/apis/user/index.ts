@@ -18,6 +18,7 @@ export interface UserRecord {
   weight: number
   location: string
   signature: string
+  vipExpireTime: string
 }
 
 export enum UserType {
@@ -30,6 +31,13 @@ export const UserTypeMap = {
   0: 'common',
   1: 'VIP',
   2: 'admin'
+}
+
+export enum VIPType {
+  MONTHLY,
+  QUARTERLY,
+  YEARLY,
+  FOREVER
 }
 
 // export const exampleUserRecord: UserRecord = {
@@ -140,4 +148,10 @@ export const interactWithContent = <T>(form: ContentInteractForm): Promise<ApiRe
   axiosRequest({
     method: form.value ? 'POST' : 'DELETE',
     url: `${form.contentType}/${form.interaction}?id=${form.contentId}`
+  })
+
+export const buy_vip = (type: VIPType): Promise<ApiResponse<UserRecord>> =>
+  axiosRequest({
+    method: "PUT",
+    url: `/users/buy_vip?vipPackage=${type}`,
   })

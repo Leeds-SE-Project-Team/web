@@ -43,6 +43,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { useMapStore } from '@/stores';
 import type { UploaderFileListItem } from 'vant';
 import { ref } from 'vue';
 import { RouterView, useRoute, useRouter } from 'vue-router';
@@ -75,7 +76,8 @@ const handleGPX = (theFile: File) => {
             steps: [{
                 path:[] as any[]
             }]
-        }
+        },
+        waypoints: [] as any[],
       }
       if(creator==='walcraft'){
         const trkseg = res.getElementsByTagName('trkseg').item(0);
@@ -90,9 +92,6 @@ const handleGPX = (theFile: File) => {
                 const wpts = ele.getElementsByTagName('wpt')
                 for(let j=0;j<wpts.length;j++){
                     if(wpts.item(j)){
-                        pos.push(
-                            [wpts[j].getAttribute('lon'), wpts[j].getAttribute('lat')]
-                        )
                         result.routes.steps[0].path.push(
                             [wpts[j].getAttribute('lon'), wpts[j].getAttribute('lat')]
                         )
@@ -100,20 +99,25 @@ const handleGPX = (theFile: File) => {
                 }
             }else if(ele.tagName==='extensions'){
                 const wpts = ele.getElementsByTagName('wpt')
-                pos.unshift([
-                    wpts[0].getAttribute('lon'), wpts[0].getAttribute('lat')
-                ])
                 result.origin = [
                     wpts[0].getAttribute('lon'), wpts[0].getAttribute('lat')
                 ]
-                pos.push([
-                    wpts[wpts.length-1].getAttribute('lon'), wpts[wpts.length-1].getAttribute('lat')
-                ])
                 result.destination = [
                     wpts[wpts.length-1].getAttribute('lon'), wpts[wpts.length-1].getAttribute('lat')
                 ]
+                for(let j=1;j<wpts.length-1;j++){
+                    result.waypoints.push(
+                        {
+                            isWaypoint: true,
+                            location: [wpts[j].getAttribute('lon'), wpts[j].getAttribute('lat')],
+                            name: "途经点",
+                            type: "waypoint"
+                        }
+                    )
+                }
             }
         }
+        useMapStore().FileGpxData = result
         console.log(result)
       }else{
         const tracks = res.getElementsByTagName('trkpt')
@@ -136,7 +140,8 @@ const handleGPX = (theFile: File) => {
               }
             }
         }
-          console.log(result)
+        useMapStore().FileGpxData = result
+        console.log(result)
       }
     }
 }

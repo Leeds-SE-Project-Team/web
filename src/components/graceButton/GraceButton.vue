@@ -6,15 +6,14 @@
                 <line stroke="currentColor" x1="6.5" y1="1.2" x2="6.5" y2="10.3"></line>
             </svg>
             <span class="button-text">
-              <span class="char0" style="--d:0ms; --dr:240ms;">C</span>
-              <span class="char1" style="--d:30ms; --dr:210ms;">l</span>
-              <span class="char2" style="--d:60ms; --dr:180ms;">i</span>
-              <span class="char3" style="--d:90ms; --dr:150ms;">c</span>
-              <span class="char4" style="--d:120ms; --dr:120ms;">k</span>
-              <span class="char5" style="--d:150ms; --dr:90ms;"> </span>
-              <span class="char6" style="--d:180ms; --dr:60ms;">M</span>
-              <span class="char7" style="--d:210ms; --dr:30ms;">e</span>
-              <span class="char8" style="--d:240ms; --dr:0ms;">!</span>
+              <span class="char0" style="--d:0ms; --dr:210ms;">P</span>
+              <span class="char1" style="--d:30ms; --dr:180ms;">a</span>
+              <span class="char2" style="--d:60ms; --dr:150ms;">y</span>
+              <span class="char3" style="--d:90ms; --dr:120ms;"> </span>
+              <span class="char4" style="--d:120ms; --dr:90ms;">N</span>
+              <span class="char5" style="--d:150ms; --dr:60ms;">o</span>
+              <span class="char6" style="--d:180ms; --dr:30ms;">w</span>
+              <span class="char7" style="--d:210ms; --dr:0ms;">!</span>
             </span>
         </div>
         <div class="message loadingMessage">

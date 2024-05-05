@@ -13,6 +13,13 @@ export interface TourCollection {
   tours: TourRecord[]
 }
 
+export interface CollectionCreate {
+  name: string
+  title: string
+  coverUrl: string
+  description: string
+}
+
 export const getTourCollectionsByCurUser: () => Promise<ApiResponse<TourCollection[]>> = () =>
   axiosRequest({
     method: 'GET',
@@ -35,4 +42,11 @@ export const getCollectionById = (id: string):Promise<ApiResponse<TourCollection
   axiosRequest({
     method: 'GET',
     url: `tour_collection?id=${id}`,
+  })
+
+export const createCollection = (form: CollectionCreate):Promise<ApiResponse<TourCollection>> =>
+  axiosRequest({
+    method: "POST",
+    url: "/tour_collection/create",
+    data: form
   })

@@ -18,8 +18,8 @@
         <div class="flex-r flex-justify-c" style="padding: 1rem;">
             <van-button round type="success" @click="showCreate = true">New Collection</van-button>
         </div>
-        <van-dialog v-model:show="showCreate" title="New Group" show-cancel-button :beforeClose="beforeClose">
-            <van-form ref="groupForm" >
+        <van-dialog v-model:show="showCreate" title="New Collection" show-cancel-button :beforeClose="beforeClose">
+            <van-form ref="theForm" >
                 <van-field
                     label="Cover"
                     class="avatar"
@@ -51,7 +51,10 @@
 </template>
 
 <script setup lang="ts">
-import { getCollectionByUser, type TourCollection } from '@/apis/collection';
+import type { ApiResponse } from '@/apis';
+import { createCollection, getCollectionByUser, type TourCollection } from '@/apis/collection';
+import { uploadFileFromURL } from '@/utils/file';
+import { Message } from '@arco-design/web-vue';
 import type { UploaderFileListItem } from 'vant';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -63,8 +66,10 @@ const fileList = ref<UploaderFileListItem[]>([])
 const collectionForm = ref({
     name: '',
     description: '',
-    coverUrl: ''
+    coverUrl: '',
+    title: ''
 })
+const theForm = ref()
 
 const fileValidate = ()=>{
     if(fileList.value.length!==1){
@@ -76,9 +81,44 @@ const toCollection = (id: number)=>{
     router.push({path:'/collection', query:{id}})
 }
 
-const beforeClose = ()=>{
-    return true
-}
+const beforeClose = (action: string):Promise<boolean>=>
+  new Promise((resolve)=>{
+    if(action === "cancel"){
+        return resolve(true);
+    }
+    if(!theForm.value){
+        resolve(false);
+        return;
+    }
+    theForm.value.validate().then((res:any)=>{
+        createCollection(collectionForm.value).then(res=>{
+            if(!res.success){
+                Message.info(res.message);
+            }
+            console.log(res)
+            return res.data?.id
+        }).then((res) =>{
+            if(!res){resolve(false);return;}
+            if(!fileList.value[0].objectUrl){
+                return resolve(false);
+            }
+            uploadFileFromURL(
+                fileList.value[0].objectUrl,
+                `/collection/${res}`,
+                fileList.value[0].file?.name
+            ).then(url=>{
+                if(url.success){
+                    resolve(true)
+                    return;
+                }
+            })
+        })
+    }).catch((e:any)=>{
+        console.log(e)
+        return resolve(false)
+        
+    })
+  })
 
 getCollectionByUser().then(res=>{
     if(res.success){

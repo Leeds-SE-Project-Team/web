@@ -5,6 +5,7 @@ import { TourType } from '@/apis/tour'
 import { Message } from '@arco-design/web-vue'
 
 export const useMapStore = defineStore('map', () => {
+  const FileGpxData = ref<object>({})
   const getGeocoder = (config?: any) => {
     const geocoder = ref()
     AMap.plugin('AMap.Geocoder', function () {
@@ -252,6 +253,7 @@ export const useMapStore = defineStore('map', () => {
     planRoute,
     screenMap,
     drawRoute,
-    searchPlace
+    searchPlace,
+    FileGpxData,
   }
 })

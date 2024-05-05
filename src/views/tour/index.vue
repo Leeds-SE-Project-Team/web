@@ -100,7 +100,7 @@
     </section> -->
   </div>
 
-  <div v-if="true" class="comments">
+  <!-- <div v-if="true" class="comments">
     <a-space size="large">
       <a-avatar
         :size="50"
@@ -176,7 +176,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts">
