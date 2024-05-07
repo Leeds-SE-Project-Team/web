@@ -128,7 +128,7 @@ userStore.curUser?.tourStars.forEach(id=>{
 
 const downGPX = (id:number)=>{
     const link = document.createElement('a')
-    link.href = `${import.meta.env.APP_STATIC_URL}/tour/${id-1}/map.gpx`
+    link.href = `${import.meta.env.APP_STATIC_URL}/tour/${id}/map.gpx`
     link.download = `${id}.gpx`
     link.click()
 }
