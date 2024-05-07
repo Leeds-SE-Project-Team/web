@@ -17,8 +17,8 @@ export interface articleInfo {
 
 export interface hoverInfo {
   username: string
-  userFollower: number | string
-  userFollowing: number | string
+  userFollower?: number | string
+  userFollowing?: number | string
   userAvatar: string
 }
 
