@@ -11,7 +11,7 @@
           <a href="#">{{ props.username }}</a>
         </h3>
       </div>
-      <div class="user-follow">
+      <!-- <div class="user-follow">
         <div class="followering">
           <span>{{ props.userFollower }}</span>
           <p>Followers</p>
@@ -20,10 +20,10 @@
           <span>{{ props.userFollowing }}</span>
           <p>Following</p>
         </div>
-      </div>
-      <div class="follow-button">
+      </div> -->
+      <!-- <div class="follow-button">
         <a-button id="f-button" type="primary">Follow</a-button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

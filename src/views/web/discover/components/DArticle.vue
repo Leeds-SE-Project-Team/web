@@ -10,12 +10,9 @@
                   <img :src="props.info.user.avatar" alt="avatar" />
                 </a-avatar>
                 <template #content>
-                  <!-- TODO: following and follower -->
                   <DHover
                     :username="props.info.user.nickname"
                     :user-avatar="props.info.user.avatar"
-                    :user-follower="$props.info.user.id"
-                    :user-following="$props.info.user.id"
                   ></DHover>
                 </template>
               </a-popover>
@@ -24,19 +21,17 @@
                   <p class="user-name">
                     {{ props.info.user.nickname }}
                   </p>
-                  <p class="user-follow">{{ props.info.user.id }} Follower</p>
+                  <!-- <p class="user-follow">{{ props.info.createTime }}</p> -->
                 </div>
                 <template #content>
                   <DHover
                     :username="props.info.user.nickname"
                     :user-avatar="props.info.user.avatar"
-                    :user-follower="$props.info.user.id"
-                    :user-following="$props.info.user.id"
                   ></DHover>
                 </template>
               </a-popover>
 
-              <a-button id="follow-button" type="primary">Follow</a-button>
+              <!-- <a-button id="follow-button" type="primary">Follow</a-button> -->
             </div>
             <div class="info-content">
               <div class="classify">
@@ -64,11 +59,11 @@
         <div class="introduction">
           <p>
             {{ props.info.description }}
-            <a href="#"> read more </a>
+            <a :href="`/collection?id=${props.info.id}`" style="color: rgba(30, 30, 255, 0.9);"> read more </a>
           </p>
         </div>
       </div>
-      <a-divider class="divider" />
+      <!-- <a-divider class="divider" />
       <div class="article-action">
         <a-button class="action-button" type="text">
           <template #icon>
@@ -86,15 +81,9 @@
           <template #icon>
             <icon-bookmark :size="20" />
           </template>
-          Bookmark
+          Star
         </a-button>
-        <a-button class="action-button" type="text">
-          <template #icon>
-            <icon-share-internal :size="20" />
-          </template>
-          Share
-        </a-button>
-      </div>
+      </div> -->
     </a-card>
   </div>
 </template>
@@ -107,5 +96,5 @@ const props = defineProps<{
   info: TourCollection
 }>()
 
-console.log(props.info.coverUrl)
+console.log(props.info.createTime)
 </script>

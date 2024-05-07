@@ -4,20 +4,20 @@
     <section class="tour-title">
       <!-- the bg part -->
       <div v-if="tourRecord" class="bg flex-r">
-        <div class="main-bg">
+        <div class="main-bg" :style="{width: showTow?'61.5%':'100%'}" >
           <img :src="coverImg" alt="" />
         </div>
-        <div class="sub">
-          <div class="sub-bg">
+        <div v-if="showTow" class="sub">
+          <div class="sub-bg" :style="{height: showThree?'50%':'100%'}">
             <img
               alt=""
-              src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/tr/trthvnkx56se9kcbf398tcu03nih1d0x-uhi28292499/0?width=1000&height=740&crop=true&q=40"
+              :src="tourRecord.tourHighlightList[1]?.tourImages[0].imageUrl"
             />
           </div>
-          <div class="sub-bg">
+          <div v-if="showThree" class="sub-bg">
             <img
               alt=""
-              src="https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/1u/1urqmvln4zd5vxwvhc9euyi43nih7at3-uhi28292564/0?width=600&height=354&crop=true&q=40"
+              :src="tourRecord.tourHighlightList[2]?.tourImages[0].imageUrl"
             />
           </div>
         </div>
@@ -247,10 +247,6 @@ import starSvgUrl from '/interaction/star.svg'
 import starredSvgUrl from '/interaction/starred.svg'
 import { type ContentInteractForm, interactWithContent } from '@/apis/user'
 
-const url = import.meta.env.APP_STATIC_URL.concat('/tour')
-const exam_pic =
-  'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a20012a2d4d5b9db43dfc6a01fe508c0.png~tplv-uwbnlip3yd-webp.webp'
-
 const route = useRoute()
 const router = useRouter()
 const tourRecord = ref<TourRecord>()
@@ -266,7 +262,20 @@ const coverImg = computed(() => {
     return tourRecord.value.mapUrl
   }
   return tourRecord.value.tourHighlightList[0].tourImages[0]?.imageUrl;
-  // return ''
+})
+
+const showTow = computed(()=>{
+  if(tourRecord.value && tourRecord.value.tourHighlightList.length>=2){
+    return true;
+  }
+  return false
+})
+
+const showThree = computed(()=>{
+  if(tourRecord.value && tourRecord.value.tourHighlightList.length>=3){
+    return true;
+  }
+  return false
 })
 
 const downGPX = (id:number|undefined)=>{

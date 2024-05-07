@@ -5,6 +5,7 @@ import useLoading from '@/hooks/loading'
 import { authPwdLogin } from '@/apis/auth'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import { MD5 } from 'crypto-js'
 
 type Status = 'default' | 'signup' | 'login'
 // type-based
@@ -44,7 +45,7 @@ const handleLogin = () => {
       setLoading(true)
       authPwdLogin({
         email: props.loginEmail,
-        password: form.password as string
+        password: MD5(form.password as string).toString()
       })
         .then((apiRes) => {
           if (apiRes.success) {

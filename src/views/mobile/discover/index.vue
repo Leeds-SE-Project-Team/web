@@ -553,15 +553,6 @@ const handleDeleteComment = (commentId: number) => {
                               {{ (item.item as unknown as TourRecord).likedBy.length }}
                             </div>
                           </div>
-                          <!--                            <template #content>-->
-                          <!--                              {{ isLiked ? '取消点赞' : '点赞' }}-->
-                          <!--                              <a-tag-->
-                          <!--                                :size="'small'"-->
-                          <!--                                style="margin: 5px; padding: 5px; border-radius: 5px"-->
-                          <!--                                >Z-->
-                          <!--                              </a-tag>-->
-                          <!--                            </template>-->
-                          <!--                          </a-tooltip>-->
                         </div>
                         <div class="video-action-item">
                           <!--                          <a-tooltip :position="'left'">-->
@@ -694,30 +685,6 @@ const handleDeleteComment = (commentId: number) => {
     @click.self="handleCloseCommentList"
   >
     <div class="comment-wrapper">
-      <!--            <div class="usually-search">-->
-      <!--              大家都在搜：<a class="usually-search-topic"-->
-      <!--                ><span-->
-      <!--                  :style="{-->
-      <!--                    cursor: recommendPlace(item) ? 'pointer' : 'default'-->
-      <!--                  }"-->
-      <!--                  class="usually-search-topic-text"-->
-      <!--                  @click="-->
-      <!--                    () => {-->
-      <!--                      if (recommendPlace(item)) {-->
-      <!--                        // handleSearch(recommendPlace)-->
-      <!--                      }-->
-      <!--                    }-->
-      <!--                  "-->
-      <!--                  >{{ recommendPlace(item) ? recommendPlace(item) : '暂无推荐' }}</span-->
-      <!--                >-->
-      <!--                <img-->
-      <!--                  v-if="recommendPlace(item)"-->
-      <!--                  alt="usually-search"-->
-      <!--                  class="usually-search-icon"-->
-      <!--                  src="/interaction/usually_search.svg"-->
-      <!--                />-->
-      <!--              </a>-->
-      <!--            </div>-->
       <div class="comment-header">{{ tourCommentNum }} comments in total</div>
       <CommentCard
         v-for="(comment, idx) in currentTourComments.filter((c) => c.parentId === null)"
@@ -725,7 +692,7 @@ const handleDeleteComment = (commentId: number) => {
         :comment="comment"
         :depth="1"
         :index="idx"
-        :tour="itemList[currentPlayIndex].item as TourRecord"
+        :tour="(itemList[currentPlayIndex].item as TourRecord)"
         @delete="handleDeleteComment"
       />
       <a-empty

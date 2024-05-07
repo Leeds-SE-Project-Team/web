@@ -27,14 +27,14 @@ export const getGroupCollectionById = (id: number): Promise<ApiResponse<GroupCol
 
 export const getGroupCollectionByGroupId = (
   groupId: number
-): Promise<ApiResponse<GroupCollectionRecord>> =>
+): Promise<ApiResponse<GroupCollectionRecord[]>> =>
   axiosRequest({
     method: 'GET',
     url: `group_collection/group?id=${groupId}`
   })
 
 export interface CreateGroupCollectionForm {
-  groupId: number
+  groupId: number | string
   name: string
   title: string
   coverUrl: string

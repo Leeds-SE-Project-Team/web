@@ -17,8 +17,9 @@
             </div>
         </header>
         <RouterView/>
-        <van-dialog v-model:show="show" title="标题"
+        <van-dialog v-model:show="show" title="Create Tour"
             show-cancel-button :show-confirm-button="false"
+            cancel-button-text="Cancel"
         >
             <div class="content flex-r flex-justify-c" style="max-height: 400px; gap:1rem; margin-top: 1rem;" >
                 <van-button plain type="primary">From Planner</van-button>

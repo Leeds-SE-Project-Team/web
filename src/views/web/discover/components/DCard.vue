@@ -4,7 +4,7 @@
       <template #title>
         <div class="title-wrapper">
           <div v-if="!isMinimal && !isTour" class="greeting-more">
-            <h4>interesting in your region</h4>
+            <h4>Interesting in your region</h4>
             <span>...</span>
           </div>
           <div v-if="!isMinimal && !isTour" class="user-wrapper">
@@ -14,20 +14,19 @@
               </a-avatar>
             </div>
             <div class="info-wrapper">
-              <span
-                ><a-link href="#" style="margin: 0; padding: 0; background-color: transparent">{{
-                  props.tourData.user.nickname
-                }}</a-link>
-                goes there</span
-              >
-              <span style="color: rgba(102, 102, 102, 1) !important">n days ago</span>
+              <span>
+                <a-link href="#" style="margin: 0; padding: 0; background-color: transparent">
+                  {{ props.tourData.user.nickname }}
+                </a-link>
+                goes there
+              </span>
+              <span style="color: rgba(102, 102, 102, 1) !important">{{ props.tourData.createTime }}</span>
             </div>
-            <div class="button-wrapper">
+            <!-- <div class="button-wrapper">
               <a-button type="primary">Follow</a-button>
-            </div>
+            </div> -->
           </div>
-          <div v-if="!isMinimal && !isTour" class="split"></div>
-          <h3 v-if="!isTour" class="title" @click="emits('jump')">
+          <h3 style="padding: 0 15px;" v-if="!isTour" class="title" @click="emits('jump')">
             {{ props.tourData.title }}
           </h3>
           <div class="picture-map">
@@ -65,9 +64,9 @@
               </a-image-preview-group>
             </div>
             <div ref="mapWrapper" class="map-wrapper hide">
-              <img :src="props.tourData.mapUrl" alt="" />
+              <a-image :src="props.tourData.mapUrl" alt=""/>
             </div>
-            <div class="switch">
+            <div v-if="hasHighlight" class="switch">
               <button class="switch-button" @click="switchClick">
                 <div class="small-img">
                   <img :src="smallImg" alt="" />
@@ -75,49 +74,29 @@
               </button>
             </div>
           </div>
-          <!--          <div class="operation">-->
-          <!--            <div class="buttons-wrapper">-->
-          <!--              <div class="like">-->
-          <!--                <a-button class="action-button" type="text">-->
-          <!--                  <template #icon>-->
-          <!--                    <icon-heart :size="20" />-->
-          <!--                  </template>-->
-          <!--                  {{ props.tourData.like }}-->
-          <!--                </a-button>-->
-          <!--              </div>-->
-          <!--              <div class="comment">-->
-          <!--                <a-button class="action-button" type="text" @click="commentClick">-->
-          <!--                  <template #icon>-->
-          <!--                    <icon-message :size="20" />-->
-          <!--                  </template>-->
-          <!--                  {{ props.tourData.comment }}-->
-          <!--                </a-button>-->
-          <!--              </div>-->
-          <!--            </div>-->
-          <!--          </div>-->
         </div>
       </template>
 
       <div v-if="!isTour" class="item-actions">
         <a-list :bordered="false" class="item-actions-left">
-          <a-list-item class="like-action">
+          <a-list-item class="like-action" @click="handleInteract(props.tourData,'like')">
             <span class="like-icon">
-              <IconHeartFill v-if="false" />
+              <IconHeartFill v-if="isLikeTour(props.tourData).value" />
               <IconHeart v-else />
             </span>
             <span>{{ 1 }}</span>
           </a-list-item>
-          <a-list-item class="star-action">
+          <a-list-item class="star-action" @click="handleInteract(props.tourData,'star')">
             <span class="star-icon">
-              <IconStarFill v-if="false" />
+              <IconStarFill v-if="isStarTour(props.tourData).value" />
               <IconStar v-else />
             </span>
             <span>{{ 1 }}</span>
           </a-list-item>
-          <a-list-item v-if="!isMinimal" style="cursor: pointer" @click="commentClick">
+          <!-- <a-list-item v-if="!isMinimal" style="cursor: pointer" @click="commentClick">
             <icon-message />
             <span>{{ comments.length > 0 ? comments.length : 'view' }}</span>
-          </a-list-item>
+          </a-list-item> -->
         </a-list>
         <div v-if="!isMinimal" class="item-actions-right">
           <a-tag
@@ -139,12 +118,12 @@
             >未过审
           </a-tag>
 
-          <a-button :type="'text'" class="delete-video">
+          <!-- <a-button :type="'text'" class="delete-video">
             <template #icon>
               <icon-delete />
             </template>
             <span>删除</span>
-          </a-button>
+          </a-button> -->
           <div class="publish-time">
             <span>发布时间：</span>
             <span>{{ props.tourData.createTime }}</span>
@@ -153,7 +132,7 @@
       </div>
 
       <!--      commentContainer-->
-      <div v-if="showCommentList" class="commentContainer">
+      <!-- <div v-if="showCommentList" class="commentContainer">
         <div class="detail-comment-divider">
           <span class="comment-title">全部评论</span>
           <a-divider />
@@ -190,19 +169,6 @@
           </a-row>
         </div>
 
-        <!--        <div class="usually-search">-->
-        <!--          大家都在搜：<a class="usually-search-topic"-->
-        <!--            ><span class="usually-search-topic-text" :style="{ cursor: 'default' }">{{-->
-        <!--              '暂无推荐'-->
-        <!--            }}</span>-->
-        <!--            <img-->
-        <!--              class="usually-search-icon"-->
-        <!--              src="/interaction/usually_search.svg"-->
-        <!--              alt="usually-search"-->
-        <!--            />-->
-        <!--          </a>-->
-        <!--        </div>-->
-
         <div class="comments-list">
           <CommentCard
             v-for="(comment, index) in comments"
@@ -215,59 +181,7 @@
           </CommentCard>
           <p class="comments-list-append">暂时没有更多评论</p>
         </div>
-      </div>
-      <!--      commentContainer-->
-
-      <!--            <div ref="commentArea" class="comment-area hide">-->
-      <!--                <div class="my-comment">-->
-      <!--                    <div class="avatar">-->
-      <!--                        <a-avatar>-->
-      <!--                            <img-->
-      <!--                                :src="props.tourData.user.avatar"-->
-      <!--                                alt="avatar"-->
-      <!--                            >-->
-      <!--                        </a-avatar>-->
-      <!--                    </div>-->
-      <!--                    <div class="form">-->
-      <!--                        <a-textarea v-model="textA" placeholder="Please enter something" allow-clear/>-->
-      <!--                    </div>-->
-      <!--                    <div class="commit">-->
-      <!--                        <a-button @click="commitComment">发送</a-button>-->
-      <!--                    </div>-->
-      <!--                </div>-->
-      <!--                <div class="other-comments">-->
-      <!--                    <a-comment-->
-      <!--                        v-for="(item, index) in commentList"-->
-      <!--                        :key="index"-->
-      <!--                        :author="item.auther"-->
-      <!--                        :content="item.content"-->
-      <!--                        :datetime="item.dateTime"-->
-      <!--                    >-->
-      <!--                        <template #actions>-->
-      <!--                        <span class="action" key="heart">-->
-      <!--                            <span v-if="true">-->
-      <!--                            <IconHeartFill :style="{ color: '#f53f3f' }" />-->
-      <!--                            </span>-->
-      <!--                            <span v-else>-->
-      <!--                            <IconHeart />-->
-      <!--                            </span>-->
-      <!--                            {{ 83 }}-->
-      <!--                        </span>-->
-      <!--                        &lt;!&ndash; <span class="action" key="reply">-->
-      <!--                            <IconMessage /> Reply-->
-      <!--                        </span> &ndash;&gt;-->
-      <!--                        </template>-->
-      <!--                        <template #avatar>-->
-      <!--                        <a-avatar>-->
-      <!--                            <img-->
-      <!--                            alt="avatar"-->
-      <!--                            :src="item.avatar"-->
-      <!--                            />-->
-      <!--                        </a-avatar>-->
-      <!--                        </template>-->
-      <!--                    </a-comment>-->
-      <!--                </div>-->
-      <!--            </div>-->
+      </div> -->
     </a-card>
   </div>
 </template>
@@ -280,6 +194,10 @@ import { type CommentRecord, getCommentsByTourId } from '@/apis/comment'
 import { Message } from '@arco-design/web-vue'
 import { type TourRecord, TourStatus } from '@/apis/tour'
 import tour from '@/views/tour/index.vue'
+import { showToast } from 'vant'
+import { useUserStore } from '@/stores'
+import { interactWithContent, type ContentInteractForm } from '@/apis/user'
+import { computed } from 'vue'
 
 const props = defineProps<{
   tourData: TourRecord
@@ -371,6 +289,11 @@ const newCommentContent = ref<string>('')
 const showCommentList = ref(false)
 const isMinimal = ref(false)
 const isTour = ref(false)
+const hasHighlight = ref(true)
+const isLikeTour = (tour: TourRecord) =>
+  computed(() => userStore.curUser?.tourLikes.includes(tour.id))
+const isStarTour = (tour: TourRecord) =>
+  computed(() => userStore.curUser?.tourStars.includes(tour.id))
 
 if (props.mode === 'minimal') {
   isMinimal.value = true
@@ -381,17 +304,70 @@ if (props.mode === 'minimal') {
   switchStatus.value = 'map'
   // switchClick()
 }
+const userStore = useUserStore()
+const interactLoadObj = useLoading()
+const handleInteract = (tour: TourRecord, interaction: 'like' | 'star') => {
+  if (interactLoadObj.loading.value) {
+    showToast('Too frequent operations')
+    return
+  }
+
+  userStore.getUserRecord().then((user) => {
+    interactLoadObj.setLoading(true)
+
+    const form: ContentInteractForm = {
+      contentType: 'tours',
+      interaction: interaction,
+      value: interaction === 'like' ? !isLikeTour(tour).value : !isStarTour(tour).value,
+      contentId: tour.id
+    }
+
+    const refreshData = () => {
+      if (interaction === 'like') {
+        user.tourLikes = form.value
+          ? [...new Set([...user.tourLikes, tour.id])]
+          : user.tourLikes.filter((tId) => tId !== tour.id)
+        tour.likedBy = form.value
+          ? [...new Set([...tour.likedBy, user.id])]
+          : tour.likedBy.filter((uId) => uId !== user.id)
+      } else if (interaction === 'star') {
+        user.tourStars = form.value
+          ? [...new Set([...user.tourStars, tour.id])]
+          : user.tourStars.filter((tId) => tId !== tour.id)
+        tour.starredBy = form.value
+          ? [...new Set([...tour.starredBy, user.id])]
+          : tour.starredBy.filter((uId) => uId !== user.id)
+      }
+    }
+
+    refreshData()
+    interactWithContent<TourRecord>(form)
+      .then((apiRes) => {
+        if (apiRes.success) {
+          refreshData()
+          Object.assign(tour, apiRes.data!)
+          showToast({
+            message: apiRes.message,
+            duration: 1000
+          })
+        } else {
+          showToast({
+            type: 'fail',
+            message: apiRes.message
+          })
+        }
+      })
+      .finally(() => {
+        interactLoadObj.setLoading(false)
+      })
+  })
+}
 
 onMounted(() => {
-  // if (props.mode === 'minimal') {
-  //   isMinimal.value = true
-  //   switchStatus.value = 'map'
-  //   switchClick()
-  // } else if (props.mode === 'tour') {
-  //   isTour.value = true
-  //   switchStatus.value = 'map'
-  //   switchClick()
-  // }
+  if(props.tourData.tourHighlightList.length<=0){
+    switchClick()
+    hasHighlight.value = false
+  }
 })
 </script>
 

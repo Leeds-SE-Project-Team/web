@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue'
 import { type FieldRule, Message } from '@arco-design/web-vue'
 import useLoading from '@/hooks/loading'
 import { createUser } from '@/apis/user'
+import { MD5 } from 'crypto-js';
 
 type Status = 'default' | 'signup' | 'login'
 // type-based
@@ -58,7 +59,7 @@ const handleSignup = () => {
       createUser({
         nickname: form.nickname as string,
         email: props.signupEmail,
-        password: form.password as string
+        password: MD5(form.password as string).toString()
       })
         .then((apiRes) => {
           if (apiRes.success) {

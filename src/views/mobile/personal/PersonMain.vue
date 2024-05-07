@@ -170,6 +170,8 @@ const clickVIP = ():Promise<void> =>
     buy_vip(vipType.value).then(res=>{
       if(res.success){
         showSuccessToast("VIP!")
+        userStore.curUser = res.data
+        user.value = res.data!
         resolve()
       }else{
         Message.info(res.message)

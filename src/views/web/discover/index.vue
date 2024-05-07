@@ -84,7 +84,12 @@
         <ul class="content-list">
           <li v-for="(item,i) in itemList" :key="i">
             <!--            TOUR-->
-            <DCard v-if="item.type==='tour'" :tour-data="(item.item as TourRecord)" style="margin: 10px"></DCard>
+            <DCard
+              v-if="item.type==='tour'"
+              :tour-data="(item.item as TourRecord)"
+              style="margin: 10px"
+              @jump="$router.push({name: 'tour', query:{id:item.item.id}})"
+            ></DCard>
             <!--          COLLECTION-->
             <DArticle v-if="item.type==='collection'" :info="(item.item as TourCollection)"></DArticle>
           </li>
@@ -105,6 +110,7 @@ import { type TourRecord, getTours } from '@/apis/tour'
 import useLoading from '@/hooks/loading'
 import { computed } from 'vue'
 import { shuffle } from 'lodash-es'
+import router from '@/router'
 
 interface DisPlayItem {
   type: 'collection' | 'tour'
@@ -145,7 +151,7 @@ const fetchCollection = () => {
   getCollectionLoading.setLoading(true)
   getTourCollection()
     .then((apiRes) => {
-      collectionList.value = apiRes.data!
+      collectionList.value = apiRes.data!.filter(item=>item.title!='Default Collection')
     })
     .catch((e) => {
       Message.error(e)
