@@ -146,6 +146,7 @@ export interface CreateTourForm {
   type: TourType
   pons: PON[]
   tourCollectionId: number
+  groupCollectionId: number
   result: any
   title: string
 }

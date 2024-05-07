@@ -10,7 +10,7 @@ import {
   TourType,
   tourTypeMap
 } from '@/apis/tour'
-import type { PickerOption } from 'vant'
+import { closeToast, type PickerOption } from 'vant'
 import { Message } from '@arco-design/web-vue'
 import useLoading from '@/hooks/loading'
 import MapPlanner from '@/views/mobile/planner/components/MapPlanner.vue'
@@ -21,12 +21,16 @@ import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collect
 import { useRoute, useRouter } from 'vue-router'
 import { uploadFileFromURL } from '@/utils/file'
 import SearchPlaceView from '@/views/mobile/planner/SearchPlaceView.vue'
+import { getGroupCollectionByGroupId, type GroupCollectionRecord } from '@/apis/groupCollection'
+import { getAllCreatedGroupsByUser, getAllJoinedGroupsByUser, type GroupRecord } from '@/apis/group'
+import { showLoadingToast } from 'vant/es'
 
 const tourTypeText = computed<string>(() => getTourTypeText(createTourForm.value.type))
 const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.value.type))
 
 const showPicker = ref(false)
 const showCollectionPicker = ref(false)
+const showGroupCollectionPicker = ref(false)
 const onConfirm = ({ selectedOptions }: { selectedOptions: PickerOption[] }) => {
   showPicker.value = false
   createTourForm.value.type = selectedOptions[0].value as TourType
@@ -37,8 +41,9 @@ const onCollectionConfirm = ({ selectedOptions }: { selectedOptions: PickerOptio
 }
 
 const userCollections = ref<TourCollection[]>([])
+const userGroupCollections = ref<GroupCollectionRecord[]>([])
 const selectedCollection = ref(-1)
-
+const selectedGroupCollection = ref(-1)
 const collectionLoadingObj = useLoading()
 const fetchTourCollections = () => {
   // userStore
@@ -66,6 +71,71 @@ const fetchTourCollections = () => {
   // })
 }
 
+const userJoinedGroups = ref<GroupRecord[]>([])
+const groupsLoadingObj = useLoading()
+const fetchGroups = () => {
+  // userStore
+  //   .getUserRecord()
+  //   .then((user) => {
+  groupsLoadingObj.setLoading(true)
+  Promise.all([getAllJoinedGroupsByUser(), getAllCreatedGroupsByUser()])
+    .then((apiRes) => {
+      if (apiRes[0].success && apiRes[1].success) {
+        const userJoinedGroups = [...apiRes[0].data!, ...apiRes[1].data!]
+        selectGroupCollectionOptions.value = userJoinedGroups.map((g) => ({
+          text: g.name,
+          value: g.id,
+          children: []
+        }))
+      }
+    })
+    .catch((reason: any) => {
+      Message.error(reason)
+    })
+    .finally(() => {
+      groupsLoadingObj.setLoading(false)
+    })
+  // })
+  // .catch((reason: any) => {
+  //   Message.error(reason)
+  // })
+}
+
+const selectedGroupCollectionName = ref('None')
+
+const onSelectedGroupChange = ({
+  value,
+  tabIndex,
+  selectedOptions
+}: {
+  value: number
+  tabIndex: number
+  selectedOptions: any[]
+}) => {
+  if (selectedOptions.length >= 2) {
+    showGroupCollectionPicker.value = false
+    selectedGroupCollectionName.value = selectedOptions[1].text
+    return
+  }
+  if (selectedOptions[0].children!.length === 0) {
+    showLoadingToast('loading...')
+    getGroupCollectionByGroupId(value)
+      .then((apiRes) => {
+        if (apiRes.success) {
+          selectGroupCollectionOptions.value[tabIndex].children = apiRes.data!.map(
+            (groupCollection) => ({
+              text: groupCollection.name,
+              value: groupCollection.id
+            })
+          )
+        }
+      })
+      .finally(() => {
+        closeToast()
+      })
+  }
+}
+
 const tourTitleInput = ref('')
 const createTourForm = ref<CreateTourForm>({
   startLocation: '',
@@ -73,6 +143,7 @@ const createTourForm = ref<CreateTourForm>({
   type: TourType.WALK,
   pons: [],
   tourCollectionId: -1,
+  groupCollectionId: -1,
   result: undefined,
   title: 'Untitled'
 })
@@ -106,7 +177,8 @@ const handleCreateTour = (navigate?: boolean) => {
         ...createTourForm.value,
         tourCollectionId: selectedCollection.value,
         title: tourTitleInput.value.length > 0 ? tourTitleInput.value : 'Untitled',
-        result: mapContainer.value.navigationResult
+        result: mapContainer.value.navigationResult,
+        groupCollectionId: selectedGroupCollection.value
       })
         .then((res) => {
           if (res.success) {
@@ -173,7 +245,14 @@ watch(createTourForm, () => {
   }
 })
 
-const sheetData = computed(() => mapContainer.value.sheetData)
+const sheetData = computed<{
+  address: string
+  loading: boolean
+  distance: number
+  neighborhoodType: string
+  neighborhood: string
+  street: string
+}>(() => mapContainer.value.sheetData)
 
 const handleSelectStart = () => {
   if (selectPoint.value) {
@@ -212,7 +291,6 @@ const selectedAll = computed({
 
 const setCenter = (center: number[] | string[]) => {
   mapContainer.value.center.value = center
-  console.log(center)
 }
 
 const resultPanelAnchors = [
@@ -226,6 +304,7 @@ const hasPlanned = computed(() => {
   const result = mapContainer.value && mapContainer.value.navigationResult
   if (result) {
     fetchTourCollections()
+    fetchGroups()
   }
   return result
 })
@@ -262,6 +341,14 @@ onMounted(() => {
 onUnmounted(() => {
   App.removeAllListeners()
 })
+
+interface SelectGroupCollectionOption {
+  text: string
+  value: number
+  children?: SelectGroupCollectionOption[]
+}
+
+const selectGroupCollectionOptions = ref<SelectGroupCollectionOption[]>([])
 </script>
 
 <template>
@@ -587,6 +674,14 @@ onUnmounted(() => {
         <van-loading v-if="selectedCollection === -1" />
         <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
       </van-cell>
+
+      <van-cell class="collection-select" @click="showGroupCollectionPicker = true">
+        <template #title>
+          <span class="menu-title">Select group collection</span>
+        </template>
+        <van-loading v-if="groupsLoadingObj.loading.value" />
+        <span v-else>{{ selectedGroupCollectionName }}</span>
+      </van-cell>
     </van-floating-panel>
     <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>
       <van-picker
@@ -601,6 +696,30 @@ onUnmounted(() => {
         @cancel="showCollectionPicker = false"
         @confirm="onCollectionConfirm"
         @scroll-into="handleScrollPicker"
+      />
+    </van-popup>
+    <van-popup v-model:show="showGroupCollectionPicker" class="popup" position="bottom" round>
+      <!--      <van-picker-->
+      <!--        :columns="-->
+      <!--          userGroupCollections.map((groupCollection) => ({-->
+      <!--            value: groupCollection.id,-->
+      <!--            text: groupCollection.name-->
+      <!--          }))-->
+      <!--        "-->
+      <!--        :loading="collectionLoadingObj.loading.value"-->
+      <!--        class="collection-picker"-->
+      <!--        @cancel="showCollectionPicker = false"-->
+      <!--        @confirm="onCollectionConfirm"-->
+      <!--        @scroll-into="handleScrollPicker"-->
+      <!--      />-->
+      <van-cascader
+        v-model="selectedGroupCollection"
+        :options="selectGroupCollectionOptions"
+        class="collection-picker"
+        title="Select Group Collection"
+        @cancel="showGroupCollectionPicker = false"
+        @change="onSelectedGroupChange"
+        @close="showGroupCollectionPicker = false"
       />
     </van-popup>
   </div>

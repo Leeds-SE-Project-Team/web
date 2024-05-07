@@ -1,32 +1,7 @@
 import localeMessageBox from '@/components/message-box/locale/en-US'
-// import localeLogin from '@/views/login/locale/en-US'
-
 import localeDashboard from '@/views/web/admin/dashboard/locale/en-US'
-
-// import localeMonitor from '@/views/dashboard/monitor/locale/en-US'
-//
 import localeSearchUserTable from '@/views/web/admin/search/search-user/locale/en-US'
 import localeSearchVideoTable from '@/views/web/admin/search/search-tour/locale/en-US'
-// import localeCardList from '@/views/list/card/locale/en-US'
-//
-// import localePostVideo from '@/views/admin/post-video/locale/en-US'
-// import localeGroupForm from '@/views/form/group/locale/en-US'
-//
-// import localeBasicProfile from '@/views/profile/basic/locale/en-US'
-//
-// import localeDataAnalysis from '@/views/visualization/data-analysis/locale/en-US'
-// import localeMultiDAnalysis from '@/views/visualization/multi-dimension-data-analysis/locale/en-US'
-//
-// import localeSuccess from '@/views/result/success/locale/en-US'
-// import localeError from '@/views/result/error/locale/en-US'
-//
-// import locale403 from '@/views/exception/403/locale/en-US'
-// import locale404 from '@/views/exception/404/locale/en-US'
-// import locale500 from '@/views/exception/500/locale/en-US'
-//
-// import localeUserInfo from '@/views/user/info/locale/en-US'
-// import localeUserSetting from '@/views/user/profile/locale/zh-CN'
-
 import localeSettings from './en-US/settings'
 
 export default {
@@ -47,23 +22,7 @@ export default {
   'navbar.action.locale': 'Switch to English',
   ...localeSettings,
   ...localeMessageBox,
-  // ...localeLogin,
   ...localeDashboard,
-  //
-  // ...localeMonitor,
   ...localeSearchUserTable,
   ...localeSearchVideoTable
-  // ...localeCardList,
-  // ...localePostVideo,
-  // ...localeGroupForm,
-  // ...localeBasicProfile,
-  // ...localeDataAnalysis,
-  // ...localeMultiDAnalysis,
-  // ...localeSuccess,
-  // ...localeError,
-  // ...locale403,
-  // ...locale404,
-  // ...locale500,
-  // ...localeUserInfo,
-  // ...localeUserSetting
 }
