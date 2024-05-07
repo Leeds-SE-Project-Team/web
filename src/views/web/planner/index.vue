@@ -247,7 +247,14 @@ watch(createTourForm, () => {
   }
 })
 
-const sheetData = computed(() => mapContainer.value.sheetData)
+const sheetData = computed<{
+  address: string
+  loading: boolean
+  distance: number
+  neighborhoodType: string
+  neighborhood: string
+  street: string
+}>(() => mapContainer.value.sheetData)
 
 const handleSelectStart = () => {
   if (selectPoint.value) {
@@ -779,7 +786,7 @@ onUnmounted(() => {
                   <van-grid-item class="detail-item" icon="aim">
                     <template #text>
                       <span class="detail-content">
-                        {{ (createGPXFrom.result.distance / 1000).toFixed(2) }} km
+                        {{ ((createGPXFrom.result as any).distance / 1000).toFixed(2) }} km
                       </span></template
                     >
                   </van-grid-item>
