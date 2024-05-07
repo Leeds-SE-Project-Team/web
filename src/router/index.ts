@@ -228,27 +228,27 @@ const router = createRouter({
       },
       component: groupCollection
     },
-    {
-      path: '/personal',
-      redirect: '/personal/personalprofile', // web页面的重定向
-      meta: {
-        auth: ['admin', 'user'],
-        layout: Capacitor.getPlatform() === 'web' ? 'b' : '',
-        title: 'personalprofile'
-      },
-      component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
-      children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
-    },
     // {
-    //   path: '/personal', // redirect: '/personal/personalprofile', // web页面的重定向
+    //   path: '/personal',
+    //   redirect: '/personal/personalprofile', // web页面的重定向
     //   meta: {
     //     auth: ['admin', 'user'],
-    //     layout: '',
+    //     layout: Capacitor.getPlatform() === 'web' ? 'b' : '',
     //     title: 'personalprofile'
     //   },
-    //   component: personalIndex,
-    //   children: personalMobileChildren
+    //   component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
+    //   children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
     // },
+    {
+      path: '/personal', // redirect: '/personal/personalprofile', // web页面的重定向
+      meta: {
+        auth: ['admin', 'user'],
+        layout: '',
+        title: 'personalprofile'
+      },
+      component: personalIndex,
+      children: personalMobileChildren
+    },
     {
       path: '/group',
       name: 'group',

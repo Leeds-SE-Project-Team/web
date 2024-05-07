@@ -67,7 +67,7 @@
           class="pic-map"
           lineType="dashed"
         >
-          <DHighlight :data="highlight" @jump="toTour"></DHighlight>
+          <DHighlight :data="highlight" @click="redirectToRoute(highlight.id)"></DHighlight>
         </a-timeline-item>
 
         <a-timeline-item class="pic-map" lineType="dashed">
@@ -146,6 +146,13 @@
               >Navigate</span
             ></van-icon
           >
+        </a-button>
+
+        <a-button
+          class="primary-btn-dark"
+          style="margin-left: 20px;"
+          @click="downGPX(tourRecord?.id)">
+          download
         </a-button>
       </div>
 
@@ -244,8 +251,8 @@ const route = useRoute()
 const router = useRouter()
 const tourRecord = ref<TourRecord>()
 
-const toTour = () => {
-  router.push({ name: 'anotherHighlight' })
+const redirectToRoute = (id: string|number) => {
+  router.push(`/highlight/${id}`);
 }
 
 const coverImg = computed(() => {
@@ -270,6 +277,16 @@ const showThree = computed(()=>{
   }
   return false
 })
+
+const downGPX = (id:number|undefined)=>{
+    const link = document.createElement('a')
+    if(!id) {
+      return
+    }
+    link.href = `${import.meta.env.APP_STATIC_URL}/tour/${id}/map.gpx`
+    link.download = `${id}.gpx`
+    link.click()
+}
 
 const userStore = useUserStore()
 const curUser = computed(() => userStore.curUser)
