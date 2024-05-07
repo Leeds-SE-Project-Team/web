@@ -29,13 +29,15 @@
                 <van-field
                     label="新密码"
                     v-model="pwdStruct.new"
-                    placeholder="请输入新密码"  
+                    placeholder="请输入新密码"
+                    type="password"
                 />
                 <van-field
                     label="确认新密码"
                     v-model="pwdStruct.renew"
                     placeholder="请输入确认新密码"
                     :rules="[{validator: pwdValidate}]"
+                    type="password"
                 />
                 <van-field
                     label="邮箱"
@@ -98,6 +100,7 @@ import { uploadFileFromURL } from '@/utils/file'
 import type { UploaderFileListItem } from 'vant';
 import router from '@/router';
 import { cloneDeep } from 'lodash-es';
+import { MD5 } from 'crypto-js';
 
 const user = ref<UserRecord | undefined>();
 const file = ref<UploaderFileListItem[]>([]);
@@ -126,8 +129,8 @@ const formSubmit = ()=>{
         if(!user.value){ return; }
         const form = {
             ...user.value,
-            oldPassword: pwdStruct.old===''?null:pwdStruct.old,
-            newPassword: pwdStruct.new===''?null:pwdStruct.new,
+            oldPassword: pwdStruct.old===''?null:MD5(pwdStruct.old).toString(),
+            newPassword: pwdStruct.new===''?null:MD5(pwdStruct.new).toString(),
         }
         console.log(form)
         if(file.value.length==1){

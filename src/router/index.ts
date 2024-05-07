@@ -3,6 +3,7 @@ import IndexView from '@/views/both/home/index.vue'
 import HomeView from '@/views/both/home/HomeView.vue'
 import LoginView from '@/views/both/login/index.vue'
 import DiscoverMobileView from '@/views/mobile/discover/index.vue'
+import DiscoverWebView from '@/views/web/discover/index.vue'
 import TourView from '@/views/tour/index.vue'
 import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
@@ -142,13 +143,12 @@ const router = createRouter({
       path: '/discover',
       name: 'discover',
       meta: {
-        // layout: 'mobile-main',
-        layout: 'mobile-main',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'Discover Page',
         auth: ['admin', 'user']
       }, // Render component dynamically according to platform
       // component: DiscoverMobileView
-      component: DiscoverMobileView
+      component: Capacitor.getPlatform() === 'web' ? DiscoverWebView : DiscoverMobileView
     },
     // {
     //   path: '/plan',
