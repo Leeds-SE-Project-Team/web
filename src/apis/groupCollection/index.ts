@@ -34,7 +34,7 @@ export const getGroupCollectionByGroupId = (
   })
 
 export interface CreateGroupCollectionForm {
-  groupId: number
+  groupId: number | string
   name: string
   title: string
   coverUrl: string
