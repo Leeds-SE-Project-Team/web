@@ -7,7 +7,7 @@ import {
   getTourTypeText,
   parseLocation,
   type TourRecord,
-  TourType,
+  TourType
 } from '@/apis/tour'
 // import type { PickerOption } from 'vant'
 import { Message } from '@arco-design/web-vue'
@@ -73,6 +73,7 @@ const createTourForm = ref<CreateTourForm>({
   type: TourType.WALK,
   pons: [],
   tourCollectionId: -1,
+  groupCollectionId: -1,
   result: undefined,
   title: 'Untitled'
 })
@@ -85,24 +86,25 @@ const createGPXFrom = ref<CreateTourForm>({
   type: TourType.WALK,
   pons: [],
   tourCollectionId: -1,
+  groupCollectionId: -1,
   result: undefined,
   title: 'Untitled'
 })
 
-const isGPX = computed(()=>{
-  if(route.query.type && route.query.type==='gpx'){
-    return true;
+const isGPX = computed(() => {
+  if (route.query.type && route.query.type === 'gpx') {
+    return true
   }
-  return false;
+  return false
 })
-const isGPS = computed(()=>{
-  if(route.query.type && route.query.gps==='true'){
-    return true;
+const isGPS = computed(() => {
+  if (route.query.type && route.query.gps === 'true') {
+    return true
   }
-  return false;
+  return false
 })
 
-if(isGPX.value){
+if (isGPX.value) {
   createGPXFrom.value.result = useMapStore().FileGpxData
   // fetchTourCollections()
 }
@@ -221,7 +223,7 @@ const pointSheetHeight = ref(0)
 const floatSheetHeight = window.innerHeight * 0.4
 // const floatSheetAnchors = [0, floatSheetHeight]
 
-let timer:any = 0
+let timer: any = 0
 watch(selectPoint, (value) => {
   if (value) {
     clearInterval(timer)
@@ -324,9 +326,12 @@ const handleMapComplete = () => {
 const showSelector = ref(false)
 const GPXCollectionPicker = ref(false)
 
-watch(()=>mapContainer.value?.mapRef.$$getInstance(),()=>{
-  console.log(mapContainer.value.mapRef.$$getInstance())
-})
+watch(
+  () => mapContainer.value?.mapRef.$$getInstance(),
+  () => {
+    console.log(mapContainer.value.mapRef.$$getInstance())
+  }
+)
 
 onMounted(() => {
   App.addListener('backButton', () => {
@@ -338,42 +343,43 @@ onMounted(() => {
   //     console.log(mapContainer.value?.mapRef.$$getInstance())
   //   }
   // },1000)
-  if(isGPX.value){
-    setTimeout(()=>{
+  if (isGPX.value) {
+    setTimeout(() => {
       const map = mapContainer.value.mapRef.$$getInstance()
       console.log(map)
-      if(isGPS.value){
-        AMap.convertFrom(mapStore.parseRouteToPath(
-          createGPXFrom.value.result.routes,
-          0
-        ), "gps", function (status:any, result:any) {
-        //status：complete 表示查询成功，no_data 为查询无结果，error 代表查询错误
-        //查询成功时，result.locations 即为转换后的高德坐标系
-        if (status === "complete" && result.info === "ok") {
-            const path = result.locations; //转换后的高德坐标 Array.<LngLat>
-            createGPXFrom.value.result.routes = path;
-            createGPXFrom.value.startLocation = path[0].toString()
-            createGPXFrom.value.endLocation = path[path.length-1].toString()
-            useMapStore().drawRoute(
-              map,
-              createGPXFrom.value.result.routes,
-              0,
-              {startMarker: true,endMarker:true,reCenter:true},
-              false,true
-            )
+      if (isGPS.value) {
+        AMap.convertFrom(
+          mapStore.parseRouteToPath(createGPXFrom.value.result.routes, 0),
+          'gps',
+          function (status: any, result: any) {
+            //status：complete 表示查询成功，no_data 为查询无结果，error 代表查询错误
+            //查询成功时，result.locations 即为转换后的高德坐标系
+            if (status === 'complete' && result.info === 'ok') {
+              const path = result.locations //转换后的高德坐标 Array.<LngLat>
+              createGPXFrom.value.result.routes = path
+              createGPXFrom.value.startLocation = path[0].toString()
+              createGPXFrom.value.endLocation = path[path.length - 1].toString()
+              useMapStore().drawRoute(
+                map,
+                createGPXFrom.value.result.routes,
+                0,
+                { startMarker: true, endMarker: true, reCenter: true },
+                false,
+                true
+              )
+            }
           }
-        })
-      }else{
+        )
+      } else {
         useMapStore().drawRoute(
           map,
           createGPXFrom.value.result.routes,
           0,
-          {startMarker: true,endMarker:true,reCenter:true},
+          { startMarker: true, endMarker: true, reCenter: true },
           isGPS.value
         )
       }
-      
-    },1000)
+    }, 1000)
   }
 })
 
@@ -383,10 +389,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div id="mobile-planner" class="flex-r" >
+  <div id="mobile-planner" class="flex-r">
     <div class="left">
-      <div id="top-menu" style="height: 100%;" >
-        <div class="outer-container" style="height: 100%;" >
+      <div id="top-menu" style="height: 100%">
+        <div class="outer-container" style="height: 100%">
           <div
             :style="{ height: (hasPlanned || selectPoint) && !alwaysShowTop ? 0 : '44px' }"
             class="menu-select"
@@ -407,11 +413,12 @@ onUnmounted(() => {
               round
               @open="selectPoint = undefined"
             >
-              <div v-if="isGPX" style="height: 100px; width: 100%" class="flex-r flex-justify-c">
-                <a-select :style="{maxWidth: '400px'}"
-                  placeholder="Please select ..."
-                  :bordered="false"
+              <div v-if="isGPX" class="flex-r flex-justify-c" style="height: 100px; width: 100%">
+                <a-select
                   v-model="createGPXFrom.type"
+                  :bordered="false"
+                  :style="{ maxWidth: '400px' }"
+                  placeholder="Please select ..."
                   @change="showPicker = false"
                 >
                   <a-option :value="TourType.WALK">Hiking</a-option>
@@ -419,11 +426,12 @@ onUnmounted(() => {
                   <a-option :value="TourType.CAR">Car</a-option>
                 </a-select>
               </div>
-              <div v-else style="height: 100px; width: 100%" class="flex-r flex-justify-c">
-                <a-select :style="{maxWidth: '400px'}"
-                  placeholder="Please select ..."
-                  :bordered="false"
+              <div v-else class="flex-r flex-justify-c" style="height: 100px; width: 100%">
+                <a-select
                   v-model="createTourForm.type"
+                  :bordered="false"
+                  :style="{ maxWidth: '400px' }"
+                  placeholder="Please select ..."
                   @change="showPicker = false"
                 >
                   <a-option :value="TourType.WALK">Hiking</a-option>
@@ -433,7 +441,7 @@ onUnmounted(() => {
               </div>
             </van-popup>
           </div>
-          <div class="menu-locations flex-c" style="height: 100%;"  >
+          <div class="menu-locations flex-c" style="height: 100%">
             <!--          '78px'-->
             <van-form
               ref="formRef"
@@ -570,16 +578,16 @@ onUnmounted(() => {
               >
               <span v-else>Long press to select a point</span>
             </div>
-            <div class="float-panne flex-c" style="flex:1;" >
+            <div class="float-panne flex-c" style="flex: 1">
               <!-- <van-floating-panel
                 v-if="pointSheetHeight > 0"
                 id="bottom-menu"
                 v-model:height="pointSheetHeight"
                 :anchors="floatSheetAnchors"
               > -->
-              <div id="choose-info" v-if="pointSheetHeight > 0">
+              <div v-if="pointSheetHeight > 0" id="choose-info">
                 <div class="pos-sheet-btn-container">
-                  <div v-if="!plannedResult" class="flex-r flex-justify-c" style="gap:1rem;">
+                  <div v-if="!plannedResult" class="flex-r flex-justify-c" style="gap: 1rem">
                     <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectStart">
                       <span class="btn-text">Start here</span>
                     </van-button>
@@ -598,7 +606,9 @@ onUnmounted(() => {
                   </div>
                 </div>
                 <div class="pos-sheet-text-container">
-                  <p class="name van-multi-ellipsis--l2">{{ sheetData.neighborhood || sheetData.street }}</p>
+                  <p class="name van-multi-ellipsis--l2">
+                    {{ sheetData.neighborhood || sheetData.street }}
+                  </p>
                   <van-loading v-if="sheetData.loading" class="loading" color="#1989fa" />
                   <div v-else>
                     <van-tag
@@ -627,11 +637,15 @@ onUnmounted(() => {
                 </div>
               </div>
               <!-- </van-floating-panel> -->
-              <div id="plan-info" class="result-panel"
+              <div
                 v-if="selectedAll && hasPlanned && !(pointSheetHeight > 0)"
+                id="plan-info"
+                class="result-panel"
               >
                 <van-cell class="result-cell">
-                  <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>
+                  <template #icon
+                    ><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon"
+                  /></template>
                   <template #title>
                     <span class="menu-title">{{ tourTypeText.toUpperCase() }}</span>
                   </template>
@@ -653,14 +667,17 @@ onUnmounted(() => {
                 <van-grid :border="false" :gutter="10" class="result-detail">
                   <van-grid-item class="detail-item" icon="clock-o" text="文字">
                     <template #text>
-                      <span class="detail-content"> {{ Math.round(plannedFirstRoute?.time / 60) }} min </span>
+                      <span class="detail-content">
+                        {{ Math.round(plannedFirstRoute?.time / 60) }} min
+                      </span>
                     </template>
                   </van-grid-item>
                   <van-grid-item class="detail-item" icon="aim">
                     <template #text>
                       <span class="detail-content">
                         {{ (plannedFirstRoute?.distance / 1000).toFixed(2) }} km
-                      </span></template>
+                      </span></template
+                    >
                   </van-grid-item>
                   <van-grid-item class="detail-item action-item" icon="share-o">
                     <template #text><span class="detail-content"> share </span></template>
@@ -684,21 +701,30 @@ onUnmounted(() => {
                     <span class="menu-title">Select collection</span>
                   </template>
                   <van-loading v-if="selectedCollection === -1" />
-                  <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
+                  <span v-else>{{
+                    userCollections.find((c) => c.id === selectedCollection)?.name
+                  }}</span>
                 </van-cell>
-                <van-popup id="thepop" v-model:show="showCollectionPicker" class="popup" position="top" round>
-                  <div style="height: 100px; width: 100%" class="flex-r flex-justify-c">
-                    <a-select :style="{maxWidth: '400px'}"
-                      placeholder="Please select ..."
-                      :bordered="false"
+                <van-popup
+                  id="thepop"
+                  v-model:show="showCollectionPicker"
+                  class="popup"
+                  position="top"
+                  round
+                >
+                  <div class="flex-r flex-justify-c" style="height: 100px; width: 100%">
+                    <a-select
                       v-model="selectedCollection"
-                      @change="showCollectionPicker = false"
+                      :bordered="false"
                       :options="
-                        userCollections.map((collection)=>({
+                        userCollections.map((collection) => ({
                           value: collection.id,
                           label: collection.name
                         }))
                       "
+                      :style="{ maxWidth: '400px' }"
+                      placeholder="Please select ..."
+                      @change="showCollectionPicker = false"
                     ></a-select>
                   </div>
                 </van-popup>
@@ -713,15 +739,19 @@ onUnmounted(() => {
                   </van-button>
                 </div>
               </div>
-              <div id="gpx-info" class="result-panel"
-                v-if="isGPX"
-              >
+              <div v-if="isGPX" id="gpx-info" class="result-panel">
                 <van-cell class="result-cell">
                   <template #icon>
-                    <img :alt="getTourTypeText(createGPXFrom.type)" :src="getTourTypeImg(createGPXFrom.type)" class="menu-icon" />
+                    <img
+                      :alt="getTourTypeText(createGPXFrom.type)"
+                      :src="getTourTypeImg(createGPXFrom.type)"
+                      class="menu-icon"
+                    />
                   </template>
                   <template #title>
-                    <span class="menu-title">{{ getTourTypeText(createGPXFrom.type).toUpperCase() }}</span>
+                    <span class="menu-title">{{
+                      getTourTypeText(createGPXFrom.type).toUpperCase()
+                    }}</span>
                   </template>
                   <van-button
                     :loading="mapContainer?.resultLoading"
@@ -741,14 +771,17 @@ onUnmounted(() => {
                 <van-grid :border="false" :gutter="10" class="result-detail">
                   <van-grid-item class="detail-item" icon="clock-o" text="文字">
                     <template #text>
-                      <span class="detail-content"> {{ Math.round(createGPXFrom.result.time / 60) }} min </span>
+                      <span class="detail-content">
+                        {{ Math.round(createGPXFrom.result.time / 60) }} min
+                      </span>
                     </template>
                   </van-grid-item>
                   <van-grid-item class="detail-item" icon="aim">
                     <template #text>
                       <span class="detail-content">
                         {{ (createGPXFrom.result.distance / 1000).toFixed(2) }} km
-                      </span></template>
+                      </span></template
+                    >
                   </van-grid-item>
                   <van-grid-item class="detail-item action-item" icon="revoke" @click="resetForm">
                     <template #text><span class="detail-content"> Return </span></template>
@@ -769,21 +802,30 @@ onUnmounted(() => {
                     <span class="menu-title">Select collection</span>
                   </template>
                   <van-loading v-if="createGPXFrom.tourCollectionId === -1" />
-                  <span v-else>{{ userCollections.find((c) => c.id === createGPXFrom.tourCollectionId)?.name }}</span>
+                  <span v-else>{{
+                    userCollections.find((c) => c.id === createGPXFrom.tourCollectionId)?.name
+                  }}</span>
                 </van-cell>
-                <van-popup id="thepop" v-model:show="GPXCollectionPicker" class="popup" position="top" round>
-                  <div style="height: 100px; width: 100%" class="flex-r flex-justify-c">
-                    <a-select :style="{maxWidth: '400px'}"
-                      placeholder="Please select ..."
-                      :bordered="false"
+                <van-popup
+                  id="thepop"
+                  v-model:show="GPXCollectionPicker"
+                  class="popup"
+                  position="top"
+                  round
+                >
+                  <div class="flex-r flex-justify-c" style="height: 100px; width: 100%">
+                    <a-select
                       v-model="createGPXFrom.tourCollectionId"
-                      @change="GPXCollectionPicker = false"
+                      :bordered="false"
                       :options="
-                        userCollections.map((collection)=>({
+                        userCollections.map((collection) => ({
                           value: collection.id,
                           label: collection.name
                         }))
                       "
+                      :style="{ maxWidth: '400px' }"
+                      placeholder="Please select ..."
+                      @change="GPXCollectionPicker = false"
                     ></a-select>
                   </div>
                 </van-popup>
@@ -803,7 +845,7 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    <div class="right" style="flex:1;">
+    <div class="right" style="flex: 1">
       <MapPlanner
         ref="mapContainer"
         v-model:selectPoint="selectPoint"
@@ -837,34 +879,38 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-#mobile-planner #map-container{
+#mobile-planner #map-container {
   position: relative;
-  top:0;
-  left:0;
-  width:100%;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
 }
-#mobile-planner #top-menu .outer-container .menu-locations #choose-info{
-  background-color: rgba(255,255,255,0.7);
+
+#mobile-planner #top-menu .outer-container .menu-locations #choose-info {
+  background-color: rgba(255, 255, 255, 0.7);
   border-radius: 15px;
   padding: 0.5rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-#mobile-planner #top-menu .outer-container .menu-locations .pos-sheet-btn{
+
+#mobile-planner #top-menu .outer-container .menu-locations .pos-sheet-btn {
   background-color: green;
 }
+
 #mobile-planner #top-menu .outer-container .menu-locations #plan-info,
-#mobile-planner #top-menu .outer-container .menu-locations #gpx-info{
-  background-color: rgba(255,255,255,0.7);
+#mobile-planner #top-menu .outer-container .menu-locations #gpx-info {
+  background-color: rgba(255, 255, 255, 0.7);
   border-radius: 15px;
   padding: 0.5rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-#mobile-planner #top-menu .outer-container .menu-locations #thepop{
+
+#mobile-planner #top-menu .outer-container .menu-locations #thepop {
   background-color: white;
 }
 </style>
