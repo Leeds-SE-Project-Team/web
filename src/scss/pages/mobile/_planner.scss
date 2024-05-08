@@ -93,11 +93,14 @@
             padding: 5px 0;
 
             .van-cell {
-              padding: 5px 16px;
-
               .van-field__label {
-                font-weight: 700 !important;
-                color: white;
+                &, * {
+                  font-weight: 700 !important;
+                  margin: 0;
+                  padding: 0;
+                  color: white;
+                }
+
                 width: 1.5rem !important;
                 height: 1.5rem !important;
               }
@@ -118,6 +121,8 @@
               .field-icon {
                 margin: auto 0 auto 16px;
               }
+
+              padding: 5px 16px;
             }
           }
         }
@@ -199,6 +204,7 @@
           font-size: 23px;
           margin: 5px 0 15px 5px;
           font-weight: bold;
+          color: rgba(0, 0, 0, 0.8);
         }
 
         .loading {
@@ -210,18 +216,21 @@
         .pos-sheet-distance {
           .icon {
             margin-right: 15px;
+            margin-left: 10px;
           }
 
           .text {
             font-size: 18px;
           }
 
+          color: rgba(0, 0, 0, 0.7);
           margin-bottom: 15px;
         }
       }
 
       .pos-sheet-location {
         margin: 5px;
+        color: rgba(0, 0, 0, 0.8);
         font-size: 18px;
       }
 
@@ -240,6 +249,7 @@
 
   .result-panel {
     z-index: $modal-z-index - 1;
+    color: rgba(0, 0, 0, 0.8);
 
     .result-cell {
       display: flex;

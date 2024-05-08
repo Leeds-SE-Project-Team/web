@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import { Camera, CameraResultType } from '@capacitor/camera'
+import { computed, inject, type Ref } from 'vue'
+import { useUserStore } from '@/stores'
+import { UserType } from '@/apis/user'
+import { showToast } from 'vant'
 
 // const imageUrl = ref('blob:http://localhost:5173/a0900c7d-6ee0-4b62-bd6c-f99f419f0d1e')
 const createHighlight = async () => {
@@ -21,37 +25,40 @@ const createHighlight = async () => {
   // }
 }
 
-const emits = defineEmits(['createHighlight', 'saveTour'])
+const emits = defineEmits(['createHighlight', 'saveTour', 'clickVIP'])
+
+const pauseTour = inject('pauseTour') as Ref<boolean>
+
+const togglePause = () => {
+  pauseTour.value = !pauseTour.value
+}
+
+const user = computed(() => useUserStore().curUser)
 </script>
 
 <template>
   <a-button-group class="footer-btn-group" type="primary">
     <a-button class="footer-btn" @click="emits('saveTour')">STOP</a-button>
+
     <a-button class="footer-btn" type="text" @click="createHighlight">
       <template #icon>
-        <icon-thumb-up-fill class="footer-icon" />
+        <icon-camera class="footer-icon" />
       </template>
     </a-button>
-    <a-button class="footer-btn" disabled type="text">
-      <icon-camera class="footer-icon" />
+    <a-button class="footer-btn" type="text" @click="togglePause">
+      <icon-play-arrow v-if="pauseTour" class="footer-icon" />
+      <icon-pause v-else class="footer-icon" />
     </a-button>
-    <a-button class="footer-btn" disabled type="text">
-      <icon-double-up class="footer-icon" />
+    <a-button class="footer-btn" type="text">
+      <img
+        alt="email"
+        src="@/assets/vip.svg"
+        v-if="!user || user.type === UserType.VIP"
+        @click="showToast('Already VIP')"
+      />
+      <icon-double-up class="footer-icon" @click="emits('clickVIP')" v-else />
     </a-button>
   </a-button-group>
-  <!--  <van-action-bar style="padding: 0 20px 0 20px">-->
-  <!--    <van-action-bar-icon @click="$router.push({ name: 'discover' })">-->
-  <!--      <template #icon>-->
-  <!--        <van-icon name="stop-circle" size="30" style="margin-top: 6px" />-->
-  <!--      </template>-->
-  <!--    </van-action-bar-icon>-->
-  <!--    <van-action-bar-button-->
-  <!--      style="margin: 0 10px 0 10px"-->
-  <!--      text="Add Highlight"-->
-  <!--      type="primary"-->
-  <!--      @click="takePicture"-->
-  <!--    />-->
-  <!--  </van-action-bar>-->
 </template>
 
 <style scoped>

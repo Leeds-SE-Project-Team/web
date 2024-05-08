@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, inject, onMounted, onUnmounted, type Ref, ref, watch } from 'vue'
 import { ElAmap } from '@vuemap/vue-amap'
 import {
   createTourHighlight,
@@ -34,6 +34,7 @@ import { parseTimeToString } from '@/utils'
 import dayjs from 'dayjs'
 import { useUserStore } from '@/stores'
 import { speechSynthesis } from '@/apis/others'
+import { UserType } from '@/apis/user'
 
 const route = useRoute()
 const tourId = parseInt(route.params.tourId as string)
@@ -72,6 +73,19 @@ const handleSaveTour = () => {
       saveTourLoadingObj.setLoading(false)
     })
 }
+
+const pauseTour = inject('pauseTour') as Ref<boolean>
+watch(
+  () => pauseTour.value,
+  (value) => {
+    if (value) {
+      speechSynthesis('行程已暂停')
+    } else {
+      speechSynthesis('行程已恢复')
+      getCurrentLocation(true)
+    }
+  }
+)
 
 const prevRecordData = ref<RecordData>({
   avgSpeed: 0,
@@ -198,7 +212,7 @@ const countNotInMotion = ref(Infinity)
 const isInMotion = computed(() => countNotInMotion.value < 10)
 
 const handleCountTime = () => {
-  if (!recordData.value) {
+  if (!recordData.value || pauseTour.value) {
     return
   }
 
@@ -219,13 +233,14 @@ const currentLineIndex = ref(-1)
 const tourPlannedLines = computed(() => {
   if (tourPlannedData.value) {
     const result = tourPlannedData.value.result
+    console.log(result)
     let lines = []
     switch (tourData.value!.type) {
       case TourType.WALK:
         lines = result.routes[0].steps
         break
       case TourType.CAR:
-        lines = result.routes[0].route
+        lines = result.routes[0].steps
         break
       case TourType.CYCLING:
         lines = result.routes[0].rides
@@ -240,9 +255,15 @@ const userStore = useUserStore()
 const getLocationLoadObj = useLoading()
 
 const getCurrentLocation = (toCenter?: boolean) => {
+  if (pauseTour.value) {
+    console.log('paused')
+    return
+  }
+
   if (!tourData.value) {
     if (!getLocationLoadObj.loading.value) {
       setTimeout(() => {
+        console.log('re get')
         getCurrentLocation(true)
       }, 1000)
     }
@@ -253,10 +274,12 @@ const getCurrentLocation = (toCenter?: boolean) => {
   if (getLocationLoadObj.loading.value || !geolocationInstance) {
     return
   }
+  console.log('start')
   getLocationLoadObj.setLoading(true)
   geolocationInstance.getCurrentPosition((status, info: any) => {
     getLocationLoadObj.setLoading(false)
     if (status === 'complete') {
+      console.log('stop', status)
       // weakGPS.value = info.accuracy > 30
       currentGPS.value = parseInt(info.accuracy)
 
@@ -344,6 +367,7 @@ const getCurrentLocation = (toCenter?: boolean) => {
             endMarker: false,
             reCenter: false
           },
+          false,
           true
         )
       }
@@ -547,7 +571,24 @@ onUnmounted(() => {
 
 <template>
   <div id="page-record">
-    <van-swipe v-if="!weakGPS" class="record-swipe" indicator-color="white">
+    <div v-if="pauseTour" class="weak-gps-hint">
+      <span class="hint-text" style="font-weight: bold; font-size: 32px; letter-spacing: 1.8px"
+        >PAUSED</span
+      >
+    </div>
+    <div v-else-if="weakGPS" class="weak-gps-hint">
+      <icon-loading class="hint-icon" />
+      <span class="hint-text">Establishing Location</span>
+    </div>
+    <div
+      v-else-if="!userStore.curUser || userStore.curUser.type !== UserType.VIP"
+      class="weak-gps-hint"
+    >
+      <span class="hint-text" style="font-weight: bold; font-size: 32px; letter-spacing: 1.8px"
+        >Not Vip</span
+      >
+    </div>
+    <van-swipe v-else class="record-swipe" indicator-color="white">
       <van-swipe-item>
         <a-grid :cols="2" class="swipe-grid">
           <a-grid-item>
@@ -693,10 +734,6 @@ onUnmounted(() => {
         </div>
       </van-swipe-item>
     </van-swipe>
-    <div v-else class="weak-gps-hint">
-      <icon-loading class="hint-icon" />
-      <span class="hint-text">Establishing Location</span>
-    </div>
 
     <div id="map-container">
       <el-amap
@@ -747,6 +784,7 @@ onUnmounted(() => {
           }"
           :enable-high-accuracy="true"
           :pan-to-location="false"
+          :timeout="5000"
           :zoom-to-accuracy="false"
         />
       </el-amap>

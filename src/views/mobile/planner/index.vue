@@ -424,11 +424,11 @@ onMounted(() => {
             //查询成功时，result.locations 即为转换后的高德坐标系
             if (status === 'complete' && result.info === 'ok') {
               const path = result.locations //转换后的高德坐标 Array.<LngLat>
-                createGPXForm.value.result.routes = path
-                createGPXForm.value.startLocation = path[0].toString()
-                // createTourForm.value.startLocation = path[0].toString()
-                createGPXForm.value.endLocation = path[path.length - 1].toString()
-                // createTourForm.value.endLocation = path[path.length - 1].toString()
+              createGPXForm.value.result.routes = path
+              createGPXForm.value.startLocation = path[0].toString()
+              // createTourForm.value.startLocation = path[0].toString()
+              createGPXForm.value.endLocation = path[path.length - 1].toString()
+              // createTourForm.value.endLocation = path[path.length - 1].toString()
               useMapStore().drawRoute(
                 map,
                 createGPXForm.value.result.routes,
@@ -523,7 +523,7 @@ const selectGroupCollectionOptions = ref<SelectGroupCollectionOption[]>([])
                 clear-trigger="always"
                 clearable
                 disabled
-                label="A:"
+                label="A"
                 name="startLocation"
                 placeholder="Current Location"
                 @click-input="showSelector = true"
@@ -603,7 +603,7 @@ const selectGroupCollectionOptions = ref<SelectGroupCollectionOption[]>([])
                 clear-trigger="always"
                 clearable
                 disabled
-                label="B:"
+                label="B"
                 name="endLocation"
                 placeholder="Choose Destination"
                 @click-input="showSelector = true"
@@ -720,7 +720,9 @@ const selectGroupCollectionOptions = ref<SelectGroupCollectionOption[]>([])
         </div>
       </div>
       <div class="pos-sheet-text-container">
-        <p class="name van-multi-ellipsis--l2">{{ sheetData.neighborhood || sheetData.street }}</p>
+        <p class="name van-multi-ellipsis--l2">
+          {{ sheetData.neighborhood || sheetData.street }}
+        </p>
         <van-loading v-if="sheetData.loading" class="loading" color="#1989fa" />
         <div v-else>
           <van-tag
