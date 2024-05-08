@@ -165,7 +165,7 @@ onUnmounted(() => {
 
 <script>
 export default {
-  name: 'HomeView',
+  name: 'WalcraftHomeView',
   bodyClass: 'index-page'
 }
 </script>

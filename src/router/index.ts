@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import IndexView from '@/views/both/home/index.vue'
+// import IndexView from '@/views/both/home/index.vue'
 // import HomeView from '@/views/both/home/HomeView.vue'
-import HomeView from '@/views/home/index.vue'
+import WalcraftHomeView from '@/views/home/index.vue'
 import LoginView from '@/views/both/login/index.vue'
 import DiscoverMobileView from '@/views/mobile/discover/index.vue'
 import DiscoverWebView from '@/views/web/discover/index.vue'
@@ -119,8 +119,7 @@ const router = createRouter({
       name: 'index',
       meta: {
         title: 'Index Page'
-      },
-      // component: IndexView
+      }, // component: IndexView
       redirect: '/home'
     },
     {
@@ -130,7 +129,7 @@ const router = createRouter({
         title: 'Home Page',
         layout: 'default'
       },
-      component: HomeView
+      component: WalcraftHomeView
     },
     {
       path: '/login',
@@ -240,8 +239,7 @@ const router = createRouter({
       },
       component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
       children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
-    },
-    // {
+    }, // {
     //   path: '/personal', // redirect: '/personal/personalprofile', // web页面的重定向
     //   meta: {
     //     auth: ['admin', 'user'],
