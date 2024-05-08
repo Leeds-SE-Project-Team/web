@@ -10,7 +10,7 @@ import { type ApiResponse, axiosRequest } from '@/apis' // Importing types and a
 export async function uploadFileFromURL(
   resURL: string,
   uploadURL: string,
-  filename: string
+  filename?: string
 ): Promise<ApiResponse<string>> {
   // Fetching the file from the provided URL
   const response = await fetch(resURL)
