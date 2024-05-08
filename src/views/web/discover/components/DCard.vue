@@ -44,7 +44,11 @@
                   />
                 </div>
                 <div class="right" v-if="props.tourData.tourHighlightList.length >= 2">
-                  <div class="up right-item">
+                  <div
+                    class="up right-item"
+                    :style="{height: props.tourData.tourHighlightList.length===2 ?
+                      '100%' : '50%'}"
+                  >
                     <a-image
                       :height="'100%'"
                       :src="props.tourData.tourHighlightList[1].tourImages[0].imageUrl"
@@ -64,7 +68,7 @@
               </a-image-preview-group>
             </div>
             <div ref="mapWrapper" class="map-wrapper hide">
-              <a-image :src="props.tourData.mapUrl" alt=""/>
+              <a-image :width="'100%'" height="100%" :src="props.tourData.mapUrl" alt=""/>
             </div>
             <div v-if="hasHighlight" class="switch">
               <button class="switch-button" @click="switchClick">
@@ -130,58 +134,6 @@
           </div>
         </div>
       </div>
-
-      <!--      commentContainer-->
-      <!-- <div v-if="showCommentList" class="commentContainer">
-        <div class="detail-comment-divider">
-          <span class="comment-title">全部评论</span>
-          <a-divider />
-        </div>
-
-        <div class="new-comment">
-          <a-row :wrap="false">
-            <a-avatar style="cursor: default">
-              <img alt="avatar" src="https://file.wmzspace.space/user/default/avatar/avatar.jpg" />
-            </a-avatar>
-
-            <a-input
-              v-model:model-value.trim="newCommentContent"
-              :max-length="400"
-              class="comment-input"
-              placeholder="留下你的精彩评论吧"
-            >
-              <template #suffix>
-                <a-tooltip>
-                  <template #content> 没有可以@的朋友</template>
-                  <img alt="at_friend" class="icon-at" src="/interaction/comment_at.svg" />
-                </a-tooltip>
-                <a-tooltip>
-                  <template #content>发布评论</template>
-                  <img
-                    v-if="newCommentContent.length > 0"
-                    alt="send_comment"
-                    class="icon-send"
-                    src="/interaction/send_comment.svg"
-                  />
-                </a-tooltip>
-              </template>
-            </a-input>
-          </a-row>
-        </div>
-
-        <div class="comments-list">
-          <CommentCard
-            v-for="(comment, index) in comments"
-            :key="index"
-            :depth="1"
-            :tour="tourData"
-            :comment="comment"
-            :index="index"
-          >
-          </CommentCard>
-          <p class="comments-list-append">暂时没有更多评论</p>
-        </div>
-      </div> -->
     </a-card>
   </div>
 </template>
