@@ -80,7 +80,7 @@ const handleGPX = (theFile: File) => {
         },
         waypoints: [] as any[],
       }
-      if(creator==='walcraft'){
+      if(creator==='walcraft' || creator==='www.Walcraft.com'){
         const trkseg = res.getElementsByTagName('trkseg').item(0);
         if(!trkseg){
             return;

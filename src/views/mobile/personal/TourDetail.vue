@@ -3,23 +3,34 @@
         <van-tabs style="background-color: transparent;">
             <van-tab title="Completed">
                 <van-list>
-                    <div
+                    <van-swipe-cell
                         v-for="item in completeTours"
                         :key="item.id"
-                        class="completed-tour flex-r"
-                        @click="toTour(item.id)"
                     >
-                        <van-image width="100" height="100" :src="item.mapUrl"/>
-                        <div class="tour-info flex-c flex-justify-c">
-                            <div class="info-title">
-                                {{ item.title }}
-                            </div>
-                            <div class="info-time flex-r">
-                                <van-icon name="completed-o" />
-                                <span style="margin-left: 0.25rem;">{{ item.createTime }}</span>
+                        <div
+                            class="completed-tour flex-r"
+                            @click="toTour(item.id)"
+                        >
+                            <van-image width="100" height="100" :src="item.mapUrl"/>
+                            <div class="tour-info flex-c flex-justify-c">
+                                <div class="info-title">
+                                    {{ item.title }}
+                                </div>
+                                <div class="info-time flex-r">
+                                    <van-icon name="completed-o" />
+                                    <span style="margin-left: 0.25rem;">{{ item.createTime }}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <template #right>
+                            <van-button
+                                square text="Download"
+                                type="primary"
+                                style="height: 100%;"
+                                @click="downGPX(item.id)"
+                            />
+                        </template>
+                    </van-swipe-cell>
                     <van-empty v-if="completeTours.length===0" description="Empty" />
                 </van-list>
             </van-tab>
@@ -56,9 +67,11 @@
                 <van-empty v-if="plannedTours.length===0" description="Empty" />
             </van-tab>
             <van-tab title="Star">
-                <div
+                <van-swipe-cell
                     v-for="item in starTours"
                     :key="item.id"
+                >
+                <div
                     class="completed-tour flex-r"
                     @click="toTour(item.id)"
                 >
@@ -73,6 +86,15 @@
                         </div>
                     </div>
                 </div>
+                <template #right>
+                        <van-button
+                            square text="Download"
+                            type="primary"
+                            style="height: 100%;"
+                            @click="downGPX(item.id)"
+                        />
+                    </template>
+                </van-swipe-cell>
                 <van-empty v-if="starTours.length===0" description="Empty" />
             </van-tab>
         </van-tabs>

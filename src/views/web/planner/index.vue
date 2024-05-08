@@ -17,7 +17,7 @@ import MapPlanner from '@/views/mobile/planner/components/MapPlanner.vue'
 import { App } from '@capacitor/app'
 import { useMapStore } from '@/stores/map'
 import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { uploadFileFromURL } from '@/utils/file'
 import SearchPlaceView from '@/views/mobile/planner/SearchPlaceView.vue'
 
@@ -79,6 +79,7 @@ const createTourForm = ref<CreateTourForm>({
 })
 
 const route = useRoute()
+const router = useRouter()
 
 const createGPXFrom = ref<CreateTourForm>({
   startLocation: '',
@@ -110,6 +111,10 @@ if (isGPX.value) {
 }
 
 const resetForm = () => {
+  if(route.query.gpx){
+    router.go(-1)
+    return;
+  }
   createTourForm.value.startLocation = ''
   createTourForm.value.endLocation = ''
   createTourForm.value.result = undefined
