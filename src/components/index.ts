@@ -3,14 +3,16 @@ import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { BarChart, LineChart, PieChart, RadarChart } from 'echarts/charts'
 import {
-  GridComponent,
-  TooltipComponent,
-  LegendComponent,
   DataZoomComponent,
-  GraphicComponent
+  GraphicComponent,
+  GridComponent,
+  LegendComponent,
+  TooltipComponent
 } from 'echarts/components'
 import Chart from './Charts/dashboardChart.vue'
 import Breadcrumb from './breadcrumb/index.vue'
+
+import Parallax from './Parallax.vue'
 
 // Manually introduce ECharts modules to reduce packing size
 
@@ -26,6 +28,8 @@ use([
   DataZoomComponent,
   GraphicComponent
 ])
+
+export { Parallax }
 
 export default {
   install(Vue: App) {

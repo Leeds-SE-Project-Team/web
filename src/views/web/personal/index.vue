@@ -41,14 +41,14 @@ getTourByUser()
       <a-layout class="profile-layout">
         <!-- left bar -->
         <a-layout-sider class="left-sider">
-        
+
           <div class='pic-profile'>
             <img :src="currUser?.avatar" alt="">
           </div>
 
           <div class="name">
             {{currUser?.nickname}}
-            
+
             <span v-if="currUser?.type" class="vip-button">
               <van-icon :size="20" name="/account/vip.svg" />
             </span>
@@ -66,7 +66,7 @@ getTourByUser()
               <div class="num-b">{{ totalCalories.toFixed(2) }}</div> Calories Consume
             </div>
           </div>
-          
+
           <a-menu class="menu" :default-selected-keys="[$route.meta.title]">
             <a-menu-item key="personalprofile" @click="navigateTo('personalprofile')">
               Your Profile
@@ -84,7 +84,7 @@ getTourByUser()
               Groups
             </a-menu-item>
           </a-menu>
-        
+
         </a-layout-sider>
 
 

@@ -5,10 +5,7 @@ import ArcoVue, { Message } from '@arco-design/web-vue'
 import Vant from 'vant'
 // 额外引入图标库
 import ArcoVueIcon from '@arco-design/web-vue/es/icon'
-import '@arco-design/web-vue/dist/arco.css'
-import 'vant/lib/index.css'
-import './scss/app.scss'
-import '@vuemap/vue-amap/dist/style.css'
+
 import App from './App.vue'
 import router from './router'
 import LayoutA from '@/layout/LayoutA.vue'
@@ -24,6 +21,16 @@ import pinia from '@/stores'
 import globalComponents from '@/components'
 import i18n from '@/locale'
 import gsap from 'gsap'
+import NowUiKit from '@/plugins/now-ui-kit'
+import ElementPlus from 'element-plus'
+import './assets/css/nucleo-icons.css'
+import './assets/css/nucleo-svg.css'
+import 'element-plus/dist/index.css'
+import '@arco-design/web-vue/dist/arco.css'
+import 'vant/lib/index.css'
+import '@vuemap/vue-amap/dist/style.css'
+import './scss/app.scss'
+import materialKit from './material-kit'
 
 const app = createApp(App)
 
@@ -60,9 +67,13 @@ app.use(Vant)
 app.use(ArcoVueIcon)
 app.use(globalComponents)
 app.use(gsap)
-// app.use(PullRefresh)
+
+app.use(ElementPlus)
 app.use(VueAMap)
 app.use(i18n)
+app.use(NowUiKit)
+app.use(materialKit)
+
 app.component('layout-default', LayoutDefault)
 app.component('layout-a', LayoutA)
 app.component('layout-b', LayoutB)

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import IndexView from '@/views/both/home/index.vue'
-import HomeView from '@/views/both/home/HomeView.vue'
+// import HomeView from '@/views/both/home/HomeView.vue'
+import HomeView from '@/views/home/index.vue'
 import LoginView from '@/views/both/login/index.vue'
 import DiscoverMobileView from '@/views/mobile/discover/index.vue'
 import DiscoverWebView from '@/views/web/discover/index.vue'
@@ -9,8 +10,9 @@ import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 import groupCollection from '@/views/web/groupCollection/index.vue'
-import personalPage from '@/views/web/personal/index.vue'
 // import groupCollection from '@/views/web/mobileGroup/index.vue'
+import personalPage from '@/views/web/personal/index.vue'
+
 import personalIndex from '@/views/mobile/personal/index.vue'
 import personalTours from '@/views/web/personal/tours.vue'
 import personalProfile from '@/views/web/personal/profile.vue'
@@ -118,15 +120,15 @@ const router = createRouter({
       meta: {
         title: 'Index Page'
       },
-      component: IndexView
+      // component: IndexView
+      redirect: '/home'
     },
     {
       path: '/home',
       name: 'home',
       meta: {
         title: 'Home Page',
-        layout: 'a',
-        auth: ['admin', 'user']
+        layout: 'default'
       },
       component: HomeView
     },
@@ -228,27 +230,27 @@ const router = createRouter({
       },
       component: groupCollection
     },
-    // {
-    //   path: '/personal',
-    //   redirect: '/personal/personalprofile', // web页面的重定向
-    //   meta: {
-    //     auth: ['admin', 'user'],
-    //     layout: Capacitor.getPlatform() === 'web' ? 'b' : '',
-    //     title: 'personalprofile'
-    //   },
-    //   component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
-    //   children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
-    // },
     {
-      path: '/personal', // redirect: '/personal/personalprofile', // web页面的重定向
+      path: '/personal',
+      redirect: '/personal/personalprofile', // web页面的重定向
       meta: {
         auth: ['admin', 'user'],
-        layout: '',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : '',
         title: 'personalprofile'
       },
-      component: personalIndex,
-      children: personalMobileChildren
+      component: Capacitor.getPlatform() === 'web' ? personalPage : personalIndex,
+      children: Capacitor.getPlatform() === 'web' ? web_personal_children : personalMobileChildren
     },
+    // {
+    //   path: '/personal', // redirect: '/personal/personalprofile', // web页面的重定向
+    //   meta: {
+    //     auth: ['admin', 'user'],
+    //     layout: 'b',
+    //     title: 'personalprofile'
+    //   },
+    //   component: personalIndex,
+    //   children: personalMobileChildren
+    // },
     {
       path: '/group',
       name: 'group',
