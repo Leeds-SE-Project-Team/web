@@ -5,7 +5,7 @@ import { TourType } from '@/apis/tour'
 import { Message } from '@arco-design/web-vue'
 
 export const useMapStore = defineStore('map', () => {
-  const FileGpxData = ref<object>({})
+  const FileGpxData = ref<any>({})
   const getGeocoder = (config?: any) => {
     const geocoder = ref()
     AMap.plugin('AMap.Geocoder', function () {
@@ -18,7 +18,6 @@ export const useMapStore = defineStore('map', () => {
     })
     return geocoder.value
   }
-
 
   const getDistance = (posA: AMap.LngLat, posB: AMap.LngLat) => {
     return posA.distance(posB)
@@ -43,7 +42,7 @@ export const useMapStore = defineStore('map', () => {
    * @param gps 是否为gps数据需要纠偏
    * @param other 是否跳过处理,用于对GPX的处理,默认为 false
    */
-  const parseRouteToPath = (route: any, tourType: TourType, gps?:boolean, other?: boolean) => {
+  const parseRouteToPath = (route: any, tourType: TourType, gps?: boolean, other?: boolean) => {
     if (other) {
       return route
     }
@@ -89,7 +88,7 @@ export const useMapStore = defineStore('map', () => {
     other?: boolean
   ) => {
     const path = parseRouteToPath(route, tourType, gps, other)
-    
+
     let startMarker
     if (options.startMarker !== false) {
       startMarker = new AMap.Marker({
@@ -129,9 +128,9 @@ export const useMapStore = defineStore('map', () => {
       mapInstance.add(routeLine)
     }
     const compArr: AMap.Overlay[] = [
-      (startMarker! as AMap.Overlay),
-      (endMarker! as AMap.Overlay),
-      (routeLine! as AMap.Overlay)
+      startMarker! as AMap.Overlay,
+      endMarker! as AMap.Overlay,
+      routeLine! as AMap.Overlay
     ]
     // 调整视野达到最佳显示区域
     if (options.reCenter !== false) {
@@ -215,9 +214,9 @@ export const useMapStore = defineStore('map', () => {
       // ctx.drawImage(img,10,10,50,60)
       // console.log(3)
       // document.body.append(newCanvas)
-      
+
       // throw ''
-      
+
       return canvas.toDataURL('image/jpeg', 1.0)
     }
   }
@@ -256,6 +255,6 @@ export const useMapStore = defineStore('map', () => {
     screenMap,
     drawRoute,
     searchPlace,
-    FileGpxData,
+    FileGpxData
   }
 })

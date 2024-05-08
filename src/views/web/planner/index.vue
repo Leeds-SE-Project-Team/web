@@ -107,13 +107,15 @@ const isGPS = computed(() => {
 
 if (isGPX.value) {
   createGPXFrom.value.result = useMapStore().FileGpxData
+  createGPXFrom.value.startLocation = createGPXFrom.value.result.origin.toString()
+  createGPXFrom.value.endLocation = createGPXFrom.value.result.destination.toString()
   // fetchTourCollections()
 }
 
 const resetForm = () => {
-  if(route.query.gpx){
+  if (route.query.gpx) {
     router.go(-1)
-    return;
+    return
   }
   createTourForm.value.startLocation = ''
   createTourForm.value.endLocation = ''
@@ -139,6 +141,7 @@ const handleCreateTour = (navigate = false) => {
       // if (createTourForm.value.title === '') {
       //   createTourForm.value.title = 'untitled'
       // }
+
       createTour({
         ...createTourForm.value,
         tourCollectionId: selectedCollection.value,
