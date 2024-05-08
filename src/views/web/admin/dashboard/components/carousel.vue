@@ -14,7 +14,9 @@
 </template>
 
 <script lang="ts" setup>
-import { getStaticRes } from '@/apis'
+const getStaticRes = (relativePath: string) => {
+  return import.meta.env.APP_STATIC_URL.concat(relativePath)
+}
 
 const imageSrc = [
   getStaticRes('/resource/logo/3.png'),

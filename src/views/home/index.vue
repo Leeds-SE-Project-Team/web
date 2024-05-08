@@ -134,14 +134,8 @@
     <DefaultFooter />
   </div>
 </template>
-<script setup>
+<script lang="ts" setup>
 import { onMounted, onUnmounted } from 'vue'
-
-//example components
-//Vue Material Kit 2 components
-// sections
-//images
-import { getStaticRes } from '@/apis/index.ts'
 import PresentationCounter from '@/views/home/Sections/PresentationCounter.vue'
 import PresentationInformation from '@/views/home/Sections/PresentationInformation.vue'
 import PresentationPages from '@/views/home/Sections/PresentationPages.vue'
@@ -150,6 +144,20 @@ import data from './Sections/Data/designBlocksData'
 import PresentationTestimonials from '@/views/home/Sections/PresentationTestimonials.vue'
 import DefaultFooter from '@/examples/footers/FooterDefault.vue'
 import NavbarDefault from '@/examples/navbars/NavbarDefault.vue'
+import wavesWhite from '@/assets/img/waves-white.svg'
+import logoBootstrap from '@/assets/img/logos/bootstrap5.jpg'
+import logoTailwind from '@/assets/img/logos/icon-tailwind.jpg'
+import logoVue from '@/assets/img/logos/vue.jpg'
+import logoAngular from '@/assets/img/logos/angular.jpg'
+import logoReact from '@/assets/img/logos/react.jpg'
+import logoSketch from '@/assets/img/logos/sketch.jpg'
+//example components
+//Vue Material Kit 2 components
+// sections
+//images
+const getStaticRes = (relativePath: string) => {
+  return import.meta.env.APP_STATIC_URL.concat(relativePath)
+}
 
 //hooks
 const body = document.getElementsByTagName('body')[0]
@@ -163,7 +171,7 @@ onUnmounted(() => {
 })
 </script>
 
-<script>
+<script lang="ts">
 export default {
   name: 'WalcraftHomeView',
   bodyClass: 'index-page'

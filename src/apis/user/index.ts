@@ -1,6 +1,10 @@
 // Basic interface for user record
-import { type ApiResponse, axiosRequest, getStaticRes } from '@/apis'
+import { type ApiResponse, axiosRequest } from '@/apis'
 import type { PredictDataRecord } from '@/views/web/admin/dashboard/types'
+
+const getStaticRes = (relativePath: string) => {
+  return import.meta.env.APP_STATIC_URL.concat(relativePath)
+}
 
 export interface UserRecord {
   id: number

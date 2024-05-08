@@ -1,9 +1,8 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { UserRecord } from '@/apis/user'
-import { useAuthStore } from '@/stores/auth'
-import { getStaticRes } from '@/apis'
 import { adminUser, guestUser } from '@/apis/user'
+import { useAuthStore } from '@/stores/auth'
 
 export const useUserStore = defineStore('user', () => {
   const curUser = ref<UserRecord | undefined>()

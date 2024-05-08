@@ -94,6 +94,6 @@ export interface ApiResponse<T> {
 }
 
 // 获取服务端静态资源URL
-export const getStaticRes = (relativePath: string) => {
+const getStaticRes = (relativePath: string) => {
   return import.meta.env.APP_STATIC_URL.concat(relativePath)
 }

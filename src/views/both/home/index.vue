@@ -3,77 +3,80 @@ import { useAuthStore } from '@/stores/auth'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { onMounted } from 'vue'
-import { getStaticRes } from '@/apis'
+
+const getStaticRes = (relativePath: string) => {
+  return import.meta.env.APP_STATIC_URL.concat(relativePath)
+}
 // import wlv from 'C:\\Main\\walcraft2.0.mp4'
 const authStore = useAuthStore()
 // const wlv = ''
 
 onMounted(() => {
-  gsap.registerPlugin(ScrollTrigger);
-  gsap.from("#info-1 .image",{
+  gsap.registerPlugin(ScrollTrigger)
+  gsap.from('#info-1 .image', {
     scrollTrigger: {
-      trigger: "#info-1",
-      scroller: ".home-wrapper",
-      end: "bottom bottom",
-      scrub: 0.5,
+      trigger: '#info-1',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
     },
-    x:-100,
-    opacity:0,
+    x: -100,
+    opacity: 0,
     duration: 2
   })
-  gsap.from("#info-1 .text",{
+  gsap.from('#info-1 .text', {
     scrollTrigger: {
-      trigger: "#info-1",
-      scroller: ".home-wrapper",
-      end: "bottom bottom",
-      scrub: 0.5,
+      trigger: '#info-1',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
     },
-    x:100,
-    opacity:0,
+    x: 100,
+    opacity: 0,
     duration: 2
   })
-  gsap.from("#info-2 .image",{
+  gsap.from('#info-2 .image', {
     scrollTrigger: {
-      trigger: "#info-2",
-      scroller: ".home-wrapper",
-      end: "bottom bottom",
-      scrub: 0.5,
+      trigger: '#info-2',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
     },
-    x:-100,
-    opacity:0,
+    x: -100,
+    opacity: 0,
     duration: 2
   })
-  gsap.from("#info-2 .text",{
+  gsap.from('#info-2 .text', {
     scrollTrigger: {
-      trigger: "#info-2",
-      scroller: ".home-wrapper",
-      end: "bottom bottom",
-      scrub: 0.5,
+      trigger: '#info-2',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
     },
-    x:100,
-    opacity:0,
+    x: 100,
+    opacity: 0,
     duration: 2
   })
-  gsap.from("#info-3 .image",{
+  gsap.from('#info-3 .image', {
     scrollTrigger: {
-      trigger: "#info-3",
-      scroller: ".home-wrapper",
-      end: "bottom bottom",
-      scrub: 0.5,
+      trigger: '#info-3',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
     },
-    x:-100,
-    opacity:0,
+    x: -100,
+    opacity: 0,
     duration: 2
   })
-  gsap.from("#info-3 .text",{
+  gsap.from('#info-3 .text', {
     scrollTrigger: {
-      trigger: "#info-3",
-      scroller: ".home-wrapper",
-      end: "bottom bottom",
-      scrub: 0.5,
+      trigger: '#info-3',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
     },
-    x:100,
-    opacity:0,
+    x: 100,
+    opacity: 0,
     duration: 2
   })
 })
@@ -129,7 +132,7 @@ onMounted(() => {
       </div>
       <div style="min-height: 500px; width: 100%; display: flex; position: relative">
         <div id="info-1" class="walcraft-info">
-          <div class="image" style="max-height: 400px; max-width: 400px" >
+          <div class="image" style="max-height: 400px; max-width: 400px">
             <img
               alt=""
               src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
@@ -146,7 +149,7 @@ onMounted(() => {
           <div class="text flex-c">
             <h2>为旅途记录多彩</h2>
           </div>
-          <div class="image" style="max-height: 400px; max-width: 400px" >
+          <div class="image" style="max-height: 400px; max-width: 400px">
             <img
               alt=""
               src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
@@ -157,7 +160,7 @@ onMounted(() => {
       </div>
       <div style="min-height: 500px; width: 100%; display: flex; position: relative">
         <div id="info-3" class="walcraft-info">
-          <div class="image" style="max-height: 400px; max-width: 400px" >
+          <div class="image" style="max-height: 400px; max-width: 400px">
             <img
               alt=""
               src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
