@@ -1,172 +1,194 @@
 <template>
-    <div id="personal-page" class="flex-c">
-        <header class="header flex-r" style="position: sticky; top: 0; z-index: 2; background-color: #f5f4ea;">
-            <van-icon :size="32" name="arrow-left" @click="back"/>
-            <div style="font-size: 1.5rem;">{{ $route.meta.title }}</div>
-            <div v-if="route.name==='personal-tour'">
-                <van-button
-                    plain
-                    icon="plus"
-                    type="primary"
-                    style="height: 32px;"
-                    @click="buttonPlus"
-                />
-            </div>
-            <div v-else>
-               <van-icon :size="32" name="envelop-o" /> 
-            </div>
-        </header>
-        <RouterView/>
-        <van-dialog v-model:show="show" title="Create Tour"
-            show-cancel-button :show-confirm-button="false"
-            cancel-button-text="Cancel"
+  <div id="personal-page" class="flex-c">
+    <header
+      class="header flex-r"
+      style="position: sticky; top: 0; z-index: 2; background-color: #f5f4ea"
+    >
+      <van-icon :size="32" name="arrow-left" @click="back" />
+      <div style="font-size: 1.5rem">{{ $route.meta.title }}</div>
+      <div v-if="route.name === 'personal-tour'">
+        <van-button icon="plus" plain style="height: 32px" type="primary" @click="buttonPlus" />
+      </div>
+      <div v-else>
+        <van-icon :size="32" name="envelop-o" />
+      </div>
+    </header>
+    <RouterView />
+    <van-dialog
+      v-model:show="show"
+      :show-confirm-button="false"
+      cancel-button-text="Cancel"
+      show-cancel-button
+      title="Create Tour"
+    >
+      <div
+        class="content flex-r flex-justify-c"
+        style="max-height: 400px; gap: 1rem; margin-top: 1rem"
+      >
+        <van-button plain type="primary">From Planner</van-button>
+        <van-uploader
+          v-model="GPXFile"
+          :after-read="loadingGpx"
+          :preview-image="false"
+          accept="*"
+          reupload
+          style="width: 100px"
         >
-            <div class="content flex-r flex-justify-c" style="max-height: 400px; gap:1rem; margin-top: 1rem;" >
-                <van-button plain type="primary">From Planner</van-button>
-                <van-uploader
-                    v-model="GPXFile" reupload
-                    style="width: 100px;"
-                    :after-read="loadingGpx"
-                    :preview-image="false"
-                    accept="*"
-                >
-                    <van-button plain type="primary">From GPX</van-button>
-                </van-uploader>
-            </div>
-        </van-dialog>
-    </div>
+          <van-button plain type="primary">From GPX</van-button>
+        </van-uploader>
+      </div>
+    </van-dialog>
+  </div>
 </template>
 
 <script lang="ts">
 export default {
-    name: "PersonalIndex"
+  name: 'PersonalIndex'
 }
 </script>
 
-<script setup lang="ts">
-import { useMapStore } from '@/stores';
-import type { UploaderFileListItem } from 'vant';
-import { ref } from 'vue';
-import { RouterView, useRoute, useRouter } from 'vue-router';
+<script lang="ts" setup>
+import { useMapStore } from '@/stores'
+import type { UploaderFileListItem } from 'vant'
+import { ref } from 'vue'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 
-const router = useRouter();
-const route = useRoute();
+const router = useRouter()
+const route = useRoute()
 const show = ref(false)
 const GPXFile = ref<UploaderFileListItem[]>([])
 
-const back = ()=>{
-    router.back();
+const back = () => {
+  router.back()
 }
-const buttonPlus = ()=>{
-    show.value = true;
+const buttonPlus = () => {
+  show.value = true
 }
 const handleGPX = (theFile: File) => {
-    const reader = new FileReader()
-    reader.readAsText(theFile)
-    reader.onload = () => {
-      // 读取gpx文件为DOM
-      const paser = new DOMParser()
-      const res = paser.parseFromString(reader.result as string, 'text/xml')
-      console.log(res)
-      const creator = res.getElementsByTagName('gpx').item(0)?.getAttribute('creator')
-      const pos = []
-      const result = {
-        origin: [] as any[],
-        destination:[] as any[],
-        routes:{
-            distance: 0,
-            time: 0,
-            steps: [{
-                path:[] as any[],
-                start_location: '',
-                end_location: '',
-                instruction: '',
-                road: '',
-                orientation: '',
-                distance: 0,
-                time: 0,
-                action: '',
-                assistant_action: '',
-            }]
-        },
-        waypoints: [] as any[],
-      }
-      if(creator==='walcraft' || creator==='www.Walcraft.com'){
-        const trkseg = res.getElementsByTagName('trkseg').item(0);
-        if(!trkseg){
-            return;
-        }
-        const elements = trkseg.children;
-        for(let i=0;i<elements.length;i++){
-            const ele = elements.item(i);
-            if(!ele){continue;}
-            if(ele.tagName==='trkpt'){
-                const wpts = ele.getElementsByTagName('wpt')
-                for(let j=0;j<wpts.length;j++){
-                    if(wpts.item(j)){
-                        result.routes.steps[0].path.push(
-                            [wpts[j].getAttribute('lon'), wpts[j].getAttribute('lat')]
-                        )
-                    }
-                }
-            }else if(ele.tagName==='extensions'){
-                const wpts = ele.getElementsByTagName('wpt')
-                result.origin = [
-                    wpts[0].getAttribute('lon'), wpts[0].getAttribute('lat')
-                ]
-                result.destination = [
-                    wpts[wpts.length-1].getAttribute('lon'), wpts[wpts.length-1].getAttribute('lat')
-                ]
-                for(let j=1;j<wpts.length-1;j++){
-                    result.waypoints.push(
-                        {
-                            isWaypoint: true,
-                            location: [wpts[j].getAttribute('lon'), wpts[j].getAttribute('lat')],
-                            name: "途经点",
-                            type: "waypoint"
-                        }
-                    )
-                }
-                const theTime = ele.getElementsByTagName('time')
-                result.routes.time = parseInt(theTime[0].innerHTML);
-                const theDistance = ele.getElementsByTagName('distance')
-                result.routes.distance = parseInt(theDistance[0].innerHTML);
+  const reader = new FileReader()
+  reader.readAsText(theFile)
+  reader.onload = () => {
+    // 读取gpx文件为DOM
+    const paser = new DOMParser()
+    const res = paser.parseFromString(reader.result as string, 'text/xml')
+    console.log(res)
+    const creator = res.getElementsByTagName('gpx').item(0)?.getAttribute('creator')
+    const pos = []
+    const result = {
+      info: 'ok',
+      origin: [] as number[],
+      destination: [] as number[],
+      routes: [
+        {
+          distance: 0,
+          time: 0,
+          steps: [
+            {
+              path: [] as any[],
+              start_location: '',
+              end_location: '',
+              instruction: '',
+              road: '',
+              orientation: '',
+              distance: 0,
+              time: 0,
+              action: '',
+              assistant_action: ''
             }
+          ]
         }
-        useMapStore().FileGpxData = result
-        console.log(useMapStore().FileGpxData)
-        router.push({name: 'planner', query:{type:'gpx'}})
-      }else{
-        const tracks = res.getElementsByTagName('trkpt')
-        const times = res.getElementsByTagName('totalTime')
-        const distances = res.getElementsByTagName('totalDistance')
-        const time = times.item(0)?.innerHTML
-        const distance = distances.item(0)?.innerHTML
-        // 摘取经纬度
-        for (let i = 0; i < tracks.length; i++) {
-            if (tracks.item(i)) {
-              pos.push([tracks[i].getAttribute('lon'), tracks.item(i)?.getAttribute('lat')])
-              if(i===0){
-                result.origin = [tracks[i].getAttribute('lon'), tracks.item(i)?.getAttribute('lat')];
-              }else if(i===tracks.length-1){
-                result.destination = [tracks[i].getAttribute('lon'), tracks.item(i)?.getAttribute('lat')];
-              }else{
-                result.routes.steps[0].path.push(
-                    [tracks[i].getAttribute('lon'), tracks.item(i)?.getAttribute('lat')]
-                )
-              }
-            }
-        }
-        useMapStore().FileGpxData = result
-        console.log(useMapStore().FileGpxData)
-        router.push({name: 'planner', query:{type:'gpx',gps:'true'}})
-      }
+      ],
+      waypoints: [] as any[]
     }
+    if (creator === 'walcraft' || creator === 'www.Walcraft.com') {
+      const trkseg = res.getElementsByTagName('trkseg').item(0)
+      if (!trkseg) {
+        return
+      }
+      const elements = trkseg.children
+      for (let i = 0; i < elements.length; i++) {
+        const ele = elements.item(i)
+        if (!ele) {
+          continue
+        }
+        if (ele.tagName === 'trkpt') {
+          const wpts = ele.getElementsByTagName('wpt')
+          for (let j = 0; j < wpts.length; j++) {
+            if (wpts.item(j)) {
+              result.routes[0].steps[0].path.push([
+                parseFloat(wpts[j].getAttribute('lon')!),
+                parseFloat(wpts[j].getAttribute('lat')!)
+              ])
+            }
+          }
+        } else if (ele.tagName === 'extensions') {
+          const wpts = ele.getElementsByTagName('wpt')
+          result.origin = [
+            parseFloat(wpts[0].getAttribute('lon')!),
+            parseFloat(wpts[0].getAttribute('lat')!)
+          ]
+          result.destination = [
+            parseFloat(wpts[wpts.length - 1].getAttribute('lon')!),
+            parseFloat(wpts[wpts.length - 1].getAttribute('lat')!)
+          ]
+          for (let j = 1; j < wpts.length - 1; j++) {
+            result.waypoints.push({
+              isWaypoint: true,
+              location: [
+                parseFloat(wpts[j].getAttribute('lon')!),
+                parseFloat(wpts[j].getAttribute('lat')!)
+              ],
+              name: '途经点',
+              type: 'waypoint'
+            })
+          }
+          const theTime = ele.getElementsByTagName('time')
+          result.routes[0].time = parseInt(theTime[0].innerHTML)
+          const theDistance = ele.getElementsByTagName('distance')
+          result.routes[0].distance = parseInt(theDistance[0].innerHTML)
+        }
+      }
+      useMapStore().FileGpxData = result
+      console.log(useMapStore().FileGpxData)
+      router.push({ name: 'planner', query: { type: 'gpx' } })
+    } else {
+      const tracks = res.getElementsByTagName('trkpt')
+      const times = res.getElementsByTagName('totalTime')
+      const distances = res.getElementsByTagName('totalDistance')
+      const time = times.item(0)?.innerHTML
+      const distance = distances.item(0)?.innerHTML
+      // 摘取经纬度
+      for (let i = 0; i < tracks.length; i++) {
+        if (tracks.item(i)) {
+          pos.push([tracks[i].getAttribute('lon'), tracks.item(i)?.getAttribute('lat')])
+          if (i === 0) {
+            result.origin = [
+              parseFloat(tracks[i].getAttribute('lon')!),
+              parseFloat(tracks[i].getAttribute('lat')!)
+            ]
+          } else if (i === tracks.length - 1) {
+            result.destination = [
+              parseFloat(tracks[i].getAttribute('lon')!),
+              parseFloat(tracks[i].getAttribute('lat')!)
+            ]
+          } else {
+            result.routes[0].steps[0].path.push([
+              parseFloat(tracks[i].getAttribute('lon')!),
+              parseFloat(tracks[i].getAttribute('lat')!)
+            ])
+          }
+        }
+      }
+      useMapStore().FileGpxData = result
+      console.log(useMapStore().FileGpxData)
+      router.push({ name: 'planner', query: { type: 'gpx', gps: 'true' } })
+    }
+  }
 }
-const loadingGpx = ()=>{
-    if(GPXFile.value.length!==1 || !GPXFile.value[0].file){
-        return;
-    }
-    handleGPX(GPXFile.value[0].file)
+const loadingGpx = () => {
+  if (GPXFile.value.length !== 1 || !GPXFile.value[0].file) {
+    return
+  }
+  handleGPX(GPXFile.value[0].file)
 }
 </script>

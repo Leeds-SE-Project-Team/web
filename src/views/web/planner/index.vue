@@ -364,19 +364,19 @@ onMounted(() => {
       console.log(map)
       if (isGPS.value) {
         AMap.convertFrom(
-          mapStore.parseRouteToPath(createGPXFrom.value.result.routes, 0),
+          mapStore.parseRouteToPath(createGPXFrom.value.result.routes[0], 0),
           'gps',
           function (status: any, result: any) {
             //status：complete 表示查询成功，no_data 为查询无结果，error 代表查询错误
             //查询成功时，result.locations 即为转换后的高德坐标系
             if (status === 'complete' && result.info === 'ok') {
               const path = result.locations //转换后的高德坐标 Array.<LngLat>
-              createGPXFrom.value.result.routes = path
+              createGPXFrom.value.result.routes[0].steps[0].path = path
               createGPXFrom.value.startLocation = path[0].toString()
               createGPXFrom.value.endLocation = path[path.length - 1].toString()
               useMapStore().drawRoute(
                 map,
-                createGPXFrom.value.result.routes,
+                createGPXFrom.value.result.routes[0],
                 0,
                 { startMarker: true, endMarker: true, reCenter: true },
                 false,
@@ -388,7 +388,7 @@ onMounted(() => {
       } else {
         useMapStore().drawRoute(
           map,
-          createGPXFrom.value.result.routes,
+          createGPXFrom.value.result.routes[0],
           0,
           { startMarker: true, endMarker: true, reCenter: true },
           isGPS.value

@@ -71,6 +71,7 @@ const handleLogin = () => {
               id: 'login',
               content: apiRes.message
             })
+            setLoading(false)
           }
         })
         .catch((e) => {
@@ -78,6 +79,7 @@ const handleLogin = () => {
             id: 'login',
             content: e
           })
+          setLoading(false)
         })
         .finally(() => {
           // setLoading(false)

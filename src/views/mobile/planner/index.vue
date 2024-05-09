@@ -414,24 +414,23 @@ onMounted(() => {
   if (isGPX.value) {
     setTimeout(() => {
       const map = mapContainer.value.mapRef.$$getInstance()
-      console.log(map)
       if (isGPS.value) {
         AMap.convertFrom(
-          mapStore.parseRouteToPath(createGPXForm.value.result.routes, 0),
+          mapStore.parseRouteToPath(createGPXForm.value.result.routes[0], 0),
           'gps',
           function (status: any, result: any) {
             //status：complete 表示查询成功，no_data 为查询无结果，error 代表查询错误
             //查询成功时，result.locations 即为转换后的高德坐标系
             if (status === 'complete' && result.info === 'ok') {
               const path = result.locations //转换后的高德坐标 Array.<LngLat>
-              createGPXForm.value.result.routes = path
+              createGPXForm.value.result.routes[0].steps[0].path = path
               createGPXForm.value.startLocation = path[0].toString()
               // createTourForm.value.startLocation = path[0].toString()
               createGPXForm.value.endLocation = path[path.length - 1].toString()
               // createTourForm.value.endLocation = path[path.length - 1].toString()
               useMapStore().drawRoute(
                 map,
-                createGPXForm.value.result.routes,
+                createGPXForm.value.result.routes[0],
                 0,
                 { startMarker: true, endMarker: true, reCenter: true },
                 false,
@@ -443,7 +442,7 @@ onMounted(() => {
       } else {
         useMapStore().drawRoute(
           map,
-          createGPXForm.value.result.routes,
+          createGPXForm.value.result.routes[0],
           0,
           { startMarker: true, endMarker: true, reCenter: true },
           isGPS.value

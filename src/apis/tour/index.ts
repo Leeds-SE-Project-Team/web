@@ -167,12 +167,14 @@ export const parseLocationNumber = (location: string): number[] => {
   return location.split(',').map((e) => parseFloat(e))
 }
 
-export const createTour = (form: CreateTourForm): Promise<ApiResponse<TourRecord>> =>
-  axiosRequest({
+export const createTour = (form: CreateTourForm): Promise<ApiResponse<TourRecord>> => {
+  console.log('form', form)
+  return axiosRequest({
     method: 'POST',
     url: `tours/create`,
     data: form
   })
+}
 
 export const getTours = (): Promise<ApiResponse<TourRecord[]>> =>
   axiosRequest({
