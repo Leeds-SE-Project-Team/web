@@ -74,8 +74,19 @@ const handleGPX = (theFile: File) => {
         origin: [] as any[],
         destination:[] as any[],
         routes:{
+            distance: 0,
+            time: 0,
             steps: [{
-                path:[] as any[]
+                path:[] as any[],
+                start_location: '',
+                end_location: '',
+                instruction: '',
+                road: '',
+                orientation: '',
+                distance: 0,
+                time: 0,
+                action: '',
+                assistant_action: '',
             }]
         },
         waypoints: [] as any[],
@@ -116,6 +127,10 @@ const handleGPX = (theFile: File) => {
                         }
                     )
                 }
+                const theTime = ele.getElementsByTagName('time')
+                result.routes.time = parseInt(theTime[0].innerHTML);
+                const theDistance = ele.getElementsByTagName('distance')
+                result.routes.distance = parseInt(theDistance[0].innerHTML);
             }
         }
         useMapStore().FileGpxData = result
