@@ -42,15 +42,12 @@ import { UserType } from '@/apis/user'
 import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection'
 import { getAllCreatedGroupsByUser, getAllJoinedGroupsByUser } from '@/apis/group'
 import { showLoadingToast } from 'vant/es'
-import {
-  getGroupCollectionByGroupId,
-  type SelectGroupCollectionOption
-} from '@/apis/groupCollection'
+import { getGroupCollectionByGroupId, type SelectGroupCollectionOption } from '@/apis/groupCollection'
 
 const route = useRoute()
-let tourId = parseInt(route.params.tourId as string)
+const tourId = ref(parseInt(route.params.tourId as string))
 const tourData = ref<TourRecord>()
-
+]
 const locationTrackList = computed<RecordDataInstant[]>(() => saveTourForm.value.trackList)
 
 const saveTourForm = ref<SaveTourForm>({
@@ -61,24 +58,25 @@ const saveTourForm = ref<SaveTourForm>({
     timeTaken: 0,
     calorie: 0
   },
-  tourId: tourId,
+  tourId: tourId.value,
   trackList: []
 })
 const recordData = computed<RecordData>(() => saveTourForm.value.recordData)
 const saveTourLoadingObj = useLoading()
 
 const handleSaveTour = () => {
-  if (isNewTour.value) {
+  if (isNewTour.value || saveTourLoadingObj.loading.value) {
     showSaveTourSheet.value = true
     return
   }
 
   saveTourLoadingObj.setLoading(true)
-  saveTour({ ...saveTourForm.value, isComplete: true, tourId: tourId })
+  showLoadingToast('Saving')
+  saveTour({ ...saveTourForm.value, isComplete: true, tourId: tourId.value })
     .then((apiRes) => {
       if (apiRes.success) {
         showToast(apiRes.message)
-        router.back()
+        router.replace({ name: 'tour', query: { id: tourId.value } })
       } else {
         throw apiRes.message
       }
@@ -103,6 +101,7 @@ const handleCreateTour = (navigate?: boolean) => {
   }
 
   saveTourLoadingObj.setLoading(true)
+  showLoadingToast('Creating')
   createTour({
     ...createTourForm.value,
     startLocation: locationTrackList.value[0].location.toString(),
@@ -114,6 +113,7 @@ const handleCreateTour = (navigate?: boolean) => {
   })
     .then((res) => {
       if (res.success) {
+        showLoadingToast('Uploading')
         uploadFileFromURL(
           mapStore.screenMap(mapRef.value.$$getInstance())!,
           `/tour/${res.data!.id}`,
@@ -123,14 +123,17 @@ const handleCreateTour = (navigate?: boolean) => {
             if (uploadRes.success) {
               savedTour.value = res.data!
               tourData.value = savedTour.value!
-              tourId = savedTour.value!.id
+              tourId.value = savedTour.value!.id
               // Message.success(res.message)
+              showLoadingToast('Saving')
               saveTour({ ...saveTourForm.value, isComplete: true, tourId: savedTour.value!.id })
                 .then((apiRes) => {
                   if (apiRes.success) {
-                    showToast(apiRes.message)
+                    showToast('Tour saved')
                     if (navigate === true) {
-                      router.push({ name: 'tour', query: { id: tourId } })
+                      router.push({ name: 'tour', query: { id: tourId.value } })
+                    } else {
+                      router.replace({ name: 'record', params: { tourId: tourId.value } })
                     }
                   } else {
                     throw apiRes.message
@@ -145,6 +148,7 @@ const handleCreateTour = (navigate?: boolean) => {
           })
           .finally(() => {
             saveTourLoadingObj.setLoading(false)
+            showSaveTourSheet.value = false
           })
       } else {
         throw res.message
@@ -153,9 +157,11 @@ const handleCreateTour = (navigate?: boolean) => {
     .catch((e) => {
       console.log(e)
       Message.error(e)
+      saveTourLoadingObj.setLoading(false)
+      showSaveTourSheet.value = false
     })
     .finally(() => {
-      saveTourLoadingObj.setLoading(false)
+      // saveTourLoadingObj.setLoading(false)
     })
 }
 
@@ -204,13 +210,13 @@ const currentRecordDataInstant = computed(() =>
 const tourPlannedData = ref<TourPlannedData>()
 const loadingTourObj = useLoading()
 const fetchTour = () => {
-  if (tourId === -1) {
+  if (tourId.value === -1) {
     showNotify({ type: 'primary', message: 'New adventure start!' })
     return
   }
 
   loadingTourObj.setLoading(true)
-  getTourById(tourId)
+  getTourById(tourId.value)
     .then((apiRes) => {
       if (apiRes.success) {
         tourData.value = apiRes.data!
@@ -284,7 +290,8 @@ const fetchHighlightList = () => {
 }
 const center = ref([116.412866, 39.88365])
 
-const markerInit = (e: any) => {}
+const markerInit = (e: any) => {
+}
 
 const mapInit = () => {
   speechSynthesis('开始导航')
@@ -312,8 +319,8 @@ const handleCountTime = () => {
     recordData.value.avgSpeed =
       recordData.value.timeInMotion > 0
         ? parseFloat(
-            ((recordData.value.totalDistance / recordData.value.timeInMotion) * 3.6).toFixed(2)
-          )
+          ((recordData.value.totalDistance / recordData.value.timeInMotion) * 3.6).toFixed(2)
+        )
         : 0
   }
 }
@@ -343,7 +350,7 @@ const tourPlannedLines = computed(() => {
 const userStore = useUserStore()
 const getLocationLoadObj = useLoading()
 
-const isNewTour = computed(() => tourId === -1)
+const isNewTour = computed(() => tourId.value === -1)
 const getCurrentLocation = (toCenter?: boolean) => {
   if (pauseTour.value) {
     console.log('paused')
@@ -394,7 +401,7 @@ const getCurrentLocation = (toCenter?: boolean) => {
         // if (distance > 0) {
         if (distance > 0 && !weakGPS.value) {
           updatePrevRecordData()
-          recordData.value.totalDistance += distance
+          recordData.value.totalDistance += distance / 1000
           recordDataInstant.speed = parseFloat(
             ((distance / (TIME_INTERVAL + countNotInMotion.value)) * 3.6).toFixed(2)
           )
@@ -475,13 +482,13 @@ const getCurrentLocation = (toCenter?: boolean) => {
 
 const handleCreateHighlight = (form: CreateTourHighlightForm) => {
   showNotify({ type: 'primary', message: 'uploading image...' })
-  uploadFileFromURL(form.imageUrl, `/tour/${tourId}/highlights`)
+  uploadFileFromURL(form.imageUrl, `/tour/${tourId.value}/highlights`)
     .then((uploadRes) => {
       if (uploadRes.success) {
         createTourHighlight({
           ...form,
           imageUrl: import.meta.env.APP_SERVER_URL + uploadRes.data!,
-          tourId: tourId
+          tourId: tourId.value
         })
           .then((apiRes) => {
             if (apiRes.success) {
@@ -503,7 +510,8 @@ const handleCreateHighlight = (form: CreateTourHighlightForm) => {
     .catch((e) => {
       showNotify({ type: 'danger', message: e })
     })
-    .finally(() => {})
+    .finally(() => {
+    })
 }
 
 defineExpose({
@@ -654,10 +662,10 @@ const fetchGroups = () => {
 const selectedGroupCollectionName = ref('None')
 
 const onSelectedGroupChange = ({
-  value,
-  tabIndex,
-  selectedOptions
-}: {
+                                 value,
+                                 tabIndex,
+                                 selectedOptions
+                               }: {
   value: number
   tabIndex: number
   selectedOptions: any[]
@@ -720,24 +728,43 @@ const handleScrollPicker = () => {
 
 <template>
   <div id="page-record">
+    <!--    PAUSE TOUR HINT-->
     <div v-if="pauseTour" class="weak-gps-hint">
       <span class="hint-text" style="font-weight: bold; font-size: 32px; letter-spacing: 1.8px"
         >PAUSED</span
       >
     </div>
+    <!--    PAUSE TOUR HINT-->
+
+    <!--    WEAK GPS HINT-->
     <div v-else-if="weakGPS" class="weak-gps-hint">
       <icon-loading class="hint-icon" />
       <span class="hint-text">Establishing Location</span>
     </div>
-    <div
-      v-else-if="!userStore.curUser || userStore.curUser.type !== UserType.VIP"
-      class="weak-gps-hint"
+    <!--    WEAK GPS HINT-->
+
+    <!--    VIP HINT-->
+    <!--    <div-->
+    <!--      v-else-if="!userStore.curUser || userStore.curUser.type !== UserType.VIP"-->
+    <!--      class="weak-gps-hint"-->
+    <!--    >-->
+    <!--      <span class="hint-text" style="font-weight: bold; font-size: 32px; letter-spacing: 1.8px"-->
+    <!--        >Not Vip</span-->
+    <!--      >-->
+    <!--    </div>-->
+    <!--    VIP HINT-->
+
+    <!--    TOUR DATA-->
+
+    <van-swipe
+      v-else
+      :style="{
+        filter:
+          !userStore.curUser || userStore.curUser.type !== UserType.VIP ? 'blur(5.5px)' : 'none'
+      }"
+      class="record-swipe"
+      indicator-color="white"
     >
-      <span class="hint-text" style="font-weight: bold; font-size: 32px; letter-spacing: 1.8px"
-        >Not Vip</span
-      >
-    </div>
-    <van-swipe v-else class="record-swipe" indicator-color="white">
       <van-swipe-item>
         <a-grid :cols="2" class="swipe-grid">
           <a-grid-item>
@@ -883,7 +910,17 @@ const handleScrollPicker = () => {
         </div>
       </van-swipe-item>
     </van-swipe>
+    <div
+      v-if="
+        !pauseTour && !weakGPS && (!userStore.curUser || userStore.curUser.type !== UserType.VIP)
+      "
+      class="vip-hint"
+    >
+      <div class="van-ellipsis" style="text-align: center">Available for VIP</div>
+    </div>
+    <!--    TOUR DATA-->
 
+    <!--    AMAP CONTAINER-->
     <div id="map-container">
       <el-amap
         ref="mapRef"
@@ -938,6 +975,9 @@ const handleScrollPicker = () => {
         />
       </el-amap>
     </div>
+    <!--    AMAP CONTAINER-->
+
+    <!--    HIGHLIGHT MODAL-->
     <van-action-sheet
       v-model:show="showHighlightSheet"
       :actions="[
@@ -984,10 +1024,15 @@ const handleScrollPicker = () => {
         <div style="order: 3">{{ action.name }}</div>
       </template>
     </van-action-sheet>
+    <!--    HIGHLIGHT MODAL-->
+
+    <!--    TOAST COMPONENT-->
     <van-toast :show="loadingTourObj.loading.value" style="padding: 0" type="loading">
       <template #message>Loading Tour</template>
     </van-toast>
+    <!--    TOAST COMPONENT-->
 
+    <!--    CREATE TOUR PANEL-->
     <van-floating-panel
       v-if="showSaveTourSheet && !showCollectionPicker && !(pointSheetHeight > 0)"
       v-model:height="resultPanelHeight"
@@ -1023,7 +1068,7 @@ const handleScrollPicker = () => {
         <van-grid-item class="detail-item" icon="aim">
           <template #text>
             <span class="detail-content">
-              {{ recordData.totalDistance.toFixed(2) }} km
+              {{ (recordData.totalDistance / 1000).toFixed(2) }} km
             </span></template
           >
         </van-grid-item>
@@ -1058,13 +1103,15 @@ const handleScrollPicker = () => {
 
       <van-cell class="collection-select" @click="showGroupCollectionPicker = true">
         <template #title>
-          <span class="menu-title">Select group collection</span>
+          <span class="menu-title">Group collection</span>
         </template>
         <van-loading v-if="groupsLoadingObj.loading.value" />
         <span v-else>{{ selectedGroupCollectionName }}</span>
       </van-cell>
     </van-floating-panel>
+    <!--    CREATE TOUR PANEL-->
 
+    <!--    COLLECTION PICKER-->
     <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>
       <van-picker
         :columns="
@@ -1091,9 +1138,13 @@ const handleScrollPicker = () => {
         @close="showGroupCollectionPicker = false"
       />
     </van-popup>
+    <!--    COLLECTION PICKER-->
+
+    <!--    SAVE TOUR BUTTONS-->
     <div v-if="showSaveTourSheet" class="operation-container" style="bottom: 0">
       <van-button
         :disabled="selectedCollection === -1"
+        :loading="saveTourLoadingObj.loading.value"
         class="operation-btn primary-btn-dark"
         style="background: white; color: black; border: thin solid lightgray"
         @click="handleCreateTour"
@@ -1105,13 +1156,10 @@ const handleScrollPicker = () => {
         class="operation-btn primary-btn-dark"
         @click="handleCreateTour(true)"
       >
-        <van-icon :size="23" name="guide-o" style="display: flex"
-          ><span class="btn-text" style="font-size: 16px; align-self: center"
-            >Navigate</span
-          ></van-icon
-        >
+        <span class="btn-text" style="font-size: 16px; align-self: center">Finish</span>
       </van-button>
     </div>
+    <!--    SAVE TOUR BUTTONS-->
   </div>
 </template>
 

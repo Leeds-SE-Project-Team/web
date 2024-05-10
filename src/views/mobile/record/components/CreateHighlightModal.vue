@@ -53,7 +53,7 @@ defineExpose({ show })
     @opened="handleOpened"
   >
     <div class="modal-body">
-      <van-cell-group inset class="" >
+      <van-cell-group class="" inset>
         <van-field
           v-model="highlightTitle"
           input-align="center"
@@ -62,10 +62,10 @@ defineExpose({ show })
         />
         <van-field
           v-model="description"
-          input-align="center"
-          type="textarea"
           autosize
+          input-align="center"
           placeholder="Enter a description"
+          type="textarea"
         />
       </van-cell-group>
       <van-image :src="props.imageUrl" alt="highlight highlight">
@@ -74,12 +74,11 @@ defineExpose({ show })
         </template>
       </van-image>
     </div>
-    
   </van-dialog>
 </template>
 
 <style scoped>
-.modal-body{
+.modal-body {
   max-height: 70vh;
   overflow: auto;
 }
