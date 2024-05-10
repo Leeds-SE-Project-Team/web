@@ -119,8 +119,8 @@
           </button>
         </van-grid-item>
       </van-grid>
-      <div class="pay flex-r flex-justify-c" style="position: relative; height: 50px">
-        <grace-button :callback="clickVIP"></grace-button>
+      <div v-if="!alreadyVIP" class="pay flex-r flex-justify-c" style="position: relative; height: 50px">
+        <grace-button :callback="clickVIP" @over="alreadyVIP = true" ></grace-button>
       </div>
     </van-dialog>
   </section>
@@ -146,6 +146,7 @@ const vipB2 = ref()
 const vipB3 = ref()
 const vipB4 = ref()
 const vipType = ref(0)
+const alreadyVIP = ref(false)
 
 const toDetail = () => {
   router.push('/personal/detail')

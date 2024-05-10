@@ -10,7 +10,8 @@
         <van-button icon="plus" plain style="height: 32px" type="primary" @click="buttonPlus" />
       </div>
       <div v-else>
-        <van-icon :size="32" name="envelop-o" />
+        <!-- <van-icon :size="32" name="envelop-o" /> -->
+        <div style="width: 32px;" ></div>
       </div>
     </header>
     <RouterView />

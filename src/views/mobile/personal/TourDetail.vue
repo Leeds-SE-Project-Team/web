@@ -2,6 +2,21 @@
     <section id="tour-detail">
         <van-tabs style="background-color: transparent;">
             <van-tab title="Completed">
+                <div v-if="!finishTourLoad">
+                    <van-skeleton>
+                        <template #template>
+                            <div :style="{ display: 'flex', width: '100%' }">
+                            <van-skeleton-image style="background:#b9b9b9;" />
+                            <div :style="{ flex: 1, marginLeft: '16px' }">
+                                <van-skeleton-paragraph row-width="60%" style="background:#b9b9b9;"/>
+                                <van-skeleton-paragraph style="background:#b9b9b9;" />
+                                <van-skeleton-paragraph style="background:#b9b9b9;" />
+                                <van-skeleton-paragraph style="background:#b9b9b9;" />
+                            </div>
+                            </div>
+                        </template>
+                    </van-skeleton>
+                </div>
                 <van-list>
                     <van-swipe-cell
                         v-for="item in completeTours"
@@ -35,6 +50,21 @@
                 </van-list>
             </van-tab>
             <van-tab title="Planned">
+                <div v-if="!finishTourLoad">
+                    <van-skeleton>
+                        <template #template>
+                            <div :style="{ display: 'flex', width: '100%' }">
+                            <van-skeleton-image style="background:#b9b9b9;" />
+                            <div :style="{ flex: 1, marginLeft: '16px' }">
+                                <van-skeleton-paragraph row-width="60%" style="background:#b9b9b9;" />
+                                <van-skeleton-paragraph style="background:#b9b9b9;" />
+                                <van-skeleton-paragraph style="background:#b9b9b9;" />
+                                <van-skeleton-paragraph style="background:#b9b9b9;" />
+                            </div>
+                            </div>
+                        </template>
+                    </van-skeleton>
+                </div>
                 <van-swipe-cell
                     v-for="item in plannedTours"
                     :key="item.id"
@@ -67,6 +97,21 @@
                 <van-empty v-if="plannedTours.length===0" description="Empty" />
             </van-tab>
             <van-tab title="Star">
+                <div v-if="!finishTourLoad">
+                    <van-skeleton>
+                        <template #template>
+                            <div :style="{ display: 'flex', width: '100%' }">
+                            <van-skeleton-image style="background:#b9b9b9;" />
+                            <div :style="{ flex: 1, marginLeft: '16px' }">
+                                <van-skeleton-paragraph row-width="60%" style="background:#b9b9b9;" />
+                                <van-skeleton-paragraph style="background:#b9b9b9;" />
+                                <van-skeleton-paragraph style="background:#b9b9b9;" />
+                                <van-skeleton-paragraph style="background:#b9b9b9;" />
+                            </div>
+                            </div>
+                        </template>
+                    </van-skeleton>
+                </div>
                 <van-swipe-cell
                     v-for="item in starTours"
                     :key="item.id"
@@ -113,6 +158,8 @@ const plannedTours = ref<TourRecord[]>([]);
 const starTours = ref<TourRecord[]>([]);
 const router = useRouter();
 const userStore = useUserStore();
+const userTours = userStore.curUser?.tours
+console.log(userStore.curUser)
 
 const toTour = (id: number)=>{
     router.push({path: '/tour', query:{id}});
@@ -120,6 +167,7 @@ const toTour = (id: number)=>{
 const toRecord = (id: number)=>{
     router.push({name:'record', params:{'tourId':id}})
 }
+const finishTourLoad = ref(false)
 
 getTourByUser().then(res=>{
     if(res.success){
@@ -131,6 +179,7 @@ getTourByUser().then(res=>{
                 plannedTours.value.push(item);
             }
         })
+        finishTourLoad.value = true
     }else{
         Message.error(res.message)
     }
@@ -166,5 +215,8 @@ const downGPX = (id:number)=>{
 :deep(.van-tabs__content){
     height: calc(100vh - 44px - 88px);
     overflow: auto;
+}
+:deep(.van-icon-completed-o:before){
+    font-size: 25px;
 }
 </style>
