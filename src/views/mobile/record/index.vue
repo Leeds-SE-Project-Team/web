@@ -802,7 +802,7 @@ onUnmounted(() => {
           name: 'View',
           color: 'black',
           callback: () => {
-            $router.push({ name: 'highlight' })
+            $router.push({ name: 'highlight', params: { id: selectedHighlight!.id } })
           },
           loading: deleteHighlightLoadingObj.loading.value
         }

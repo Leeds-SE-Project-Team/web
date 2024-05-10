@@ -30,6 +30,7 @@ import GroupList from '@/views/mobile/personal/GroupList.vue'
 import GroupIndex from '@/views/mobile/group/index.vue'
 import { ADMIN_ROUTE } from '@/router/web'
 import HighlightView from '@/views/web/highlight/index.vue'
+import HighlightMobileView from '@/views/mobile/highlight/index.vue'
 import PlannerWebView from '@/views/web/planner/index.vue'
 import { Capacitor } from '@capacitor/core'
 
@@ -201,13 +202,13 @@ const router = createRouter({
       path: '/highlight/:id',
       name: 'highlight',
       meta: {
-        layout: 'b', // layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'highlight Page',
         auth: ['admin', 'user']
       }, // Render component dynamically according to platform
       // component: HighlightMobileView
-      component: HighlightView
-      // component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
+      // component: HighlightView
+      component: Capacitor.getPlatform() === 'web' ? HighlightView : HighlightMobileView
     },
     {
       path: '/highlightano',
