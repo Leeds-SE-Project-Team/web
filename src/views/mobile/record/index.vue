@@ -48,7 +48,7 @@ import {
 } from '@/apis/groupCollection'
 
 const route = useRoute()
-const tourId = parseInt(route.params.tourId as string)
+let tourId = parseInt(route.params.tourId as string)
 const tourData = ref<TourRecord>()
 
 const locationTrackList = computed<RecordDataInstant[]>(() => saveTourForm.value.trackList)
@@ -74,7 +74,7 @@ const handleSaveTour = () => {
   }
 
   saveTourLoadingObj.setLoading(true)
-  saveTour({ ...saveTourForm.value, isComplete: true })
+  saveTour({ ...saveTourForm.value, isComplete: true, tourId: tourId })
     .then((apiRes) => {
       if (apiRes.success) {
         showToast(apiRes.message)
@@ -127,8 +127,9 @@ const handleCreateTour = (navigate?: boolean) => {
                 .then((apiRes) => {
                   if (apiRes.success) {
                     showToast(apiRes.message)
+                    tourId = savedTour.value!.id
                     if (navigate === true) {
-                      router.push({ name: 'tour', query: { id: savedTour.value!.id } })
+                      router.push({ name: 'tour', query: { id: tourId } })
                     }
                   } else {
                     throw apiRes.message

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-// import IndexView from '@/views/both/home/index.vue'
+import IndexView from '@/views/both/home/index.vue'
 // import HomeView from '@/views/both/home/HomeView.vue'
 import WalcraftHomeView from '@/views/home/index.vue'
 import LoginView from '@/views/both/login/index.vue'
@@ -128,9 +128,9 @@ const router = createRouter({
       name: 'home',
       meta: {
         title: 'Home Page',
-        layout: 'default'
+        layout: Capacitor.getPlatform() === 'web' ? 'default' : ''
       },
-      component: WalcraftHomeView
+      component: Capacitor.getPlatform() === 'web' ? WalcraftHomeView : IndexView
     },
     {
       path: '/login',
