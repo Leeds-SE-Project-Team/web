@@ -267,7 +267,7 @@ onMounted(() => {
           const layers = useMapStore().drawRoute(
             (routeMap.value as any).$$getInstance(),
             jsonToPath(dj),
-            item.type,{},true
+            item.type,{},false,true
           )
           mapRoutes.value.push(layers)
         })
