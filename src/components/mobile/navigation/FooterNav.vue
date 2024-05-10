@@ -7,12 +7,12 @@ const active = ref('discover')
 
 <template>
   <van-tabbar
+    id="mobile-footer-nav"
     v-model="active"
     :active-color="'#aadc64'"
     :border="false"
     :inactive-color="'#FFFFFF'"
     route
-    id="mobile-footer-nav"
   >
     <van-tabbar-item :to="{ name: 'discover' }" badge="5" name="discover">
       <template #icon>
@@ -32,18 +32,18 @@ const active = ref('discover')
       </template>
       <span class="tab-title">Record</span>
     </van-tabbar-item>
-    <van-tabbar-item name="profile" :to="{path:'/personal'}">
+    <van-tabbar-item :to="{ path: '/personal' }" name="profile">
       <template #icon>
         <van-icon :size="18" name="contact" />
       </template>
       <span class="tab-title">Profile</span>
     </van-tabbar-item>
-    <van-tabbar-item :to="{ name: 'highlight' }" dot name="highlight">
-      <template #icon>
-        <van-icon :size="18" name="setting" />
-      </template>
-      <span class="tab-title">Highlight</span>
-    </van-tabbar-item>
+    <!--    <van-tabbar-item :to="{ name: 'highlight' }" dot name="highlight">-->
+    <!--      <template #icon>-->
+    <!--        <van-icon :size="18" name="setting" />-->
+    <!--      </template>-->
+    <!--      <span class="tab-title">Highlight</span>-->
+    <!--    </van-tabbar-item>-->
   </van-tabbar>
 </template>
 <style lang="scss" scoped></style>

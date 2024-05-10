@@ -58,12 +58,12 @@
             <van-form ref="groupForm" >
                 <van-field
                     label="Cover"
-                    class="avatar"
+                    class="group-avatar"
                     required
                     :rules="[{validator: fileValidate}]"
                 >
                     <template #input>
-                        <van-uploader v-model="fileList"/>
+                        <van-uploader v-model="fileList" :show-upload="fileList.length<1" />
                     </template>
                 </van-field>
                 <van-field

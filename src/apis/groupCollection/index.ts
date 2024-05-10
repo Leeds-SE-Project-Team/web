@@ -13,6 +13,12 @@ export interface GroupCollectionRecord {
   members: UserRecord[]
 }
 
+export interface SelectGroupCollectionOption {
+  text: string
+  value: number
+  children?: SelectGroupCollectionOption[]
+}
+
 export const getAllGroupCollection = (): Promise<ApiResponse<GroupCollectionRecord[]>> =>
   axiosRequest({
     method: 'GET',

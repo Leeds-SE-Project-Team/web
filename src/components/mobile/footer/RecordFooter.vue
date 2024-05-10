@@ -4,9 +4,16 @@ import { computed, inject, type Ref } from 'vue'
 import { useUserStore } from '@/stores'
 import { UserType } from '@/apis/user'
 import { showToast } from 'vant'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 // const imageUrl = ref('blob:http://localhost:5173/a0900c7d-6ee0-4b62-bd6c-f99f419f0d1e')
 const createHighlight = async () => {
+  if (parseInt(route.params.tourId as string) === -1) {
+    showToast('Please save tour')
+    return
+  }
+
   const image = await Camera.getPhoto({
     quality: 90,
     resultType: CameraResultType.DataUrl
@@ -51,12 +58,12 @@ const user = computed(() => useUserStore().curUser)
     </a-button>
     <a-button class="footer-btn" type="text">
       <img
+        v-if="!user || user.type === UserType.VIP"
         alt="email"
         src="@/assets/vip.svg"
-        v-if="!user || user.type === UserType.VIP"
         @click="showToast('Already VIP')"
       />
-      <icon-double-up class="footer-icon" @click="emits('clickVIP')" v-else />
+      <icon-double-up v-else class="footer-icon" @click="emits('clickVIP')" />
     </a-button>
   </a-button-group>
 </template>

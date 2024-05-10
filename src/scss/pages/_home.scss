@@ -74,9 +74,9 @@
       
       button{
         height: 40px;
-        background-color: transparent;
-        backdrop-filter: invert(1);
-        -webkit-backdrop-filter: invert(1);
+        background-color: $theme-ui-colors-primary;
+        color: white;
+        border-radius: 15px;
       }
     }
 

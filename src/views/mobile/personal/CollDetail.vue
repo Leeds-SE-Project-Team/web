@@ -22,12 +22,12 @@
             <van-form ref="theForm" >
                 <van-field
                     label="Cover"
-                    class="avatar"
+                    class="coll-avatar"
                     required
                     :rules="[{validator: fileValidate}]"
                 >
                     <template #input>
-                        <van-uploader v-model="fileList"/>
+                        <van-uploader v-model="fileList" :show-upload="fileList.length<1" />
                     </template>
                 </van-field>
                 <van-field

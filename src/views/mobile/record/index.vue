@@ -8,11 +8,15 @@ import {
   getTourHighlights,
   type TourHighlight
 } from '@/apis/tour/highlight'
-import { showNotify, showToast } from 'vant'
+import { closeToast, type PickerOption, showNotify, showToast } from 'vant'
 import {
   calculateTourCalorie,
+  createTour,
+  type CreateTourForm,
   fetchTourDataJson,
   getTourById,
+  getTourTypeImg,
+  getTourTypeText,
   parseLocation,
   parseLocationNumber,
   type RecordData,
@@ -30,16 +34,22 @@ import { Message } from '@arco-design/web-vue'
 import { useMapStore } from '@/stores/map'
 import useLoading from '@/hooks/loading'
 import { cloneDeep } from 'lodash-es'
-import { parseTimeToString } from '@/utils'
+import { hapticsImpactLight, parseTimeToString } from '@/utils'
 import dayjs from 'dayjs'
 import { useUserStore } from '@/stores'
 import { speechSynthesis } from '@/apis/others'
 import { UserType } from '@/apis/user'
+import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection'
+import { getAllCreatedGroupsByUser, getAllJoinedGroupsByUser } from '@/apis/group'
+import { showLoadingToast } from 'vant/es'
+import {
+  getGroupCollectionByGroupId,
+  type SelectGroupCollectionOption
+} from '@/apis/groupCollection'
 
 const route = useRoute()
-const tourId = parseInt(route.params.tourId as string)
+const tourId = ref(parseInt(route.params.tourId as string))
 const tourData = ref<TourRecord>()
-
 const locationTrackList = computed<RecordDataInstant[]>(() => saveTourForm.value.trackList)
 
 const saveTourForm = ref<SaveTourForm>({
@@ -50,18 +60,25 @@ const saveTourForm = ref<SaveTourForm>({
     timeTaken: 0,
     calorie: 0
   },
-  tourId: tourId,
+  tourId: tourId.value,
   trackList: []
 })
 const recordData = computed<RecordData>(() => saveTourForm.value.recordData)
 const saveTourLoadingObj = useLoading()
+
 const handleSaveTour = () => {
+  if (isNewTour.value || saveTourLoadingObj.loading.value) {
+    showSaveTourSheet.value = true
+    return
+  }
+
   saveTourLoadingObj.setLoading(true)
-  saveTour({ ...saveTourForm.value, isComplete: true })
+  showLoadingToast('Saving')
+  saveTour({ ...saveTourForm.value, isComplete: true, tourId: tourId.value })
     .then((apiRes) => {
       if (apiRes.success) {
         showToast(apiRes.message)
-        router.back()
+        router.replace({ name: 'tour', query: { id: tourId.value } })
       } else {
         throw apiRes.message
       }
@@ -74,6 +91,82 @@ const handleSaveTour = () => {
     })
 }
 
+const savedTour = ref<TourRecord>()
+const handleCreateTour = (navigate?: boolean) => {
+  // if (createTourForm.value.title === '') {
+  //   createTourForm.value.title = 'untitled'
+  // }
+  if (locationTrackList.value.length === 0) {
+    showToast('No data recorded.')
+    showSaveTourSheet.value = false
+    return
+  }
+
+  saveTourLoadingObj.setLoading(true)
+  showLoadingToast('Creating')
+  createTour({
+    ...createTourForm.value,
+    startLocation: locationTrackList.value[0].location.toString(),
+    endLocation: locationTrackList.value[locationTrackList.value.length - 1].location.toString(),
+    tourCollectionId: selectedCollection.value,
+    title: tourTitleInput.value.length > 0 ? tourTitleInput.value : 'Untitled',
+    result: undefined,
+    groupCollectionId: selectedGroupCollection.value
+  })
+    .then((res) => {
+      if (res.success) {
+        showLoadingToast('Uploading')
+        uploadFileFromURL(
+          mapStore.screenMap(mapRef.value.$$getInstance())!,
+          `/tour/${res.data!.id}`,
+          'map_screenshot.jpg'
+        )
+          .then((uploadRes) => {
+            if (uploadRes.success) {
+              savedTour.value = res.data!
+              tourData.value = savedTour.value!
+              tourId.value = savedTour.value!.id
+              // Message.success(res.message)
+              showLoadingToast('Saving')
+              saveTour({ ...saveTourForm.value, isComplete: true, tourId: savedTour.value!.id })
+                .then((apiRes) => {
+                  if (apiRes.success) {
+                    showToast('Tour saved')
+                    if (navigate === true) {
+                      router.push({ name: 'tour', query: { id: tourId.value } })
+                    } else {
+                      router.replace({ name: 'record', params: { tourId: tourId.value } })
+                    }
+                  } else {
+                    throw apiRes.message
+                  }
+                })
+                .catch((e) => {
+                  Message.error(e)
+                })
+            } else {
+              throw uploadRes.message
+            }
+          })
+          .finally(() => {
+            saveTourLoadingObj.setLoading(false)
+            showSaveTourSheet.value = false
+          })
+      } else {
+        throw res.message
+      }
+    })
+    .catch((e) => {
+      console.log(e)
+      Message.error(e)
+      saveTourLoadingObj.setLoading(false)
+      showSaveTourSheet.value = false
+    })
+    .finally(() => {
+      // saveTourLoadingObj.setLoading(false)
+    })
+}
+
 const pauseTour = inject('pauseTour') as Ref<boolean>
 watch(
   () => pauseTour.value,
@@ -82,7 +175,10 @@ watch(
       speechSynthesis('行程已暂停')
     } else {
       speechSynthesis('行程已恢复')
-      getCurrentLocation(true)
+      if (!getLocationLoadObj.loading.value) {
+        clearTimeout(getLocationTimeout)
+        getCurrentLocation(true)
+      }
     }
   }
 )
@@ -116,19 +212,30 @@ const currentRecordDataInstant = computed(() =>
 const tourPlannedData = ref<TourPlannedData>()
 const loadingTourObj = useLoading()
 const fetchTour = () => {
-  if (tourId === -1) {
+  if (tourId.value === -1) {
     showNotify({ type: 'primary', message: 'New adventure start!' })
     return
   }
 
   loadingTourObj.setLoading(true)
-  getTourById(tourId)
+  getTourById(tourId.value)
     .then((apiRes) => {
       if (apiRes.success) {
         tourData.value = apiRes.data!
         fetchTourDataJson(tourData.value)
           .then((res) => {
-            const result = res[0].data.result
+            if (res[0].data.result) {
+              const result = res[0].data.result
+              tourPlannedData.value = res[0].data
+              mapStore.drawRoute(
+                mapRef.value.$$getInstance(),
+                tourData.value!.type === TourType.PUBLIC ? result.plans[0] : result.routes[0],
+                tourData.value!.type,
+                {
+                  lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
+                }
+              )
+            }
 
             if (tourData.value!.state !== TourState.UNFINISHED) {
               saveTourForm.value = res[1].data
@@ -140,16 +247,6 @@ const fetchTour = () => {
                   ))
               )
             }
-
-            tourPlannedData.value = res[0].data
-            mapStore.drawRoute(
-              mapRef.value.$$getInstance(),
-              tourData.value!.type === TourType.PUBLIC ? result.plans[0] : result.routes[0],
-              tourData.value!.type,
-              {
-                lineOptions: { strokeStyle: 'dashed', strokeColor: 'green' }
-              }
-            )
           })
           .finally(() => {
             loadingTourObj.setLoading(false)
@@ -254,15 +351,17 @@ const tourPlannedLines = computed(() => {
 const userStore = useUserStore()
 const getLocationLoadObj = useLoading()
 
+const isNewTour = computed(() => tourId.value === -1)
 const getCurrentLocation = (toCenter?: boolean) => {
   if (pauseTour.value) {
     console.log('paused')
     return
   }
 
-  if (!tourData.value) {
+  if (!isNewTour.value && !tourData.value) {
     if (!getLocationLoadObj.loading.value) {
-      setTimeout(() => {
+      clearTimeout(getLocationTimeout)
+      getLocationTimeout = setTimeout(() => {
         console.log('re get')
         getCurrentLocation(true)
       }, 1000)
@@ -274,12 +373,10 @@ const getCurrentLocation = (toCenter?: boolean) => {
   if (getLocationLoadObj.loading.value || !geolocationInstance) {
     return
   }
-  console.log('start')
   getLocationLoadObj.setLoading(true)
   geolocationInstance.getCurrentPosition((status, info: any) => {
     getLocationLoadObj.setLoading(false)
     if (status === 'complete') {
-      console.log('stop', status)
       // weakGPS.value = info.accuracy > 30
       currentGPS.value = parseInt(info.accuracy)
 
@@ -305,14 +402,14 @@ const getCurrentLocation = (toCenter?: boolean) => {
         // if (distance > 0) {
         if (distance > 0 && !weakGPS.value) {
           updatePrevRecordData()
-          recordData.value.totalDistance += distance
+          recordData.value.totalDistance += distance / 1000
           recordDataInstant.speed = parseFloat(
             ((distance / (TIME_INTERVAL + countNotInMotion.value)) * 3.6).toFixed(2)
           )
           countNotInMotion.value = 0
-          if (tourData.value && userStore.curUser) {
+          if (userStore.curUser) {
             recordData.value.calorie = calculateTourCalorie(
-              tourData.value.type,
+              tourData.value?.type ?? TourType.WALK,
               userStore.curUser.weight,
               recordData.value.timeTaken,
               recordData.value.avgSpeed
@@ -323,61 +420,62 @@ const getCurrentLocation = (toCenter?: boolean) => {
           countNotInMotion.value++
         }
 
-        const distances: number[] = tourPlannedLines.value.map((l: any) =>
-          AMap.GeometryUtil.distanceToLine(info.position, l.path)
-        )
-        const minDistance = Math.min(...distances)
+        if (tourPlannedData.value) {
+          const distances: number[] = tourPlannedLines.value.map((l: any) =>
+            AMap.GeometryUtil.distanceToLine(info.position, l.path)
+          )
+          const minDistance = Math.min(...distances)
 
-        if (minDistance === Infinity) {
-          // No tour
-        } else if (minDistance > Math.max(currentGPS.value, 100)) {
-          currentLineIndex.value = -1
-          showNotify({
-            type: 'danger',
-            message: '您已偏离路线'
-          })
-          if (!speechOutOfRoute.value) {
-            speechSynthesis('您已偏航，请重新规划路线')
-            speechOutOfRoute.value = true
-          }
-        } else {
-          const minIndex = distances.findIndex((d) => d === minDistance)
-          if (currentLineIndex.value !== minIndex) {
-            currentLineIndex.value = minIndex
-
-            speechSynthesis(tourPlannedLines.value[minIndex].instruction)
-
+          if (minDistance === Infinity) {
+            // No tour
+          } else if (minDistance > Math.max(currentGPS.value, 100)) {
+            currentLineIndex.value = -1
             showNotify({
-              type: 'primary',
-              message: tourPlannedLines.value[minIndex].instruction
+              type: 'danger',
+              message: '您已偏离路线'
             })
+            if (!speechOutOfRoute.value) {
+              speechSynthesis('您已偏航，请重新规划路线')
+              speechOutOfRoute.value = true
+            }
+          } else {
+            const minIndex = distances.findIndex((d) => d === minDistance)
+            if (currentLineIndex.value !== minIndex) {
+              currentLineIndex.value = minIndex
+
+              speechSynthesis(tourPlannedLines.value[minIndex].instruction)
+
+              showNotify({
+                type: 'primary',
+                message: tourPlannedLines.value[minIndex].instruction
+              })
+            }
           }
         }
       } else {
         locationTrackList.value.push(recordDataInstant)
       }
 
-      if (tourData.value) {
-        layers = mapStore.drawRoute(
-          mapRef.value.$$getInstance(),
-          locationTrackList.value.map((track) => track.location),
-          tourData.value.type,
-          {
-            startMarker: false,
-            endMarker: false,
-            reCenter: false
-          },
-          false,
-          true
-        )
-      }
+      layers = mapStore.drawRoute(
+        mapRef.value.$$getInstance(),
+        locationTrackList.value.map((track) => track.location),
+        tourData.value?.type ?? TourType.WALK,
+        {
+          startMarker: false,
+          endMarker: false,
+          reCenter: false
+        },
+        false,
+        true
+      )
     } else if (status === 'error') {
       // showToast({
       //   type: 'fail',
       //   message: info.originMessage
       // })
     }
-    setTimeout(() => {
+    clearTimeout(getLocationTimeout)
+    getLocationTimeout = setTimeout(() => {
       getCurrentLocation()
     }, 2000)
   })
@@ -385,13 +483,13 @@ const getCurrentLocation = (toCenter?: boolean) => {
 
 const handleCreateHighlight = (form: CreateTourHighlightForm) => {
   showNotify({ type: 'primary', message: 'uploading image...' })
-  uploadFileFromURL(form.imageUrl, `/tour/${tourId}/highlights`)
+  uploadFileFromURL(form.imageUrl, `/tour/${tourId.value}/highlights`)
     .then((uploadRes) => {
       if (uploadRes.success) {
         createTourHighlight({
           ...form,
           imageUrl: import.meta.env.APP_SERVER_URL + uploadRes.data!,
-          tourId: tourId
+          tourId: tourId.value
         })
           .then((apiRes) => {
             if (apiRes.success) {
@@ -421,10 +519,6 @@ defineExpose({
   handleSaveTour
 })
 
-const getLocation = (e: any) => {
-  // console.log('getLocation: ', e)
-}
-
 const geolocationRef = ref()
 
 const highlightPanelAnchors = [
@@ -432,14 +526,10 @@ const highlightPanelAnchors = [
   Math.round(0.46 * window.innerHeight),
   Math.round(0.7 * window.innerHeight)
 ]
-const highlightPanelHeight = ref(highlightPanelAnchors[0])
 
 const handleClickHighlight = (highlight: TourHighlight) => {
   selectedHighlight.value = highlight
   showHighlightSheet.value = true
-  // const [x, y] = parseLocationNumber(highlight.location)
-  // moveToPosition([x, y - 0.002])
-  // highlightPanelHeight.value = highlightPanelAnchors[1]
 }
 
 const deleteHighlightLoadingObj = useLoading()
@@ -473,43 +563,20 @@ watch(selectedHighlight, (value) => {
   if (value) {
     const [x, y] = parseLocationNumber(value.location)
     moveToPosition([x, y])
-    // moveToPosition([x, y - 0.002])
-    // highlightPanelHeight.value = highlightPanelAnchors[1]
     showHighlightSheet.value = true
   } else {
     showHighlightSheet.value = false
   }
 })
 
-// watch(highlightPanelHeight, (value) => {
-//   handleHeightChange(value)
-// })
-
 const handleCloseHighlightAction = () => {
   if (selectedHighlight.value) {
     moveToPosition(parseLocationNumber(selectedHighlight.value.location))
   }
-  // selectedHighlight.value = undefined
 }
 const showHighlightSheet = ref(false)
-// const handleHeightChange = debounce((height: number) => {
-//   if (height === highlightPanelAnchors[0]) {
-//     if (selectedHighlight.value) {
-//       moveToPosition(parseLocationNumber(selectedHighlight.value.location))
-//     }
-//     selectedHighlight.value = undefined
-//   }
-// }, 100)
 
-// const polyline = computed(() => ({
-//   path: locationTrackList.value.length > 0 ? locationTrackList.value : undefined,
-//   // path: locationTrackList.value,
-//   editable: false,
-//   visible: true,
-//   draggable: false
-// }))
-
-let getLocationInterval = 0
+let getLocationTimeout = 0
 let countTimeInterval = 0
 
 const currentGPS = ref(Infinity)
@@ -525,70 +592,179 @@ watch(weakGPS, (value) => {
 })
 
 onMounted(() => {
+  fetchTourCollections()
+  fetchGroups()
   // countTimeInterval = setInterval(handleCountTime, 1000)
 })
 
 onUnmounted(() => {
-  clearInterval(getLocationInterval)
+  clearTimeout(getLocationTimeout)
   clearInterval(countTimeInterval)
 })
 
-// onMounted(() => {
-//   let id
-//   let target
-//   let options
-//
-//   function success(pos) {
-//     const crd = pos.coords
-//
-//     console.log(pos)
-//
-//     if (target.latitude === crd.latitude && target.longitude === crd.longitude) {
-//       console.log('Congratulations, you reached the target')
-//       navigator.geolocation.clearWatch(id)
-//     }
-//   }
-//
-//   function error(err) {
-//     console.error(`ERROR(${err.code}): ${err.message}`)
-//   }
-//
-//   target = {
-//     latitude: 0,
-//     longitude: 0
-//   }
-//
-//   options = {
-//     enableHighAccuracy: false,
-//     timeout: 5000,
-//     maximumAge: 0
-//   }
-//
-//   console.log('start')
-//   id = navigator.geolocation.watchPosition(success, error, options)
-// })
+const showCollectionPicker = ref(false)
+const showGroupCollectionPicker = ref(false)
+const pointSheetHeight = ref(0)
+const resultPanelAnchors = [
+  Math.round(0.2 * window.innerHeight),
+  Math.round(0.4 * window.innerHeight),
+  Math.round(0.6 * window.innerHeight)
+]
+const resultPanelHeight = ref(resultPanelAnchors[1])
+
+const tourTitleInput = ref('')
+const createTourForm = ref<CreateTourForm>({
+  startLocation: '',
+  endLocation: '',
+  type: TourType.WALK,
+  pons: [],
+  tourCollectionId: -1,
+  groupCollectionId: -1,
+  result: undefined,
+  title: 'Untitled'
+})
+// const resetForm = () => {
+//   createTourForm.value.startLocation = ''
+//   createTourForm.value.endLocation = ''
+//   createTourForm.value.result = undefined
+//   createTourForm.value.title = 'untitled'
+//   createTourForm.value.pons = []
+// }
+
+const tourTypeText = computed<string>(() => getTourTypeText(createTourForm.value.type))
+const tourTypeImg = computed<string>(() => getTourTypeImg(createTourForm.value.type))
+
+const showSaveTourSheet = ref(false)
+const selectGroupCollectionOptions = ref<SelectGroupCollectionOption[]>([])
+
+const groupsLoadingObj = useLoading()
+const fetchGroups = () => {
+  groupsLoadingObj.setLoading(true)
+  Promise.all([getAllJoinedGroupsByUser(), getAllCreatedGroupsByUser()])
+    .then((apiRes) => {
+      if (apiRes[0].success && apiRes[1].success) {
+        const userJoinedGroups = [...apiRes[0].data!, ...apiRes[1].data!]
+        selectGroupCollectionOptions.value = userJoinedGroups.map((g) => ({
+          text: g.name,
+          value: g.id,
+          children: []
+        }))
+      }
+    })
+    .catch((reason: any) => {
+      Message.error(reason)
+    })
+    .finally(() => {
+      groupsLoadingObj.setLoading(false)
+    })
+}
+
+const selectedGroupCollectionName = ref('None')
+
+const onSelectedGroupChange = ({
+  value,
+  tabIndex,
+  selectedOptions
+}: {
+  value: number
+  tabIndex: number
+  selectedOptions: any[]
+}) => {
+  if (selectedOptions.length >= 2) {
+    showGroupCollectionPicker.value = false
+    selectedGroupCollectionName.value = selectedOptions[1].text
+    return
+  }
+  if (selectedOptions[0].children!.length === 0) {
+    showLoadingToast('loading...')
+    getGroupCollectionByGroupId(value)
+      .then((apiRes) => {
+        if (apiRes.success) {
+          selectGroupCollectionOptions.value[tabIndex].children = apiRes.data!.map(
+            (groupCollection) => ({
+              text: groupCollection.name,
+              value: groupCollection.id
+            })
+          )
+        }
+      })
+      .finally(() => {
+        closeToast()
+      })
+  }
+}
+
+const onCollectionConfirm = ({ selectedOptions }: { selectedOptions: PickerOption[] }) => {
+  showCollectionPicker.value = false
+  selectedCollection.value = selectedOptions[0].value as number
+}
+const userCollections = ref<TourCollection[]>([])
+const selectedCollection = ref(-1)
+const selectedGroupCollection = ref(-1)
+const collectionLoadingObj = useLoading()
+const fetchTourCollections = () => {
+  collectionLoadingObj.setLoading(true)
+  getTourCollectionsByCurUser()
+    .then((apiRes) => {
+      if (apiRes.success) {
+        userCollections.value = apiRes.data!
+        selectedCollection.value = userCollections.value[0].id
+      } else {
+        Message.error(apiRes.message)
+      }
+    })
+    .catch((reason: any) => {
+      Message.error(reason)
+    })
+    .finally(() => {
+      collectionLoadingObj.setLoading(false)
+    })
+}
+
+const handleScrollPicker = () => {
+  hapticsImpactLight()
+}
 </script>
 
 <template>
   <div id="page-record">
+    <!--    PAUSE TOUR HINT-->
     <div v-if="pauseTour" class="weak-gps-hint">
       <span class="hint-text" style="font-weight: bold; font-size: 32px; letter-spacing: 1.8px"
         >PAUSED</span
       >
     </div>
+    <!--    PAUSE TOUR HINT-->
+
+    <!--    WEAK GPS HINT-->
     <div v-else-if="weakGPS" class="weak-gps-hint">
       <icon-loading class="hint-icon" />
       <span class="hint-text">Establishing Location</span>
     </div>
-    <div
-      v-else-if="!userStore.curUser || userStore.curUser.type !== UserType.VIP"
-      class="weak-gps-hint"
+    <!--    WEAK GPS HINT-->
+
+    <!--    VIP HINT-->
+    <!--    <div-->
+    <!--      v-else-if="!userStore.curUser || userStore.curUser.type !== UserType.VIP"-->
+    <!--      class="weak-gps-hint"-->
+    <!--    >-->
+    <!--      <span class="hint-text" style="font-weight: bold; font-size: 32px; letter-spacing: 1.8px"-->
+    <!--        >Not Vip</span-->
+    <!--      >-->
+    <!--    </div>-->
+    <!--    VIP HINT-->
+
+    <!--    TOUR DATA-->
+
+    <van-swipe
+      v-else
+      :style="{
+        filter:
+          !userStore.curUser || userStore.curUser.type !== UserType.VIP ? 'blur(5.5px)' : 'none'
+      }"
+      class="record-swipe"
+      indicator-color="white"
     >
-      <span class="hint-text" style="font-weight: bold; font-size: 32px; letter-spacing: 1.8px"
-        >Not Vip</span
-      >
-    </div>
-    <van-swipe v-else class="record-swipe" indicator-color="white">
       <van-swipe-item>
         <a-grid :cols="2" class="swipe-grid">
           <a-grid-item>
@@ -734,7 +910,17 @@ onUnmounted(() => {
         </div>
       </van-swipe-item>
     </van-swipe>
+    <div
+      v-if="
+        !pauseTour && !weakGPS && (!userStore.curUser || userStore.curUser.type !== UserType.VIP)
+      "
+      class="vip-hint"
+    >
+      <div class="van-ellipsis" style="text-align: center">Available for VIP</div>
+    </div>
+    <!--    TOUR DATA-->
 
+    <!--    AMAP CONTAINER-->
     <div id="map-container">
       <el-amap
         ref="mapRef"
@@ -789,6 +975,9 @@ onUnmounted(() => {
         />
       </el-amap>
     </div>
+    <!--    AMAP CONTAINER-->
+
+    <!--    HIGHLIGHT MODAL-->
     <van-action-sheet
       v-model:show="showHighlightSheet"
       :actions="[
@@ -835,9 +1024,142 @@ onUnmounted(() => {
         <div style="order: 3">{{ action.name }}</div>
       </template>
     </van-action-sheet>
+    <!--    HIGHLIGHT MODAL-->
+
+    <!--    TOAST COMPONENT-->
     <van-toast :show="loadingTourObj.loading.value" style="padding: 0" type="loading">
       <template #message>Loading Tour</template>
     </van-toast>
+    <!--    TOAST COMPONENT-->
+
+    <!--    CREATE TOUR PANEL-->
+    <van-floating-panel
+      v-if="showSaveTourSheet && !showCollectionPicker && !(pointSheetHeight > 0)"
+      v-model:height="resultPanelHeight"
+      :anchors="resultPanelAnchors"
+      class="result-panel"
+    >
+      <van-cell class="result-cell">
+        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>
+        <template #title>
+          <span class="menu-title">{{ tourTypeText.toUpperCase() }}</span>
+        </template>
+        <!--          :loading="mapContainer.resultLoading"-->
+        <!--        <van-button-->
+        <!--          :loading-text="' loading'"-->
+        <!--          class="adjust-btn"-->
+        <!--          hairline-->
+        <!--          plain-->
+        <!--          size="small"-->
+        <!--          type="primary"-->
+        <!--          @click="alwaysShowTop = !alwaysShowTop"-->
+        <!--        >-->
+        <!--          <span v-if="!alwaysShowTop">ADJUST ROUTE</span>-->
+        <!--          <span v-else>HIDE ROUTE</span>-->
+        <!--        </van-button>-->
+      </van-cell>
+
+      <van-grid :border="false" :gutter="10" class="result-detail">
+        <van-grid-item class="detail-item" icon="clock-o" text="文字">
+          <template #text>
+            <span class="detail-content"> {{ Math.round(recordData.timeInMotion / 60) }} min </span>
+          </template>
+        </van-grid-item>
+        <van-grid-item class="detail-item" icon="aim">
+          <template #text>
+            <span class="detail-content">
+              {{ (recordData.totalDistance / 1000).toFixed(2) }} km
+            </span></template
+          >
+        </van-grid-item>
+        <van-grid-item class="detail-item action-item" icon="share-o">
+          <template #text><span class="detail-content"> share </span></template>
+        </van-grid-item>
+        <van-grid-item
+          class="detail-item action-item"
+          icon="close"
+          @click="showSaveTourSheet = false"
+        >
+          <template #text><span class="detail-content"> Close </span></template>
+        </van-grid-item>
+      </van-grid>
+      <van-cell>
+        <van-field
+          v-model="tourTitleInput"
+          class="title-input"
+          label="Tour title"
+          placeholder="Untitled"
+        />
+      </van-cell>
+
+      <van-cell class="collection-select" @click="showCollectionPicker = true">
+        <!--        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>-->
+        <template #title>
+          <span class="menu-title">Select collection</span>
+        </template>
+        <van-loading v-if="selectedCollection === -1" />
+        <span v-else>{{ userCollections.find((c) => c.id === selectedCollection)?.name }}</span>
+      </van-cell>
+
+      <van-cell class="collection-select" @click="showGroupCollectionPicker = true">
+        <template #title>
+          <span class="menu-title">Group collection</span>
+        </template>
+        <van-loading v-if="groupsLoadingObj.loading.value" />
+        <span v-else>{{ selectedGroupCollectionName }}</span>
+      </van-cell>
+    </van-floating-panel>
+    <!--    CREATE TOUR PANEL-->
+
+    <!--    COLLECTION PICKER-->
+    <van-popup v-model:show="showCollectionPicker" class="popup" position="bottom" round>
+      <van-picker
+        :columns="
+          userCollections.map((collection) => ({
+            value: collection.id,
+            text: collection.name
+          }))
+        "
+        :loading="collectionLoadingObj.loading.value"
+        class="collection-picker"
+        @cancel="showCollectionPicker = false"
+        @confirm="onCollectionConfirm"
+        @scroll-into="handleScrollPicker"
+      />
+    </van-popup>
+    <van-popup v-model:show="showGroupCollectionPicker" class="popup" position="bottom" round>
+      <van-cascader
+        v-model="selectedGroupCollection"
+        :options="selectGroupCollectionOptions"
+        class="collection-picker"
+        title="Select Group Collection"
+        @cancel="showGroupCollectionPicker = false"
+        @change="onSelectedGroupChange"
+        @close="showGroupCollectionPicker = false"
+      />
+    </van-popup>
+    <!--    COLLECTION PICKER-->
+
+    <!--    SAVE TOUR BUTTONS-->
+    <div v-if="showSaveTourSheet" class="operation-container" style="bottom: 0">
+      <van-button
+        :disabled="selectedCollection === -1"
+        :loading="saveTourLoadingObj.loading.value"
+        class="operation-btn primary-btn-dark"
+        style="background: white; color: black; border: thin solid lightgray"
+        @click="handleCreateTour"
+      >
+        <span class="btn-text">Save</span>
+      </van-button>
+      <van-button
+        :disabled="selectedCollection === -1"
+        class="operation-btn primary-btn-dark"
+        @click="handleCreateTour(true)"
+      >
+        <span class="btn-text" style="font-size: 16px; align-self: center">Finish</span>
+      </van-button>
+    </div>
+    <!--    SAVE TOUR BUTTONS-->
   </div>
 </template>
 

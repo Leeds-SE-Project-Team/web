@@ -21,7 +21,11 @@ import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collect
 import { useRoute, useRouter } from 'vue-router'
 import { uploadFileFromURL } from '@/utils/file'
 import SearchPlaceView from '@/views/mobile/planner/SearchPlaceView.vue'
-import { getGroupCollectionByGroupId, type GroupCollectionRecord } from '@/apis/groupCollection'
+import {
+  getGroupCollectionByGroupId,
+  type GroupCollectionRecord,
+  type SelectGroupCollectionOption
+} from '@/apis/groupCollection'
 import { getAllCreatedGroupsByUser, getAllJoinedGroupsByUser, type GroupRecord } from '@/apis/group'
 import { showLoadingToast } from 'vant/es'
 
@@ -46,9 +50,6 @@ const selectedCollection = ref(-1)
 const selectedGroupCollection = ref(-1)
 const collectionLoadingObj = useLoading()
 const fetchTourCollections = () => {
-  // userStore
-  //   .getUserRecord()
-  //   .then((user) => {
   collectionLoadingObj.setLoading(true)
   getTourCollectionsByCurUser()
     .then((apiRes) => {
@@ -65,18 +66,11 @@ const fetchTourCollections = () => {
     .finally(() => {
       collectionLoadingObj.setLoading(false)
     })
-  // })
-  // .catch((reason: any) => {
-  //   Message.error(reason)
-  // })
 }
 
 const userJoinedGroups = ref<GroupRecord[]>([])
 const groupsLoadingObj = useLoading()
 const fetchGroups = () => {
-  // userStore
-  //   .getUserRecord()
-  //   .then((user) => {
   groupsLoadingObj.setLoading(true)
   Promise.all([getAllJoinedGroupsByUser(), getAllCreatedGroupsByUser()])
     .then((apiRes) => {
@@ -95,10 +89,6 @@ const fetchGroups = () => {
     .finally(() => {
       groupsLoadingObj.setLoading(false)
     })
-  // })
-  // .catch((reason: any) => {
-  //   Message.error(reason)
-  // })
 }
 
 const selectedGroupCollectionName = ref('None')
@@ -172,6 +162,18 @@ const isGPS = computed(() => {
     return true
   }
   return false
+})
+const GPXTime = computed(()=>{
+  if(isGPX.value){
+    return useMapStore().FileGpxData.routes[0].time
+  }
+  return ''
+})
+const GPXDistance = computed(()=>{
+  if(isGPX.value){
+    return useMapStore().FileGpxData.routes[0].distance
+  }
+  return ''
 })
 
 if (isGPX.value) {
@@ -430,7 +432,7 @@ onMounted(() => {
               // createTourForm.value.endLocation = path[path.length - 1].toString()
               useMapStore().drawRoute(
                 map,
-                createGPXForm.value.result.routes[0],
+                path,
                 0,
                 { startMarker: true, endMarker: true, reCenter: true },
                 false,
@@ -456,12 +458,6 @@ onMounted(() => {
 onUnmounted(() => {
   App.removeAllListeners()
 })
-
-interface SelectGroupCollectionOption {
-  text: string
-  value: number
-  children?: SelectGroupCollectionOption[]
-}
 
 const selectGroupCollectionOptions = ref<SelectGroupCollectionOption[]>([])
 </script>
@@ -833,31 +829,18 @@ const selectGroupCollectionOptions = ref<SelectGroupCollectionOption[]>([])
         <template #title>
           <span class="menu-title">{{ tourTypeText.toUpperCase() }}</span>
         </template>
-        <!-- <van-button
-          :loading="mapContainer.resultLoading"
-          :loading-text="' loading'"
-          class="adjust-btn"
-          hairline
-          plain
-          size="small"
-          type="primary"
-          @click="alwaysShowTop = !alwaysShowTop"
-        >
-          <span v-if="!alwaysShowTop">ADJUST ROUTE</span>
-          <span v-else>HIDE ROUTE</span>
-        </van-button> -->
       </van-cell>
 
       <van-grid :border="false" :gutter="10" class="result-detail">
         <van-grid-item class="detail-item" icon="clock-o" text="文字">
           <template #text>
-            <span class="detail-content"> {{ Math.round(plannedFirstRoute?.time / 60) }} min </span>
+            <span class="detail-content"> {{ Math.round(GPXTime / 60) }} min </span>
           </template>
         </van-grid-item>
         <van-grid-item class="detail-item" icon="aim">
           <template #text>
             <span class="detail-content">
-              {{ (plannedFirstRoute?.distance / 1000).toFixed(2) }} km
+              {{ (GPXDistance / 1000).toFixed(2) }} km
             </span></template
           >
         </van-grid-item>
@@ -910,19 +893,6 @@ const selectGroupCollectionOptions = ref<SelectGroupCollectionOption[]>([])
       />
     </van-popup>
     <van-popup v-model:show="showGroupCollectionPicker" class="popup" position="bottom" round>
-      <!--      <van-picker-->
-      <!--        :columns="-->
-      <!--          userGroupCollections.map((groupCollection) => ({-->
-      <!--            value: groupCollection.id,-->
-      <!--            text: groupCollection.name-->
-      <!--          }))-->
-      <!--        "-->
-      <!--        :loading="collectionLoadingObj.loading.value"-->
-      <!--        class="collection-picker"-->
-      <!--        @cancel="showCollectionPicker = false"-->
-      <!--        @confirm="onCollectionConfirm"-->
-      <!--        @scroll-into="handleScrollPicker"-->
-      <!--      />-->
       <van-cascader
         v-model="selectedGroupCollection"
         :options="selectGroupCollectionOptions"
