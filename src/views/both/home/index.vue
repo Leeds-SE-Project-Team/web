@@ -79,11 +79,99 @@ onMounted(() => {
     opacity: 0,
     duration: 2
   })
+  gsap.from('#info-4 .image', {
+    scrollTrigger: {
+      trigger: '#info-4',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
+    },
+    x: -100,
+    opacity: 0,
+    duration: 2
+  })
+  gsap.from('#info-4 .text', {
+    scrollTrigger: {
+      trigger: '#info-4',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
+    },
+    x: 100,
+    opacity: 0,
+    duration: 2
+  })
+  gsap.from('#info-5 .image', {
+    scrollTrigger: {
+      trigger: '#info-5',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
+    },
+    x: -100,
+    opacity: 0,
+    duration: 2
+  })
+  gsap.from('#info-5 .text', {
+    scrollTrigger: {
+      trigger: '#info-5',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
+    },
+    x: 100,
+    opacity: 0,
+    duration: 2
+  })
+  gsap.from('#info-6 .image', {
+    scrollTrigger: {
+      trigger: '#info-6',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
+    },
+    x: -100,
+    opacity: 0,
+    duration: 2
+  })
+  gsap.from('#info-6 .text', {
+    scrollTrigger: {
+      trigger: '#info-6',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
+    },
+    x: 100,
+    opacity: 0,
+    duration: 2
+  })
+  gsap.from('#info-7 .image', {
+    scrollTrigger: {
+      trigger: '#info-7',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
+    },
+    x: -100,
+    opacity: 0,
+    duration: 2
+  })
+  gsap.from('#info-7 .text', {
+    scrollTrigger: {
+      trigger: '#info-7',
+      scroller: '.home-wrapper',
+      end: 'bottom bottom',
+      scrub: 0.5
+    },
+    x: 100,
+    opacity: 0,
+    duration: 2
+  })
 })
 </script>
 
 <template>
-  <div class="home-wrapper" style="height: 100%; width: 100%; overflow: auto; position: relative">
+  <div class="home-wrapper" style="height: 100%; width: 100%; overflow-y: auto; position: relative;overflow-x: hidden;">
     <a-result v-if="authStore.isTokenValid" :status="'success'" title="Login succeed!">
       <template #icon>
         <IconFaceSmileFill />
@@ -130,9 +218,9 @@ onMounted(() => {
           style="height: 100%; width: 100%; object-fit: cover"
         ></video>
       </div>
-      <div style="min-height: 500px; width: 100%; display: flex; position: relative">
+      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
         <div id="info-1" class="walcraft-info">
-          <div class="image" style="max-height: 400px; max-width: 400px">
+          <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
               src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
@@ -140,16 +228,22 @@ onMounted(() => {
             />
           </div>
           <div class="text flex-c">
-            <h2>随时随地规划行程</h2>
+            <h2 style="padding: 0 1rem;">Trip Information and User Interaction</h2>
+            <p style="padding: 0 1rem;">
+              Discover page serves as a hub for users to discover, engage with, and connect over various travel experiences shared within the platform.
+            </p>
           </div>
         </div>
       </div>
-      <div style="min-height: 500px; width: 100%; display: flex; position: relative">
+      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
         <div id="info-2" class="walcraft-info">
           <div class="text flex-c">
-            <h2>为旅途记录多彩</h2>
+            <h2 style="padding: 0 1rem;">Detailed Tour Information</h2>
+            <p style="padding: 0 1rem;">
+              The Tour Details page offers users an in-depth view of a tour, featuring essential metrics like distance and average speed, supplemented by a navigation map.
+            </p>
           </div>
-          <div class="image" style="max-height: 400px; max-width: 400px">
+          <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
               src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
@@ -158,9 +252,9 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div style="min-height: 500px; width: 100%; display: flex; position: relative">
+      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
         <div id="info-3" class="walcraft-info">
-          <div class="image" style="max-height: 400px; max-width: 400px">
+          <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
               src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
@@ -168,7 +262,78 @@ onMounted(() => {
             />
           </div>
           <div class="text flex-c">
-            <h2>与好友群组共同分享</h2>
+            <h2 style="padding: 0 1rem;">Collect All Tours and Place in a Map</h2>
+            <p style="padding: 0 1rem;">
+              Tours created by ordinary users will be added to the default Collection by default. All Tours in the Collection will be displayed on the initial map.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+        <div id="info-4" class="walcraft-info">
+          <div class="text flex-c">
+            <h2 style="padding: 0 1rem;">Itinerary Planning and Customization Options</h2>
+            <p style="padding: 0 1rem;">
+              The Planner page empowers users to craft personalized itineraries by selecting travel mode, start and end points, and must-pass locations.
+            </p>
+          </div>
+          <div class="image" style="max-height: 500px; max-width: 400px">
+            <img
+              alt=""
+              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              style="object-fit: cover; width: 100%; height: 100%"
+            />
+          </div>
+        </div>
+      </div>
+      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+        <div id="info-5" class="walcraft-info">
+          <div class="image" style="max-height: 500px; max-width: 400px">
+            <img
+              alt=""
+              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              style="object-fit: cover; width: 100%; height: 100%"
+            />
+          </div>
+          <div class="text flex-c">
+            <h2 style="padding: 0 1rem;">Navigation Interface</h2>
+            <p style="padding: 0 1rem;">
+              The Record page enables users to navigate along their planned itinerary from the Planner page, displaying the path and providing voice guidance.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+        <div id="info-6" class="walcraft-info">
+          <div class="text flex-c">
+            <h2 style="padding: 0 1rem;">Customizable Profile and VIP Features and Subscriptions</h2>
+            <p style="padding: 0 1rem;">
+              The Personal page offers users extensive customization options for their profile, including avatar uploads and detailed personal information editing. VIP users enjoy exclusive features like creating custom Collections and Groups.
+            </p>
+          </div>
+          <div class="image" style="max-height: 500px; max-width: 400px">
+            <img
+              alt=""
+              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              style="object-fit: cover; width: 100%; height: 100%"
+            />
+          </div>
+        </div>
+      </div>
+      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+        <div id="info-7" class="walcraft-info">
+          <div class="text flex-c">
+            <h2 style="padding: 0 1rem;">Group User and Trip Display</h2>
+            <p style="padding: 0 1rem;">
+              The Group Details page provides a comprehensive overview of group activities, showcasing members and their respective trips.
+            </p>
+          </div>
+          <div class="image" style="max-height: 500px; max-width: 400px">
+            <img
+              alt=""
+              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              style="object-fit: cover; width: 100%; height: 100%"
+            />
           </div>
         </div>
       </div>
