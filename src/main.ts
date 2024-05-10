@@ -29,8 +29,8 @@ import 'element-plus/dist/index.css'
 import '@arco-design/web-vue/dist/arco.css'
 import 'vant/lib/index.css'
 import '@vuemap/vue-amap/dist/style.css'
-import './scss/app.scss'
 import materialKit from './material-kit'
+import './scss/app.scss'
 
 const app = createApp(App)
 

@@ -4,21 +4,15 @@
     <section class="tour-title">
       <!-- the bg part -->
       <div v-if="tourRecord" class="bg flex-r">
-        <div class="main-bg" :style="{width: showTow?'61.5%':'100%'}" >
+        <div :style="{ width: showTow ? '61.5%' : '100%' }" class="main-bg">
           <img :src="coverImg" alt="" />
         </div>
         <div v-if="showTow" class="sub">
-          <div class="sub-bg" :style="{height: showThree?'50%':'100%'}">
-            <img
-              alt=""
-              :src="tourRecord.tourHighlightList[1]?.tourImages[0].imageUrl"
-            />
+          <div :style="{ height: showThree ? '50%' : '100%' }" class="sub-bg">
+            <img :src="tourRecord.tourHighlightList[1]?.tourImages[0].imageUrl" alt="" />
           </div>
           <div v-if="showThree" class="sub-bg">
-            <img
-              alt=""
-              :src="tourRecord.tourHighlightList[2]?.tourImages[0].imageUrl"
-            />
+            <img :src="tourRecord.tourHighlightList[2]?.tourImages[0].imageUrl" alt="" />
           </div>
         </div>
       </div>
@@ -48,7 +42,7 @@
     <section class="overview">
       <div class="subtitle">TOUR OVERVIEW</div>
       <a-divider />
-      <a-timeline class="timeline" labelPosition="same">
+      <a-timeline class="tour-timeline" labelPosition="same">
         <section class="map" style="margin-bottom: 1rem">
           <div class="subtitle">MAP</div>
           <div v-if="tourRecord" class="map-img">
@@ -150,8 +144,9 @@
 
         <a-button
           class="primary-btn-dark"
-          style="margin-left: 20px;"
-          @click="downGPX(tourRecord?.id)">
+          style="margin-left: 20px"
+          @click="downGPX(tourRecord?.id)"
+        >
           download
         </a-button>
       </div>
@@ -251,8 +246,8 @@ const route = useRoute()
 const router = useRouter()
 const tourRecord = ref<TourRecord>()
 
-const redirectToRoute = (id: string|number) => {
-  router.push(`/highlight/${id}`);
+const redirectToRoute = (id: string | number) => {
+  router.push(`/highlight/${id}`)
 }
 
 const coverImg = computed(() => {
@@ -261,31 +256,31 @@ const coverImg = computed(() => {
   } else if (!tourRecord.value.tourHighlightList[0]) {
     return tourRecord.value.mapUrl
   }
-  return tourRecord.value.tourHighlightList[0].tourImages[0]?.imageUrl;
+  return tourRecord.value.tourHighlightList[0].tourImages[0]?.imageUrl
 })
 
-const showTow = computed(()=>{
-  if(tourRecord.value && tourRecord.value.tourHighlightList.length>=2){
-    return true;
+const showTow = computed(() => {
+  if (tourRecord.value && tourRecord.value.tourHighlightList.length >= 2) {
+    return true
   }
   return false
 })
 
-const showThree = computed(()=>{
-  if(tourRecord.value && tourRecord.value.tourHighlightList.length>=3){
-    return true;
+const showThree = computed(() => {
+  if (tourRecord.value && tourRecord.value.tourHighlightList.length >= 3) {
+    return true
   }
   return false
 })
 
-const downGPX = (id:number|undefined)=>{
-    const link = document.createElement('a')
-    if(!id) {
-      return
-    }
-    link.href = `${import.meta.env.APP_STATIC_URL}/tour/${id}/map.gpx`
-    link.download = `${id}.gpx`
-    link.click()
+const downGPX = (id: number | undefined) => {
+  const link = document.createElement('a')
+  if (!id) {
+    return
+  }
+  link.href = `${import.meta.env.APP_STATIC_URL}/tour/${id}/map.gpx`
+  link.download = `${id}.gpx`
+  link.click()
 }
 
 const userStore = useUserStore()

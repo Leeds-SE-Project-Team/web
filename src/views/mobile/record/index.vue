@@ -122,12 +122,13 @@ const handleCreateTour = (navigate?: boolean) => {
           .then((uploadRes) => {
             if (uploadRes.success) {
               savedTour.value = res.data!
+              tourData.value = savedTour.value!
+              tourId = savedTour.value!.id
               // Message.success(res.message)
               saveTour({ ...saveTourForm.value, isComplete: true, tourId: savedTour.value!.id })
                 .then((apiRes) => {
                   if (apiRes.success) {
                     showToast(apiRes.message)
-                    tourId = savedTour.value!.id
                     if (navigate === true) {
                       router.push({ name: 'tour', query: { id: tourId } })
                     }
