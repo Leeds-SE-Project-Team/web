@@ -49,7 +49,7 @@ getTourByUser().then((res) => {
           {{ currUser?.nickname }}
 
           <span v-if="currUser?.type" class="vip-button">
-            <van-icon :size="20" name="/account/vip.svg" />
+            <img alt="vip" src="@/assets/vip.svg" />
           </span>
         </div>
 
@@ -68,7 +68,7 @@ getTourByUser().then((res) => {
           </div>
         </div>
 
-        <a-menu class="menu" :default-selected-keys="[$route.meta.title]">
+        <a-menu :default-selected-keys="[$route.meta.title]" class="menu">
           <a-menu-item key="personalprofile" @click="navigateTo('personal')">
             Your Profile
           </a-menu-item>

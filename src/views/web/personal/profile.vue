@@ -1,16 +1,14 @@
 <script lang="ts" setup>
 import { getTourById, getTourByUser, type TourRecord } from '@/apis/tour'
 import { useUserStore } from '@/stores/user'
-import { computed, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import tourCard from './cards/tourCard.vue'
 import { Message } from '@arco-design/web-vue'
 import { upgradeUser, type UserRecord } from '@/apis/user'
-import { reactive, onMounted } from 'vue';
-import { updateUser } from '@/apis/user/index';
+import { updateUser } from '@/apis/user/index'
 import { uploadFileFromURL } from '@/utils/file'
-import type { UploaderFileListItem } from 'vant';
-import router from '@/router';
-
+import { showToast, type UploaderFileListItem } from 'vant'
+import router from '@/router'
 
 const currUser = computed(() => useUserStore().curUser)
 const likeTours = ref<TourRecord[]>([])
@@ -80,125 +78,132 @@ userStore
     Message.info(e)
   })
 
-
-
 // profile data ---------->
-const tours = ref<TourRecord[]|undefined>([])
+const tours = ref<TourRecord[] | undefined>([])
 
 const totalCalories = ref<number>()
 const totalMiles = ref<number>()
 const tourNumber = ref<number>(0)
 
-getTourByUser()
-  .then((res) => {
-    if (res.success) {
-      tours.value = res.data
-      totalCalories.value = tours.value?.reduce((total, tour) => total + (tour.tourRecordData?.calorie || 0), 0) || 0;
-      totalMiles.value = tours.value?.reduce((total, tour) => total + (tour.tourRecordData?.totalDistance || 0), 0) || 0;
-      tourNumber.value = tours.value ? tours.value.length : 0
-    }
-  })
-
-
-
-
-// form ------------->
-const visibleU = ref(false);
-
-const handleClickU = () => {
-  visibleU.value = true;
-};
-const handleOkU = () => {
-  visibleU.value = false;
-};
-const handleCancelU = () => {
-  visibleU.value = false;
-}
-
-
-
-const file = ref<UploaderFileListItem[]>([]);
-const theForm = ref();
-const statusArray = ref<boolean[]>(new Array(10).fill(false));
-const pwdStruct = reactive({
-    old: '',
-    new: '',
-    renew: '',
+getTourByUser().then((res) => {
+  if (res.success) {
+    tours.value = res.data
+    totalCalories.value =
+      tours.value?.reduce((total, tour) => total + (tour.tourRecordData?.calorie || 0), 0) || 0
+    totalMiles.value =
+      tours.value?.reduce((total, tour) => total + (tour.tourRecordData?.totalDistance || 0), 0) ||
+      0
+    tourNumber.value = tours.value ? tours.value.length : 0
+  }
 })
 
-const pwdValidate = ()=>{
-    if(pwdStruct.old=='' && pwdStruct.new!=''){
-        return "请输入旧密码"
-    }else if(pwdStruct.new==''){
-        return true
-    }else if(pwdStruct.renew!=pwdStruct.new){
-        return "请输入相同密码"
-    }
-    return true;
+// form ------------->
+const visibleU = ref(false)
+
+const handleClickU = () => {
+  visibleU.value = true
+}
+const handleOkU = () => {
+  visibleU.value = false
+}
+const handleCancelU = () => {
+  visibleU.value = false
 }
 
-const formSubmit = ()=>{
-    theForm.value.validate().then(()=>{
-        if(!user.value){ return; }
-        const form = {
-            ...user.value,
-            oldPassword: pwdStruct.old===''?null:pwdStruct.old,
-            newPassword: pwdStruct.new===''?null:pwdStruct.new,
-        }
-        console.log(form)
-        if(file.value.length==1){
-            uploadFileFromURL(
-                file.value[0].objectUrl as string,
-                `/user/${user.value.id}/avatar`,
-            ).then(res=>{
-                if(res.success){
-                    return res.data as string;
-                }else{
-                    Message.info(res.message)
-                    return 'no'
-                }
-            }).then(res=>{
-                if(res==='no'){return;}
-                form.avatar = import.meta.env.APP_STATIC_URL+res;
-                console.log(res)
-                updateUser(form).then(res=>{
-                    if(res.success){
-                        Message.info(res.message);
-                        userStore.curUser = res.data!
-                        router.replace({path:'/personal',query:{status: 'refresh'}})
-                    }else{
-                        Message.info(res.message);
-                    }
-                })
-            }).catch(e=>{
-                Message.error(e)
-            })
-        }
-        updateUser(form).then(res=>{
-            if(res.success){
-                Message.info(res.message);
-            }else{
-                Message.info(res.message);
+const file = ref<UploaderFileListItem[]>([])
+const theForm = ref()
+const statusArray = ref<boolean[]>(new Array(10).fill(false))
+const pwdStruct = reactive({
+  old: '',
+  new: '',
+  renew: ''
+})
+
+const pwdValidate = () => {
+  if (pwdStruct.old == '' && pwdStruct.new != '') {
+    return '请输入旧密码'
+  } else if (pwdStruct.new == '') {
+    return true
+  } else if (pwdStruct.renew != pwdStruct.new) {
+    return '请输入相同密码'
+  }
+  return true
+}
+
+const formSubmit = () => {
+  theForm.value
+    .validate()
+    .then(() => {
+      if (!user.value) {
+        return
+      }
+      const form = {
+        ...user.value,
+        oldPassword: pwdStruct.old === '' ? null : pwdStruct.old,
+        newPassword: pwdStruct.new === '' ? null : pwdStruct.new
+      }
+      console.log(form)
+      if (file.value.length == 1) {
+        uploadFileFromURL(file.value[0].objectUrl as string, `/user/${user.value.id}/avatar`)
+          .then((res) => {
+            if (res.success) {
+              return res.data as string
+            } else {
+              Message.info(res.message)
+              return 'no'
             }
-            visibleU.value = false;
-        }).catch(e=>{
+          })
+          .then((res) => {
+            if (res === 'no') {
+              return
+            }
+            form.avatar = import.meta.env.APP_STATIC_URL + res
+            console.log(res)
+            updateUser(form).then((res) => {
+              if (res.success) {
+                Message.info(res.message)
+                userStore.curUser = res.data!
+                router.replace({ path: '/personal', query: { status: 'refresh' } })
+              } else {
+                Message.info(res.message)
+              }
+            })
+          })
+          .catch((e) => {
             Message.error(e)
-            visibleU.value = false;
+          })
+      }
+      updateUser(form)
+        .then((res) => {
+          if (res.success) {
+            Message.info(res.message)
+          } else {
+            Message.info(res.message)
+          }
+          visibleU.value = false
         })
-    }).catch((e:any)=>{
-        console.log(e);
+        .catch((e) => {
+          Message.error(e)
+          visibleU.value = false
+        })
+    })
+    .catch((e: any) => {
+      console.log(e)
     })
 }
 
-const changeInput = (i:number)=>{
-    statusArray.value[i] = !statusArray.value[i];
+const changeInput = (i: number) => {
+  statusArray.value[i] = !statusArray.value[i]
 }
-onMounted(()=>{
-    userStore.getUserRecord().then(res=>{
-        console.log(res)
-        user.value = res;
-    }).catch(e=>{
-        Message.info(e);
+onMounted(() => {
+  userStore
+    .getUserRecord()
+    .then((res) => {
+      console.log(res)
+      user.value = res
+    })
+    .catch((e) => {
+      Message.info(e)
     })
 })
 </script>
@@ -207,106 +212,92 @@ onMounted(()=>{
   <div id="personal-profile">
     <div class="cover">
       <div class="profile-head">
-        <img alt="" :src="currUser?.avatar" />
+        <img :src="currUser?.avatar" alt="" />
       </div>
 
       <div class="name">
-
-        <span @click="handleClickU" style="cursor: pointer;">
+        <span style="cursor: pointer" @click="handleClickU">
           <icon-pen />
         </span>
 
-        <a-modal 
-          v-model:visible="visibleU" 
-          @ok="handleOkU" 
-          @cancel="handleCancelU" 
-          :on-before-ok="formSubmit">
-          <template #title>
-            Change you detail
-          </template>
+        <a-modal
+          v-model:visible="visibleU"
+          :on-before-ok="formSubmit"
+          @cancel="handleCancelU"
+          @ok="handleOkU"
+        >
+          <template #title> Change you detail</template>
           <van-form ref="theForm">
-            <van-cell-group v-if="user" inset class="flex-c" style="background-color: transparent;">
-                <van-field
-                    label="头像"
-                    class="avatar"
-                    @click="console.log(file)"
-                >
-                    <template #input>
-                        <van-uploader v-model="file" />
-                    </template>
-                </van-field>
-                <van-field
-                    label="用户名"
-                    placeholder="请输入用户名"
-                    :readonly="!statusArray[0]"
-                    :right-icon="statusArray[0]?'sign':'edit'"
-                    v-model="user.nickname"
-                    @click-right-icon="changeInput(0)"
-                    :rules="[{required: true, message: '请输入用户名'}]"
-                />
-                <van-field
-                    label="旧密码"
-                    placeholder="请输入旧密码"
-                    v-model="pwdStruct.old"
-                    type="password"
-                />
-                <van-field
-                    label="新密码"
-                    v-model="pwdStruct.new"
-                    placeholder="请输入新密码"  
-                />
-                <van-field
-                    label="确认新密码"
-                    v-model="pwdStruct.renew"
-                    placeholder="请输入确认新密码"
-                    :rules="[{validator: pwdValidate}]"
-                />
-                <van-field
-                    label="邮箱"
-                    placeholder="请输入邮箱"
-                    :readonly="!statusArray[1]"
-                    :right-icon="statusArray[1]?'sign':'edit'"
-                    v-model="user.email"
-                    @click-right-icon="changeInput(1)"
-                    :rules="[{required: true, message:'请输入邮箱'}]"
-                />
-                <van-field
-                    label="Age"
-                    placeholder="Enter Age"
-                    :readonly="!statusArray[2]"
-                    :right-icon="statusArray[2]?'sign':'edit'"
-                    @click-right-icon="changeInput(2)"
-                    v-model="user.age"
-                />
-                <van-field
-                    label="Gender"
-                    placeholder="Enter Gender"
-                >
-                    <template #input>
-                        <van-radio-group v-model="user.gender" direction="horizontal">
-                            <van-radio name="Male">Male</van-radio>
-                            <van-radio name="Famale">Famale</van-radio>
-                        </van-radio-group>
-                    </template>
-                    
-                </van-field>
-                <van-field
-                    label="Height"
-                    placeholder="Enter Height"
-                    :readonly="!statusArray[4]"
-                    :right-icon="statusArray[4]?'sign':'edit'"
-                    @click-right-icon="changeInput(4)"
-                    v-model="user.height"
-                />
-                <van-field
-                    label="Weight"
-                    placeholder="Enter Weight"
-                    :readonly="!statusArray[5]"
-                    :right-icon="statusArray[5]?'sign':'edit'"
-                    @click-right-icon="changeInput(5)"
-                    v-model="user.weight"
-                />
-                <!-- <van-button @click="formSubmit">submit</van-button> -->
+            <van-cell-group v-if="user" class="flex-c" inset style="background-color: transparent">
+              <van-field class="avatar" label="头像" @click="console.log(file)">
+                <template #input>
+                  <van-uploader v-model="file" />
+                </template>
+              </van-field>
+              <van-field
+                v-model="user.nickname"
+                :readonly="!statusArray[0]"
+                :right-icon="statusArray[0] ? 'sign' : 'edit'"
+                :rules="[{ required: true, message: '请输入用户名' }]"
+                label="用户名"
+                placeholder="请输入用户名"
+                @click-right-icon="changeInput(0)"
+              />
+              <van-field
+                v-model="pwdStruct.old"
+                label="旧密码"
+                placeholder="请输入旧密码"
+                type="password"
+              />
+              <van-field v-model="pwdStruct.new" label="新密码" placeholder="请输入新密码" />
+              <van-field
+                v-model="pwdStruct.renew"
+                :rules="[{ validator: pwdValidate }]"
+                label="确认新密码"
+                placeholder="请输入确认新密码"
+              />
+              <van-field
+                v-model="user.email"
+                :readonly="!statusArray[1]"
+                :right-icon="statusArray[1] ? 'sign' : 'edit'"
+                :rules="[{ required: true, message: '请输入邮箱' }]"
+                label="邮箱"
+                placeholder="请输入邮箱"
+                @click-right-icon="changeInput(1)"
+              />
+              <van-field
+                v-model="user.age"
+                :readonly="!statusArray[2]"
+                :right-icon="statusArray[2] ? 'sign' : 'edit'"
+                label="Age"
+                placeholder="Enter Age"
+                @click-right-icon="changeInput(2)"
+              />
+              <van-field label="Gender" placeholder="Enter Gender">
+                <template #input>
+                  <van-radio-group v-model="user.gender" direction="horizontal">
+                    <van-radio name="Male">Male</van-radio>
+                    <van-radio name="Famale">Famale</van-radio>
+                  </van-radio-group>
+                </template>
+              </van-field>
+              <van-field
+                v-model="user.height"
+                :readonly="!statusArray[4]"
+                :right-icon="statusArray[4] ? 'sign' : 'edit'"
+                label="Height"
+                placeholder="Enter Height"
+                @click-right-icon="changeInput(4)"
+              />
+              <van-field
+                v-model="user.weight"
+                :readonly="!statusArray[5]"
+                :right-icon="statusArray[5] ? 'sign' : 'edit'"
+                label="Weight"
+                placeholder="Enter Weight"
+                @click-right-icon="changeInput(5)"
+              />
+              <!-- <van-button @click="formSubmit">submit</van-button> -->
             </van-cell-group>
           </van-form>
         </a-modal>
@@ -317,7 +308,8 @@ onMounted(()=>{
         <div>
           <a-popover position="rb">
             <a-button v-if="user?.type" class="vip-button">
-              <van-icon :size="20" name="/account/vip.svg" />
+              <img alt="email" src="@/assets/vip.svg" @click="showToast('Already VIP')" />
+              <!--              <van-icon :size="20" name="/account/vip.svg" />-->
             </a-button>
             <template #content>
               <p>You are vip and you can:</p>
@@ -338,7 +330,7 @@ onMounted(()=>{
             @ok="handleOk"
           >
             <template #title> VIP for Walcraft</template>
-            <a-radio-group type="button" size="large" v-model="chosedvip">
+            <a-radio-group v-model="chosedvip" size="large" type="button">
               <a-radio value="Beijing">
                 <div class="price">
                   <div class="time">1 Month</div>
@@ -359,7 +351,14 @@ onMounted(()=>{
               </a-radio>
               <a-radio value="Guanou">
                 <div class="price">
-                  <div class="time"><strong>Forever</strong> <van-icon :size="12" name="/account/vip.svg" /></div>
+                  <div class="time">
+                    <strong>Forever</strong>
+                    <img
+                      alt="vip"
+                      src="@/assets/vip.svg"
+                      style="margin-left: 2px; width: 12px; height: 12px"
+                    />
+                  </div>
                   <div class="money"><strong>$160</strong></div>
                 </div>
               </a-radio>
@@ -380,16 +379,24 @@ onMounted(()=>{
             <span>
               <icon-pen-fill />
             </span>
-            <div class="item">{{ tourNumber + " tours" }}</div>
+            <div class="item">{{ tourNumber + ' tours' }}</div>
           </div>
 
           <div>
             <icon-double-right />
-            <div class="item">{{ totalMiles !== undefined ? totalMiles.toFixed(2) + ' km' : 'calculating...' }}</div>
+            <div class="item">
+              {{ totalMiles !== undefined ? totalMiles.toFixed(2) + ' km' : 'calculating...' }}
+            </div>
           </div>
           <div>
             <icon-fire />
-            <div class="item">{{ totalCalories !== undefined ? totalCalories.toFixed(2) + ' calories' : 'calculating...' }}</div>
+            <div class="item">
+              {{
+                totalCalories !== undefined
+                  ? totalCalories.toFixed(2) + ' calories'
+                  : 'calculating...'
+              }}
+            </div>
           </div>
           <div>
             <icon-thumb-up />
@@ -573,16 +580,15 @@ export default {
   }
 }
 
-  .price {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    padding: 20px;
-    padding: 20px;
-    transition: 0.5s;
-    border-radius: 20px;
-    font-size: 14px;
-  }
-
+.price {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 20px;
+  padding: 20px;
+  transition: 0.5s;
+  border-radius: 20px;
+  font-size: 14px;
+}
 </style>

@@ -1,19 +1,19 @@
 <template>
   <section class="user-info flex-r">
     <div class="user-avatar">
-      <van-image :src="user?.avatar" height="100" round width="100" fit="cover" />
+      <van-image :src="user?.avatar" fit="cover" height="100" round width="100" />
     </div>
     <div class="user-text flex-c">
       <div class="username flex-r">
         <span style="margin-right: 0.5rem">{{ user?.nickname }}</span>
         <div v-if="user?.type == 1" class="flex-c flex-justify-c">
-          <van-icon :size="20" name="/account/vip.svg" />
+          <img alt="vip" src="@/assets/vip.svg" />
         </div>
       </div>
       <div class="email">
         {{ user?.email }}
       </div>
-      <div class="vip-time" v-if="user?.vipExpireTime">VIP expire at {{ user?.vipExpireTime }}</div>
+      <div v-if="user?.vipExpireTime" class="vip-time">VIP expire at {{ user?.vipExpireTime }}</div>
     </div>
   </section>
   <section class="options">
@@ -59,13 +59,13 @@
           <span>My Group</span>
         </div>
         <template #right-icon>
-          <van-icon @click="toGroup" v-if="user?.type == 1" :size="24" name="arrow" />
+          <van-icon v-if="user?.type == 1" :size="24" name="arrow" @click="toGroup" />
           <van-icon v-else :size="24" name="credit-pay" />
         </template>
       </van-cell>
       <van-cell v-if="user?.type == 0" @click="payVIP = true">
         <template #icon>
-          <van-icon :size="24" name="/account/vip.svg" />
+          <img alt="vip" src="@/assets/vip.svg" style="width: 24px; height: 24px" />
         </template>
         <div class="flex-r list-text">
           <span>Apply for VIP</span>
@@ -81,7 +81,7 @@
     <van-dialog v-model:show="payVIP" :show-confirm-button="false">
       <template #title>
         <div class="flex-r" style="justify-content: end; padding: 0.5rem">
-          <van-icon @click="payVIP = false" :size="23" name="cross" />
+          <van-icon :size="23" name="cross" @click="payVIP = false" />
         </div>
         <div>Pay for VIP</div>
       </template>
@@ -213,6 +213,7 @@ onMounted(() => {})
 :deep(.van-cell) {
   margin: 0.5rem 0;
 }
+
 :deep(.van-dialog__header) {
   padding: 0;
 }
