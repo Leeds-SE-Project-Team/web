@@ -22,12 +22,15 @@
                     :style="{ minWidth: '150px' }"
                     :trigger-props="{ autoFitPopupMinWidth: true }"
                     placeholder="Select"
+                    v-model="searchType"
                   >
-                    <a-option>Hiking</a-option>
-                    <a-option>Biking</a-option>
-                    <a-option>
-                      <icon-search />
-                      Running
+                    <a-option :value="0">Hiking</a-option>
+                    <a-option :value="1">Biking</a-option>
+                    <a-option :value="2">
+                      Car
+                    </a-option>
+                    <a-option :value="3">
+                      All
                     </a-option>
                   </a-select>
                 </div>
@@ -41,6 +44,7 @@
                     :style="{ width: '100%' }"
                     allow-clear
                     placeholder="Please enter something"
+                    v-model="curInput"
                   >
                     <template #prefix>
                       <icon-search />
@@ -54,6 +58,7 @@
                 <a-button
                   type="primary"
                   style="background-color: rgb(79, 133, 13); font-weight: bold"
+                  @click="searchText=curInput"
                   >Search</a-button>
               </div>
             </div>
@@ -110,7 +115,7 @@ import { type TourRecord, getTours } from '@/apis/tour'
 import useLoading from '@/hooks/loading'
 import { computed } from 'vue'
 import { shuffle } from 'lodash-es'
-import router from '@/router'
+import { watch } from 'vue'
 
 interface DisPlayItem {
   type: 'collection' | 'tour'
@@ -119,17 +124,48 @@ interface DisPlayItem {
 
 const tourList = ref<TourRecord[]>([])
 const collectionList = ref<TourCollection[]>([])
-const itemList = computed<DisPlayItem[]>(() =>
-  shuffle([
-    ...tourList.value.map((tour) => ({
-      item: tour,
-      type: 'tour'
-    })),
-    ...collectionList.value.map((collection) => ({
-      item: collection,
-      type: 'collection'
-    }))
-  ] as DisPlayItem[])
+const searchType = ref(3)
+const searchText = ref('')
+const curInput = ref('')
+watch(curInput,()=>{
+  if(curInput.value===''){
+    searchText.value = curInput.value
+  }
+})
+const itemList = computed<DisPlayItem[]>(() => {
+  const list = shuffle([
+      ...tourList.value.map((tour) => ({
+        item: tour,
+        type: 'tour'
+      })),
+      ...collectionList.value.map((collection) => ({
+        item: collection,
+        type: 'collection'
+      }))
+    ] as DisPlayItem[])
+    console.log(searchText.value)
+  if(searchType.value!==3 || searchText.value !==''){
+    return list.filter(item=>{
+      if(searchType.value!==3&&searchText.value){
+        if(item.type==='tour'){
+          return (item.item as TourRecord).type===searchType.value &&
+            (item.item as TourRecord).title===searchText.value
+        }else{
+          return false
+        }
+      }else if(searchType.value!==3){
+        if(item.type==='tour'){
+          return (item.item as TourRecord).type===searchType.value
+        }else{
+          return false
+        }
+      }else{
+        return item.item.title === searchText.value
+      }
+    })
+  }
+    return list
+  }
 )
 
 const getTourLoading = useLoading()

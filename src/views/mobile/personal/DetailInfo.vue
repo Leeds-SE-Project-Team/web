@@ -4,11 +4,11 @@
             <van-cell-group v-if="user" inset class="flex-c" style="background-color: transparent;">
                 <van-field
                     label="头像"
-                    class="avatar"
+                    class="personal-avatar"
                     @click="console.log(file)"
                 >
                     <template #input>
-                        <van-uploader v-model="file" />
+                        <van-uploader v-model="file" :show-upload="file.length<1" />
                     </template>
                 </van-field>
                 <van-field
@@ -193,7 +193,7 @@ onMounted(()=>{
     background-color: transparent;
     margin: 0.5rem 0;
 }
-.avatar :deep(.van-field__label){
+.personal-avatar :deep(.van-field__label){
     display: flex;
     flex-direction: column;
     justify-content: center;

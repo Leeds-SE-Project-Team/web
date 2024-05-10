@@ -50,6 +50,7 @@ let button:any;
 const props = defineProps<{
   callback?: ()=>Promise<void>
 }>()
+const emits = defineEmits(['over'])
 const clickButton = () => {
     if (!disabled) {
         disabled = true;
@@ -69,6 +70,7 @@ const clickButton = () => {
                       disabled = false;
                       button.classList.add('ready');
                       button.classList.remove('complete');
+                      emits('over')
                   }, 1000);
               }, 1500);
           })
