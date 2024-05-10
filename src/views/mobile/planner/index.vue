@@ -173,6 +173,18 @@ const isGPS = computed(() => {
   }
   return false
 })
+const GPXTime = computed(()=>{
+  if(isGPX.value){
+    return useMapStore().FileGpxData.routes[0].time
+  }
+  return ''
+})
+const GPXDistance = computed(()=>{
+  if(isGPX.value){
+    return useMapStore().FileGpxData.routes[0].distance
+  }
+  return ''
+})
 
 if (isGPX.value) {
   createGPXForm.value.result = useMapStore().FileGpxData
@@ -430,7 +442,7 @@ onMounted(() => {
               // createTourForm.value.endLocation = path[path.length - 1].toString()
               useMapStore().drawRoute(
                 map,
-                createGPXForm.value.result.routes[0],
+                path,
                 0,
                 { startMarker: true, endMarker: true, reCenter: true },
                 false,
@@ -851,13 +863,13 @@ const selectGroupCollectionOptions = ref<SelectGroupCollectionOption[]>([])
       <van-grid :border="false" :gutter="10" class="result-detail">
         <van-grid-item class="detail-item" icon="clock-o" text="文字">
           <template #text>
-            <span class="detail-content"> {{ Math.round(plannedFirstRoute?.time / 60) }} min </span>
+            <span class="detail-content"> {{ Math.round(GPXTime / 60) }} min </span>
           </template>
         </van-grid-item>
         <van-grid-item class="detail-item" icon="aim">
           <template #text>
             <span class="detail-content">
-              {{ (plannedFirstRoute?.distance / 1000).toFixed(2) }} km
+              {{ (GPXDistance / 1000).toFixed(2) }} km
             </span></template
           >
         </van-grid-item>

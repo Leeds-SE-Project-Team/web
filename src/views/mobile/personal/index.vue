@@ -78,6 +78,12 @@ const handleGPX = (theFile: File) => {
       info: 'ok',
       origin: [] as number[],
       destination: [] as number[],
+      end: {
+        location: [] as number[]
+      },
+      start: {
+        location: [] as number[]
+      },
       routes: [
         {
           distance: 0,
@@ -85,8 +91,8 @@ const handleGPX = (theFile: File) => {
           steps: [
             {
               path: [] as any[],
-              start_location: '',
-              end_location: '',
+              start_location: [0.0,0.0],
+              end_location: [0.0,0.0],
               instruction: '',
               road: '',
               orientation: '',
@@ -98,7 +104,6 @@ const handleGPX = (theFile: File) => {
           ]
         }
       ],
-      waypoints: [] as any[]
     }
     if (creator === 'walcraft' || creator === 'www.Walcraft.com') {
       const trkseg = res.getElementsByTagName('trkseg').item(0)
@@ -127,20 +132,28 @@ const handleGPX = (theFile: File) => {
             parseFloat(wpts[0].getAttribute('lon')!),
             parseFloat(wpts[0].getAttribute('lat')!)
           ]
+          result.start.location = [
+            parseFloat(wpts[0].getAttribute('lon')!),
+            parseFloat(wpts[0].getAttribute('lat')!)
+          ]
           result.destination = [
             parseFloat(wpts[wpts.length - 1].getAttribute('lon')!),
             parseFloat(wpts[wpts.length - 1].getAttribute('lat')!)
           ]
+          result.end.location = [
+            parseFloat(wpts[wpts.length - 1].getAttribute('lon')!),
+            parseFloat(wpts[wpts.length - 1].getAttribute('lat')!)
+          ]
           for (let j = 1; j < wpts.length - 1; j++) {
-            result.waypoints.push({
-              isWaypoint: true,
-              location: [
-                parseFloat(wpts[j].getAttribute('lon')!),
-                parseFloat(wpts[j].getAttribute('lat')!)
-              ],
-              name: '途经点',
-              type: 'waypoint'
-            })
+            // pons.push({
+            //   isWaypoint: true,
+            //   location: [
+            //     parseFloat(wpts[j].getAttribute('lon')!),
+            //     parseFloat(wpts[j].getAttribute('lat')!)
+            //   ],
+            //   name: '途经点',
+            //   type: 'waypoint'
+            // })
           }
           const theTime = ele.getElementsByTagName('time')
           result.routes[0].time = parseInt(theTime[0].innerHTML)
