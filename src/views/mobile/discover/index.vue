@@ -146,7 +146,7 @@ const fetchCollection = () => {
   getTourCollection()
     .then((apiRes) => {
       collectionList.value = apiRes.data!.filter((c) => {
-        return c.tours.length > 0 && c.name!=="Default Collection"
+        return c.tours.length > 0 && c.name !== 'Default Collection'
       })
     })
     .catch((e) => {
@@ -491,7 +491,7 @@ const handleDeleteComment = (commentId: number) => {
                               >
                             </div>
                           </a-row>
-                          <div class="title">
+                          <div class="discover-title">
                             <div class="title-container">
                               <div class="title-inner-container">
                                 <div class="title-content">
@@ -692,7 +692,7 @@ const handleDeleteComment = (commentId: number) => {
         :comment="comment"
         :depth="1"
         :index="idx"
-        :tour="(itemList[currentPlayIndex].item as TourRecord)"
+        :tour="itemList[currentPlayIndex].item as TourRecord"
         @delete="handleDeleteComment"
       />
       <a-empty

@@ -96,6 +96,13 @@ const handleCreateTour = (navigate?: boolean) => {
   // if (createTourForm.value.title === '') {
   //   createTourForm.value.title = 'untitled'
   // }
+  if (locationTrackList.value.length === 0) {
+    showToast('No data recorded.')
+    showSaveTourSheet.value = false
+    return
+  }
+
+  saveTourLoadingObj.setLoading(true)
   createTour({
     ...createTourForm.value,
     startLocation: locationTrackList.value[0].location.toString(),
@@ -108,28 +115,45 @@ const handleCreateTour = (navigate?: boolean) => {
     .then((res) => {
       if (res.success) {
         uploadFileFromURL(
-          mapStore.screenMap(mapRef.value.mapRef.$$getInstance())!,
+          mapStore.screenMap(mapRef.value.$$getInstance())!,
           `/tour/${res.data!.id}`,
           'map_screenshot.jpg'
         )
           .then((uploadRes) => {
             if (uploadRes.success) {
               savedTour.value = res.data!
-              Message.success(res.message)
-              if (navigate === true) {
-                router.push({ name: 'tour', query: { id: savedTour.value!.id } })
-              }
+              // Message.success(res.message)
+              saveTour({ ...saveTourForm.value, isComplete: true, tourId: savedTour.value!.id })
+                .then((apiRes) => {
+                  if (apiRes.success) {
+                    showToast(apiRes.message)
+                    if (navigate === true) {
+                      router.push({ name: 'tour', query: { id: savedTour.value!.id } })
+                    }
+                  } else {
+                    throw apiRes.message
+                  }
+                })
+                .catch((e) => {
+                  Message.error(e)
+                })
             } else {
               throw uploadRes.message
             }
           })
-          .finally(() => {})
+          .finally(() => {
+            saveTourLoadingObj.setLoading(false)
+          })
       } else {
         throw res.message
       }
     })
     .catch((e) => {
+      console.log(e)
       Message.error(e)
+    })
+    .finally(() => {
+      saveTourLoadingObj.setLoading(false)
     })
 }
 
