@@ -69,7 +69,7 @@ const personalMobileChildren: RouteRecordRaw[] = [
 const web_personal_children = [
   {
     path: 'personalprofile',
-    name: 'personalprofile',
+    name: 'personal',
     meta: {
       title: 'personalprofile'
     },
@@ -77,7 +77,7 @@ const web_personal_children = [
   },
   {
     path: 'personaltours',
-    name: 'personaltours',
+    name: 'personal-tour',
     meta: {
       title: 'personaltours'
     },
@@ -93,7 +93,7 @@ const web_personal_children = [
   },
   {
     path: 'personalcollections',
-    name: 'personalcollections',
+    name: 'personal-collection',
     meta: {
       title: 'personalcollections'
     },
@@ -101,7 +101,7 @@ const web_personal_children = [
   },
   {
     path: 'personalgroup',
-    name: 'personalgroup',
+    name: 'personal-group',
     meta: {
       title: 'personalgroup'
     },
