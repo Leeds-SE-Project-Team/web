@@ -104,12 +104,25 @@ const isGPS = computed(() => {
   }
   return false
 })
+const GPXTime = computed(()=>{
+  if(isGPX.value){
+    return useMapStore().FileGpxData.routes[0].time
+  }
+  return ''
+})
+const GPXDistance = computed(()=>{
+  if(isGPX.value){
+    return useMapStore().FileGpxData.routes[0].distance
+  }
+  return ''
+})
 
 if (isGPX.value) {
   createGPXFrom.value.result = useMapStore().FileGpxData
   createGPXFrom.value.startLocation = createGPXFrom.value.result.origin.toString()
   createGPXFrom.value.endLocation = createGPXFrom.value.result.destination.toString()
   // fetchTourCollections()
+  console.log(GPXTime.value, GPXDistance.value)
 }
 
 const resetForm = () => {
@@ -363,6 +376,7 @@ onMounted(() => {
       const map = mapContainer.value.mapRef.$$getInstance()
       console.log(map)
       if (isGPS.value) {
+        console.log(createGPXFrom.value.result.routes[0])
         AMap.convertFrom(
           mapStore.parseRouteToPath(createGPXFrom.value.result.routes[0], 0),
           'gps',
@@ -376,7 +390,7 @@ onMounted(() => {
               createGPXFrom.value.endLocation = path[path.length - 1].toString()
               useMapStore().drawRoute(
                 map,
-                createGPXFrom.value.result.routes[0],
+                path,
                 0,
                 { startMarker: true, endMarker: true, reCenter: true },
                 false,
@@ -691,8 +705,8 @@ onUnmounted(() => {
                     <template #text>
                       <span class="detail-content">
                         {{ (plannedFirstRoute?.distance / 1000).toFixed(2) }} km
-                      </span></template
-                    >
+                      </span>
+                    </template>
                   </van-grid-item>
                   <van-grid-item class="detail-item action-item" icon="share-o">
                     <template #text><span class="detail-content"> share </span></template>
@@ -787,14 +801,14 @@ onUnmounted(() => {
                   <van-grid-item class="detail-item" icon="clock-o" text="文字">
                     <template #text>
                       <span class="detail-content">
-                        {{ Math.round(createGPXFrom.result.time / 60) }} min
+                        {{ Math.round(GPXTime / 60) }} min
                       </span>
                     </template>
                   </van-grid-item>
                   <van-grid-item class="detail-item" icon="aim">
                     <template #text>
                       <span class="detail-content">
-                        {{ ((createGPXFrom.result as any).distance / 1000).toFixed(2) }} km
+                        {{ (GPXDistance / 1000).toFixed(2) }} km
                       </span></template
                     >
                   </van-grid-item>
