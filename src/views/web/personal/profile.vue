@@ -245,6 +245,11 @@ onMounted(()=>{
                     :rules="[{required: true, message: '请输入用户名'}]"
                 />
                 <van-field
+                    label="signature"
+                    placeholder="singnature"
+                    v-model="user.signature"
+                />
+                <van-field
                     label="旧密码"
                     placeholder="请输入旧密码"
                     v-model="pwdStruct.old"
@@ -315,20 +320,27 @@ onMounted(()=>{
           {{ currUser?.nickname }}
         </div>
         <div>
-          <a-popover position="rb">
+          <a-popover position="right">
             <a-button v-if="user?.type" class="vip-button">
               <van-icon :size="20" name="/account/vip.svg" />
             </a-button>
             <template #content>
               <p>You are vip and you can:</p>
-              <p>Lorem ipsum doio qui. export ab dolor officiis cum vero?</p>
-              <p>Lorem ipratiossimus dolores similique.</p>
+              <p>- Create your won collections</p>
+              <p>- Create your group and invite your friends</p>
             </template>
           </a-popover>
 
-          <a-button v-if="!user?.type" class="buy-button vip-button" @click="handleClick">
-            vip
-          </a-button>
+          <a-popover position="rb">
+            <a-button v-if="!user?.type" class="buy-button vip-button" @click="handleClick">
+              vip
+            </a-button>
+            <template #content>
+              <p>You are not vip. If you are vip and you can:</p>
+              <p>Create your won collections</p>
+              <p>Create your group and invite your friends</p>
+            </template>
+          </a-popover>
 
           <a-modal
             v-model:visible="visible"
@@ -369,8 +381,7 @@ onMounted(()=>{
       </div>
 
       <div class="profile-des">
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Maiores qui eaque deserunt totam
-        eveniet labore.
+        {{currUser?.signature}}
       </div>
 
       <div class="profile-detail">
