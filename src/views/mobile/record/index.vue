@@ -42,12 +42,14 @@ import { UserType } from '@/apis/user'
 import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection'
 import { getAllCreatedGroupsByUser, getAllJoinedGroupsByUser } from '@/apis/group'
 import { showLoadingToast } from 'vant/es'
-import { getGroupCollectionByGroupId, type SelectGroupCollectionOption } from '@/apis/groupCollection'
+import {
+  getGroupCollectionByGroupId,
+  type SelectGroupCollectionOption
+} from '@/apis/groupCollection'
 
 const route = useRoute()
 const tourId = ref(parseInt(route.params.tourId as string))
 const tourData = ref<TourRecord>()
-]
 const locationTrackList = computed<RecordDataInstant[]>(() => saveTourForm.value.trackList)
 
 const saveTourForm = ref<SaveTourForm>({
@@ -290,8 +292,7 @@ const fetchHighlightList = () => {
 }
 const center = ref([116.412866, 39.88365])
 
-const markerInit = (e: any) => {
-}
+const markerInit = (e: any) => {}
 
 const mapInit = () => {
   speechSynthesis('开始导航')
@@ -319,8 +320,8 @@ const handleCountTime = () => {
     recordData.value.avgSpeed =
       recordData.value.timeInMotion > 0
         ? parseFloat(
-          ((recordData.value.totalDistance / recordData.value.timeInMotion) * 3.6).toFixed(2)
-        )
+            ((recordData.value.totalDistance / recordData.value.timeInMotion) * 3.6).toFixed(2)
+          )
         : 0
   }
 }
@@ -510,8 +511,7 @@ const handleCreateHighlight = (form: CreateTourHighlightForm) => {
     .catch((e) => {
       showNotify({ type: 'danger', message: e })
     })
-    .finally(() => {
-    })
+    .finally(() => {})
 }
 
 defineExpose({
@@ -662,10 +662,10 @@ const fetchGroups = () => {
 const selectedGroupCollectionName = ref('None')
 
 const onSelectedGroupChange = ({
-                                 value,
-                                 tabIndex,
-                                 selectedOptions
-                               }: {
+  value,
+  tabIndex,
+  selectedOptions
+}: {
   value: number
   tabIndex: number
   selectedOptions: any[]
