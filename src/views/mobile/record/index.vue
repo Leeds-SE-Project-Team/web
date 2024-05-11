@@ -34,7 +34,7 @@ import { Message } from '@arco-design/web-vue'
 import { useMapStore } from '@/stores/map'
 import useLoading from '@/hooks/loading'
 import { cloneDeep } from 'lodash-es'
-import { hapticsImpactLight, parseTimeToString } from '@/utils'
+import { getCurrentLocation, hapticsImpactLight, hapticsVibrate, parseTimeToString } from '@/utils'
 import dayjs from 'dayjs'
 import { useUserStore } from '@/stores'
 import { speechSynthesis } from '@/apis/others'
@@ -176,7 +176,7 @@ watch(
       speechSynthesis('行程已恢复')
       if (!getLocationLoadObj.loading.value) {
         clearTimeout(getLocationTimeout)
-        getCurrentLocation(true)
+        refreshCurrentLocation(true)
       }
     }
   }
@@ -319,7 +319,7 @@ const handleCountTime = () => {
     recordData.value.avgSpeed =
       recordData.value.timeInMotion > 0
         ? parseFloat(
-            ((recordData.value.totalDistance / recordData.value.timeInMotion) * 3.6).toFixed(2)
+            (recordData.value.totalDistance / (recordData.value.timeInMotion / 3600)).toFixed(2)
           )
         : 0
   }
@@ -350,7 +350,7 @@ const userStore = useUserStore()
 const getLocationLoadObj = useLoading()
 
 const isNewTour = computed(() => tourId.value === -1)
-const getCurrentLocation = (toCenter?: boolean) => {
+const refreshCurrentLocation = (toCenter?: boolean) => {
   if (pauseTour.value) {
     return
   }
@@ -359,122 +359,138 @@ const getCurrentLocation = (toCenter?: boolean) => {
     if (!getLocationLoadObj.loading.value) {
       clearTimeout(getLocationTimeout)
       getLocationTimeout = setTimeout(() => {
-        getCurrentLocation(true)
+        refreshCurrentLocation(toCenter)
       }, 1000)
     }
     return
   }
 
-  const geolocationInstance = geolocationRef.value.$$getInstance() as AMap.Geolocation
-  if (getLocationLoadObj.loading.value || !geolocationInstance) {
-    return
-  }
+  // const geolocationInstance = geolocationRef.value.$$getInstance() as AMap.Geolocation
+  // if (geolocationInstance) {
+  //   geolocationInstance.getCurrentPosition(function (status, info) {})
+  // }
+  console.log('start')
   getLocationLoadObj.setLoading(true)
-  geolocationInstance.getCurrentPosition((status, info: any) => {
-    getLocationLoadObj.setLoading(false)
-    if (status === 'complete') {
-      // weakGPS.value = info.accuracy > 30
-      currentGPS.value = parseInt(info.accuracy)
+  getCurrentLocation()
+    .then((res: AMap.CurrentPositionResult) => {
+      getLocationLoadObj.setLoading(false)
+      if (res.info === 'SUCCESS') {
+        // weakGPS.value = info.accuracy > 30
+        currentGPS.value = Math.round(res.accuracy)
+        mapStore.currentLocation = res.position.toArray()
+        if (toCenter === true) {
+          center.value = res.position.toArray()
+        }
+        // if (layers.length > 0) {
+        //   ;(mapRef.value.$$getInstance() as AMap.Map).remove(layers)
+        // }
+        let recordDataInstant: RecordDataInstant = {
+          altitude: (res as any)?.altitude ?? 0,
+          speed: 0,
+          location: res.position,
+          time: parseTimeToString(dayjs())
+        }
+        const len = locationTrackList.value.length
+        if (len > 0) {
+          console.log(recordDataInstant.location)
 
-      if (toCenter === true) {
-        center.value = info.position.toArray()
-      }
-      // if (layers.length > 0) {
-      //   ;(mapRef.value.$$getInstance() as AMap.Map).remove(layers)
-      // }
-      let recordDataInstant: RecordDataInstant = {
-        altitude: info.altitude ?? 0,
-        speed: 0,
-        location: info.position,
-        time: parseTimeToString(dayjs())
-      }
-      const len = locationTrackList.value.length
-
-      if (len > 0) {
-        const distance = mapStore.getDistance(
-          currentRecordDataInstant.value!.location,
-          recordDataInstant.location
-        )
-        // if (distance > 0) {
-        if (distance > 0 && !weakGPS.value) {
-          updatePrevRecordData()
-          recordData.value.totalDistance += distance / 1000
-          recordDataInstant.speed = parseFloat(
-            ((distance / (TIME_INTERVAL + countNotInMotion.value)) * 3.6).toFixed(2)
+          const distance = mapStore.getDistance(
+            currentRecordDataInstant.value!.location,
+            recordDataInstant.location
           )
-          countNotInMotion.value = 0
-          if (userStore.curUser) {
-            recordData.value.calorie = calculateTourCalorie(
-              tourData.value?.type ?? TourType.WALK,
-              userStore.curUser.weight,
-              recordData.value.timeTaken,
-              recordData.value.avgSpeed
+
+          console.log(distance)
+          // if (distance > 0) {
+          if (distance > 0 && !weakGPS.value) {
+            updatePrevRecordData()
+            recordData.value.totalDistance += distance / 1000
+            console.log('total', recordData.value.totalDistance)
+            recordDataInstant.speed = parseFloat(
+              ((distance / (TIME_INTERVAL + countNotInMotion.value)) * 3.6).toFixed(2)
             )
-          }
-          locationTrackList.value.push(recordDataInstant)
-        } else {
-          countNotInMotion.value++
-        }
-
-        if (tourPlannedData.value) {
-          const distances: number[] = tourPlannedLines.value.map((l: any) =>
-            AMap.GeometryUtil.distanceToLine(info.position, l.path)
-          )
-          const minDistance = Math.min(...distances)
-
-          if (minDistance === Infinity) {
-            // No tour
-          } else if (minDistance > Math.max(currentGPS.value, 100)) {
-            currentLineIndex.value = -1
-            showNotify({
-              type: 'danger',
-              message: '您已偏离路线'
-            })
-            if (!speechOutOfRoute.value) {
-              speechSynthesis('您已偏航，请重新规划路线')
-              speechOutOfRoute.value = true
+            countNotInMotion.value = 0
+            if (userStore.curUser) {
+              recordData.value.calorie = calculateTourCalorie(
+                tourData.value?.type ?? TourType.WALK,
+                userStore.curUser.weight,
+                recordData.value.timeTaken,
+                recordData.value.avgSpeed
+              )
             }
+            locationTrackList.value.push(recordDataInstant)
           } else {
-            const minIndex = distances.findIndex((d) => d === minDistance)
-            if (currentLineIndex.value !== minIndex) {
-              currentLineIndex.value = minIndex
+            countNotInMotion.value++
+          }
 
-              speechSynthesis(tourPlannedLines.value[minIndex].instruction)
+          if (tourPlannedData.value) {
+            const distances: number[] = tourPlannedLines.value.map((l: any) =>
+              AMap.GeometryUtil.distanceToLine(res.position, l.path)
+            )
+            const minDistance = Math.min(...distances)
 
+            if (minDistance === Infinity) {
+              // No tour
+            } else if (minDistance > Math.max(currentGPS.value, 100)) {
+              currentLineIndex.value = -1
               showNotify({
-                type: 'primary',
-                message: tourPlannedLines.value[minIndex].instruction
+                type: 'danger',
+                message: '您已偏离路线'
               })
+              if (!speechOutOfRoute.value) {
+                hapticsVibrate()
+                speechSynthesis('您已偏航，请重新规划路线')
+                speechOutOfRoute.value = true
+              }
+            } else {
+              const minIndex = distances.findIndex((d) => d === minDistance)
+              if (currentLineIndex.value !== minIndex) {
+                currentLineIndex.value = minIndex
+                hapticsVibrate()
+                speechSynthesis(tourPlannedLines.value[minIndex].instruction)
+                showNotify({
+                  type: 'primary',
+                  message: tourPlannedLines.value[minIndex].instruction
+                })
+              }
             }
           }
+        } else {
+          locationTrackList.value.push(recordDataInstant)
         }
-      } else {
-        locationTrackList.value.push(recordDataInstant)
-      }
 
-      layers = mapStore.drawRoute(
-        mapRef.value.$$getInstance(),
-        locationTrackList.value.map((track) => track.location),
-        tourData.value?.type ?? TourType.WALK,
-        {
-          startMarker: false,
-          endMarker: false,
-          reCenter: false
-        },
-        false,
-        true
-      )
-    } else if (status === 'error') {
-      // showToast({
-      //   type: 'fail',
-      //   message: info.originMessage
-      // })
-    }
-    clearTimeout(getLocationTimeout)
-    getLocationTimeout = setTimeout(() => {
-      getCurrentLocation()
-    }, 2000)
-  })
+        layers = mapStore.drawRoute(
+          mapRef.value.$$getInstance(),
+          locationTrackList.value.map((track) => track.location),
+          tourData.value?.type ?? TourType.WALK,
+          {
+            startMarker: false,
+            endMarker: false,
+            reCenter: false,
+            lineOptions: {
+              strokeOpacity: 0.6,
+              strokeWeight: 2
+            }
+          },
+          false,
+          true
+        )
+      } else {
+        showToast(res.info)
+        // showToast({
+        //   type: 'fail',
+        //   message: info.originMessage
+        // })
+      }
+      clearTimeout(getLocationTimeout)
+      getLocationTimeout = setTimeout(() => {
+        refreshCurrentLocation()
+      }, 2000)
+    })
+    .catch((e) => {
+      console.log(e)
+      refreshCurrentLocation(toCenter)
+    })
+  // (status, info: any) => { })
 }
 
 const handleCreateHighlight = (form: CreateTourHighlightForm) => {
@@ -582,6 +598,7 @@ const speechOutOfRoute = ref(false)
 
 watch(weakGPS, (value) => {
   if (!speechWeak.value && value) {
+    hapticsVibrate()
     speechSynthesis('GPS 信号弱')
     speechWeak.value = true
   }
@@ -822,7 +839,7 @@ const handleScrollPicker = () => {
                 animation
                 title="Traveled"
               >
-                <template #suffix> M</template>
+                <template #suffix> Km</template>
               </a-statistic>
             </div>
           </a-grid-item>
@@ -921,16 +938,16 @@ const handleScrollPicker = () => {
       <el-amap
         ref="mapRef"
         v-model:zoom="zoom"
+        :WebGLParams="{
+          preserveDrawingBuffer: true
+        }"
         :animateEnable="true"
         :center="center"
         :doubleClickZoom="false"
         :scrollWheel="true"
         mapStyle="amap://styles/fresh"
-        @complete="getCurrentLocation(true)"
+        @complete="refreshCurrentLocation(true)"
         @init="mapInit"
-        :WebGLParams="{
-          preserveDrawingBuffer: true
-        }"
       >
         <!--        <el-amap-polyline-->
         <!--          :draggable="polyline.draggable"-->
@@ -939,12 +956,38 @@ const handleScrollPicker = () => {
         <!--          :visible="polyline.visible"-->
         <!--        />-->
 
+        <el-amap-marker :offset="[-9.5, -12]" :position="mapStore.currentLocation">
+          <img
+            alt="location"
+            src="https://a.amap.com/jsapi/static/image/plugin/point.png"
+            style="
+              width: 19px;
+              height: 19px;
+              border-radius: 50%;
+              box-shadow: 0 0 8px #4d95ec;
+              background-color: #fff;
+              opacity: 0.9;
+              cursor: zoom-in;
+              transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1) !important;
+            "
+          />
+        </el-amap-marker>
+
+        <el-amap-circle
+          :center="mapStore.currentLocation"
+          :fill-opacity="0"
+          :radius="currentGPS"
+          :stroke-opacity="0.5"
+          :strokeWeight="1"
+        />
+
         <el-amap-marker
           v-for="(highlight, idx) in highlightList"
           :key="idx"
           :offset="[-10, -40]"
           :position="parseLocation(highlight.location)"
           :visible="true"
+          :z-index="1"
           @init="markerInit"
         >
           <div @click="handleClickHighlight(highlight)">
@@ -961,17 +1004,17 @@ const handleScrollPicker = () => {
           </div>
         </el-amap-marker>
 
-        <el-amap-control-geolocation
-          ref="geolocationRef"
-          :circleOptions="{
-            fillOpacity: 0,
-            strokeOpacity: 0.5
-          }"
-          :enable-high-accuracy="true"
-          :pan-to-location="false"
-          :timeout="5000"
-          :zoom-to-accuracy="false"
-        />
+        <!--        <el-amap-control-geolocation-->
+        <!--          ref="geolocationRef"-->
+        <!--          :circleOptions="{-->
+        <!--            fillOpacity: 0,-->
+        <!--            strokeOpacity: 0.5-->
+        <!--          }"-->
+        <!--          :enable-high-accuracy="true"-->
+        <!--          :pan-to-location="false"-->
+        <!--          :timeout="5000"-->
+        <!--          :zoom-to-accuracy="false"-->
+        <!--        />-->
       </el-amap>
     </div>
     <!--    AMAP CONTAINER-->
@@ -1027,7 +1070,7 @@ const handleScrollPicker = () => {
 
     <!--    TOAST COMPONENT-->
     <van-toast :show="loadingTourObj.loading.value" style="padding: 0" type="loading">
-      <template #message>Loading Tour</template>
+      <template #message>Loading</template>
     </van-toast>
     <!--    TOAST COMPONENT-->
 

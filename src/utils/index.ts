@@ -177,16 +177,25 @@ export const getCurrentLocation = (
   options?: AMap.GeolocationOptions
 ): Promise<AMap.CurrentPositionResult> =>
   new Promise((resolve, reject) => {
-    useGeolocation(options)
-      .then((res) => {
-        res.getCurrentPosition().then((currentPosition) => {
-          // curPosition.value = currentPosition.position.toArray()
-          resolve(currentPosition)
+    try {
+      useGeolocation(options)
+        .then((res) => {
+          res
+            .getCurrentPosition()
+            .then((currentPosition) => {
+              // curPosition.value = currentPosition.position.toArray()
+              resolve(currentPosition)
+            })
+            .catch((e) => {
+              reject(e)
+            })
         })
-      })
-      .catch((e) => {
-        reject(e)
-      })
+        .catch((e) => {
+          reject(e)
+        })
+    } catch (e) {
+      reject(e)
+    }
 
     // new AMap.Geolocation(geolocationOptions).getCurrentPosition((...cb) => {
     //   if (cb[0] === 'error') {
