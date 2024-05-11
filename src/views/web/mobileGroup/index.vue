@@ -1,10 +1,12 @@
 <template>
     <div id="manage-group" @click="handleClick">
-        <div><icon-send /> Manage Group</div>
+        <div><icon-send /></div>
     </div>
 
     <a-modal class="manage-model" v-model:visible="visible" title="Manage Group" @cancel="handleCancel"
-        @before-ok="handleBeforeOk" :ok-text="'submit group'" :cancel-text="'cancle'">
+        @before-ok="handleBeforeOk" :ok-text="'submit group'" :cancel-text="'cancle'"
+        :width="340"
+        >
         <h4>
             The group you created
         </h4>
@@ -23,7 +25,7 @@
         <a-divider />
         <h4>Create group</h4>
 
-        <a-form :model="form" ref="formRef">
+        <a-form :model="form" ref="formRef" auto-label-width>
 
             <a-form-item field="name" label="Name" :rules="[{ required: true, message: 'name is required' }]"
                 :validate-trigger="['change', 'input']">
@@ -42,6 +44,7 @@
 
         </a-form>
     </a-modal>
+
 
     <!-- this is the group collection page  -->
     <div id="mobile-group-collection-page" class="group-page">
