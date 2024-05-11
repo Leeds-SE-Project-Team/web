@@ -185,7 +185,7 @@ const router = createRouter({
           return { path: '/discover' }
         }
       },
-      component: Capacitor.getPlatform() === 'web' ? groupCollection: mobileGroupCollection
+      component: CollectionDetail
     }, //     {
     //       path: '/highlight',
     //       name: 'highlight',
@@ -224,11 +224,11 @@ const router = createRouter({
       path: '/groupcollection/:id',
       name: 'groucollection',
       meta: {
-        layout: 'b',
+        layout: Capacitor.getPlatform() === 'web' ? 'b' : 'mobile-main',
         title: 'group collection Page',
         auth: ['admin', 'user']
       },
-      component: groupCollection
+      component: Capacitor.getPlatform() === 'web' ? groupCollection : mobileGroupCollection
     },
     {
       path: '/personal',

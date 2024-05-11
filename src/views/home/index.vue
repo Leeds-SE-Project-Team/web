@@ -15,9 +15,33 @@
           autoplay
           loop
           muted
-          style="height: 100%; width: 100%; object-fit: cover"
+          style="height: 100%; width: 100%; object-fit: cover; position: fixed"
         ></video>
-        <h6 class="category category-absolute">Copyright &copy; 2024</h6>
+
+        <div style="position: fixed; width: 100vw; top: 60vh">
+          <button
+            type="button"
+            style="
+              scale: 1;
+              font-family:
+                PingFang SC,
+                DFPKingGothicGB-Regular,
+                sans-serif;
+              width: 300px;
+
+              border: none;
+              background-color: #0077d9;
+              opacity: 0.8;
+              color: white;
+              margin-top: 30px;
+              padding: 8px 60px;
+              border-radius: 15px;
+            "
+            @click="$router.push({ name: 'login' })"
+          >
+            <div style="font-size: 1.5rem">Start Now</div>
+          </button>
+        </div>
       </div>
     </div>
 
