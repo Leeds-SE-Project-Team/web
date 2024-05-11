@@ -157,7 +157,6 @@ const handleCreateTour = (navigate?: boolean) => {
       }
     })
     .catch((e) => {
-      console.log(e)
       Message.error(e)
       saveTourLoadingObj.setLoading(false)
       showSaveTourSheet.value = false
@@ -330,7 +329,6 @@ const currentLineIndex = ref(-1)
 const tourPlannedLines = computed(() => {
   if (tourPlannedData.value) {
     const result = tourPlannedData.value.result
-    console.log(result)
     let lines = []
     switch (tourData.value!.type) {
       case TourType.WALK:
@@ -354,7 +352,6 @@ const getLocationLoadObj = useLoading()
 const isNewTour = computed(() => tourId.value === -1)
 const getCurrentLocation = (toCenter?: boolean) => {
   if (pauseTour.value) {
-    console.log('paused')
     return
   }
 
@@ -362,7 +359,6 @@ const getCurrentLocation = (toCenter?: boolean) => {
     if (!getLocationLoadObj.loading.value) {
       clearTimeout(getLocationTimeout)
       getLocationTimeout = setTimeout(() => {
-        console.log('re get')
         getCurrentLocation(true)
       }, 1000)
     }
@@ -932,6 +928,9 @@ const handleScrollPicker = () => {
         mapStyle="amap://styles/fresh"
         @complete="getCurrentLocation(true)"
         @init="mapInit"
+        :WebGLParams="{
+          preserveDrawingBuffer: true
+        }"
       >
         <!--        <el-amap-polyline-->
         <!--          :draggable="polyline.draggable"-->
