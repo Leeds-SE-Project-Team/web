@@ -114,6 +114,33 @@
                 </div>
             </div>
         </section>
+        <div style="height:400px; width:100%;margin-bottom: 1rem; padding-bottom: 1rem;position: relative;">
+            <div class="controler" style="position: absolute; width: 100%; height: 100%; z-index: 2; overflow: auto">
+                <div class="buttons flex-r" style="width: 100%;" >
+                    <a-button 
+                        type="primary"
+                        @click="fixedToAll"
+                    >ALL</a-button>
+                    <a-button
+                        v-for="(item,index) in mapRoute"
+                        :key="index"
+                        type="primary"
+                        @click="fixedToTour(index)"
+                    >
+                        {{ item[0]+':'+item[2] }}
+                    </a-button>
+                </div>
+            </div>
+            <el-amap :scroll-wheel="false" ref="routeMap">
+                <el-amap-control-geolocation
+                :circleOptions="{
+                    fillOpacity: 0,
+                    strokeOpacity: 0
+                }"
+                />
+            </el-amap>
+        </div>
+        
     </div>
 </template>
 
@@ -129,6 +156,7 @@ import { getAllGroups, getGroupById, type GroupRecord } from '@/apis/group';
 import { createGroupCollection, type CreateGroupCollectionForm } from '@/apis/groupCollection';
 import type { UserRecord } from '@/apis/user';
 import router from '@/router';
+import { useMapStore } from '@/stores';
 import Message from '@arco-design/web-vue/es/message';
 import { number } from 'echarts';
 import { ref, onMounted, computed } from 'vue';
@@ -180,6 +208,46 @@ const getGroup = async () => {
         })
 }
 
+const jsonToPath = (data:any):Array<[number,number]>=> {
+  const res: Array<[number,number]> = [];
+  data.trackList.forEach((item:any)=>{
+    res.push(item.location)
+  })
+  return res;
+}
+const routeMap = ref()
+const mapRoute = ref<any[]>([])
+const tourData = ref<any[]>([])
+
+const fixedToAll = ()=>{
+  const overlays:any[] = [];
+  mapRoute.value.forEach(item=>{
+    overlays.push(...item[1]);
+  })
+  if(routeMap.value){
+    (routeMap.value as any).$$getInstance().clearMap();
+    tourData.value.forEach(item=>{
+        useMapStore().drawRoute(
+            (routeMap.value as any).$$getInstance(),
+            jsonToPath(item),
+            item.type,{},false,true
+        )
+    });
+    (routeMap.value as any).$$getInstance().setFitView(overlays);
+  }
+}
+
+const fixedToTour = (index: number)=>{
+  if(routeMap.value){
+    (routeMap.value as any).$$getInstance().clearMap();
+    useMapStore().drawRoute(
+        (routeMap.value as any).$$getInstance(),
+        jsonToPath(tourData.value[index]),
+        0,{},false,true
+    );
+    (routeMap.value as any).$$getInstance().setFitView(mapRoute.value[index][1]);
+  }
+}
 
 onMounted(async () => {
     await getGroupById(groupId)
@@ -195,6 +263,22 @@ onMounted(async () => {
                 console.log(res.message)
             }
         })
+    allData.value?.groupCollections.forEach(item=>{
+        item.tours.forEach(tour=>{
+            fetch(tour.completeUrl).then(res=>{
+                return res.json()
+            }).then(dj=>{
+                tourData.value.push(dj)
+                const layers = useMapStore().drawRoute(
+                    (routeMap.value as any).$$getInstance(),
+                    jsonToPath(dj),
+                    tour.type,{},false,true
+                )
+                mapRoute.value.push([tour.user.nickname, layers, tour.title])
+            })
+        })
+        fixedToAll()
+    })
 })
 
 function changeHeight(index1: any, index2: any) {
@@ -281,6 +365,5 @@ const handleSubmit = async () => {
 const handleCancel = () => {
     visible.value = false;
 }
-
 
 </script>
