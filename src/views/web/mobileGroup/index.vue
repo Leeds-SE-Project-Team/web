@@ -1,4 +1,48 @@
 <template>
+    <div id="manage-group" @click="handleClick">
+        <div><icon-send /> Manage Group</div>
+    </div>
+
+    <a-modal class="manage-model" v-model:visible="visible" title="Manage Group" @cancel="handleCancel"
+        @before-ok="handleBeforeOk" :ok-text="'submit group'" :cancel-text="'cancle'">
+        <h4>
+            The group you created
+        </h4>
+        <a-space wrap>
+            <a-tag 
+                @close="console.log('close')" 
+                v-for="(each, index) of allData?.groupCollections" 
+                :key="each.id" 
+                :color="colors[index]"
+                closable
+                size="large"
+                >
+                {{ each.name }}
+            </a-tag>
+        </a-space>
+        <a-divider />
+        <h4>Create group</h4>
+
+        <a-form :model="form" ref="formRef">
+
+            <a-form-item field="name" label="Name" :rules="[{ required: true, message: 'name is required' }]"
+                :validate-trigger="['change', 'input']">
+                <a-input v-model="form.name" />
+            </a-form-item>
+
+            <a-form-item field="title" label="Title" :rules="[{ required: true, message: 'title is required' }]"
+                :validate-trigger="['change', 'input']">
+                <a-input v-model="form.title" />
+            </a-form-item>
+
+            <a-form-item field="description" label="des"
+                :rules="[{ required: true, message: 'description is required' }]" :validate-trigger="['change', 'input']">
+                <a-textarea v-model="form.description" />
+            </a-form-item>
+
+        </a-form>
+    </a-modal>
+
     <!-- this is the group collection page  -->
     <div id="mobile-group-collection-page" class="group-page">
         <!-- the section of bg -->
@@ -79,8 +123,11 @@ export default {
 <script lang="ts" setup>
 import { getCollectionById } from '@/apis/collection';
 import { getAllGroups, getGroupById, type GroupRecord } from '@/apis/group';
+import { createGroupCollection, type CreateGroupCollectionForm } from '@/apis/groupCollection';
 import type { UserRecord } from '@/apis/user';
 import router from '@/router';
+import Message from '@arco-design/web-vue/es/message';
+import { number } from 'echarts';
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 // define all the varibles
@@ -96,6 +143,40 @@ const others = computed(() => allData.value?.members.filter((x) => x.id !== allD
 const redirectToRoute = (id: string|number) => {
   router.push(`/tour?id=${id}`);
 }
+
+// color
+const colors = [
+    'red',
+    'orangered',
+    'orange',
+    'gold',
+    'lime',
+    'green',
+    'cyan',
+    'blue',
+    'arcoblue',
+    'purple',
+    'pinkpurple',
+    'magenta',
+    'gray'
+];
+
+const getGroup = async () => {
+    await getGroupById(groupId)
+        .then((res) => {
+            if (res.success) {
+                allData.value = res.data
+                console.log(allData.value)
+                picNum.value = allData.value?.groupCollections.map(() => 0) as number[]
+                allImgNum.value = allData.value?.groupCollections.map((x: any) => x.tours.length)
+                leader.value = allData.value?.members.find((x) => x.id === allData.value?.leaderId)
+            }
+            else {
+                console.log(res.message)
+            }
+        })
+}
+
 
 onMounted(async () => {
     await getGroupById(groupId)
@@ -140,6 +221,62 @@ function changeHeight(index1: any, index2: any) {
         }
     }
 
+}
+
+
+
+
+// manage group ------------------------>
+const visible = ref(false);
+
+const formRef = ref();
+
+const form = ref<CreateGroupCollectionForm>({
+    groupId: groupId,
+    name: '',
+    title: '',
+    coverUrl: '',
+    description: ''
+});
+
+const handleClick = () => {
+    visible.value = true;
+};
+
+const handleBeforeOk = () => {
+    if (!formRef.value)
+        return
+
+    formRef.value.validate()
+    .then((err: any) => {
+        if (!err) {
+            handleSubmit();
+            getGroup()
+        } else {
+            // failed
+            Message.warning("You need complete the form")
+        }
+    })
+    console.log(form.value)
+};
+
+const handleSubmit = async () => {
+    await createGroupCollection(form.value)
+        .then((res) => {
+            if (res.success) {
+                Message.success(res.message)
+                
+            } else {
+                Message.error(res.message)
+            }
+        })
+        .catch((err) => {
+            Message.error(err.message)
+        })
+}
+
+const handleCancel = () => {
+    visible.value = false;
 }
 
 

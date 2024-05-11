@@ -1,11 +1,13 @@
 <template>
 
     <div id="manage-group" @click="handleClick">
-        <div><icon-send /> Manage Group</div>
+        <div><icon-send /></div>
     </div>
 
     <a-modal class="manage-model" v-model:visible="visible" title="Manage Group" @cancel="handleCancel"
-        @before-ok="handleBeforeOk" :ok-text="'submit group'" :cancel-text="'cancle'">
+        @before-ok="handleBeforeOk" :ok-text="'submit group'" :cancel-text="'cancle'"
+        :width="340"
+        >
         <h4>
             The group you created
         </h4>
@@ -24,7 +26,7 @@
         <a-divider />
         <h4>Create group</h4>
 
-        <a-form :model="form" ref="formRef">
+        <a-form :model="form" ref="formRef" auto-label-width>
 
             <a-form-item field="name" label="Name" :rules="[{ required: true, message: 'name is required' }]"
                 :validate-trigger="['change', 'input']">
@@ -36,7 +38,7 @@
                 <a-input v-model="form.title" />
             </a-form-item>
 
-            <a-form-item field="description" label="description"
+            <a-form-item field="description" label="des"
                 :rules="[{ required: true, message: 'description is required' }]" :validate-trigger="['change', 'input']">
                 <a-textarea v-model="form.description" />
             </a-form-item>
