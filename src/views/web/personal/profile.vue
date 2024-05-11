@@ -4,7 +4,7 @@ import { useUserStore } from '@/stores/user'
 import { computed, onMounted, reactive, ref } from 'vue'
 import tourCard from './cards/tourCard.vue'
 import { Message } from '@arco-design/web-vue'
-import { upgradeUser, type UserRecord } from '@/apis/user'
+import { cancelVip, upgradeUser, type UserRecord } from '@/apis/user'
 import { updateUser } from '@/apis/user/index'
 import { uploadFileFromURL } from '@/utils/file'
 import { showToast, type UploaderFileListItem } from 'vant'
@@ -49,6 +49,18 @@ const handleOk = () => {
 }
 const handleCancel = () => {
   visible.value = false
+}
+
+const quitVip = ()=>{
+  cancelVip().then(res=>{
+    if(res.success){
+      user.value = res.data!
+      userStore.curUser = user.value
+      Message.success('Quit Success')
+    }else{
+      Message.info(res.message)
+    }
+  })
 }
 
 const userStore = useUserStore()
@@ -320,6 +332,7 @@ onMounted(() => {
               <p>You are vip and you can:</p>
               <p>- Create your won collections</p>
               <p>- Create your group and invite your friends</p>
+              <a-button type="primary" status="danger" @click="quitVip" >Quit VIP</a-button>
             </template>
           </a-popover>
 
