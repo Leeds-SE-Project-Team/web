@@ -102,17 +102,17 @@
     </a-space>
 
     <div class="like">
-      <div>
+      <div class="btns">
         <a-button class="button-icon" @click="tourRecord && handleInteract(tourRecord, 'like')">
           <template #icon>
             <div class="icon">
               <img
-                :height="30"
+                :height="50"
                 :src="tourRecord && isLikeTour(tourRecord).value ? likedSvgUrl : likeSvgUrl"
-                :width="45"
+                :width="50"
                 alt="like"
               />
-              <span>{{ tourRecord?.likedBy.length }}</span>
+              <span style="color: #fff">{{ tourRecord?.likedBy.length }}</span>
             </div>
           </template>
         </a-button>
@@ -121,18 +121,18 @@
           <template #icon>
             <div class="icon">
               <img
-                :height="30"
+                :height="50"
                 :src="tourRecord && isStarTour(tourRecord).value ? starredSvgUrl : starSvgUrl"
-                :width="45"
+                :width="50"
                 alt="like"
               />
-              <span>{{ tourRecord?.starredBy.length }}</span>
+              <span style="color: #fff">{{ tourRecord?.starredBy.length }}</span>
             </div>
           </template>
         </a-button>
 
         <a-button
-          class="primary-btn-dark"
+          class="button-icon navi"
           @click="router.push({ name: 'record', params: { tourId: tourId } })"
         >
           <van-icon :size="23" name="guide-o" style="display: flex"
@@ -143,11 +143,10 @@
         </a-button>
 
         <a-button
-          class="primary-btn-dark"
-          style="margin-left: 20px"
+          class="button-icon  navi"
           @click="downGPX(tourRecord?.id)"
         >
-          download
+          Download GPX
         </a-button>
       </div>
 
