@@ -1,5 +1,4 @@
 <template>
-
     <div id="manage-group" @click="handleClick">
         <div><icon-send /> Manage Group</div>
     </div>
@@ -36,7 +35,7 @@
                 <a-input v-model="form.title" />
             </a-form-item>
 
-            <a-form-item field="description" label="description"
+            <a-form-item field="description" label="des"
                 :rules="[{ required: true, message: 'description is required' }]" :validate-trigger="['change', 'input']">
                 <a-textarea v-model="form.description" />
             </a-form-item>
