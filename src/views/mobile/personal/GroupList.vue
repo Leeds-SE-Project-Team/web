@@ -45,7 +45,7 @@
                         style="margin: 0.5rem 0;"
                     >
                         <van-image style="flex: 1; max-height: 100px;" :src="item.coverUrl" fit="cover"/>
-                        <div class="group-info flex-c flex-justify-c" >
+                        <div class="group-info flex-c flex-justify-c" @click="redirectToRoute(item.id)" >
                             <div class="info-title" >
                                 {{ item.name }}
                             </div>
@@ -161,6 +161,11 @@ const beforeClose: Interceptor = async (action:string)=>{
             description: thisGroup.description
         })
         if(!end.success){Message.info(end.message); throw end.message;}
+        getAllCreatedGroupsByUser().then(res=>{
+            if(res.success){
+                myGroup.value = res.data!
+            }
+        })
         Message.success("Create Success")
     } catch (error) {
         console.log(error)

@@ -298,7 +298,7 @@ onMounted(() => {
           <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
-              src="https://file.wmzspace.space/resource/planer.jpg"
+              src="https://file.wmzspace.space/resource/navigate.jpg"
               style="object-fit: cover; width: 100%; height: 100%"
             />
           </div>
