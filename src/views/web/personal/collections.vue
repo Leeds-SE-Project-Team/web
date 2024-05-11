@@ -1,38 +1,38 @@
 <script lang="ts" setup>
-import { getTourCollectionsByCurUser, type TourCollection } from '@/apis/collection';
-import tourCard from './cards/tourCard.vue';
-import { ref } from 'vue';
-import type { ApiResponse } from '@/apis';
-import { createCollection, getCollectionByUser } from '@/apis/collection';
-import { uploadFileFromURL } from '@/utils/file';
-import { Message } from '@arco-design/web-vue';
-import type { UploaderFileListItem } from 'vant';
-import { useRouter } from 'vue-router';
+import {
+  createCollection,
+  getCollectionByUser,
+  getTourCollectionsByCurUser,
+  type TourCollection
+} from '@/apis/collection'
+import tourCard from './cards/tourCard.vue'
+import { ref } from 'vue'
+import { uploadFileFromURL } from '@/utils/file'
+import { Message } from '@arco-design/web-vue'
+import type { UploaderFileListItem } from 'vant'
+import { useRouter } from 'vue-router'
 
 const myCollections = ref<TourCollection[]>([])
 
-getTourCollectionsByCurUser()
-  .then((res) => {
-    myCollections.value = res.data as TourCollection[]
-  })
-
+getTourCollectionsByCurUser().then((res) => {
+  myCollections.value = res.data as TourCollection[]
+})
 
 // new collection dialog -------------->
-const visible = ref(false);
+const visible = ref(false)
 
 const handleClick = () => {
-  visible.value = true;
-};
-
-const handleCancel = () => {
-  visible.value = false;
+  visible.value = true
 }
 
+const handleCancel = () => {
+  visible.value = false
+}
 
 // new collection -------------->
 const collections = ref<TourCollection[]>([])
-const router = useRouter();
-const showCreate = ref(false);
+const router = useRouter()
+const showCreate = ref(false)
 const fileList = ref<UploaderFileListItem[]>([])
 const collectionForm = ref({
   name: '',
@@ -44,9 +44,9 @@ const theForm = ref()
 
 const fileValidate = () => {
   if (fileList.value.length !== 1) {
-    return "Upload one cover image"
+    return 'Upload one cover image'
   }
-  return true;
+  return true
 }
 
 const toCollection = (id: number) => {
@@ -55,56 +55,62 @@ const toCollection = (id: number) => {
 
 const beforeClose = (action: string): Promise<boolean> =>
   new Promise((resolve) => {
-    if (action === "cancel") {
-      return resolve(true);
+    if (action === 'cancel') {
+      return resolve(true)
     }
     if (!theForm.value) {
-      resolve(false);
-      return;
+      resolve(false)
+      return
     }
-    theForm.value.validate().then((res: any) => {
-      if (res) {
-        resolve(false);
-        return;
-      }
-      createCollection(collectionForm.value).then(res => {
-        if (!res.success) {
-          Message.info(res.message);
+    theForm.value
+      .validate()
+      .then((res: any) => {
+        if (res) {
+          resolve(false)
+          return
         }
-        getCollections()
-        return res.data?.id
-      }).then((res) => {
-        if (!res) { resolve(false); return; }
-        if (!fileList.value[0].objectUrl) {
-          return resolve(false);
-        }
-        uploadFileFromURL(
-          fileList.value[0].objectUrl,
-          `/collection/${res}`,
-          fileList.value[0].file?.name
-        ).then(url => {
-          if (url.success) {
-            resolve(true)
-            return;
-          }
-        })
+        createCollection(collectionForm.value)
+          .then((res) => {
+            if (!res.success) {
+              Message.info(res.message)
+            }
+            getCollections()
+            return res.data?.id
+          })
+          .then((res) => {
+            if (!res) {
+              resolve(false)
+              return
+            }
+            if (!fileList.value[0].objectUrl) {
+              return resolve(false)
+            }
+            uploadFileFromURL(
+              fileList.value[0].objectUrl,
+              `/collection/${res}`,
+              fileList.value[0].file?.name
+            ).then((url) => {
+              if (url.success) {
+                resolve(true)
+                return
+              }
+            })
+          })
       })
-    }).catch((e: any) => {
-      console.log(e)
-      return resolve(false)
-    })
+      .catch((e: any) => {
+        console.log(e)
+        return resolve(false)
+      })
   })
 
-
 const getCollections = () => {
-  getCollectionByUser().then(res => {
+  getCollectionByUser().then((res) => {
     if (res.success) {
-      console.log(res);
+      console.log(res)
       collections.value = res.data!
     }
   })
-  getTourCollectionsByCurUser()
-  .then((res) => {
+  getTourCollectionsByCurUser().then((res) => {
     myCollections.value = res.data as TourCollection[]
   })
 }
@@ -114,47 +120,68 @@ getCollections()
 
 <template>
   <div id="personal-collections">
-
-    <div class="my-collections" v-for="collection in myCollections" :key="collection.id">
-      <h3 :id="collection.id.toString()">{{ collection.name }}</h3>
+    <div v-for="collection in myCollections" :key="collection.id" class="my-collections">
+      <span :id="collection.id.toString()" style="font-size: 20px; font-weight: bold">{{
+        collection.name
+      }}</span>
+      <a-button
+        style="float: right; margin-right: 20px; border-radius: 5px; opacity: 0.8"
+        type="primary"
+        @click="$router.push({ name: 'collection', query: { id: collection.id } })"
+        >View Detail
+      </a-button>
       <a-divider :size="4" />
 
-      <div class="card" v-for="tour in collection.tours" :key="tour.id">
+      <div v-for="tour in collection.tours" :key="tour.id" class="card">
         <tourCard :info="tour"></tourCard>
       </div>
 
-      <div v-if="!collection.tours.length" class="no">
-        No exist planned tours
-      </div>
+      <div v-if="!collection.tours.length" class="no">No exist planned tours</div>
     </div>
   </div>
 
   <a-affix class="affix">
-    <a-anchor class="anchor" :style="{ backgroundColor: 'var(--color-bg-1)' }" :line-less="true">
-      <a-anchor-link v-for="collection in myCollections" :key="collection.id" :href="'#' + collection.id.toString()"
-        class="item">
+    <a-anchor :line-less="true" :style="{ backgroundColor: 'var(--color-bg-1)' }" class="anchor">
+      <a-anchor-link
+        v-for="collection in myCollections"
+        :key="collection.id"
+        :href="'#' + collection.id.toString()"
+        class="item"
+      >
         {{ collection.name }}
       </a-anchor-link>
       <div class="create-btn" @click="handleClick">
-        <icon-plus-circle-fill />CREATE
+        <icon-plus-circle-fill />
+        CREATE
       </div>
 
-      <a-modal v-model:visible="visible" title="Modal Form" @cancel="handleCancel"
-        :on-before-ok="() => beforeClose('confirm')">
-
-        <a-form :model="collectionForm" ref="theForm">
-          <a-form-item label="Cover" class="av" required :rules="[{ validator: fileValidate }]">
+      <a-modal
+        v-model:visible="visible"
+        :on-before-ok="() => beforeClose('confirm')"
+        title="Modal Form"
+        @cancel="handleCancel"
+      >
+        <a-form ref="theForm" :model="collectionForm">
+          <a-form-item :rules="[{ validator: fileValidate }]" class="av" label="Cover" required>
             <van-uploader v-model="fileList" />
           </a-form-item>
-          <a-form-item field="name" label="Name" required :rules="[{ required: true, message: 'need name' }]">
+          <a-form-item
+            :rules="[{ required: true, message: 'need name' }]"
+            field="name"
+            label="Name"
+            required
+          >
             <a-input v-model="collectionForm.name" />
           </a-form-item>
-          <a-form-item field="description" label="Des" required
-            :rules="[{ required: true, message: 'need description' }]">
+          <a-form-item
+            :rules="[{ required: true, message: 'need description' }]"
+            field="description"
+            label="Des"
+            required
+          >
             <a-textarea v-model="collectionForm.description" />
           </a-form-item>
         </a-form>
-
       </a-modal>
     </a-anchor>
   </a-affix>
@@ -165,7 +192,6 @@ export default {
   name: 'personalCollections'
 }
 </script>
-
 
 <style lang="scss">
 .affix {
@@ -190,7 +216,6 @@ export default {
 }
 
 #personal-collections {
-
   position: relative;
   overflow: scroll;
   height: calc(100vh - 50px);
@@ -207,7 +232,6 @@ export default {
       font-size: 26px;
     }
 
-
     .card {
       padding: 24px 0;
       border-bottom: 1px solid #e5e5e5;
@@ -221,6 +245,5 @@ export default {
       color: #818181;
     }
   }
-
 }
 </style>
