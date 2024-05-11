@@ -3,19 +3,22 @@
 //}
 
 #home {
-  .tip-card-container{
+  .tip-card-container {
     background-color: var(--theme-ui-colors-card);
     box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px;
     margin-bottom: 1.5rem;
-    .tip-card{
+
+    .tip-card {
       padding: 1.5rem;
     }
-    .tip-title{
+
+    .tip-title {
       color: inherit;
       font-weight: 700;
       line-height: 1.125;
     }
-    .tip-btn{
+
+    .tip-btn {
       background-color: #4F850D;
       font-size: 16px;
       font-weight: 700;
@@ -29,20 +32,23 @@
     }
   }
 
-  .main-content-container{
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  .main-content-container {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     background-color: #FFFFFF;
     box-shadow: none;
     min-height: 100vh;
-    .tours-card-container{
+
+    .tours-card-container {
       padding-bottom: 1.5rem;
       padding-left: 1.5rem;
       padding-right: 1.5rem;
       padding-top: 1.5rem;
-      .tours-card{
+
+      .tours-card {
         gap: 3rem;
         display: grid;
-        .tour-import-btn{
+
+        .tour-import-btn {
           background-color: #4F850D;
           font-size: 16px;
           font-weight: 700;
@@ -59,28 +65,32 @@
   }
 }
 
-.home-wrapper{
-  .back-container{
-    .Logo-wrapper{
+.home-wrapper {
+  .back-container {
+    .Logo-wrapper {
       position: absolute;
       top: 60%;
       left: 50%;
-      transform: translate(-50%,-50%);
+      transform: translate(-50%, -50%);
       width: 50%;
       max-width: 400px;
       min-width: 200px;
       height: auto;
       z-index: 2;
-      
-      button{
-        height: 40px;
-        background-color: $theme-ui-colors-primary;
+
+      button {
+        font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+        margin-top: 50px;
+        //height: 40px;
+        border: none;
+        background-color: $theme-ui-colors-secondary;
+        opacity: 0.6;
         color: white;
         border-radius: 15px;
       }
     }
 
-    .walcraft-info{
+    .walcraft-info {
       display: flex;
       position: absolute;
       width: 100%;

@@ -171,7 +171,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="home-wrapper" style="height: 100%; width: 100%; overflow-y: auto; position: relative;overflow-x: hidden;">
+  <div
+    class="home-wrapper"
+    style="height: 100%; width: 100%; overflow-y: auto; position: relative; overflow-x: hidden"
+  >
     <a-result v-if="authStore.isTokenValid" :status="'success'" title="Login succeed!">
       <template #icon>
         <IconFaceSmileFill />
@@ -201,7 +204,7 @@ onMounted(() => {
       <div style="height: 100vh; width: 100%; position: relative">
         <div class="flex-c flex-justify-c Logo-wrapper">
           <button type="button" @click="$router.push({ name: 'login' })">
-            <div style="font-size: 1.5rem">Login</div>
+            <div style="font-size: 1.5rem">Start Now</div>
           </button>
           <!-- <a-button
           type="primary"
@@ -228,9 +231,10 @@ onMounted(() => {
             />
           </div>
           <div class="text flex-c">
-            <h2 style="padding: 0 1rem;">Trip Information and User Interaction</h2>
-            <p style="padding: 0 1rem;">
-              Discover page serves as a hub for users to discover, engage with, and connect over various travel experiences shared within the platform.
+            <h2 style="padding: 0 1rem">Trip Information and User Interaction</h2>
+            <p style="padding: 0 1rem">
+              Discover page serves as a hub for users to discover, engage with, and connect over
+              various travel experiences shared within the platform.
             </p>
           </div>
         </div>
@@ -238,9 +242,10 @@ onMounted(() => {
       <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-2" class="walcraft-info">
           <div class="text flex-c">
-            <h2 style="padding: 0 1rem;">Detailed Tour Information</h2>
-            <p style="padding: 0 1rem;">
-              The Tour Details page offers users an in-depth view of a tour, featuring essential metrics like distance and average speed, supplemented by a navigation map.
+            <h2 style="padding: 0 1rem">Detailed Tour Information</h2>
+            <p style="padding: 0 1rem">
+              The Tour Details page offers users an in-depth view of a tour, featuring essential
+              metrics like distance and average speed, supplemented by a navigation map.
             </p>
           </div>
           <div class="image" style="max-height: 500px; max-width: 400px">
@@ -262,9 +267,10 @@ onMounted(() => {
             />
           </div>
           <div class="text flex-c">
-            <h2 style="padding: 0 1rem;">Collect All Tours and Place in a Map</h2>
-            <p style="padding: 0 1rem;">
-              Tours created by ordinary users will be added to the default Collection by default. All Tours in the Collection will be displayed on the initial map.
+            <h2 style="padding: 0 1rem">Collect All Tours and Place in a Map</h2>
+            <p style="padding: 0 1rem">
+              Tours created by ordinary users will be added to the default Collection by default.
+              All Tours in the Collection will be displayed on the initial map.
             </p>
           </div>
         </div>
@@ -272,9 +278,10 @@ onMounted(() => {
       <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-4" class="walcraft-info">
           <div class="text flex-c">
-            <h2 style="padding: 0 1rem;">Itinerary Planning and Customization Options</h2>
-            <p style="padding: 0 1rem;">
-              The Planner page empowers users to craft personalized itineraries by selecting travel mode, start and end points, and must-pass locations.
+            <h2 style="padding: 0 1rem">Itinerary Planning and Customization Options</h2>
+            <p style="padding: 0 1rem">
+              The Planner page empowers users to craft personalized itineraries by selecting travel
+              mode, start and end points, and must-pass locations.
             </p>
           </div>
           <div class="image" style="max-height: 500px; max-width: 400px">
@@ -296,9 +303,10 @@ onMounted(() => {
             />
           </div>
           <div class="text flex-c">
-            <h2 style="padding: 0 1rem;">Navigation Interface</h2>
-            <p style="padding: 0 1rem;">
-              The Record page enables users to navigate along their planned itinerary from the Planner page, displaying the path and providing voice guidance.
+            <h2 style="padding: 0 1rem">Navigation Interface</h2>
+            <p style="padding: 0 1rem">
+              The Record page enables users to navigate along their planned itinerary from the
+              Planner page, displaying the path and providing voice guidance.
             </p>
           </div>
         </div>
@@ -306,9 +314,11 @@ onMounted(() => {
       <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-6" class="walcraft-info">
           <div class="text flex-c">
-            <h2 style="padding: 0 1rem;">Customizable Profile and VIP Features and Subscriptions</h2>
-            <p style="padding: 0 1rem;">
-              The Personal page offers users extensive customization options for their profile, including avatar uploads and detailed personal information editing. VIP users enjoy exclusive features like creating custom Collections and Groups.
+            <h2 style="padding: 0 1rem">Customizable Profile and VIP Features and Subscriptions</h2>
+            <p style="padding: 0 1rem">
+              The Personal page offers users extensive customization options for their profile,
+              including avatar uploads and detailed personal information editing. VIP users enjoy
+              exclusive features like creating custom Collections and Groups.
             </p>
           </div>
           <div class="image" style="max-height: 500px; max-width: 400px">
@@ -323,9 +333,10 @@ onMounted(() => {
       <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-7" class="walcraft-info">
           <div class="text flex-c">
-            <h2 style="padding: 0 1rem;">Group User and Trip Display</h2>
-            <p style="padding: 0 1rem;">
-              The Group Details page provides a comprehensive overview of group activities, showcasing members and their respective trips.
+            <h2 style="padding: 0 1rem">Group User and Trip Display</h2>
+            <p style="padding: 0 1rem">
+              The Group Details page provides a comprehensive overview of group activities,
+              showcasing members and their respective trips.
             </p>
           </div>
           <div class="image" style="max-height: 500px; max-width: 400px">
