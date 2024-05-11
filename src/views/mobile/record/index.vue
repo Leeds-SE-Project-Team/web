@@ -956,7 +956,7 @@ const handleScrollPicker = () => {
         <!--          :visible="polyline.visible"-->
         <!--        />-->
 
-        <el-amap-marker :offset="[-9.5, -12]" :position="mapStore.currentLocation">
+        <el-amap-marker :offset="[-9.5, -14]" :position="mapStore.currentLocation">
           <img
             alt="location"
             src="https://a.amap.com/jsapi/static/image/plugin/point.png"
@@ -1004,17 +1004,19 @@ const handleScrollPicker = () => {
           </div>
         </el-amap-marker>
 
-        <!--        <el-amap-control-geolocation-->
-        <!--          ref="geolocationRef"-->
-        <!--          :circleOptions="{-->
-        <!--            fillOpacity: 0,-->
-        <!--            strokeOpacity: 0.5-->
-        <!--          }"-->
-        <!--          :enable-high-accuracy="true"-->
-        <!--          :pan-to-location="false"-->
-        <!--          :timeout="5000"-->
-        <!--          :zoom-to-accuracy="false"-->
-        <!--        />-->
+        <el-amap-control-geolocation
+          ref="geolocationRef"
+          :circleOptions="{
+            fillOpacity: 0,
+            strokeOpacity: 0
+          }"
+          :enable-high-accuracy="true"
+          :pan-to-location="true"
+          :show-circle="false"
+          :show-marker="false"
+          :timeout="5000"
+          :zoom-to-accuracy="true"
+        />
       </el-amap>
     </div>
     <!--    AMAP CONTAINER-->

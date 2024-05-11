@@ -8,7 +8,12 @@
       </div>
     </div>
 
-    <div class="page-header" filter-color="green" style="width: 100%">
+    <div
+      class="page-header"
+      filter-color="green"
+      style="width: 100%; cursor: pointer"
+      @click="$router.push({ name: 'login' })"
+    >
       <div style="text-align: center">
         <video
           :src="getStaticRes('/resource/walcraft2.0.mp4')"
@@ -20,7 +25,6 @@
 
         <div style="position: fixed; width: 100vw; top: 60vh">
           <button
-            type="button"
             style="
               scale: 1;
               font-family:
@@ -28,7 +32,6 @@
                 DFPKingGothicGB-Regular,
                 sans-serif;
               width: 300px;
-
               border: none;
               background-color: #0077d9;
               opacity: 0.8;
@@ -37,9 +40,9 @@
               padding: 8px 60px;
               border-radius: 15px;
             "
-            @click="$router.push({ name: 'login' })"
+            type="button"
           >
-            <div style="font-size: 1.5rem">Start Now</div>
+            Start Now
           </button>
         </div>
       </div>
