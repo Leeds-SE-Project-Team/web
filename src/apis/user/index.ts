@@ -181,3 +181,9 @@ export const addUserToGroup = (inviteId: number, groupId: number): Promise<ApiRe
     method: 'POST',
     url: `/users/addUserToGroup?inviteId=${inviteId}&groupId=${groupId}`
   })
+
+export const cancelVip = (): Promise<ApiResponse<UserRecord>>=>
+  axiosRequest({
+    method: 'PUT',
+    url: '/users/cancel_vip'
+  })

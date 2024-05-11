@@ -708,8 +708,8 @@ onUnmounted(() => {
                     type="primary"
                     @click="alwaysShowTop = !alwaysShowTop"
                   >
-                    <span v-if="!alwaysShowTop">ADJUST ROUTE</span>
-                    <span v-else>HIDE ROUTE</span>
+                    <span style="color: white" v-if="!alwaysShowTop">ADJUST ROUTE</span>
+                    <span style="color: white" v-else>HIDE ROUTE</span>
                   </van-button>
                 </van-cell>
 
@@ -760,7 +760,7 @@ onUnmounted(() => {
                     <span class="menu-title">Select collection</span>
                   </template>
                   <van-loading v-if="selectedCollection === -1" />
-                  <span v-else>{{
+                  <span style="color: white;" v-else>{{
                     userCollections.find((c) => c.id === selectedCollection)?.name
                   }}</span>
                 </van-cell>
@@ -969,6 +969,16 @@ onUnmounted(() => {
 
 #mobile-planner #top-menu .outer-container .menu-locations #thepop {
   background-color: white;
+}
+
+.detail-item :deep(.van-grid-item__content){
+  color: white;
+}
+.title-input :deep(#van-field-3-label){
+  color: white;
+}
+.title-input :deep(#van-field-3-input){
+  color: white;
 }
 </style>
 

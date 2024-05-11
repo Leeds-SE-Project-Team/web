@@ -74,6 +74,17 @@
           <van-icon :size="24" name="arrow" />
         </template>
       </van-cell>
+      <van-cell v-if="user?.type == 1" @click="quitVip">
+        <template #icon>
+          <van-icon name="revoke" :size="24" />
+        </template>
+        <div class="flex-r list-text">
+          <span>Quit VIP</span>
+        </div>
+        <template #right-icon>
+          <van-icon :size="24" name="arrow" />
+        </template>
+      </van-cell>
       <div class="flex-r flex-justify-c" style="margin: 2.5rem 0">
         <van-button hairline type="primary" @click="authStore.handleLogout">Logout</van-button>
       </div>
@@ -127,7 +138,7 @@
 </template>
 
 <script lang="ts" setup>
-import { buy_vip, type UserRecord, VIPType } from '@/apis/user'
+import { buy_vip, type UserRecord, VIPType, cancelVip } from '@/apis/user'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { Message } from '@arco-design/web-vue'
@@ -173,6 +184,19 @@ const clickVIP = (): Promise<void> =>
       }
     })
   })
+const quitVip = ()=>{
+  cancelVip().then(res=>{
+    if(res.success){
+      user.value = res.data!
+      userStore.curUser = user.value
+      alreadyVIP.value = false
+      showSuccessToast('Quit Success')
+    }else{
+      Message.info(res.message)
+    }
+  })
+}
+
 const setChoose = (id: number) => {
   if (!(vipB1.value && vipB2.value && vipB3.value)) {
     return
