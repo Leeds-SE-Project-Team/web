@@ -63,11 +63,13 @@ export default {
         </div>
       </div>
     </div>
+    
     <div class="container mt-sm-5 mt-3">
       <div
-        v-for="({ heading, description, items }, index) in data"
-        :class="`row ${index != 0 && index != -1 ? 'pt-lg-6' : ''}`"
+        v-for="({ heading, description, id, items }, index) in data"
+        :class="[`row ${index != 0 && index != -1 ? 'pt-lg-6' : ''}`]"
         :key="heading"
+        :id = id
       >
         <div :class="`${col1 ?? 'col-lg-3'}`">
           <div class="position-sticky pb-lg-5 pb-3 mt-lg-0 mt-5 ps-2" style="top: 100px">
@@ -78,22 +80,7 @@ export default {
           </div>
         </div>
         <div :class="`${col2 ?? 'col-lg-9'}`">
-          <div :class="`row ${index !== 0 ? 'mt-3' : ''}`">
-            <div
-              class="col-md-4 mt-md-0"
-              v-for="{ image, title, subtitle, route, pro } in items"
-              :key="title"
-            >
-              <ExampleCard
-                class="min-height-160 shadow-lg mt-4"
-                :image="image"
-                :title="title"
-                :subtitle="subtitle"
-                :route="route"
-                :pro="pro"
-              />
-            </div>
-          </div>
+          <img :src="items[0].image" alt="">
         </div>
       </div>
     </div>

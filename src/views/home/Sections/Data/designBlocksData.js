@@ -14,7 +14,7 @@ Coded by www.creative-tim.com
 */
 
 const imagesPrefix =
-  'https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections'
+  '../src/views/home/Sections/Data/img'
 
 import imgPricing from '@/assets/img/pricing.png'
 import imgFeatures from '@/assets/img/features.png'
@@ -31,11 +31,12 @@ import imgDropdowns from '@/assets/img/dropdowns.jpg'
 
 export default [
   {
-    heading: 'Design Blocks',
-    description: 'A selection of 45 page sections that fit perfectly in any combination',
+    heading: 'your tours',
+    description: 'Tours can be either self-guided or conducted as part of a group.',
+    id: "id-tour",
     items: [
       {
-        image: `${imagesPrefix}/headers.jpg`,
+        image: `${imagesPrefix}/tour.png`,
         title: 'Page Headers',
         subtitle: '10 Examples',
         route: 'home',
@@ -135,11 +136,12 @@ export default [
     ]
   },
   {
-    heading: 'Navigation',
-    description: '30+ components that will help go through the pages',
+    heading: 'highlight',
+    description: 'experiences worth special attention or capturing in photographs.',
+    id: "id-high",
     items: [
       {
-        image: `${imagesPrefix}/navbars.jpg`,
+        image: `${imagesPrefix}/high.png`,
         title: 'Navbars',
         subtitle: '4 Examples',
         route: 'home',
@@ -162,11 +164,12 @@ export default [
     ]
   },
   {
-    heading: 'Input Areas',
-    description: '50+ elements that you need for text manipulation and insertion',
+    heading: 'Group',
+    description: 'These individuals can be family members, friends, colleagues, or strangers from different places who share the experience of the journey.',
+    id: "id-group",
     items: [
       {
-        image: `${imagesPrefix}/newsletters.jpg`,
+        image: `${imagesPrefix}/gc.png`,
         title: 'Newsletters',
         subtitle: '6 Examples',
         route: 'home',
@@ -196,11 +199,12 @@ export default [
     ]
   },
   {
-    heading: 'Attention Catchers',
-    description: '20+ Fully coded components that popup from different places of the screen',
+    heading: 'collections',
+    description: ' Collections enable travelers to browse and select tour options that suit their needs more easily.',
+    id: "id-collection",
     items: [
       {
-        image: imgAlert,
+        image: `${imagesPrefix}/collection.png`,
         title: 'Alerts',
         subtitle: '4 Examples',
         route: 'home',
@@ -224,82 +228,6 @@ export default [
         image: imgModal,
         title: 'Modals',
         subtitle: '5 Examples',
-        route: 'home',
-        pro: false
-      }
-    ]
-  },
-  {
-    heading: 'Elements',
-    description: '80+ carefully crafted small elements that come with multiple colors and shapes',
-    items: [
-      {
-        image: `${imagesPrefix}/buttons.jpg`,
-        title: 'Buttons',
-        subtitle: '6 Examples',
-        route: 'home',
-        pro: false
-      },
-      {
-        image: `${imagesPrefix}/avatars.jpg`,
-        title: 'Avatars',
-        subtitle: '2 Examples',
-        route: 'home',
-        pro: false
-      },
-      {
-        image: imgDropdowns,
-        title: 'Dropdowns',
-        subtitle: '2 Examples',
-        route: 'home',
-        pro: false
-      },
-      {
-        image: `${imagesPrefix}/switch.jpg`,
-        title: 'Toggles',
-        subtitle: '2 Examples',
-        route: 'home',
-        pro: false
-      },
-      {
-        image: `${imagesPrefix}/social-buttons.jpg`,
-        title: 'Social Buttons',
-        subtitle: '2 Examples',
-        route: 'home',
-        pro: true
-      },
-      {
-        image: `${imagesPrefix}/breadcrumbs.jpg`,
-        title: 'Breadcrumbs',
-        subtitle: '1 Example',
-        route: 'home',
-        pro: false
-      },
-      {
-        image: `${imagesPrefix}/badges.jpg`,
-        title: 'Badges',
-        subtitle: '3 Examples',
-        route: 'home',
-        pro: false
-      },
-      {
-        image: `${imagesPrefix}/progress.jpg`,
-        title: 'Progress Bars',
-        subtitle: '4 Examples',
-        route: 'home',
-        pro: false
-      },
-      {
-        image: `${imagesPrefix}/tables.jpg`,
-        title: 'Tables',
-        subtitle: '3 Examples',
-        route: 'home',
-        pro: true
-      },
-      {
-        image: `${imagesPrefix}/typography.jpg`,
-        title: 'Typography',
-        subtitle: '2 Examples',
         route: 'home',
         pro: false
       }
