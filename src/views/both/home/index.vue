@@ -218,12 +218,12 @@ onMounted(() => {
           style="height: 100%; width: 100%; object-fit: cover"
         ></video>
       </div>
-      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+      <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-1" class="walcraft-info">
           <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
-              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              src="https://file.wmzspace.space/resource/discover.png"
               style="object-fit: cover; width: 100%; height: 100%"
             />
           </div>
@@ -235,7 +235,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+      <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-2" class="walcraft-info">
           <div class="text flex-c">
             <h2 style="padding: 0 1rem;">Detailed Tour Information</h2>
@@ -246,18 +246,18 @@ onMounted(() => {
           <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
-              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              src="https://file.wmzspace.space/resource/tour.jpg"
               style="object-fit: cover; width: 100%; height: 100%"
             />
           </div>
         </div>
       </div>
-      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+      <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-3" class="walcraft-info">
           <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
-              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              src="https://file.wmzspace.space/resource/coll.jpg"
               style="object-fit: cover; width: 100%; height: 100%"
             />
           </div>
@@ -269,7 +269,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+      <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-4" class="walcraft-info">
           <div class="text flex-c">
             <h2 style="padding: 0 1rem;">Itinerary Planning and Customization Options</h2>
@@ -280,18 +280,18 @@ onMounted(() => {
           <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
-              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              src="https://file.wmzspace.space/resource/planer.jpg"
               style="object-fit: cover; width: 100%; height: 100%"
             />
           </div>
         </div>
       </div>
-      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+      <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-5" class="walcraft-info">
           <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
-              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              src="https://file.wmzspace.space/resource/planer.jpg"
               style="object-fit: cover; width: 100%; height: 100%"
             />
           </div>
@@ -303,7 +303,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+      <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-6" class="walcraft-info">
           <div class="text flex-c">
             <h2 style="padding: 0 1rem;">Customizable Profile and VIP Features and Subscriptions</h2>
@@ -314,13 +314,13 @@ onMounted(() => {
           <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
-              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              src="https://file.wmzspace.space/resource/vip.jpg"
               style="object-fit: cover; width: 100%; height: 100%"
             />
           </div>
         </div>
       </div>
-      <div style="min-height: 700px; width: 100%; display: flex; position: relative">
+      <div style="min-height: 800px; width: 100%; display: flex; position: relative">
         <div id="info-7" class="walcraft-info">
           <div class="text flex-c">
             <h2 style="padding: 0 1rem;">Group User and Trip Display</h2>
@@ -331,7 +331,7 @@ onMounted(() => {
           <div class="image" style="max-height: 500px; max-width: 400px">
             <img
               alt=""
-              src="//fp1.fghrsh.net/2020/01/12/a34fb4bccf0056405451e822c2de7b2f.jpg"
+              src="https://file.wmzspace.space/resource/group.jpg"
               style="object-fit: cover; width: 100%; height: 100%"
             />
           </div>

@@ -147,10 +147,18 @@ watch(
           </template>
         </a-anchor-link>
       </a-anchor>
-      <a-menu-item key="1" class="bg-transparent">Home</a-menu-item>
-      <a-menu-item key="2" class="bg-transparent">Solution</a-menu-item>
-      <a-menu-item key="3" class="bg-transparent">Cloud Service</a-menu-item>
-      <a-menu-item key="4" class="bg-transparent">Cooperation</a-menu-item>
+      <a-menu-item key="1" class="bg-transparent">
+        Home
+      </a-menu-item>
+      <a-menu-item key="2" class="bg-transparent">
+        Solution
+      </a-menu-item>
+      <a-menu-item key="3" class="bg-transparent">
+        Cloud Service
+      </a-menu-item>
+      <a-menu-item key="4" class="bg-transparent">
+        Cooperation
+      </a-menu-item>
       <a-menu-item key="5" class="bg-transparent" style="float: right">
         <a-button
           shape="round"
