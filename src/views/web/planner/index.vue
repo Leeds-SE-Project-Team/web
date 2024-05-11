@@ -104,14 +104,14 @@ const isGPS = computed(() => {
   }
   return false
 })
-const GPXTime = computed(()=>{
-  if(isGPX.value){
+const GPXTime = computed(() => {
+  if (isGPX.value) {
     return useMapStore().FileGpxData.routes[0].time
   }
   return ''
 })
-const GPXDistance = computed(()=>{
-  if(isGPX.value){
+const GPXDistance = computed(() => {
+  if (isGPX.value) {
     return useMapStore().FileGpxData.routes[0].distance
   }
   return ''
@@ -332,7 +332,7 @@ const hasPlanned = computed(() => {
   return result || isGPX.value
 })
 
-const alwaysShowTop = ref(false)
+const alwaysShowTop = ref(true)
 
 const plannedResult = computed(() => mapContainer.value.navigationResult)
 const plannedFirstRoute = computed(() =>
@@ -419,7 +419,7 @@ onUnmounted(() => {
 
 <template>
   <div id="mobile-planner" class="flex-r">
-    <div class="left">
+    <div class="left" style="width: 30vw">
       <div id="top-menu" style="height: 100%">
         <div class="outer-container" style="height: 100%">
           <div
@@ -614,13 +614,62 @@ onUnmounted(() => {
                 v-model:height="pointSheetHeight"
                 :anchors="floatSheetAnchors"
               > -->
-              <div v-if="pointSheetHeight > 0" id="choose-info">
+              <div
+                v-if="pointSheetHeight > 0"
+                id="choose-info"
+                style="background-color: transparent; color: white"
+              >
+                <div class="pos-sheet-text-container">
+                  <p class="name van-multi-ellipsis--l2" style="font-size: 30px">
+                    {{ sheetData.neighborhood || sheetData.street }}
+                  </p>
+                  <van-tag
+                    v-for="(tag, idx) in sheetData.neighborhoodType
+                      .split(';')
+                      .filter((type: string) => type.length > 0)"
+                    :key="idx"
+                    :type="'default'"
+                    class="search-result-area-label-tag"
+                    plain
+                    size="large"
+                    style="color: white; margin: 10px 10px 5px 0"
+                  >
+                    {{ tag }}
+                  </van-tag>
+                  <a-divider></a-divider>
+                  <van-loading v-if="sheetData.loading" align="center" color="white" />
+                  <div v-else>
+                    <div class="pos-sheet-distance" style="margin: 10px 0">
+                      <van-icon :size="27" class="icon" name="location" style="color: white" />
+                      <span class="text" style="margin-left: 10px; font-size: 20px"
+                        ><span>{{ sheetData.distance }}</span> km away</span
+                      >
+                    </div>
+
+                    <div class="pos-sheet-location van-multi-ellipsis--l3">
+                      {{ sheetData.address }}
+                    </div>
+                  </div>
+                </div>
                 <div class="pos-sheet-btn-container">
-                  <div v-if="!plannedResult" class="flex-r flex-justify-c" style="gap: 1rem">
-                    <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectStart">
+                  <div
+                    v-if="!plannedResult"
+                    class="flex-r flex-justify-c"
+                    style="justify-content: space-evenly"
+                  >
+                    <van-button
+                      class="pos-sheet-btn primary-btn-dark"
+                      style="background-color: rgba(64, 120, 0, 0.8)"
+                      @click="handleSelectStart"
+                    >
                       <span class="btn-text">Start here</span>
                     </van-button>
-                    <van-button class="pos-sheet-btn primary-btn-dark" @click="handleSelectEnd">
+
+                    <van-button
+                      class="pos-sheet-btn primary-btn-dark"
+                      style="background-color: rgba(64, 120, 0, 0.8)"
+                      @click="handleSelectEnd"
+                    >
                       <span class="btn-text">Set as end point</span>
                     </van-button>
                   </div>
@@ -634,44 +683,15 @@ onUnmounted(() => {
                     </van-button>
                   </div>
                 </div>
-                <div class="pos-sheet-text-container">
-                  <p class="name van-multi-ellipsis--l2">
-                    {{ sheetData.neighborhood || sheetData.street }}
-                  </p>
-                  <van-loading v-if="sheetData.loading" class="loading" color="#1989fa" />
-                  <div v-else>
-                    <van-tag
-                      v-for="(tag, idx) in sheetData.neighborhoodType
-                        .split(';')
-                        .filter((type: string) => type.length > 0)"
-                      :key="idx"
-                      class="search-result-area-label-tag"
-                      plain
-                      size="large"
-                      type="primary"
-                    >
-                      {{ tag }}
-                    </van-tag>
-                    <div class="pos-sheet-distance">
-                      <van-icon :size="23" class="icon" name="location" />
-                      <span class="text"
-                        ><span>{{ sheetData.distance }}</span> km away</span
-                      >
-                    </div>
-
-                    <div class="pos-sheet-location van-multi-ellipsis--l3">
-                      {{ sheetData.address }}
-                    </div>
-                  </div>
-                </div>
               </div>
               <!-- </van-floating-panel> -->
               <div
                 v-if="selectedAll && hasPlanned && !(pointSheetHeight > 0)"
                 id="plan-info"
                 class="result-panel"
+                style="background-color: transparent"
               >
-                <van-cell class="result-cell">
+                <van-cell class="result-cell" style="color: rgba(255, 255, 255, 0.9) !important">
                   <template #icon
                     ><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon"
                   /></template>
@@ -693,7 +713,12 @@ onUnmounted(() => {
                   </van-button>
                 </van-cell>
 
-                <van-grid :border="false" :gutter="10" class="result-detail">
+                <van-grid
+                  :border="false"
+                  :gutter="10"
+                  class="result-detail"
+                  style="fill: white; color: white"
+                >
                   <van-grid-item class="detail-item" icon="clock-o" text="文字">
                     <template #text>
                       <span class="detail-content">
@@ -721,10 +746,15 @@ onUnmounted(() => {
                     class="title-input"
                     label="Tour title"
                     placeholder="Untitled"
+                    style="fill: white; color: white !important"
                   />
                 </van-cell>
 
-                <van-cell class="collection-select" @click="showCollectionPicker = true">
+                <van-cell
+                  class="collection-select"
+                  style="fill: white; color: white"
+                  @click="showCollectionPicker = true"
+                >
                   <!--        <template #icon><img :alt="tourTypeText" :src="tourTypeImg" class="menu-icon" /></template>-->
                   <template #title>
                     <span class="menu-title">Select collection</span>
@@ -800,9 +830,7 @@ onUnmounted(() => {
                 <van-grid :border="false" :gutter="10" class="result-detail">
                   <van-grid-item class="detail-item" icon="clock-o" text="文字">
                     <template #text>
-                      <span class="detail-content">
-                        {{ Math.round(GPXTime / 60) }} min
-                      </span>
+                      <span class="detail-content"> {{ Math.round(GPXTime / 60) }} min </span>
                     </template>
                   </van-grid-item>
                   <van-grid-item class="detail-item" icon="aim">
