@@ -56,6 +56,7 @@ const submitForm = async () => {
           description: '',
           coverUrl: ''
         }
+        getCreatedGroup()
       } else {
         Message.warning("create group failed, please create later")
       }

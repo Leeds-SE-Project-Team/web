@@ -10,7 +10,7 @@ import CollectionDetail from '@/views/discover/CollectionDetail.vue'
 import PlannerMobileView from '@/views/mobile/planner/index.vue'
 import AnoHighlightView from '@/views/mobile/highlight/another.vue'
 import groupCollection from '@/views/web/groupCollection/index.vue'
-// import groupCollection from '@/views/web/mobileGroup/index.vue'
+import mobileGroupCollection from '@/views/web/mobileGroup/index.vue'
 import personalPage from '@/views/web/personal/index.vue'
 
 import personalIndex from '@/views/mobile/personal/index.vue'
@@ -185,7 +185,7 @@ const router = createRouter({
           return { path: '/discover' }
         }
       },
-      component: CollectionDetail
+      component: Capacitor.getPlatform() === 'web' ? groupCollection: mobileGroupCollection
     }, //     {
     //       path: '/highlight',
     //       name: 'highlight',
