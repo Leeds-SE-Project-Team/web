@@ -148,16 +148,16 @@ watch(
         </a-anchor-link>
       </a-anchor>
       <a-menu-item key="1" class="bg-transparent">
-        Home
+       <a href="#id-tour" style="color:#000">Tour</a>
       </a-menu-item>
       <a-menu-item key="2" class="bg-transparent">
-        Solution
+       <a href="#id-high" style="color:#000">Highlight</a>
       </a-menu-item>
       <a-menu-item key="3" class="bg-transparent">
-        Cloud Service
+       <a href="#id-group" style="color:#000">Group</a>
       </a-menu-item>
       <a-menu-item key="4" class="bg-transparent">
-        Cooperation
+       <a href="#id-collection" style="color:#000">Collection</a>
       </a-menu-item>
       <a-menu-item key="5" class="bg-transparent" style="float: right">
         <a-button

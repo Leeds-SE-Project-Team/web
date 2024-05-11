@@ -53,7 +53,7 @@ const navigateTo = (routeName: string) => {
           <div class="row justify-content-start mt-5">
             <DefaultInfoCard
               class="mt-3"
-              icon="Gourps"
+              icon="Group"
               title="Groups play and tour"
               description=" These individuals can be family members, friends, colleagues, or strangers from different places who share the experience of the journey."
             />

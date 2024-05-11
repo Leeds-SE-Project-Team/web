@@ -53,9 +53,9 @@
       <PresentationCounter />
       <PresentationInformation />
       <PresentationExample :data="data" />
-      <PresentationPages />
-      <PresentationTestimonials />
-      <div class="container">
+      <!-- <PresentationPages /> -->
+      <!-- <PresentationTestimonials /> -->
+      <!-- <div class="container">
         <div class="row">
           <div class="d-flex flex-column w-100 text-center p-5 mb-8">
             <h3>Available on these technologies</h3>
@@ -116,7 +116,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
       <div
         :style="{
           background: 'linear-gradient(195deg, rgb(66, 66, 74), rgb(25, 25, 25))'
@@ -136,20 +136,13 @@
               <div class="d-flex justify-content-center p-5">
                 <div class="col-lg-8 ms-lg-5 text-center">
                   <h3 class="text-white">
-                    Do you love this awesome UI Kit from Vuejs & Bootstrap?
+                    Do you love our walcraft app?
                   </h3>
                   <p class="text-white text-md">
-                    Cause if you do, it can be yours for FREE. Hit the button below to navigate to
-                    Creative Tim where you can <br />
-                    find the Design System in HTML. Start a new project or give an old Bootstrap
-                    project a new look!
+                    You can invite your friends and you can get 3 days free vip!
+                    <br />
+                    Go and paly with your friends!
                   </p>
-
-                  <a
-                    class="btn btn-sm mb-0 bg-gradient-success px-5 py-3 mt-4"
-                    href="https://www.creative-tim.com/product/vue-material-kit"
-                    >Download Now</a
-                  >
                 </div>
               </div>
             </div>
