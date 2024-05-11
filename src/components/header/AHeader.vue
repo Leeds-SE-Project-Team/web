@@ -29,6 +29,7 @@ const isVIP = computed(()=>{
 
 const clickVIP = (): Promise<void> =>
   new Promise((resolve) => {
+    console.log(chosedvip.value)
     buy_vip(chosedvip.value).then((res) => {
       if (res.success) {
         showSuccessToast('VIP!')
@@ -89,25 +90,25 @@ const clickVIP = (): Promise<void> =>
     >
       <template #title> VIP for Walcraft</template>
       <a-radio-group v-model="chosedvip" size="large" type="button">
-        <a-radio value="Beijing">
+        <a-radio value="0">
           <div class="price">
             <div class="time">1 Month</div>
             <div class="money">$6</div>
           </div>
         </a-radio>
-        <a-radio value="Shanghai">
+        <a-radio value="1">
           <div class="price">
             <div class="time">3 Month</div>
             <div class="money">$16</div>
           </div>
         </a-radio>
-        <a-radio value="Guangzhou">
+        <a-radio value="2">
           <div class="price">
             <div class="time">1 Year</div>
             <div class="money">$60</div>
           </div>
         </a-radio>
-        <a-radio value="Guanou">
+        <a-radio value="3">
           <div class="price">
             <div class="time">
               <strong>Forever</strong>

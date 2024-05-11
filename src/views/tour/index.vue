@@ -121,10 +121,9 @@
           <template #icon>
             <div class="icon">
               <img
-                :height="50"
                 :src="tourRecord && isStarTour(tourRecord).value ? starredSvgUrl : starSvgUrl"
-                :width="50"
                 alt="like"
+                style="width: 50px; height: 50px;"
               />
               <span style="color: #fff">{{ tourRecord?.starredBy.length }}</span>
             </div>

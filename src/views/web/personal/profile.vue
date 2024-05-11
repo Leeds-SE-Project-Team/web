@@ -4,7 +4,7 @@ import { useUserStore } from '@/stores/user'
 import { computed, onMounted, reactive, ref } from 'vue'
 import tourCard from './cards/tourCard.vue'
 import { Message } from '@arco-design/web-vue'
-import { cancelVip, upgradeUser, type UserRecord } from '@/apis/user'
+import { buy_vip, cancelVip, upgradeUser, type UserRecord } from '@/apis/user'
 import { updateUser } from '@/apis/user/index'
 import { uploadFileFromURL } from '@/utils/file'
 import { showToast, type UploaderFileListItem } from 'vant'
@@ -68,11 +68,12 @@ const user = ref<UserRecord | null>(null)
 
 const clickVIP = (): Promise<void> =>
   new Promise((resolve) => {
-    const form = user.value!
-    form.type = 1
-    upgradeUser(form).then((res) => {
+    console.log(chosedvip.value)
+    buy_vip(chosedvip.value).then((res) => {
       if (res.success) {
-        Message.success('Congratulations! You are VIP now!')
+        Message.success('Congratulations! you are VIP now!')
+        userStore.curUser = res.data
+        user.value = res.data!
         resolve()
       } else {
         Message.info(res.message)
@@ -356,25 +357,25 @@ onMounted(() => {
           >
             <template #title> VIP for Walcraft</template>
             <a-radio-group v-model="chosedvip" size="large" type="button">
-              <a-radio value="Beijing">
+              <a-radio value="0">
                 <div class="price">
                   <div class="time">1 Month</div>
                   <div class="money">$6</div>
                 </div>
               </a-radio>
-              <a-radio value="Shanghai">
+              <a-radio value="1">
                 <div class="price">
                   <div class="time">3 Month</div>
                   <div class="money">$16</div>
                 </div>
               </a-radio>
-              <a-radio value="Guangzhou">
+              <a-radio value="2">
                 <div class="price">
                   <div class="time">1 Year</div>
                   <div class="money">$60</div>
                 </div>
               </a-radio>
-              <a-radio value="Guanou">
+              <a-radio value="3">
                 <div class="price">
                   <div class="time">
                     <strong>Forever</strong>
