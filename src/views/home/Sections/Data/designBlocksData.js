@@ -13,8 +13,13 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-const imagesPrefix =
-  '../src/views/home/Sections/Data/img'
+// 获取服务端静态资源URL
+const getStaticRes = (relativePath) => {
+  return import.meta.env.APP_STATIC_URL.concat(relativePath)
+}
+
+const imagesPrefix = getStaticRes('/resource/home')
+// '../src/views/home/Sections/Data/img'
 
 import imgPricing from '@/assets/img/pricing.png'
 import imgFeatures from '@/assets/img/features.png'
@@ -24,16 +29,14 @@ import imgTeam from '@/assets/img/team.png'
 import imgStat from '@/assets/img/stat.png'
 import imgContent from '@/assets/img/content.png'
 import imgPagination from '@/assets/img/pagination.png'
-import imgAlert from '@/assets/img/alerts.jpg'
 import imgPopover from '@/assets/img/popovers.jpg'
 import imgModal from '@/assets/img/modals.jpg'
-import imgDropdowns from '@/assets/img/dropdowns.jpg'
 
 export default [
   {
     heading: 'your tours',
     description: 'Tours can be either self-guided or conducted as part of a group.',
-    id: "id-tour",
+    id: 'id-tour',
     items: [
       {
         image: `${imagesPrefix}/tour.png`,
@@ -138,7 +141,7 @@ export default [
   {
     heading: 'highlight',
     description: 'experiences worth special attention or capturing in photographs.',
-    id: "id-high",
+    id: 'id-high',
     items: [
       {
         image: `${imagesPrefix}/high.png`,
@@ -165,8 +168,9 @@ export default [
   },
   {
     heading: 'Group',
-    description: 'These individuals can be family members, friends, colleagues, or strangers from different places who share the experience of the journey.',
-    id: "id-group",
+    description:
+      'These individuals can be family members, friends, colleagues, or strangers from different places who share the experience of the journey.',
+    id: 'id-group',
     items: [
       {
         image: `${imagesPrefix}/gc.png`,
@@ -200,8 +204,9 @@ export default [
   },
   {
     heading: 'collections',
-    description: ' Collections enable travelers to browse and select tour options that suit their needs more easily.',
-    id: "id-collection",
+    description:
+      ' Collections enable travelers to browse and select tour options that suit their needs more easily.',
+    id: 'id-collection',
     items: [
       {
         image: `${imagesPrefix}/collection.png`,

@@ -1,32 +1,37 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
-import groupCard from './cards/groupCard.vue';
-import { createGroup, getAllCreatedGroupsByUser, getAllJoinedGroupsByUser, type CreateGroupForm, type GroupRecord } from '@/apis/group';
-import { Message, type RequestOption } from '@arco-design/web-vue';
-import { uploadFileFromURL } from '@/utils/file';
+import { ref } from 'vue'
+import groupCard from './cards/groupCard.vue'
+import {
+  createGroup,
+  type CreateGroupForm,
+  getAllCreatedGroupsByUser,
+  getAllJoinedGroupsByUser,
+  type GroupRecord
+} from '@/apis/group'
+import { Message, type RequestOption } from '@arco-design/web-vue'
+import { uploadFileFromURL } from '@/utils/file'
+import { useUserStore } from '@/stores'
+import { UserType } from '@/apis/user'
 
 const createdGroups = ref<GroupRecord[]>()
 const jointGroups = ref<GroupRecord[]>()
 
-
 const getCreatedGroup = () => {
-  getAllCreatedGroupsByUser()
-    .then((res => {
-      if (res.success) {
-        createdGroups.value = res.data
-        console.log("created", createdGroups.value)
-      }
-    }))
+  getAllCreatedGroupsByUser().then((res) => {
+    if (res.success) {
+      createdGroups.value = res.data
+      console.log('created', createdGroups.value)
+    }
+  })
 }
 
 const getJointGroup = () => {
-  getAllJoinedGroupsByUser()
-    .then((res => {
-      if (res.success) {
-        jointGroups.value = res.data
-        console.log("join", jointGroups.value)
-      }
-    }))
+  getAllJoinedGroupsByUser().then((res) => {
+    if (res.success) {
+      jointGroups.value = res.data
+      console.log('join', jointGroups.value)
+    }
+  })
 }
 
 getCreatedGroup()
@@ -42,35 +47,36 @@ const form = ref<CreateGroupForm>({
 
 const submitForm = async () => {
   if (!form.value.name || !form.value.description) {
-    Message.warning("please enter all the form data")
+    Message.warning('please enter all the form data')
     return
   }
 
-  await createGroup(form.value)
-    .then((res) => {
-      if (res.success) {
-        Message.success(res.message)
-        isCreate.value = false
-        form.value = {
-          name: '',
-          description: '',
-          coverUrl: ''
-        }
-        getCreatedGroup()
-      } else {
-        Message.warning("create group failed, please create later")
+  await createGroup(form.value).then((res) => {
+    if (res.success) {
+      Message.success(res.message)
+      isCreate.value = false
+      form.value = {
+        name: '',
+        description: '',
+        coverUrl: ''
       }
-    })
+      getCreatedGroup()
+    } else {
+      Message.warning('create group failed, please create later')
+    }
+  })
 }
 
 const customRequest = (option: RequestOption) => {
   console.log(option)
   if (option.fileItem.url) {
-    uploadFileFromURL(option.fileItem.url, `/group/test`, "cover.png").then(res=>{
-      console.log(res)
-    }).catch(e=>{
-      Message.error(e)
-    })
+    uploadFileFromURL(option.fileItem.url, `/group/test`, 'cover.png')
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((e) => {
+        Message.error(e)
+      })
   }
   return {}
   // const { onProgress, onError, onSuccess, fileItem, name } = option
@@ -105,12 +111,10 @@ const customRequest = (option: RequestOption) => {
   //     xhr.abort()
   //   }
   // }
+}
 
-
-
-};
+const userStore = useUserStore()
 </script>
-
 
 <script lang="ts">
 export default {
@@ -124,24 +128,29 @@ export default {
     <div class="my-group">
       <div class="create">
         <h3>My Group</h3>
-        <div class="create-btn" @click="isCreate = true">
+        <div
+          class="create-btn"
+          @click="isCreate = true"
+          v-if="userStore.curUser?.type === UserType.VIP"
+        >
           <icon-plus-circle-fill />CREATE
         </div>
       </div>
       <a-divider :size="4" />
 
       <div v-if="isCreate" class="form-part">
-
-        <div class="title">
-          create my group
-        </div>
+        <div class="title">create my group</div>
 
         <a-form :model="form">
           <a-form-item field="name" label="Name">
             <a-input v-model="form.name" />
           </a-form-item>
           <a-form-item field="des" label="Description">
-            <a-textarea v-model="form.description" placeholder="Please enter something" allow-clear />
+            <a-textarea
+              v-model="form.description"
+              placeholder="Please enter something"
+              allow-clear
+            />
           </a-form-item>
 
           <a-form-item field="url" label="Background url" class="bg-item">
@@ -149,7 +158,7 @@ export default {
               <template #upload-button>
                 <div class="upload-box">
                   <div>
-                    <span style="color: #3370FF"> Click to upload</span>
+                    <span style="color: #3370ff"> Click to upload</span>
                   </div>
                 </div>
               </template>
@@ -164,15 +173,10 @@ export default {
       </div>
 
       <div class="card" v-for="group in createdGroups" :key="group.id">
-        <groupCard 
-          @reload="getCreatedGroup"
-          :info="group"
-          :isCreated="1"></groupCard>
+        <groupCard @reload="getCreatedGroup" :info="group" :isCreated="1"></groupCard>
       </div>
 
-      <div v-if="!createdGroups?.length" class="no-group">
-        You haven't created a group
-      </div>
+      <div v-if="!createdGroups?.length" class="no-group">You haven't created a group</div>
     </div>
 
     <div class="join-group">
@@ -180,17 +184,11 @@ export default {
       <a-divider :size="4" />
 
       <div class="card" v-for="group in jointGroups" :key="group.id">
-        <groupCard 
-          @reload="getCreatedGroup"
-          :info="group"
-          :isCreated="0"></groupCard>
+        <groupCard @reload="getCreatedGroup" :info="group" :isCreated="0"></groupCard>
       </div>
 
-      <div v-if="!jointGroups?.length" class="no-group">
-        You haven't joined a group
-      </div>
+      <div v-if="!jointGroups?.length" class="no-group">You haven't joined a group</div>
     </div>
-
   </div>
 </template>
 
@@ -248,7 +246,6 @@ export default {
           text-align: center;
         }
       }
-
     }
 
     .create {
@@ -278,10 +275,10 @@ export default {
     .no-group {
       width: 100%;
       text-align: center;
-      color:#878787;
+      color: #878787;
       font-size: 18px;
       font-weight: 600;
-      padding:  14px;
+      padding: 14px;
     }
   }
 }
