@@ -8,30 +8,6 @@ const layout = computed(
   () => 'layout-' + ((route.meta.layout as string) || 'default').toLowerCase()
 )
 
-//
-// ws.onopen = () =>
-//   speechSynthesis(ws, {
-//     business: {
-//       aue: 'raw',
-//       vcn: 'xiaoyan',
-//       pitch: 50,
-//       speed: 50
-//     },
-//     data: {
-//       status: 2,
-//       text: base64
-//     }
-//   })
-
-// .then((res) => {
-//   console.log(res)
-// })
-// .catch((e) => {
-//   console.error(e)
-// })
-
-// let speechInstance = new SpeechSynthesisUtterance('大家好，我是渣渣辉。')
-// speechSynthesis.speak(speechInstance)
 </script>
 
 <!--App.vue-->
